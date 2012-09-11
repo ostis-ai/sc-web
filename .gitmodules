@@ -1,0 +1,3 @@
+[submodule "sc-machine"]
+	path = sc-machine
+	url = git@github.com:deniskoronchik/sc-machine.git
