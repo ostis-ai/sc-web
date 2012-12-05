@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Piecemaker>
+  <Contents>
+    <Image Source="contents/piecemaker1.png" Title="Project One">
+		<Text>&lt;h1&gt;New hot Features&lt;/h1&gt;&lt;p&gt;The all new Piecemaker comes with lots of new features, making it even more slick.&lt;/p&gt;&lt;p&gt;Just to mention a few - you can now specify unlimited transition styles, include your own SWF and Video files, add hyperlinks to images and info texts with all special characters.&lt;/p&gt;&lt;p&gt;We also impoved the navigation and the animation with animated shadows and pixel-perfect transitions.&lt;/p&gt;</Text>
+		<Hyperlink URL="http://www.templatemo.com" Target="_blank" />
+	</Image>		
+    <Image Source="contents/piecemaker2.png" Title="Project Two">
+      <Text>&lt;h1&gt;New hot Features&lt;/h1&gt;&lt;p&gt;This 3D Piecemake slider is integrated with Work Center template from templatemo.com website. The all new Piecemaker comes with lots of new features, making it even more slick.&lt;/p&gt;&lt;p&gt;Just to mention a few - you can now specify unlimited transition styles, include your own SWF and Video files, add hyperlinks to images and info texts with all special characters.&lt;/p&gt;&lt;p&gt;We also impoved the navigation and the animation with animated shadows and pixel-perfect transitions.&lt;/p&gt;</Text>
+      <Hyperlink URL="http://www.templatemo.com/page/1" Target="_blank" />
+    </Image>
+	<Image Source="contents/piecemaker3.png" Title="Project Three">
+      <Text>&lt;h1&gt;New hot Features&lt;/h1&gt;&lt;p&gt;The all new Piecemaker comes with lots of new features, making it even more slick.&lt;/p&gt;&lt;p&gt;Just to mention a few - you can now specify unlimited transition styles, include your own SWF and Video files, add hyperlinks to images and info texts with all special characters.&lt;/p&gt;&lt;p&gt;We also impoved the navigation and the animation with animated shadows and pixel-perfect transitions.&lt;/p&gt;</Text>
+      <Hyperlink URL="http://www.templatemo.com/page/2" Target="_blank" />
+    </Image>
+	<Image Source="contents/piecemaker4.png" Title="Project Four">
+      <Text>&lt;h1&gt;New hot Features&lt;/h1&gt;&lt;p&gt;The all new Piecemaker comes with lots of new features, making it even more slick.&lt;/p&gt;&lt;p&gt;Just to mention a few - you can now specify unlimited transition styles, include your own SWF and Video files, add hyperlinks to images and info texts with all special characters.&lt;/p&gt;&lt;p&gt;We also impoved the navigation and the animation with animated shadows and pixel-perfect transitions. Visit www.flashmo.com to download free flash templates.&lt;/p&gt;</Text>
+      <Hyperlink URL="http://www.templatemo.com/page/3" Target="_blank" />
+    </Image>
+  </Contents>
+  <Settings ImageWidth="960" ImageHeight="360" LoaderColor="0x333333" InnerSideColor="0x222222" SideShadowAlpha="0.8" DropShadowAlpha="0.7" DropShadowDistance="25" DropShadowScale="0.95" DropShadowBlurX="40" DropShadowBlurY="4" MenuDistanceX="20" MenuDistanceY="50" MenuColor1="0x999999" MenuColor2="0x333333" MenuColor3="0xFFFFFF" ControlSize="100" ControlDistance="20" ControlColor1="0x222222" ControlColor2="0xFFFFFF" ControlAlpha="0.8" ControlAlphaOver="0.95" ControlsX="450" ControlsY="280&#xD;&#xA;" ControlsAlign="center" TooltipHeight="30" TooltipColor="0x222222" TooltipTextY="5" TooltipTextStyle="P-Italic" TooltipTextColor="0xFFFFFF" TooltipMarginLeft="5" TooltipMarginRight="7" TooltipTextSharpness="50" TooltipTextThickness="-100" InfoWidth="400" InfoBackground="0xFFFFFF" InfoBackgroundAlpha="0.95" InfoMargin="15" InfoSharpness="0" InfoThickness="0" Autoplay="10" FieldOfView="45"></Settings>
+  <Transitions>
+    <Transition Pieces="8" Time="1.4" Transition="easeInOutBack" Delay="0.06" DepthOffset="500" CubeDistance="40"></Transition>
+    <Transition Pieces="6" Time="0.9" Transition="easeInOutBack" Delay="0.1" DepthOffset="500" CubeDistance="40"></Transition>
+    <Transition Pieces="7" Time="1.2" Transition="easeInOutCubic" Delay="0.1" DepthOffset="500" CubeDistance="40"></Transition>
+    <Transition Pieces="9" Time="1.4" Transition="easeInOutQuart" Delay="0.06" DepthOffset="600" CubeDistance="30"></Transition>
+  </Transitions>
+</Piecemaker>

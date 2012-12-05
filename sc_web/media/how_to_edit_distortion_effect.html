@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+	<head>
+		<title>How to Edit Distortion Effect</title>
+        <meta name="Keywords" content="how to, editing Distortion Effect, XML variables, bar transition effects, guidelines, quick tips, AS3, flashmo" />
+        <meta name="Description" content="How to Edit Distortion Effect - XML Flash Image Gallery by flashmo.com website. Configure XML config tags to edit the gallery features and customize bar effects in photo transition tags" />
+        <style type="text/css">
+        <!--
+        body {
+            margin: 0 0 0 0;
+            padding: 0 0 0 0;
+            color: #000000;
+            background-color: #444444;
+            font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+            font-size: 13px;
+        }
+        
+        a:link, a:visited { color: #003366; text-decoration: none; }
+        a:hover { color: #009900; }
+		h2 {
+			font-size: 26px;
+			font-weight: normal;
+		}
+		.flashmo_box {
+			margin: 20px auto;
+			width: 900px;
+			padding: 10px 30px;
+			background: #EEEEEE;
+			font-size: 13px;
+		}
+		.flashmo_variable {
+			color: #0066AA;
+		}
+        -->
+        </style>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+        
+        <!-- embedding SWF -->
+		<script type="text/javascript" src="js/swfobject/swfobject.js"></script>
+		<script type="text/javascript">
+			var flashvars = {};
+			flashvars.xml_file = "distortion_list.xml";
+			var params = {};
+			params.wmode = "transparent";
+			params.allowfullscreen = true;
+			var attributes = {};
+			attributes.id = "slider";
+			swfobject.embedSWF("distortion_effect.swf", "flashmo_slider", "960", "360", "9.0.0", false, flashvars, params, attributes);
+		</script>
+        <!-- embedding SWF -->
+        
+	</head>
+	<body>
+    
+		<div align="center" style="margin-top: 20px;">
+
+			<!-- Distortion Effect SWF -->
+			<div id="flashmo_slider">
+            	<br /><br /><a href="http://www.flashmo.com/preview/flashmo_264_distortion_effect" target="_blank">Distortion Effect</a><br /><br />
+                <a href="http://www.adobe.com/go/getflashplayer">
+                <img src="http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif" alt="Get Adobe Flash player" />
+                </a><br /><br />
+			</div>
+			<!-- Distortion Effect SWF -->
+
+    	</div>
+
+		<div class="flashmo_box">
+		
+			<h2><a href="http://www.flashmo.com/preview/flashmo_264_distortion_effect" target="_parent">Distortion Effect</a></h2>
+			<blockquote>
+			  <p>Adjust <span class="flashmo_variable">width</span> and <span class="flashmo_variable">height</span> values of  the Flash file ( <span class="flashmo_variable">flashmo_264_distortion_effect.swf</span> ) in <span class="flashmo_variable">swfobject.embedSWF();</span> Javascript function</p>
+			  <p><strong>Example:</strong></p>
+		      <ul>
+		        <li>swfobject.embedSWF(&quot;flashmo_264_distortion_effect.swf&quot;, &quot;flashmo_slider&quot;, &quot;<span class="flashmo_variable">900</span>&quot;, &quot;<span class="flashmo_variable">300</span>&quot;, &quot;9.0.0&quot;, false, flashvars, params, attributes);</li>
+		        <li>SWF width value is set as <span class="flashmo_variable">900</span> pixels and height value is set as <span class="flashmo_variable">300</span> pixels in this HTML page</li>
+	          </ul>
+	      </blockquote>
+          
+	    <h2> XML file name</h2>
+			<blockquote>
+			  <p><span class="flashmo_variable">xml_file</span> = <span class="flashmo_variable">flashmo_264_photo_list.xml</span> ( or any file name can be set in JavaScript )</p>
+			  <p><strong>Example:</strong> <span class="flashmo_variable">flashvars.xml_file</span> = &quot;<span class="flashmo_variable">flashmo_264_photo_list.xml</span>&quot;;</p>
+	  	  </blockquote>
+          
+			<h2>  Variables in XML  <span class="flashmo_variable">&lt;config&gt;</span> tag</h2>
+            
+		  	<blockquote>
+            	<p><span class="flashmo_variable">folder</span> = &quot;<span class="flashmo_variable">photos/</span>&quot; the folder name where all images are stored</p>
+	    	<p><span class="flashmo_variable">show_tooltip</span> = 
+       		  <span class="flashmo_variable">true</span> or <span class="flashmo_variable">false</span></p>
+	    	<p><span class="flashmo_variable">show_autoplay_button</span> = <span class="flashmo_variable">true</span> to show or <span class="flashmo_variable">false</span> to hide ( located at top right corner )</p>
+                
+            <p><span class="flashmo_variable">autoplay</span> = 
+   	    	<span class="flashmo_variable">true</span> or <span class="flashmo_variable">false</span></p>
+			<p><span class="flashmo_variable">autoplay_duration</span> = 
+			<span class="flashmo_variable">3</span> seconds ( or any number of seconds )</p>
+			<p>&nbsp; </p>
+            
+			<p><span class="flashmo_variable">photo_width</span> = <span class="flashmo_variable">900</span> pixels ( or any number of pixels )</p>
+	  		<p><span class="flashmo_variable">photo_height</span> = <span class="flashmo_variable">300</span> pixels ( or any number of pixels )</p>
+	  		<p>&nbsp;</p>
+            
+	  		<p><span class="flashmo_variable">thumbnail_group_width</span> = <span class="flashmo_variable">710</span> pixels ( or any number of pixels )</p>
+	  		<p><span class="flashmo_variable">thumbnail_height</span> = <span class="flashmo_variable">100</span> pixels ( the height value of thumbnails )</p>
+	  		<p><span class="flashmo_variable">thumbnail_spacing</span> = <span class="flashmo_variable">10</span> pixels ( horizontal spacing between one thumbnail and another  )</p>
+	  		<p><span class="flashmo_variable">thumbnail_border_size</span> = <span class="flashmo_variable">5</span> pixels ( or any number of pixels )</p>
+	  		<p><span class="flashmo_variable">thumbnail_border_color </span>= <span class="flashmo_variable">#FFFFFF</span> ( any color HEX value )</p>
+	  		<p><span class="flashmo_variable">thumbnail_highlight_color </span>= <span class="flashmo_variable">#CC3333</span> ( any color HEX value ) - border color of the selected thumbnail</p>
+	  		<p>&nbsp;</p>
+            
+	  		<p><span class="flashmo_variable">previous_button</span> = <span class="flashmo_variable">true</span> or <span class="flashmo_variable">false</span> ( located at center left side )</p>
+	  		<p><span class="flashmo_variable">next_button</span> = <span class="flashmo_variable">true</span> or <span class="flashmo_variable">false</span> ( located at center right side )</p>
+			<p>&nbsp;</p>
+            
+	  		<p><span class="flashmo_variable">description</span> = <span class="flashmo_variable">true</span> to show or <span class="flashmo_variable">false</span> to hide ( located at the top center )</p>
+	  		<p><span class="flashmo_variable">description_bg_color </span>= <span class="flashmo_variable">#000000</span> ( any color HEX value )</p>
+	  		<p><span class="flashmo_variable">description_bg_alpha </span>= <span class="flashmo_variable">0.6</span> ( 0.00 to 1.00 for alpha value )            </p>
+	  		<p><span class="flashmo_variable">css_file </span> = <span class="flashmo_variable">flashmo_210_style.css</span> ( or change to another CSS file name ) - to format the HTML description text field</p>
+<p><span class="flashmo_variable">tween_duration</span> = 
+  <span class="flashmo_variable">0.7</span> seconds by default ( motion tweening duration of each block in bar transition )</p>
+                 
+			  <p><span class="flashmo_variable">tween_delay</span> = <span class="flashmo_variable">0.02</span> seconds by default ( delay between each block in bar transition )</p>
+		  </blockquote>
+          
+          <h2>Transitions in each photo &lt;transition&gt; tag</h2>
+			
+            <blockquote>
+			  <p><span class="flashmo_variable">sequence</span> = first | last | inner | outer</p>
+			  <p><span class="flashmo_variable">direction</span> = left | right | up | down</p>
+			  <p><span class="flashmo_variable">slice</span> = 3 | 4 | 5 |  6 | 7 | or any positive integer number ( odd numbers are better if <span class="flashmo_variable">sequence</span> is set to inner or outer )</p>
+			  <p><span class="flashmo_variable">effect </span>= easeInOutQuart | easeInOutCubic | easeInOutExpo | easeInOutSine ( or see below <span class="flashmo_variable">Tweener transition cheat sheet</span> )</p>
+			</blockquote>
+            
+</div>
+
+	<div align="center">
+    	<script type="text/javascript">
+			swfobject.embedSWF("transitions.swf", "tweener_transitions", "960", "680", "9.0.0", false);
+		</script>
+        	<div id="tweener_transitions" >
+            	<br /><br /><a href="http://www.flashmo.com" target="_blank">Flash XML Image Slider</a><br /><br />
+                <a href="http://www.adobe.com/go/getflashplayer">
+                    <img src="http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif" alt="Get Adobe Flash player" />
+                </a><br /><br />
+			</div>
+
+	</div>
+	<br />
+    
+</body>
+</html>

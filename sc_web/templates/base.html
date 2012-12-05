@@ -1,0 +1,102 @@
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>{{ title }}</title>
+	<link href="/media/css/templatemo_style.css" rel="stylesheet" type="text/css" />
+
+	<script language="javascript" type="text/javascript">
+	function clearText(field)
+	{
+	    if (field.defaultValue == field.value) field.value = '';
+	    else if (field.value == '') field.value = field.defaultValue;
+	}
+	</script>
+
+	<link rel="stylesheet" type="text/css" href="/media/css/ddsmoothmenu.css" />
+
+	<script type="text/javascript" src="/media/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/media/js/ddsmoothmenu.js">
+
+	/***********************************************
+	* Smooth Navigational Menu- (c) Dynamic Drive DHTML code library (www.dynamicdrive.com)
+	* This notice MUST stay intact for legal use
+	* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+	***********************************************/
+
+	</script>
+
+	<script type="text/javascript">
+
+	ddsmoothmenu.init({
+		mainmenuid: "templatemo_menu", //menu DIV id
+		orientation: 'h', //Horizontal or vertical menu: Set to "h" or "v"
+		classname: 'ddsmoothmenu', //class added to menu's outer DIV
+		//customtheme: ["#1c5a80", "#18374a"],
+		contentsource: "markup" //"markup" or ["container_id", "path_to_menu_file"]
+	})
+
+	</script> 
+</head>
+
+<body id="home">
+
+	<!-- header -->
+	<div id="templatemo_header_wrapper">
+	    <div id="templatemo_header">
+		<div id="site_title"><a href="http://www.ostis.net">IMS<span> OSTIS</span></a></div>
+		<div id="templatemo_menu" class="ddsmoothmenu">
+		    <ul>
+		        <li><a href="index.html">Home</a></li>
+		        <li><a href="about.html">About</a></li>
+		        <li><a href="blog.html">Blog</a></li>
+		        <li><a href="contact.html" class="selected">Contact</a></li>
+		    </ul>
+		    <br style="clear: left" />
+		</div> <!-- end of templatemo_menu -->
+	    </div> <!-- END of header -->
+	</div>
+
+	<!-- main content -->
+	<div id="templatemo_main_top"></div>
+		<div id="templatemo_main">
+			{% block content %}{% endblock %}
+			<div class="cleaner"></div>
+		</div>
+
+	</div> <!-- END of main -->
+	
+
+
+	<!-- footer -->
+	<div id="templatemo_footer_wrapper">
+		<div id="templatemo_footer">
+	
+		<div class="col col_14">
+			<h5>Pages</h5>
+		    <ul class="footer_list">
+		    	<li><a href="index.html">Home</a></li>
+		        <li><a href="about.html">About</a></li>
+		        <li><a href="portfolio.html">Portfolio</a></li>
+		        <li><a href="blog.html">Blog</a></li>
+		        <li><a href="contact.html">Contact</a></li>
+				</ul>
+		</div>
+		
+		
+		<div class="col col_14 no_margin_right">
+			<h5>Newsletter</h5>
+		    <form action="#" method="get">
+		      <input type="text" value="Subscribe" name="email" id="subemail" title="email" onfocus="clearText(this)" onblur="clearText(this)" class="newsletter_txt" />
+		      <input type="submit" name="Subscribe" value=" Subscribe " alt="Subscribe" id="subscribe_button" title="Subscribe" class="subscribe_button"  />
+		    </form>
+		    <div class="cleaner h30"></div>
+		    Copyright © 2012 <a href="#">OSTIS</a> Designed by <a href="http://www.templatemo.com" target="_parent">Free CSS Templates</a>
+		</div>
+		
+	    <div class="cleaner"></div>
+	    </div>
+	</div> <!-- END of footer -->
+</body>
+
+</html>

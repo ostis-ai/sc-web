@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<photos>
+
+	<config
+		folder="contents/"
+		show_tooltip="true"
+		show_autoplay_button="true"
+		autoplay="true"
+		autoplay_duration="2"
+
+		photo_width="960"
+		photo_height="360"
+
+		thumbnail_group_width="540"
+		thumbnail_height="60"
+		thumbnail_spacing="10"
+		thumbnail_border_size="5"
+		thumbnail_border_color="#CCCCCC"
+		thumbnail_highlight_color="#CC3333"
+
+		previous_button="true"
+		next_button="true"
+		
+		description="true"
+		description_bg_color="#000000"
+		description_bg_alpha="0.7"
+		css_file="css/flashmo_210_style.css"
+		tween_duration="0.8" 
+		tween_delay="0.0012">
+	</config>
+	
+	<photo>
+		<transition sequence="last" direction="right" slice="180" effect="easeInOutExpo"></transition>
+		<thumbnail>s_piecemaker1.png</thumbnail>
+		<filename>piecemaker1.png</filename>
+		<tooltip>Image Title 01</tooltip>
+		<description><![CDATA[<p class="subtitle">Image Title 01 goes here</p><p><a href="http://www.flashmo.com/page/1" target="_parent">Lorem ipsum dolor sit amet</a>, consectetur adipiscing elit. <span class="highlight">Quisque at ante sit amet</span> erat laoreet <u>fermentum</u>. Nam scelerisque cursus dolor. Duis nulla diam, posuere ac, varius id, ullamcorper sit amet, libero. <span class="note">This text is dynamically loaded from the external XML file. This textfield supports HTML and CSS.</span></p>]]></description>
+	</photo>
+	
+	<photo>
+		<transition sequence="first" direction="down" slice="480" effect="easeInOutQuart"></transition>
+		<thumbnail>s_piecemaker2.png</thumbnail>
+		<filename>piecemaker2.png</filename>
+		<tooltip>Image Title 02</tooltip>
+		<description><![CDATA[<p class="subtitle">Image Title 02 goes here</p><p>Donec id semper sem. <a href="http://www.flashmo.com/donate" target="_blank">Fusce sollicitudin</a> viverra tristique. Phasellus auctor, ipsum eu semper cursus, magna odio ullamcorper eros, eget sodales lacus purus quis ipsum. Integer quis lacinia diam. Sed in mi metus, eget euismod dui. Etiam nec congue nunc.</p>]]></description>
+	</photo>
+	
+	<photo>
+		<transition sequence="last" direction="right" slice="180" effect="easeInOutQuart"></transition>
+		<thumbnail>s_piecemaker3.png</thumbnail>
+		<filename>piecemaker3.png</filename>
+		<tooltip>Image Title 03</tooltip>
+		<description><![CDATA[<p class="subtitle">Image Title 03 goes here</p><p>In velit urna, <u>convallis id</u>, pharetra in, iaculis sit amet, mi. Praesent consectetur imperdiet mauris. Suspendisse at pede vel lorem pulvinar laoreet. Etiam et neque. Donec dapibus viverra est.</p><p><span class="note">This text is dynamically loaded from the external XML file. This textfield supports HTML and CSS.</span></p>]]></description>
+	</photo>
+	
+	<photo>
+		<transition sequence="first" direction="up" slice="480" effect="easeInOutBack"></transition>
+		<thumbnail>s_piecemaker4.png</thumbnail>
+		<filename>piecemaker4.png</filename>
+		<tooltip>Image Title 04</tooltip>
+		<description><![CDATA[<p class="subtitle">Image Title 04 goes here</p><p><a href="http://www.flashmo.com/page/1" target="_blank">Mauris vestibulum felis</a> eget tortor. Praesent mattis varius quam. Vestibulum ullamcorper ipsum nec augue. Nunc commodo, magna pharetra semper vehicula, dui ligula feugiat elit, et euismod nunc orci ut libero. <span class="note">Mauris et elit quis mauris aliquet luctus.</span></p>]]></description>
+	</photo>
+	
+	<photo>
+		<transition sequence="last" direction="down" slice="480" effect="easeInOutBack"></transition>
+		<thumbnail>s_piecemaker1.png</thumbnail>
+		<filename>piecemaker1.png</filename>
+		<tooltip>Image Title 05</tooltip>
+		<description><![CDATA[<p class="subtitle">Image Title 05 goes here</p><p>Nunc aliquam, dolor vitae sollicitudin lacinia, nibh orci sagittis diam, dignissim sodales dui erat nec eros. Fusce quis enim. <a href="http://www.flashmo.com" target="_parent">Aenean eleifend</a>, neque hendrerit elementum sodales, sed tempor vitae tellus.</p>]]></description>
+	</photo>
+
+	<photo>
+		<transition sequence="first" direction="left" slice="180" effect="easeInOutQuart"></transition>
+		<thumbnail>s_piecemaker2.png</thumbnail>
+		<filename>piecemaker2.png</filename>
+		<tooltip>Image Title 06</tooltip>
+		<description><![CDATA[<p class="subtitle">Image Title 06 goes here</p><p>Praesent consectetur imperdiet mauris. <a href="http://www.flashmo.com" target="_parent">Suspendisse at pede vel</a> lorem pulvinar laoreet. Pellentesque elementum enim a augue in nisi. <span class="highlight">Nunc commodo, magna pharetra semper vehicula, dui ligula feugiat elit, et euismod nunc orci ut libero.</span></p>]]></description>
+	</photo>
+	
+	<photo>
+		<transition direction="up" slice="480" effect="easeInOutQuad"></transition>
+		<thumbnail>s_piecemaker3.png</thumbnail>
+		<filename>piecemaker3.png</filename>
+		<tooltip>Image Title 07</tooltip>
+		<description><![CDATA[<p class="subtitle">Image Title 07 goes here</p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. <span class="highlight">Quisque at ante sit amet</span> erat laoreet <u>fermentum</u>. Quisque nec nisl. <a href="http://www.flashmo.com/donate" target="_parent">Integer vel sapien quis</a> risus egestas suscipit. Aliquam at sagittis sapien. Duis volutpat pharetra tristique.</p>]]></description>
+	</photo>
+	
+	<photo>
+		<transition sequence="outer" direction="down" slice="480" effect="easeInOutQuart"></transition>
+		<thumbnail>s_piecemaker4.png</thumbnail>
+		<filename>piecemaker4.png</filename>
+		<tooltip>Image Title 08</tooltip>
+		<description><![CDATA[<p class="subtitle">Image Title 08 goes here</p><p><span class="highlight">Quisque at ante sit amet</span> erat laoreet <u>fermentum</u>. Quisque nec nisl. <a href="http://www.flashmo.com/page/1" target="_blank">Nam scelerisque cursus dolor</a>. Integer vel sapien quis risus egestas suscipit. Nam lorem tortor, viverra gravida, egestas id, pellentesque in, mi. Praesent consectetur imperdiet mauris. <span class="highlight">Suspendisse at nisi nec diam pretium tincidunt.</span></p>]]></description>
+	</photo>
+
+</photos>
