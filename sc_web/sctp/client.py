@@ -1,7 +1,31 @@
+# -*- coding: utf-8 -*-
+"""
+-----------------------------------------------------------------------------
+This source file is part of OSTIS (Open Semantic Technology for Intelligent Systems)
+For the latest info, see http://www.ostis.net
+
+Copyright (c) 2012 OSTIS
+
+OSTIS is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+OSTIS is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
+-----------------------------------------------------------------------------
+"""
+
 import os, sys
 import socket, struct
 
 from types import sctpCommandType, sctpResultCode
+from sctp.types import ScAddr
 
 
 
@@ -83,9 +107,85 @@ class sctpClient:
 		self.sock.send(alldata)
 		
 		# recieve response
-		data = self.sock.recv(12)
-		cmdCode, cmdId, resCode, resSize, elType = struct.unpack('=BIBIH', data)
+		data = self.sock.recv(10)
+		cmdCode, cmdId, resCode, resSize = struct.unpack('=BIBI', data)
 		if resCode != sctpResultCode.SCTP_RESULT_OK:
 			return None
 		
+		data = self.sock.recv(2)
+		elType = struct.unpack("=H", data)[0]
+		
 		return elType
+	
+	def create_node(self, el_type):
+		"""Create new sc-node in memory with specified type
+		@param el_type:	Type of node that would be created
+		@return: If sc-node was created, then returns it sc-addr; otherwise return None 
+		"""
+		
+		# send request
+		params = struct.pack('=H', el_type)
+		data = struct.pack('=BBII', sctpCommandType.SCTP_CMD_GET_ELEMENT_TYPE, 0, 0, len(params))
+		alldata = data + params
+		
+		self.sock.send(alldata)
+		
+		# recieve response
+		data = self.sock.recv(10)
+		cmdCode, cmdId, resCode, resSize = struct.unpack('=BIBI', data)
+		if resCode != sctpResultCode.SCTP_RESULT_OK:
+			return None
+		
+		addr = ScAddr()
+		data = self.sock.recv(4)
+		addr.seg, addr.offset = struct.unpack('=HH', data)
+		
+		return addr
+	
+	def create_link(self):
+		"""Create new sc-link in memory
+		@return: If sc-link was created, then returns it sc-addr; otherwise return None 
+		"""
+		# send request
+		data = struct.pack('=BBII', sctpCommandType.SCTP_CMD_GET_ELEMENT_TYPE, 0, 0, 0)
+		alldata = data
+		
+		self.sock.send(alldata)
+		
+		# recieve response
+		data = self.sock.recv(10)
+		cmdCode, cmdId, resCode, resSize = struct.unpack('=BIBI', data)
+		if resCode != sctpResultCode.SCTP_RESULT_OK:
+			return None
+		
+		addr = ScAddr()
+		data = self.sock.recv(4)
+		addr.seg, addr.offset = struct.unpack('=HH', data)
+		
+		return addr
+	
+	def create_arc(self, arc_type, begin_addr, end_addr):
+		"""Create new arc in sc-memory with specified type and begin, end elements
+		@param arc_type: Type of sc-arc
+		@param begin_addr: sc-addr of begin arc element
+		@param end_addr: sc-addr of end arc element
+		@return: If sc-arc was created, then returns it sc-addr; otherwise return None 
+		"""
+		# send request
+		params = struct.pack('=HHHHH', arc_type, begin_addr.seg, begin_addr.offset, end_addr.seg, end_addr.offset)
+		data = struct.pack('=BBII', sctpCommandType.SCTP_CMD_GET_ELEMENT_TYPE, 0, 0, len(params))
+		alldata = data + params
+		
+		self.sock.send(alldata)
+		
+		# recieve response
+		data = self.sock.recv(10)
+		cmdCode, cmdId, resCode, resSize = struct.unpack('=BIBI', data)
+		if resCode != sctpResultCode.SCTP_RESULT_OK:
+			return None
+		
+		addr = ScAddr()
+		data = self.sock.recv(4)
+		addr.seg, addr.offset = struct.unpack('=HH', data)
+		
+		return addr
