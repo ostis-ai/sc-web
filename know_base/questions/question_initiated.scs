@@ -1,0 +1,5 @@
+question_initiated <- sc_node_not_relation;;
+
+question_initiated => nrel_main_ru_idtf:
+	[инициированный вопрос*];;
+

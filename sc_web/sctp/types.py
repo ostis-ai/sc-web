@@ -29,11 +29,14 @@ class sctpCommandType:
     SCTP_CMD_GET_ELEMENT_TYPE   = 0x02 # return sc-element type
     SCTP_CMD_ERASE_ELEMENT      = 0x03 # erase specified sc-element
     SCTP_CMD_CREATE_NODE        = 0x04 # create new sc-node
-    SCTP_CMD_CREAET_LINK        = 0x05 # create new sc-link
+    SCTP_CMD_CREATE_LINK        = 0x05 # create new sc-link
     SCTP_CMD_CREATE_ARC         = 0x06 # create new sc-arc
     SCTP_CMD_GET_ARC_BEGIN      = 0x07 # return begin element of sc-arc
     SCTP_CMD_GET_ARC_END        = 0x08 # return end element of sc-arc
     SCTP_CMD_GET_LINK_CONTENT   = 0x09 # return content of sc-link
+    SCTP_CMD_FIND_LINKS         = 0x0A # return sc-links with specified content
+    
+    SCTP_CMD_FIND_ELEMENT_BY_SYSITDF = 0xa0 # return sc-element by it system identifier
     
     SCTP_CMD_SHUTDOWN           = 0xfe # disconnect client from server
 

@@ -1,0 +1,8 @@
+format <- sc_node_not_relation;;
+
+/* identifiers */
+format => nrel_main_ru_idtf:
+	[формат];;
+
+format => nrel_main_en_idtf:
+	[format];;

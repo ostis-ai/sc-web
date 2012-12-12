@@ -125,7 +125,7 @@ class sctpClient:
 		
 		# send request
 		params = struct.pack('=H', el_type)
-		data = struct.pack('=BBII', sctpCommandType.SCTP_CMD_GET_ELEMENT_TYPE, 0, 0, len(params))
+		data = struct.pack('=BBII', sctpCommandType.SCTP_CMD_CREATE_NODE, 0, 0, len(params))
 		alldata = data + params
 		
 		self.sock.send(alldata)
@@ -136,7 +136,7 @@ class sctpClient:
 		if resCode != sctpResultCode.SCTP_RESULT_OK:
 			return None
 		
-		addr = ScAddr()
+		addr = ScAddr(0, 0)
 		data = self.sock.recv(4)
 		addr.seg, addr.offset = struct.unpack('=HH', data)
 		
@@ -147,7 +147,7 @@ class sctpClient:
 		@return: If sc-link was created, then returns it sc-addr; otherwise return None 
 		"""
 		# send request
-		data = struct.pack('=BBII', sctpCommandType.SCTP_CMD_GET_ELEMENT_TYPE, 0, 0, 0)
+		data = struct.pack('=BBII', sctpCommandType.SCTP_CMD_CREATE_LINK, 0, 0, 0)
 		alldata = data
 		
 		self.sock.send(alldata)
@@ -158,7 +158,7 @@ class sctpClient:
 		if resCode != sctpResultCode.SCTP_RESULT_OK:
 			return None
 		
-		addr = ScAddr()
+		addr = ScAddr(0, 0)
 		data = self.sock.recv(4)
 		addr.seg, addr.offset = struct.unpack('=HH', data)
 		
@@ -173,7 +173,7 @@ class sctpClient:
 		"""
 		# send request
 		params = struct.pack('=HHHHH', arc_type, begin_addr.seg, begin_addr.offset, end_addr.seg, end_addr.offset)
-		data = struct.pack('=BBII', sctpCommandType.SCTP_CMD_GET_ELEMENT_TYPE, 0, 0, len(params))
+		data = struct.pack('=BBII', sctpCommandType.SCTP_CMD_CREATE_ARC, 0, 0, len(params))
 		alldata = data + params
 		
 		self.sock.send(alldata)
@@ -184,7 +184,61 @@ class sctpClient:
 		if resCode != sctpResultCode.SCTP_RESULT_OK:
 			return None
 		
-		addr = ScAddr()
+		addr = ScAddr(0, 0)
+		data = self.sock.recv(4)
+		addr.seg, addr.offset = struct.unpack('=HH', data)
+		
+		return addr
+	
+	def find_links_with_content(self, data):
+		"""Find sc-links with specified content
+		@param data: Content data for search
+		@return: Returns list of sc-addrs of founded sc-links. If there are any error, then return None
+		"""
+		# send request
+		params = struct.pack('=I%ds' % len(data), len(data), data)
+		data = struct.pack('=BBII', sctpCommandType.SCTP_CMD_FIND_LINKS, 0, 0, len(params))
+		alldata = data + params
+		
+		self.sock.send(alldata)
+		
+		# recieve response
+		data = self.sock.recv(10)
+		cmdCode, cmdId, resCode, resSize = struct.unpack('=BIBI', data)
+		if resCode != sctpResultCode.SCTP_RESULT_OK or resSize < 4:
+			return None
+		
+		res = []
+		data = self.sock.recv(resSize)
+		resCount = struct.unpack('=I', data[:4])[0]
+		for i in xrange(resCount):
+			addr = ScAddr(0, 0)
+			data = data[4:]
+			addr.seg, addr.offset = struct.unpack('=HH', data)
+			res.append(addr)
+		
+		return res
+	
+	def find_element_by_system_identifier(self, idtf_data):
+		"""Find sc-element by it system identifier
+		@param idtf_data: Identifier data for search
+		@return: Returns sc-addrs of founded sc-element. 
+		If there are any error or sc-element wasn't found, then return None
+		"""
+		# send request
+		params = struct.pack('=I%ds' % len(idtf_data), len(idtf_data), idtf_data)
+		data = struct.pack('=BBII', sctpCommandType.SCTP_CMD_FIND_ELEMENT_BY_SYSITDF, 0, 0, len(params))
+		alldata = data + params
+		
+		self.sock.send(alldata)
+		
+		# recieve response
+		data = self.sock.recv(10)
+		cmdCode, cmdId, resCode, resSize = struct.unpack('=BIBI', data)
+		if resCode != sctpResultCode.SCTP_RESULT_OK or resSize < 4:
+			return None
+		
+		addr = ScAddr(0, 0)
 		data = self.sock.recv(4)
 		addr.seg, addr.offset = struct.unpack('=HH', data)
 		

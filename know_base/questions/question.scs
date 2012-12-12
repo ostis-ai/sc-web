@@ -1,0 +1,4 @@
+question <- sc_node_not_relation;;
+
+question => nrel_main_ru_idtf:
+	[вопрос];;

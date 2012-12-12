@@ -1,0 +1,4 @@
+ui_nrel_command_result <- sc_node_norole_relation;;
+
+ui_nrel_command_result => nrel_main_ru_idtf:
+	[результат выполнения команды пользовательского интерфейса*];;
