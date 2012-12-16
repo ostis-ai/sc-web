@@ -1,0 +1,4 @@
+ui_nrel_user_answer_formats <- sc_node_norole_relation;;
+
+ui_nrel_user_answer_formats => nrel_main_ru_idtf:
+	[множество форматов для вывода ответа пользователю*];;

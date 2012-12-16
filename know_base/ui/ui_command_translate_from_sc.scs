@@ -1,0 +1,4 @@
+ui_command_translate_from_sc <- sc_node_not_relation;;
+
+ui_command_translate_from_sc => nrel_main_ru_idtf:
+	[команда трансялции из SC-кода на внешний язык];;

@@ -2,3 +2,5 @@ format_scs <- sc_node_not_relation;;
 
 format_scs => nrel_main_ru_idtf:
 	[формат scs];;
+
+

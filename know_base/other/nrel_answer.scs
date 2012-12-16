@@ -1,4 +1,0 @@
-nrel_answer <- sc_node_norole_relation;;
-
-nrel_answer => nrel_main_ru_idtf:
-	[ответ*];;

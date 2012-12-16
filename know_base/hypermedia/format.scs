@@ -6,3 +6,5 @@ format => nrel_main_ru_idtf:
 
 format => nrel_main_en_idtf:
 	[format];;
+
+format -> format_scs;;

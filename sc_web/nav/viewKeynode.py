@@ -31,6 +31,7 @@ from sctp.client import sctpClient
 from sctp.types import ScAddr
 from sctp.types import ScElementType
 
+
 def resolveKeynodes(identifiers, sctp_client):
 	"""Resolve sc-element by their identifiers, and return map
 	of names to their sc-addrs
@@ -64,18 +65,44 @@ def keynode(request, name):
 		# resolve keynodes
 		_keyn = resolveKeynodes([KeynodeSysIdentifiers.question,
 								KeynodeSysIdentifiers.question_initiated,
+								KeynodeSysIdentifiers.ui_user,
+								KeynodeSysIdentifiers.question_nrel_answer,
+								KeynodeSysIdentifiers.nrel_author,
+								KeynodeSysIdentifiers.format_scs,
+								KeynodeSysIdentifiers.ui_nrel_user_answer_formats,
 								], sctp_client)
 		
 		keynode_question = _keyn[KeynodeSysIdentifiers.question]
 		keynode_question_initiated = _keyn[KeynodeSysIdentifiers.question_initiated]
+		keynode_ui_user = _keyn[KeynodeSysIdentifiers.ui_user]
+		keynode_nrel_answer = _keyn[KeynodeSysIdentifiers.question_nrel_answer]
+		keynode_nrel_author = _keyn[KeynodeSysIdentifiers.nrel_author]
+		keynode_format_scs = _keyn[KeynodeSysIdentifiers.format_scs]
+		keynode_ui_nrel_user_answer_formats = _keyn[KeynodeSysIdentifiers.ui_nrel_user_answer_formats]
 		
 		# create question in sc-memory
 		question_node = sctp_client.create_node(ScElementType.sc_type_node | ScElementType.sc_type_const)
 		sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_question, question_node)
 		sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, question_node, arg_addr)
 		
-		sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_question_initiated, question_node)
 		
+		
+		# create author
+		user_node = sctp_client.create_node(ScElementType.sc_type_node | ScElementType.sc_type_const)
+		sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_user, user_node)
+		
+		author_arc = sctp_client.create_arc(ScElementType.sc_type_arc_common | ScElementType.sc_type_const, question_node, user_node)
+		sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_nrel_author, author_arc)		
+		
+		# create otput formats set
+		output_formats_node = sctp_client.create_node(ScElementType.sc_type_node | ScElementType.sc_type_const)
+		sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, output_formats_node, keynode_format_scs)
+		
+		format_arc = sctp_client.create_arc(ScElementType.sc_type_arc_common | ScElementType.sc_type_const, question_node, output_formats_node)
+		sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_nrel_user_answer_formats, format_arc)
+		
+		# initiate question
+		sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_question_initiated, question_node)
 	
 #	data = str(name.encode('utf-8'))
 #	res = sctp_client.find_element_by_system_identifier(data)

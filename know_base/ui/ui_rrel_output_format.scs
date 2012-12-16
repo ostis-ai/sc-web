@@ -1,0 +1,4 @@
+ui_rrel_output_format <- sc_node_role_relation;;
+
+ui_rrel_output_format => nrel_main_ru_idtf:
+	[выходной формат'];;

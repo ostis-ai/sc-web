@@ -24,14 +24,17 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 class KeynodeSysIdentifiers:
     
     nrel_system_identifier = 'nrel_system_identifier'
-    
+    nrel_author = 'nrel_author'
     
     question = 'question'
+    question_nrel_answer = 'question_nrel_answer'
     question_initiated = 'question_initiated'
     question_search_all_output_arcs = 'question_search_all_output_arcs'
     
     ui_user = 'ui_user'
+    ui_nrel_user_answer_formats = 'ui_nrel_user_answer_formats'
     
+    format_scs = 'format_scs'
     
 def getKeynodeBySystemIdentifier(sys_idtf, client):
     """Returns keynode sc-addr, by system identifier
