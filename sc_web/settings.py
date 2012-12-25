@@ -125,7 +125,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'djcelery',
+#    'djcelery',
     'sc_web.nav',
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',

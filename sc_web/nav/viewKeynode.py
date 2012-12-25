@@ -26,9 +26,10 @@ from django.template import Context
 from django.template import Context, loader
 import settings
 import keynodes
+import time
 from keynodes import KeynodeSysIdentifiers
 from sctp.client import sctpClient
-from sctp.types import ScAddr
+from sctp.types import ScAddr, sctpIteratorType
 from sctp.types import ScElementType
 
 
@@ -46,6 +47,22 @@ def resolveKeynodes(identifiers, sctp_client):
 		res[idtf] = addr
 		
 	return res
+
+def findAnswer(question_addr, keynode_nrel_answer, sctp_client):
+	return sctp_client.iterate_elements(sctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
+										question_addr,
+										ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
+										ScElementType.sc_type_node | ScElementType.sc_type_const,
+										ScElementType.sc_type_arc_pos_const_perm,
+										keynode_nrel_answer)
+	
+def findTranslation(construction_addr, keynode_nrel_translation, sctp_client):
+	return sctp_client.iterate_elements(sctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
+										construction_addr,
+										ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
+										ScElementType.sc_type_link,
+										ScElementType.sc_type_arc_pos_const_perm,
+										keynode_nrel_translation)
 			
 
 def keynode(request, name):
@@ -70,6 +87,7 @@ def keynode(request, name):
 								KeynodeSysIdentifiers.nrel_author,
 								KeynodeSysIdentifiers.format_scs,
 								KeynodeSysIdentifiers.ui_nrel_user_answer_formats,
+								KeynodeSysIdentifiers.nrel_translation,								
 								], sctp_client)
 		
 		keynode_question = _keyn[KeynodeSysIdentifiers.question]
@@ -79,6 +97,7 @@ def keynode(request, name):
 		keynode_nrel_author = _keyn[KeynodeSysIdentifiers.nrel_author]
 		keynode_format_scs = _keyn[KeynodeSysIdentifiers.format_scs]
 		keynode_ui_nrel_user_answer_formats = _keyn[KeynodeSysIdentifiers.ui_nrel_user_answer_formats]
+		keynode_nrel_translation = _keyn[KeynodeSysIdentifiers.nrel_translation]
 		
 		# create question in sc-memory
 		question_node = sctp_client.create_node(ScElementType.sc_type_node | ScElementType.sc_type_const)
@@ -103,6 +122,31 @@ def keynode(request, name):
 		
 		# initiate question
 		sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_question_initiated, question_node)
+		
+		# first of all we need to wait answer to this question
+		#print sctp_client.iterate_elements(sctpIteratorType.SCTP_ITERATOR_3F_A_A, keynode_question_initiated, 0, 0)
+		
+		answer = findAnswer(question_node, keynode_nrel_answer, sctp_client)
+		while answer is None:
+			time.sleep(0.2)
+			answer = findAnswer(question_node, keynode_nrel_answer, sctp_client)
+		
+		answer_addr = answer[0][2]
+		translation = findTranslation(answer_addr, keynode_nrel_translation, sctp_client)
+		while translation is None:
+			time.sleep(0.2)
+			translation = findTranslation(answer_addr, keynode_nrel_translation, sctp_client)
+			
+		# get output string
+		translation_addr = translation[0][2]
+		output = sctp_client.get_link_content(translation_addr)
+		output = output.replace('\n', '<br/>')
+		
+		res = sctp_client.iterate_elements(sctpIteratorType.SCTP_ITERATOR_3F_A_A, arg_addr, 0, 0)
+		if res is None:
+			output += "must be: 0"
+		else:
+			output += "must be: %d" % len(res)
 	
 #	data = str(name.encode('utf-8'))
 #	res = sctp_client.find_element_by_system_identifier(data)

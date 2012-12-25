@@ -24,6 +24,7 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 class KeynodeSysIdentifiers:
     
     nrel_system_identifier = 'nrel_system_identifier'
+    nrel_translation = 'nrel_translation'
     nrel_author = 'nrel_author'
     
     question = 'question'

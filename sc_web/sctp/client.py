@@ -25,7 +25,7 @@ import os, sys
 import socket, struct
 
 from types import sctpCommandType, sctpResultCode
-from sctp.types import ScAddr
+from sctp.types import ScAddr, sctpIteratorType
 
 
 
@@ -218,6 +218,72 @@ class sctpClient:
 			res.append(addr)
 		
 		return res
+	
+	def iterate_elements(self, iterator_type, *args):
+		"""Iterate element by specified template and return results
+		"""
+		params = None
+		params_count = None
+		if iterator_type == sctpIteratorType.SCTP_ITERATOR_3A_A_F:
+			params_count = 3
+			params = struct.pack('=BHHHH', iterator_type, args[0], args[1], args[2].seg, args[2].offset)
+		elif iterator_type == sctpIteratorType.SCTP_ITERATOR_3F_A_A:
+			params_count = 3
+			params = struct.pack('=BHHHH', iterator_type, args[0].seg, args[0].offset, args[1], args[2])
+		elif iterator_type == sctpIteratorType.SCTP_ITERATOR_3F_A_F:
+			params_count = 3
+			params = struct.pack('=BHHHHH', iterator_type, args[0].seg, args[0].offset, args[1], args[2].seg, args[2].offset)
+		elif iterator_type == sctpIteratorType.SCTP_ITERATOR_5_A_A_F_A_A:
+			params_count = 5
+			params = struct.pack('=BHHHHHH', iterator_type, args[0], args[1], args[2].seg, args[2].offset, args[3], args[4])
+		elif iterator_type == sctpIteratorType.SCTP_ITERATOR_5_A_A_F_A_F:
+			params_count = 5
+			params = struct.pack('=BHHHHHHH', iterator_type, args[0], args[1], args[2].seg, args[2].offset, args[3], args[4].seg, args[4].offset)
+		elif iterator_type == sctpIteratorType.SCTP_ITERATOR_5_F_A_A_A_A:
+			params_count = 5
+			params = struct.pack('=BHHHHHH', iterator_type, args[0].seg, args[0].offset, args[1], args[2], args[3], args[4])
+		elif iterator_type == sctpIteratorType.SCTP_ITERATOR_5_F_A_F_A_A:
+			params_count = 5
+			params = struct.pack('=BHHHHHHH', iterator_type, args[0].seg, args[0].offset, args[1], args[2].seg, args[2].offset, args[3], args[4])
+		elif iterator_type == sctpIteratorType.SCTP_ITERATOR_5_F_A_F_A_F:
+			params_count = 5
+			params = struct.pack('=BHHHHHHHH', iterator_type, args[0].seg, args[0].offset, args[1], args[2].seg, args[2].offset, args[3], args[4].seg, args[4].offset)
+		elif iterator_type == sctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F:
+			params_count = 5
+			params = struct.pack('=BHHHHHHH', iterator_type, args[0].seg, args[0].offset, args[1], args[2], args[3], args[4].seg, args[4].offset)
+		
+		params_len = len(params)
+		# send request	
+		data = struct.pack('=BBII', sctpCommandType.SCTP_CMD_ITERATE_ELEMENTS, 0, 0, params_len)
+		alldata = data + params
+		
+		self.sock.send(alldata)
+		
+		# recieve response
+		data = self.sock.recv(10)
+		cmdCode, cmdId, resCode, resSize = struct.unpack('=BIBI', data)
+		if resCode != sctpResultCode.SCTP_RESULT_OK or resSize == 0:
+			return None
+		
+		res_count_data = self.sock.recv(4)
+		res_count = struct.unpack('=I', res_count_data)[0]
+		
+		if res_count == 0:
+			return None
+		
+		results = []
+		for idx in xrange(res_count):
+			result_item = []
+			for j in xrange(params_count):
+				addr_data = self.sock.recv(4)
+				addr = ScAddr(0, 0)
+				addr.seg, addr.offset = struct.unpack('=HH', addr_data)
+				result_item.append(addr)
+				
+			results.append(result_item)
+			
+		
+		return results
 	
 	def find_element_by_system_identifier(self, idtf_data):
 		"""Find sc-element by it system identifier
