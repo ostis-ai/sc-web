@@ -110,3 +110,17 @@ class ScAddr:
     
     def __eq__(self, other):
         return self.seg == other.seg and self.offset == other.offset
+    
+    @staticmethod
+    def parse_from_string(addr_str):
+        """Parse sc-addr from string 'seg_offset'
+        @return: Return parsed sc-addr
+        """
+        try:
+            seg_str, offset_str = addr_str.split('_')
+            addr = ScAddr(int(seg_str), int(offset_str)) 
+        except:
+            return None
+        
+        return addr
+        
