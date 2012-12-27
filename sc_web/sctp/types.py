@@ -111,6 +111,9 @@ class ScAddr:
     def __eq__(self, other):
         return self.seg == other.seg and self.offset == other.offset
     
+    def to_id(self):
+        return "%d_%d" % (self.seg, self.offset)
+    
     @staticmethod
     def parse_from_string(addr_str):
         """Parse sc-addr from string 'seg_offset'

@@ -7,4 +7,4 @@ format => nrel_main_ru_idtf:
 format => nrel_main_en_idtf:
 	[format];;
 
-format -> format_scs; format_scg_json;;
+format -> format_scs; format_scg_json; format_scn_json;;

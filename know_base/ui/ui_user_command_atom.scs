@@ -1,0 +1,4 @@
+ui_user_commant_atom <- sc_node_not_relation;;
+
+ui_user_command_atom => nrel_main_ru_idtf:
+	[атомарная пользовательская команда];;

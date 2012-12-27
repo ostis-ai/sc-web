@@ -1,0 +1,4 @@
+ui_user_command_noatom <- sc_node_not_relation;;
+
+ui_user_command_noatom => nrel_main_ru_udtf:
+	[неатомарная пользовательская команда];;

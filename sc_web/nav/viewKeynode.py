@@ -27,26 +27,11 @@ from django.template import Context, loader
 import settings
 import keynodes
 import time
-from keynodes import KeynodeSysIdentifiers
+from keynodes import KeynodeSysIdentifiers, Keynodes
 from sctp.client import sctpClient
 from sctp.types import ScAddr, sctpIteratorType
 from sctp.types import ScElementType
 
-
-def resolveKeynodes(identifiers, sctp_client):
-	"""Resolve sc-element by their identifiers, and return map
-	of names to their sc-addrs
-	@param identifiers: List of system identifiers
-	@param sctp_client: sctp client object to connect to knowledge base
-	@return: Returns map where keys are identifiers and values are sc-addr objects 
-	"""
-	res = {}
-	for idtf in identifiers:
-		# try to initiate question
-		addr = keynodes.getKeynodeBySystemIdentifier(str(idtf.encode('utf-8')), sctp_client)
-		res[idtf] = addr
-		
-	return res
 
 def findAnswer(question_addr, keynode_nrel_answer, sctp_client):
 	return sctp_client.iterate_elements(sctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
@@ -80,24 +65,16 @@ def keynode(request, name):
 	else:
 		
 		# resolve keynodes
-		_keyn = resolveKeynodes([KeynodeSysIdentifiers.question,
-								KeynodeSysIdentifiers.question_initiated,
-								KeynodeSysIdentifiers.ui_user,
-								KeynodeSysIdentifiers.question_nrel_answer,
-								KeynodeSysIdentifiers.nrel_author,
-								KeynodeSysIdentifiers.format_scs,
-								KeynodeSysIdentifiers.ui_nrel_user_answer_formats,
-								KeynodeSysIdentifiers.nrel_translation,								
-								], sctp_client)
+		keys = Keynodes(sctp_client)
 		
-		keynode_question = _keyn[KeynodeSysIdentifiers.question]
-		keynode_question_initiated = _keyn[KeynodeSysIdentifiers.question_initiated]
-		keynode_ui_user = _keyn[KeynodeSysIdentifiers.ui_user]
-		keynode_nrel_answer = _keyn[KeynodeSysIdentifiers.question_nrel_answer]
-		keynode_nrel_author = _keyn[KeynodeSysIdentifiers.nrel_author]
-		keynode_format_scs = _keyn[KeynodeSysIdentifiers.format_scs]
-		keynode_ui_nrel_user_answer_formats = _keyn[KeynodeSysIdentifiers.ui_nrel_user_answer_formats]
-		keynode_nrel_translation = _keyn[KeynodeSysIdentifiers.nrel_translation]
+		keynode_question = keys[KeynodeSysIdentifiers.question]
+		keynode_question_initiated = keys[KeynodeSysIdentifiers.question_initiated]
+		keynode_ui_user = keys[KeynodeSysIdentifiers.ui_user]
+		keynode_nrel_answer = keys[KeynodeSysIdentifiers.question_nrel_answer]
+		keynode_nrel_author = keys[KeynodeSysIdentifiers.nrel_author]
+		keynode_format_scs = keys[KeynodeSysIdentifiers.format_scs]
+		keynode_ui_nrel_user_answer_formats = keys[KeynodeSysIdentifiers.ui_nrel_user_answer_formats]
+		keynode_nrel_translation = keys[KeynodeSysIdentifiers.nrel_translation]
 		
 		# create question in sc-memory
 		question_node = sctp_client.create_node(ScElementType.sc_type_node | ScElementType.sc_type_const)

@@ -15,8 +15,8 @@
 
 	<link rel="stylesheet" type="text/css" href="/media/css/ddsmoothmenu.css" />
 
-	<script type="text/javascript" src="/media/js/jquery.min.js"></script>
-	<script type="text/javascript" src="/media/js/ddsmoothmenu.js">
+	<script type="text/javascript" src="media/js/jquery/jquery-1.8.2.min.js"></script>
+	<script type="text/javascript" src="media/js/ddsmoothmenu.js">
 
 	/***********************************************
 	* Smooth Navigational Menu- (c) Dynamic Drive DHTML code library (www.dynamicdrive.com)
@@ -28,13 +28,85 @@
 
 	<script type="text/javascript">
 
-	ddsmoothmenu.init({
-		mainmenuid: "templatemo_menu", //menu DIV id
-		orientation: 'h', //Horizontal or vertical menu: Set to "h" or "v"
-		classname: 'ddsmoothmenu', //class added to menu's outer DIV
-		//customtheme: ["#1c5a80", "#18374a"],
-		contentsource: "markup" //"markup" or ["container_id", "path_to_menu_file"]
-	})
+	
+
+	$.ajax({
+		type: "GET",
+		url: "api/commands",
+		data:{
+		},
+
+            // ajax
+            success : function(mainMenu){
+
+		var menuItems = new Array();
+		// this function parse menu item and return 
+		// html string that represent it. 
+		// It calls recursively for child items
+		function parseMenuItem(item){
+
+			menuItems.push(item.id)
+			var res = '<li><a href="" id="menu_' + item.id + '">' + item.id + '</a>';
+			if (item.hasOwnProperty('childs'))
+			{
+				res += '<ul>'
+				for (idx in item.childs)
+				{
+					var subMenu = item.childs[idx];
+					res += parseMenuItem(subMenu);
+				}
+				res += '</ul>'
+			}
+
+			return res + '</li>'
+		}
+		
+		var menuHtml = '<ul>';
+
+		menuHtml += parseMenuItem(mainMenu) + '</ul>' + '<br style="clear: left"></br>';
+		$(menuHtml).appendTo('#templatemo_menu')
+
+		// resolve identifiers
+		var idtfRequest = 'api/idtf?language=ru'
+		for (idx in menuItems)
+		{
+			var id = menuItems[idx];
+			var arg = parseInt(idx) + 1
+			idtfRequest += "&" + arg.toString() + "_=" + id;
+		}
+
+		$.ajax({
+			type: "GET",
+			url: idtfRequest,
+			data:{
+			},
+
+			// ajax
+			success : function(identifiers){
+				
+				for (idx in menuItems)
+				{
+					var item = menuItems[idx];
+					if (identifiers.hasOwnProperty(item))
+					{
+						$('#menu_' + item).text(identifiers[item]);
+					}					
+				}
+			}
+		});
+		
+		ddsmoothmenu.init({
+			mainmenuid: "templatemo_menu", //menu DIV id
+			orientation: 'h', //Horizontal or vertical menu: Set to "h" or "v"
+			classname: 'ddsmoothmenu', //class added to menu's outer DIV
+			//customtheme: ["#1c5a80", "#18374a"],
+			contentsource: "markup" //"markup" or ["container_id", "path_to_menu_file"]
+			})
+            }
+
+
+        }) ;
+
 
 	</script> 
 
@@ -48,12 +120,7 @@
 	    <div id="templatemo_header">
 		<div id="site_title"><a href="http://www.ostis.net">IMS<span> OSTIS</span></a></div>
 		<div id="templatemo_menu" class="ddsmoothmenu">
-		    <ul>
-		        <li><a href="index.html">Home</a></li>
-		        <li><a href="about.html">About</a></li>
-		        <li><a href="blog.html">Blog</a></li>
-		        <li><a href="contact.html" class="selected">Contact</a></li>
-		    </ul>
+		    
 		    <br style="clear: left" />
 		</div> <!-- end of templatemo_menu -->
 	    </div> <!-- END of header -->

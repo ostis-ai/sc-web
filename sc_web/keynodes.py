@@ -21,10 +21,30 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 """
 
+class Keynodes:
+    
+    def __init__(self, sctp_client):
+        self.sctp_client = sctp_client
+        self.keys = {}
+        
+    def __getitem__(self, name):
+        
+        value = None
+        try:
+            value = self.keys[name]
+        except:
+            value = self.sctp_client.find_element_by_system_identifier(str(name.encode('utf-8')))
+            if value is None:
+                raise Exception("Can't resolve keynode '%s'" % name)
+            else:
+                self.keys[name] = value
+        return value
+
 class KeynodeSysIdentifiers:
     
     nrel_system_identifier = 'nrel_system_identifier'
     nrel_translation = 'nrel_translation'
+    nrel_decomposition = 'nrel_decomposition'
     nrel_author = 'nrel_author'
     
     question = 'question'
@@ -34,15 +54,11 @@ class KeynodeSysIdentifiers:
     
     ui_user = 'ui_user'
     ui_nrel_user_answer_formats = 'ui_nrel_user_answer_formats'
+    ui_main_menu = 'ui_main_menu'
+    ui_user_command_atom = 'ui_user_command_atom'
+    ui_user_command_noatom = 'ui_user_command_noatom'
+    
     
     format_scs = 'format_scs'
     format_scg_json = 'format_scg_json'
     
-def getKeynodeBySystemIdentifier(sys_idtf, client):
-    """Returns keynode sc-addr, by system identifier
-    @param sys_idtf: System identifier of keynode
-    @param client: sctpClient object to connect
-    @return: If keynode founded, then return sc-addr of founded keynode; otherwise return None   
-    """
-    assert client is not None
-    return client.find_element_by_system_identifier(sys_idtf)

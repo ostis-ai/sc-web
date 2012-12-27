@@ -26,7 +26,7 @@ from django.template import Context
 from django.template import Context, loader
 from sctp.types import ScAddr, sctpIteratorType, ScElementType
 from sctp.client import sctpClient
-from keynodes import KeynodeSysIdentifiers
+from keynodes import KeynodeSysIdentifiers, Keynodes
 import keynodes
 import settings, json
 import time
@@ -41,7 +41,7 @@ def get_identifier(request):
 		arguments = []
 		arg = ''
 		while arg is not None:
-			arg = request.GET.get(u'arg_%d' % idx, None)
+			arg = request.GET.get(u'%d_' % idx, None)
 			if arg is not None:
 				arguments.append(arg)
 			idx += 1
@@ -79,12 +79,86 @@ def get_identifier(request):
 				idtf_value = sctp_client.get_link_content(idtf_addr)
 				idtf_value = idtf_value.decode('utf-8')
 			
-			result[addr_str] = idtf_value
+				result[addr_str] = idtf_value
 			
 		result = json.dumps(result)
 				
 	return HttpResponse(result, 'application/json')
 
+# --------------------------------------------------
+def parse_menu_command(cmd_addr, sctp_client, keys):
+	"""Parse specified command from sc-memory and
+	return hierarchy map (with childs), that represent it
+	@param cmd_addr: sc-addr of command to parse
+	@param sctp_client: sctp client object to work with sc-memory
+	@param keys: keynodes object. Used just to prevent new instance creation 
+	"""
+	keynode_ui_user_command_atom = keys[KeynodeSysIdentifiers.ui_user_command_atom]
+	keynode_ui_user_command_noatom = keys[KeynodeSysIdentifiers.ui_user_command_noatom]
+	keynode_nrel_decomposition = keys[KeynodeSysIdentifiers.nrel_decomposition]
+	
+	# try to find command type
+	cmd_type = "unknown"
+	if sctp_client.iterate_elements(sctpIteratorType.SCTP_ITERATOR_3F_A_F,
+									keynode_ui_user_command_atom,
+									ScElementType.sc_type_arc_pos_const_perm,
+									cmd_addr) is not None:
+		cmd_type = "atom"
+	elif sctp_client.iterate_elements(sctpIteratorType.SCTP_ITERATOR_3F_A_F,
+									  keynode_ui_user_command_noatom,
+									  ScElementType.sc_type_arc_pos_const_perm,
+									  cmd_addr) is not None:
+		cmd_type = "noatom"
+	
+	attrs = {}
+	attrs["cmd_type"] = cmd_type
+	attrs["id"] = cmd_addr.to_id()
+	
+	
+	# try to find decomposition
+	decomp = sctp_client.iterate_elements(sctpIteratorType.SCTP_ITERATOR_5_A_A_F_A_F,
+										  ScElementType.sc_type_node | ScElementType.sc_type_const,
+										  ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
+										  cmd_addr,
+										  ScElementType.sc_type_arc_pos_const_perm,
+										  keynode_nrel_decomposition)
+	if decomp is not None:
+		
+		# iterate child commands
+		childs = sctp_client.iterate_elements(sctpIteratorType.SCTP_ITERATOR_3F_A_A,
+											  decomp[0][0],
+											  ScElementType.sc_type_arc_pos_const_perm,
+											  ScElementType.sc_type_node | ScElementType.sc_type_const)
+		if childs is not None:
+			child_commands = []
+			for item in childs:
+				child_structure = parse_menu_command(item[2], sctp_client, keys)
+				child_commands.append(child_structure)
+			attrs["childs"] = child_commands
+	
+	return attrs	
+
+def get_menu_commands(request):
+	
+	result = "[]"
+	if request.is_ajax():
+		
+		sctp_client = sctpClient()
+		sctp_client.initialize(settings.SCTP_HOST, settings.SCTP_PORT)
+		
+		keys = Keynodes(sctp_client)
+		
+		keynode_ui_main_menu = keys[KeynodeSysIdentifiers.ui_main_menu]
+		
+		# try to find main menu node
+		result = parse_menu_command(keynode_ui_main_menu, sctp_client, keys)
+		if result is None:
+			print "There are no main menu in knowledge base"
+			result = "[]"
+		else:
+			result = json.dumps(result)
+	
+	return HttpResponse(result, 'application/json')
 
 # -------------------------------------------
 def findAnswer(question_addr, keynode_nrel_answer, sctp_client):
@@ -102,7 +176,7 @@ def findTranslation(construction_addr, keynode_nrel_translation, sctp_client):
 										ScElementType.sc_type_link,
 										ScElementType.sc_type_arc_pos_const_perm,
 										keynode_nrel_translation)
-def init_command(request):
+def command(request):
 	result = "[]"
 	if request.is_ajax() or True:
 		#result = u'[{"type": "node", "id": "1", "identifier": "node1"},' \

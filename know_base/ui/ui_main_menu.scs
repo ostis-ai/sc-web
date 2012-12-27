@@ -1,0 +1,20 @@
+ui_main_menu <- sc_node_not_relation;;
+
+ui_main_menu => nrel_main_ru_idtf:
+	[главное меню];;
+
+ui_main_menu <= nrel_decomposition:
+	{
+		ui_menu_na_help 
+			(* <= nrel_decomposition: 
+				{
+					ui_menu_na_help_main
+					(* <- ui_user_command_atom;;
+					*)
+				};;
+			   <- ui_user_command_noatom;;
+			*);
+		ui_menu_na_edit 
+			(* <- ui_user_command_noatom;;
+			*)
+	};;
