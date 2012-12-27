@@ -9,8 +9,10 @@ urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'nav.viewHome.home', name='home'),
     url(r'^nav/(?P<name>[A-Za-z0-9._]+)', 'nav.viewKeynode.keynode', ),
+    url(r'^scg', 'nav.viewKeynode.scg', ),
     
     url(r'^api/idtf', 'api.api.get_identifier'),
+    url(r'^api/command', 'api.api.init_command'),
     # url(r'^sc_web/', include('sc_web.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:

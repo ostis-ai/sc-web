@@ -128,13 +128,13 @@ def keynode(request, name):
 		
 		answer = findAnswer(question_node, keynode_nrel_answer, sctp_client)
 		while answer is None:
-			time.sleep(0.2)
+			time.sleep(0.1)
 			answer = findAnswer(question_node, keynode_nrel_answer, sctp_client)
 		
 		answer_addr = answer[0][2]
 		translation = findTranslation(answer_addr, keynode_nrel_translation, sctp_client)
 		while translation is None:
-			time.sleep(0.2)
+			time.sleep(0.1)
 			translation = findTranslation(answer_addr, keynode_nrel_translation, sctp_client)
 			
 		# get output string
@@ -193,3 +193,10 @@ def keynode(request, name):
 	c = Context({"data": output
 				})
 	return HttpResponse(t.render(c))
+
+def scg(request):
+	t = loader.get_template("scg.html")
+	
+	c = Context({})
+	return HttpResponse(t.render(c))
+	

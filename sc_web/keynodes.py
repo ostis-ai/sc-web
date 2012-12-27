@@ -36,6 +36,7 @@ class KeynodeSysIdentifiers:
     ui_nrel_user_answer_formats = 'ui_nrel_user_answer_formats'
     
     format_scs = 'format_scs'
+    format_scg_json = 'format_scg_json'
     
 def getKeynodeBySystemIdentifier(sys_idtf, client):
     """Returns keynode sc-addr, by system identifier
