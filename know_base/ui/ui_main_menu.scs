@@ -10,11 +10,17 @@ ui_main_menu <= nrel_decomposition:
 				{
 					ui_menu_na_help_main
 					(* <- ui_user_command_atom;;
+					=> nrel_main_ru_idtf:
+						[Основной раздел];;
 					*)
 				};;
 			   <- ui_user_command_noatom;;
+			   => nrel_main_ru_idtf:
+				[Помощь];;
 			*);
 		ui_menu_na_edit 
 			(* <- ui_user_command_noatom;;
+			=> nrel_main_ru_idtf:
+				[Редактирование];;
 			*)
 	};;

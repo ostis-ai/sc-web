@@ -116,7 +116,7 @@ scgNodeConstGeneral.prototype = {
         x   : 110,
         y   : 110,
         text    : '',
-        textFill  : "gray"
+        textFill  : "blue"
     },
 
     _defaultCircleConfig : {

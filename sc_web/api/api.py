@@ -193,14 +193,16 @@ def command(request):
 		
 		if idtf_addr is not None:
 			
-			keynode_question = keynodes.getKeynodeBySystemIdentifier(KeynodeSysIdentifiers.question, sctp_client)
-			keynode_question_initiated = keynodes.getKeynodeBySystemIdentifier(KeynodeSysIdentifiers.question_initiated, sctp_client)
-			keynode_ui_user = keynodes.getKeynodeBySystemIdentifier(KeynodeSysIdentifiers.ui_user, sctp_client)
-			keynode_nrel_answer = keynodes.getKeynodeBySystemIdentifier(KeynodeSysIdentifiers.question_nrel_answer, sctp_client)
-			keynode_nrel_author = keynodes.getKeynodeBySystemIdentifier(KeynodeSysIdentifiers.nrel_author, sctp_client)
-			keynode_format_scg_json = keynodes.getKeynodeBySystemIdentifier(KeynodeSysIdentifiers.format_scg_json, sctp_client)
-			keynode_ui_nrel_user_answer_formats = keynodes.getKeynodeBySystemIdentifier(KeynodeSysIdentifiers.ui_nrel_user_answer_formats, sctp_client)
-			keynode_nrel_translation = keynodes.getKeynodeBySystemIdentifier(KeynodeSysIdentifiers.nrel_translation, sctp_client)
+			keys = Keynodes(sctp_client)
+			
+			keynode_question = keys[KeynodeSysIdentifiers.question]
+			keynode_question_initiated = keys[KeynodeSysIdentifiers.question_initiated]
+			keynode_ui_user = keys[KeynodeSysIdentifiers.ui_user]
+			keynode_nrel_answer = keys[KeynodeSysIdentifiers.question_nrel_answer]
+			keynode_nrel_author = keys[KeynodeSysIdentifiers.nrel_author]
+			keynode_format_scg_json = keys[KeynodeSysIdentifiers.format_scg_json]
+			keynode_ui_nrel_user_answer_formats = keys[KeynodeSysIdentifiers.ui_nrel_user_answer_formats]
+			keynode_nrel_translation = keys[KeynodeSysIdentifiers.nrel_translation]
 			
 			# create question in sc-memory
 			question_node = sctp_client.create_node(ScElementType.sc_type_node | ScElementType.sc_type_const)
@@ -216,7 +218,7 @@ def command(request):
 			author_arc = sctp_client.create_arc(ScElementType.sc_type_arc_common | ScElementType.sc_type_const, question_node, user_node)
 			sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_nrel_author, author_arc)		
 			
-			# create otput formats set
+			# create output formats set
 			output_formats_node = sctp_client.create_node(ScElementType.sc_type_node | ScElementType.sc_type_const)
 			sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, output_formats_node, keynode_format_scg_json)
 			
