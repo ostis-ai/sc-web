@@ -14,6 +14,7 @@ urlpatterns = patterns('',
     url(r'^api/idtf', 'api.api.get_identifier'),
     url(r'^api/commands', 'api.api.get_menu_commands'),
     url(r'^api/doCommand', 'api.api.command'),
+    url(r'^api/outputLangs', 'api.api.available_output_langs'),
     # url(r'^sc_web/', include('sc_web.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:

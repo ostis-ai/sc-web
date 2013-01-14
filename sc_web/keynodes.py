@@ -57,8 +57,10 @@ class KeynodeSysIdentifiers:
     ui_main_menu = 'ui_main_menu'
     ui_user_command_atom = 'ui_user_command_atom'
     ui_user_command_noatom = 'ui_user_command_noatom'
+    ui_output_languages = 'ui_output_languages'
     
     
     format_scs = 'format_scs'
     format_scg_json = 'format_scg_json'
+    format_scn_json = 'format_scn_json'
     

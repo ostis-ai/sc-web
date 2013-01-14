@@ -31,6 +31,14 @@ import keynodes
 import settings, json
 import time
 
+def newSctpClient():
+	sctp_client = sctpClient()
+	sctp_client.initialize(settings.SCTP_HOST, settings.SCTP_PORT)
+	return sctp_client
+
+#######################
+
+
 def get_identifier(request):
 	
 	result = None
@@ -220,7 +228,7 @@ def command(request):
 			
 			# create output formats set
 			output_formats_node = sctp_client.create_node(ScElementType.sc_type_node | ScElementType.sc_type_const)
-			sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, output_formats_node, keynode_format_scg_json)
+			sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, output_formats_node, format_scg_json)
 			
 			format_arc = sctp_client.create_arc(ScElementType.sc_type_arc_common | ScElementType.sc_type_const, question_node, output_formats_node)
 			sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_nrel_user_answer_formats, format_arc)
@@ -247,4 +255,27 @@ def command(request):
 			result = sctp_client.get_link_content(translation_addr)
 		
 	
+	return HttpResponse(result, 'application/json')
+
+def available_output_langs(request):
+	"""Returns list of available output languages
+	"""
+	result = "[]"
+	if request.is_ajax() or True:
+		sctp_client = newSctpClient()
+		
+		keys = Keynodes(sctp_client)
+		
+		keynode_ui_output_languages = keys[KeynodeSysIdentifiers.ui_output_languages]
+		res = sctp_client.iterate_elements(sctpIteratorType.SCTP_ITERATOR_3F_A_A,
+											keynode_ui_output_languages,
+											ScElementType.sc_type_arc_pos_const_perm,
+											ScElementType.sc_type_node | ScElementType.sc_type_const)
+		if (res is not None):
+			result = []
+			for items in res:
+				result.append(items[2].to_id())
+				
+			result = json.dumps(result)
+		
 	return HttpResponse(result, 'application/json')

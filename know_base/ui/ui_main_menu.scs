@@ -12,6 +12,14 @@ ui_main_menu <= nrel_decomposition:
 					(* <- ui_user_command_atom;;
 					=> nrel_main_ru_idtf:
 						[Основной раздел];;
+					<= nrel_decomposition:
+					{
+						ui_na_help_ui
+						(*
+						=> nrel_main_ru_idtf:
+							[Пользовательский интерфейс];;
+						*)
+					};;
 					*)
 				};;
 			   <- ui_user_command_noatom;;

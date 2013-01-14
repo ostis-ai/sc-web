@@ -1,5 +1,5 @@
 /*
-Credit: http://www.templatemo.com
+Credit: http:/www.templatemo.com
 */
 
 body {
@@ -32,7 +32,7 @@ a.more {
 	line-height: 21px; 
 	text-align: center; 
 	padding-right: 25px; 
-	background: url(../images/templatemo_button.png) left center no-repeat; 
+	background: url(../images/theme/templatemo_button.png) left center no-repeat; 
 }
 
 p { 
@@ -87,7 +87,7 @@ h6 { font-size: 12px; margin: 0 0 5px; padding: 0; }
 .divider { 
 	margin-bottom: 40px; 
 	padding-bottom: 20px; 
-	background: url(../images/templatemo_divider.png) repeat-x bottom; 
+	background: url(../images/theme/templatemo_divider.png) repeat-x bottom; 
 }
 
 .float_l { 
@@ -116,7 +116,7 @@ h6 { font-size: 12px; margin: 0 0 5px; padding: 0; }
 	color:#5f5f59; 
 	margin: 0 0 10px 0; 
 	padding: 0 5px 0 15px; 
-	background: url(../images/templatemo_list.png) no-repeat scroll 0 5px;  
+	background: url(../images/theme/templatemo_list.png) no-repeat scroll 0 5px;  
 }
 
 .templatemo_list li a { 
@@ -131,7 +131,7 @@ h6 { font-size: 12px; margin: 0 0 5px; padding: 0; }
 #templatemo_header_wrapper {
 	width: 100%;
 	height: 63px;
-	background: url(../images/templatemo_header_bg.jpg) repeat-x top 
+	background: url(../images/theme/templatemo_header_bg.jpg) repeat-x top 
 }
 
 #templatemo_header {
@@ -143,7 +143,7 @@ h6 { font-size: 12px; margin: 0 0 5px; padding: 0; }
 #templatemo_middle_wrapper {
 	width: 100%;
 	height: 538px;
-	background: #1f1f1e url(../images/templatemo_middle.jpg) no-repeat
+	background: #1f1f1e url(../images/theme/templatemo_middle.jpg) no-repeat
 }
 
 #templatemo_middle {
@@ -200,6 +200,10 @@ h6 { font-size: 12px; margin: 0 0 5px; padding: 0; }
 
 #templatemo_menu { 
 	float: right; 
+}
+
+#templatemo_selectors{
+    float: right;
 }
 
 #templatemo_main img { 
@@ -287,15 +291,15 @@ h6 { font-size: 12px; margin: 0 0 5px; padding: 0; }
 }
 
 .footer_list li a.facebook { 
-	background-image: url(../images/facebook.png); 
+	background-image: url(../images/theme/facebook.png); 
 }
 
 .footer_list li a.twitter { 
-	background-image: url(../images/twitter.png); 
+	background-image: url(../images/theme/twitter.png); 
 }
 
 .footer_list li a.feed { 
-	background-image: url(../images/feed.png); 
+	background-image: url(../images/theme/feed.png); 
 }
 
 #templatemo_footer .newsletter_txt { 
@@ -314,7 +318,7 @@ h6 { font-size: 12px; margin: 0 0 5px; padding: 0; }
 	height: 23px;  
 	padding-bottom: 5px; 
 	padding-right: 25px; 
-	background: url(../images/templatemo_button.png) left center no-repeat; 
+	background: url(../images/theme/templatemo_button.png) left center no-repeat; 
 	border: none; 
 	cursor: pointer; 
 }

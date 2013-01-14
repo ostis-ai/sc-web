@@ -1,0 +1,16 @@
+ui_output_languages <- sc_node_not_relation;;
+
+ui_output_languages -> ui_output_langauge_scg
+	(* => nrel_main_ru_idtf:
+		[Язык SCg];;
+	*);;
+
+ui_output_languages -> ui_output_language_scn
+	(* => nrel_main_ru_idtf:
+		[Язык SCn];;
+	*);;
+ui_output_languages -> ui_output_language_scs
+	(* => nrel_main_ru_idtf:
+		[Язык SCs];;
+	*);;
+

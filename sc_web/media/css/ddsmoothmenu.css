@@ -7,6 +7,7 @@
 	margin: 0;
 	padding: 0;
 	list-style-type: none;
+    white-space: nowrap;
 }
 
 /*Top level list items*/
@@ -39,17 +40,19 @@
 
 .ddsmoothmenu ul li a.selected, .ddsmoothmenu ul li a:hover { /*CSS class that's dynamically added to the currently active menu items' LI A element*/
 	color: #3388FF;
-	background: url(../images/templatemo_menu_hover.png);
+	/*background: url(../images/theme/templatemo_menu_hover.png);*/
+    /*background-color: #1A1A1A;*/
 }
 
 /*1st sub level menu*/
 .ddsmoothmenu ul li ul {
 	position: absolute;
-	width: 172px;
+	/*width: 172px;*/
 	left: 0;
 	display: none; /*collapse all sub menus to begin with*/
 	visibility: hidden;
-	background: url(../images/templatemo_smm.png) repeat-y #222;
+	/*background: url(../images/theme/templatemo_smm.png) repeat-y #222;*/
+    background-color: #1A1A1A;
 }
 
 .ddsmoothmenu ul li ul span.top { 
@@ -58,7 +61,8 @@
 	height: 10px; 
 	top: -10px; 
 	left: 0;  
-	background: url(../images/templatemo_smt.png) no-repeat; 
+	/*background: url(../images/theme/templatemo_smt.png) no-repeat; */
+    background-color: #1A1A1A;
 }
 
 .ddsmoothmenu ul li ul span.bottom { 
@@ -67,7 +71,8 @@
 	height: 10px; 
 	bottom: -10px; 
 	left: 0;  
-	background: url(../images/templatemo_smb.png) no-repeat; 
+	/*background: url(../images/theme/templatemo_smb.png) no-repeat; */
+    background-color: #1A1A1A;
 }
 
 /*Sub level menu list items (undo style from Top level List Items)*/
@@ -104,7 +109,8 @@
 .ddsmoothmenu ul li ul li a.selected, .ddsmoothmenu ul li ul li a:hover {
 	color: #fff;
 	font-weight: 700;
-	background: none;
+	/*background: none;*/
+    background-color: #1A1A1A;
 }
 
 /* Holly Hack for IE \*/
