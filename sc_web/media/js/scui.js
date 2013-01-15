@@ -1,5 +1,28 @@
 /* Core logic for client-side */
 
+
+// -------------------- utils --------------------------
+/*
+ * Function to translate values of specified nodes in html
+ * 
+ * @param {id_prefix} Prefix of DOM-nodes id (widhout '#'). Example id="#prefix_1_1".
+ * @param {objects} List of objects, that need to be translated. This list contains 
+ * sc-addrs of objects.
+ * @param {identifiers} Object that contains <key, value> map of translations.
+ * Key - sc-addr, Value - translation text.
+ */
+function _updateTranslation(id_prefix, objects, identifiers){
+    for (idx in objects){
+        var item = objects[idx];
+        if (identifiers.hasOwnProperty(item)){
+            $('#' + id_prefix + item).text(identifiers[item])
+        }                    
+    }
+}
+
+var id_select_idtf_language = '#select_idtf_language';
+var id_select_output_language = '#select_output_language';
+
 /* 
  * Create instance of scuiRoot object.
  * This object is singleton and agregate whole semantic user interface
@@ -18,7 +41,7 @@ scuiRoot.prototype = {
     // --- initialization of semantic user interface ---
     init:function(options){
         this.initMenu();
-        this._updateOutputLanguages();
+        this.initControls();
     },
     
     // Initialize main menu
@@ -30,21 +53,39 @@ scuiRoot.prototype = {
             },
 
             // ajax
-            success: $.proxy(this._buildMenu, this)
+            success: $.proxy(this.buildMenu, this)
             
         }) // ajax 'commands'
+    },
+    
+    initControls: function(){
+        this.updateOutputLanguages();
+        this.updateIdtfLanguages();
+        
+        // identifiers laguage selection
+        this.currentIdtfLanguage = $(id_select_idtf_language + ' :selected').val();
+        $(id_select_idtf_language).change(function() {
+            this.currentIdtfLanguage = $(id_select_idtf_language + ' :selected').val();
+        });
+
+        // output language selection        
+        this.currentOutputLanguage = $(id_select_output_language + ' :selected').val();
+        $(id_select_output_language).change(function() {
+            this.currentOutputLanguage = $(id_select_output_language + ' :selected').val();
+        });
     },
     
     /*
      * Function tha resolve identifiers for specified objects
      * 
+     * @methodOf {scuiRoot}
      * @param objects List of objects that need to be resolved. It contains sc-addrs of objects.
      * @param callback Function that will be called on success identifiers resolve.
      * It will take a map (object[key] = value) of resolved identifiers, where key is an sc-addr of object and value is
      * identifier. If identifier for specified object wasn't resolve, then if wouldn't be present in keys.
      * @params context Context parameter for ajax request @see jQuery $.ajax() function for more information
      */
-    _resolveIdentifiers: function(objects, callback, context){
+    resolveIdentifiers: function(objects, callback, context){
         // resolve identifiers
         var idtfRequest = 'api/idtf?language=ru'
         for (idx in objects)
@@ -70,11 +111,12 @@ scuiRoot.prototype = {
     /* 
      * Parse one menu item and generate html representation of it.
      * This function calls recursively for child items.
+     * @methodOf {scuiRoot}
      * 
      * @param {item} Menu item to parse</param>
      * @return {String} Return generated html menu
      */ 
-    _parseMenuItem: function(item){
+    parseMenuItem: function(item){
 
         this.menuItems.push(item.id);
         var res = '<li><a href="" id="menu_' + item.id + '">' + item.id + '</a>';
@@ -82,7 +124,7 @@ scuiRoot.prototype = {
             res += '<ul>'
             for (idx in item.childs){
                 var subMenu = item.childs[idx];
-                res += this._parseMenuItem(subMenu);
+                res += this.parseMenuItem(subMenu);
             }
             res += '</ul>';
         }
@@ -92,10 +134,10 @@ scuiRoot.prototype = {
     
     /*
      * Method to parse menu from server response and construct it html representation
-     * 
+     * @methodOf {scuiRoot}
      * @param {mainMenu} Main menu object
      */
-    _buildMenu: function(mainMenu){
+    buildMenu: function(mainMenu){
         // delete old menu items
         if (this.menuItems != null)
             delete menuItems;
@@ -106,31 +148,27 @@ scuiRoot.prototype = {
         if (mainMenu.hasOwnProperty('childs')){
             for (idx in mainMenu.childs){
                 var subMenu = mainMenu.childs[idx];
-                menuHtml += this._parseMenuItem(subMenu);
+                menuHtml += this.parseMenuItem(subMenu);
             }
         }
         menuHtml += '</ul>' + '<br style="clear: left"></br>';
         $('#templatemo_menu').append(menuHtml)
 
-        this._resolveIdentifiers(this.menuItems, this._updateMenuTranslation, this);
+        this.resolveIdentifiers(this.menuItems, this.updateMenuTranslation, this);
     },
     
     /*
      * Method to update menu translations
      * 
+     * @methodOf {scuiRoot}
      * @param {identifiers} Object that contains translation for menu items
      */
-    _updateMenuTranslation: function(identifiers){
+    updateMenuTranslation: function(identifiers){
         
         if (this.menuItems == null)
             return; // do nothing
         
-        for (idx in this.menuItems){
-            var item = this.menuItems[idx];
-            if (identifiers.hasOwnProperty(item)){
-                $('#menu_' + item).text(identifiers[item])
-            }                    
-        }
+        _updateTranslation('menu_', this.menuItems, identifiers);
         
         if (this.hasOwnProperty('_notifyUpdateMenu')){
             this._notifyUpdateMenu()
@@ -139,9 +177,9 @@ scuiRoot.prototype = {
     
     /*
      * Method to update available output languages
-     * 
+     * @methodOf {scuiRoot}
      */
-    _updateOutputLanguages: function(){
+    updateOutputLanguages: function(){
         
         $.ajax({
             type: "GET",
@@ -157,38 +195,87 @@ scuiRoot.prototype = {
                 if (this.outputLanguages != null)
                     delete outputLanguages;
                     
-                this.outputLanguages = new Array();       
+                this.outputLanguages = new Array();
                 var optionsHtml = '';
 
                 for (idx in languages){
                     var lang = languages[idx];
     
-                    optionsHtml += '<option value="' + lang + '"' + 'id="lang_' + lang + '">' + lang + '</option>';
+                    optionsHtml += '<option value="' + lang + '"' + 'id="output_lang_' + lang + '">' + lang + '</option>';
                     this.outputLanguages.push(lang);
                 }
                 
-                $('#slect_output_language').append(optionsHtml);
+                $(id_select_output_language).append(optionsHtml);
                 
-                this._resolveIdentifiers(this.outputLanguages, this._updateOutputLanguagesTranslation, this);
+                this.resolveIdentifiers(this.outputLanguages, this.updateOutputLanguagesTranslation, this);
             }
             
-        }) // ajax 'commands'
+        }) // ajax
     },
     
     /*
      * Method ot update translation for output languages
+     * @methodOf {scuiRoot}
      */
-    _updateOutputLanguagesTranslation: function(identifiers){
+    updateOutputLanguagesTranslation: function(identifiers){
         
         if (this.outputLanguages == null)
             return; // do nothing
         
-        for (idx in this.outputLanguages){
-            var lang = this.outputLanguages[idx];
-            if (identifiers.hasOwnProperty(lang)){
-                $('#lang_' + lang).text(identifiers[lang])
-            }                    
-        }
-    } 
+        _updateTranslation('output_lang_', this.outputLanguages, identifiers);
+    },
+    
+    
+    /*
+     * Method to update available identifier languages
+     * @methodOf {scuiRoot}
+     */
+    updateIdtfLanguages: function(){
+        
+        $.ajax({
+            type: "GET",
+            url: "api/idtfLangs",
+            data:{
+            },
+            context: this,
+
+            // ajax
+            success: function(languages){
+                
+                // delete old output languages
+                if (this.idtfLanguages != null)
+                    delete idtfLanguages;
+                    
+                this.idtfLanguages = new Array();       
+                var optionsHtml = '';
+
+                for (idx in languages){
+                    var lang = languages[idx];
+    
+                    optionsHtml += '<option value="' + lang + '"' + 'id="idtf_lang_' + lang + '">' + lang + '</option>';
+                    this.idtfLanguages.push(lang);
+                }
+                
+                $(id_select_idtf_language).append(optionsHtml);
+                
+                this.resolveIdentifiers(this.idtfLanguages, this.updateIdtfLanguagesTranslation, this);
+            }
+            
+        }) // ajax
+    },
+    
+    
+    /*
+     * Method ot update translation for identifier languages
+     * @methodOf {scuiRoot}
+     */
+    updateIdtfLanguagesTranslation: function(identifiers){
+        
+        if (this.idtfLanguages == null)
+            return; // do nothing
+        
+        _updateTranslation('idtf_lang_', this.idtfLanguages, identifiers);
+    },
+    
     
 };

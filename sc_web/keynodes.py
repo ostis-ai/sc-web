@@ -58,6 +58,7 @@ class KeynodeSysIdentifiers:
     ui_user_command_atom = 'ui_user_command_atom'
     ui_user_command_noatom = 'ui_user_command_noatom'
     ui_output_languages = 'ui_output_languages'
+    ui_idtf_languages = 'ui_idtf_languages'
     
     
     format_scs = 'format_scs'

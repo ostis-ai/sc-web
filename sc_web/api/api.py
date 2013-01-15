@@ -279,3 +279,27 @@ def available_output_langs(request):
 			result = json.dumps(result)
 		
 	return HttpResponse(result, 'application/json')
+
+
+def available_idtf_langs(request):
+	"""Returns list of available identifier languages
+	"""
+	result = "[]"
+	if request.is_ajax() or True:
+		sctp_client = newSctpClient()
+		
+		keys = Keynodes(sctp_client)
+		
+		keynode_ui_idtf_languages = keys[KeynodeSysIdentifiers.ui_idtf_languages]
+		res = sctp_client.iterate_elements(sctpIteratorType.SCTP_ITERATOR_3F_A_A,
+											keynode_ui_idtf_languages,
+											ScElementType.sc_type_arc_pos_const_perm,
+											ScElementType.sc_type_node | ScElementType.sc_type_const)
+		if (res is not None):
+			result = []
+			for items in res:
+				result.append(items[2].to_id())
+				
+			result = json.dumps(result)
+		
+	return HttpResponse(result, 'application/json')

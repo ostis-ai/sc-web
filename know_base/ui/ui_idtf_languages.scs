@@ -1,0 +1,10 @@
+ui_idtf_languages <- sc_node_not_relation;;
+
+ui_idtf_languages -> ui_idtf_languages_ru
+	(* => nrel_main_ru_idtf:
+		[Русские идентификаторы];;
+	*);;
+ui_idtf_languages -> ui_idtf_languages_en
+	(* => nrel_main_ru_idtf:
+		[Английские идентификаторы];;
+	*);;

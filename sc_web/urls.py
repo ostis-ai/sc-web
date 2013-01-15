@@ -11,10 +11,12 @@ urlpatterns = patterns('',
     url(r'^nav/(?P<name>[A-Za-z0-9._]+)', 'nav.viewKeynode.keynode', ),
     url(r'^scg', 'nav.viewKeynode.scg', ),
     
-    url(r'^api/idtf', 'api.api.get_identifier'),
     url(r'^api/commands', 'api.api.get_menu_commands'),
     url(r'^api/doCommand', 'api.api.command'),
     url(r'^api/outputLangs', 'api.api.available_output_langs'),
+    url(r'^api/idtfLangs', 'api.api.available_idtf_langs'),
+    
+    url(r'^api/idtf', 'api.api.get_identifier'),
     # url(r'^sc_web/', include('sc_web.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
