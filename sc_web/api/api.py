@@ -43,7 +43,12 @@ def get_identifier(request):
 	
 	result = None
 	if request.is_ajax() or True:
-		lang_code = request.GET.get(u'language', '')
+		lang_code = ScAddr.parse_from_string(request.GET.get(u'language', None))
+		
+		if lang_code is None:
+			print "Invalid sc-addr of language"
+			return HttpResponse(None)
+		
 		# get arguments
 		idx = 1
 		arguments = []
@@ -54,15 +59,23 @@ def get_identifier(request):
 				arguments.append(arg)
 			idx += 1
 		
-		sctp_client = sctpClient()
-		sctp_client.initialize(settings.SCTP_HOST, settings.SCTP_PORT)
+		sctp_client = newSctpClient()
+		
+		keys = Keynodes(sctp_client)
+		keynode_ui_nrel_idtf_language_relation = keys[KeynodeSysIdentifiers.ui_nrel_idtf_language_relation]
 		
 		# first of all we need to resolve language relation
-		lang_str = 'nrel_main_%s_idtf' % lang_code
-		lang_relation_keynode = sctp_client.find_element_by_system_identifier(str(lang_str.encode('utf-8')))
+		lang_relation_keynode = sctp_client.iterate_elements(sctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
+															lang_code,
+															ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
+															ScElementType.sc_type_node | ScElementType.sc_type_const,
+															ScElementType.sc_type_arc_pos_const_perm,
+															keynode_ui_nrel_idtf_language_relation) 
 		if lang_relation_keynode is None:
 			print "Can't resolve keynode for language '%s'" % str(lang_code)
 			return HttpResponse(None)
+		
+		lang_relation_keynode = lang_relation_keynode[0][2]
 		
 		result = {}
 		# get requested identifiers for arguments

@@ -62,12 +62,15 @@ scuiRoot.prototype = {
     },
     
     initControls: function(){
-        this.updateOutputLanguages();
         this.updateIdtfLanguages();
+        this.updateOutputLanguages();
         
         // identifiers laguage selection
-        $(id_select_idtf_language).change(function() {
-        });
+        $(id_select_idtf_language).change(
+                function() {
+                    scuiRoot().updateTranslations();
+                }
+        );
 
     },
     
@@ -101,7 +104,7 @@ scuiRoot.prototype = {
      */
     resolveIdentifiers: function(objects, callback, context){
         // resolve identifiers
-        var idtfRequest = 'api/idtf?language=ru'
+        var idtfRequest = 'api/idtf?language=' + this.getItdfLanguage();
         for (idx in objects)
         {
             var id = objects[idx];
@@ -168,11 +171,21 @@ scuiRoot.prototype = {
         menuHtml += '</ul>' + '<br style="clear: left"></br>';
         $('#templatemo_menu').append(menuHtml)
 
-        this.resolveIdentifiers(this.menuItems, this.updateMenuTranslation, this);
+        this.resolveIdentifiers(this.menuItems, this.applyMenuTranslation, this);
         
         $('.cmd_atom').click(function() {
             scuiRoot().doCommand(this.id);
         });
+    },
+    
+    /* 
+     * Method to update whole UI translations
+     * @methodOf {scuiRoot}
+     */
+    updateTranslations: function(){
+        this.resolveIdentifiers(this.menuItems, this.applyMenuTranslation, this);
+        this.resolveIdentifiers(this.outputLanguages, this.applyOutputLanguagesTranslation, this);
+        this.resolveIdentifiers(this.idtfLanguages, this.applyIdtfLanguagesTranslation, this);
     },
     
     /*
@@ -181,7 +194,7 @@ scuiRoot.prototype = {
      * @methodOf {scuiRoot}
      * @param {identifiers} Object that contains translation for menu items
      */
-    updateMenuTranslation: function(identifiers){
+    applyMenuTranslation: function(identifiers){
         
         if (this.menuItems == null)
             return; // do nothing
@@ -225,7 +238,7 @@ scuiRoot.prototype = {
                 
                 $(id_select_output_language).append(optionsHtml);
                 
-                this.resolveIdentifiers(this.outputLanguages, this.updateOutputLanguagesTranslation, this);
+                this.resolveIdentifiers(this.outputLanguages, this.applyOutputLanguagesTranslation, this);
             }
             
         }) // ajax
@@ -235,7 +248,7 @@ scuiRoot.prototype = {
      * Method ot update translation for output languages
      * @methodOf {scuiRoot}
      */
-    updateOutputLanguagesTranslation: function(identifiers){
+    applyOutputLanguagesTranslation: function(identifiers){
         
         if (this.outputLanguages == null)
             return; // do nothing
@@ -276,7 +289,7 @@ scuiRoot.prototype = {
                 
                 $(id_select_idtf_language).append(optionsHtml);
                 
-                this.resolveIdentifiers(this.idtfLanguages, this.updateIdtfLanguagesTranslation, this);
+                this.resolveIdentifiers(this.idtfLanguages, this.applyIdtfLanguagesTranslation, this);
             }
             
         }) // ajax
@@ -287,7 +300,7 @@ scuiRoot.prototype = {
      * Method ot update translation for identifier languages
      * @methodOf {scuiRoot}
      */
-    updateIdtfLanguagesTranslation: function(identifiers){
+    applyIdtfLanguagesTranslation: function(identifiers){
         
         if (this.idtfLanguages == null)
             return; // do nothing
