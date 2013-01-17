@@ -4,31 +4,50 @@ ui_main_menu => nrel_main_ru_idtf:
 	[главное меню];;
 
 ui_main_menu <= nrel_decomposition:
+{
+	ui_menu_na_help;	
+	ui_menu_na_edit;
+	ui_menu_na_view_kb
+};;
+
+
+ui_menu_na_help <- ui_user_command_noatom;;
+ui_menu_na_help <= nrel_decomposition: 
+{
+	ui_menu_na_help_main
+	(* 
+	<- ui_user_command_atom;;
+	=> nrel_main_ru_idtf: [Основной раздел];;
+	<= nrel_decomposition:
 	{
-		ui_menu_na_help 
-			(* <= nrel_decomposition: 
-				{
-					ui_menu_na_help_main
-					(* <- ui_user_command_atom;;
-					=> nrel_main_ru_idtf:
-						[Основной раздел];;
-					<= nrel_decomposition:
-					{
-						ui_na_help_ui
-						(*
-						=> nrel_main_ru_idtf:
-							[Пользовательский интерфейс];;
-						*)
-					};;
-					*)
-				};;
-			   <- ui_user_command_noatom;;
-			   => nrel_main_ru_idtf:
-				[Помощь];;
-			*);
-		ui_menu_na_edit 
-			(* <- ui_user_command_noatom;;
-			=> nrel_main_ru_idtf:
-				[Редактирование];;
-			*)
+		ui_na_help_ui (* => nrel_main_ru_idtf: [Пользовательский интерфейс];; *)
 	};;
+	*)
+};;
+ui_menu_na_help <- ui_user_command_noatom;;
+ui_menu_na_help => nrel_main_ru_idtf: [Помощь];;
+
+
+ui_menu_na_edit <- ui_user_command_noatom;;
+ui_menu_na_edit => nrel_main_ru_idtf: [Редактирование];;
+
+ui_menu_na_view_kb <- ui_user_command_noatom;;
+ui_menu_na_view_kb => nrel_main_ru_idtf: [Просмотр БЗ];;
+ui_menu_na_view_kb <= nrel_decomposition:
+{
+	ui_menu_na_view_kb_base
+	(* 
+	<- ui_user_command_noatom;;
+	=> nrel_main_ru_idtf: [Базовые];;
+	<= nrel_decomposition:
+		{
+			ui_menu_view_output_arcs
+			(* 
+			<- ui_user_command_atom;;
+			=> nrel_main_ru_idtf: [Выходящие дуги];;
+			*)
+		};;
+	*)
+};;
+
+

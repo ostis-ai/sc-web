@@ -2,6 +2,10 @@
 	padding-top: 7px;
 }
 
+.menu_item{
+    cursor: pointer;
+}
+
 .ddsmoothmenu ul{
 	z-index:100;
 	margin: 0;
@@ -18,7 +22,7 @@
 }
 
 /*Top level menu link items style*/
-.ddsmoothmenu ul li a {
+.ddsmoothmenu ul li .menu_item {
 	display: block;
 	width: 170px;
 	height: 31px;
@@ -34,11 +38,11 @@
 	text-align: center;
 }
 
-* html .ddsmoothmenu ul li a{ /*IE6 hack to get sub menu links to behave correctly*/
+* html .ddsmoothmenu ul li .menu_item{ /*IE6 hack to get sub menu links to behave correctly*/
 	display: inline-block;
 }
 
-.ddsmoothmenu ul li a.selected, .ddsmoothmenu ul li a:hover { /*CSS class that's dynamically added to the currently active menu items' LI A element*/
+.ddsmoothmenu ul li a.selected, .ddsmoothmenu ul li .menu_item:hover { /*CSS class that's dynamically added to the currently active menu items' LI A element*/
 	color: #3388FF;
 	/*background: url(../images/theme/templatemo_menu_hover.png);*/
     /*background-color: #1A1A1A;*/
@@ -87,11 +91,11 @@
 }
 
 /* Sub level menu links style */
-.ddsmoothmenu ul li ul li a{
+.ddsmoothmenu ul li ul li .menu_item{
 	font-weight: 400;
 	width: 130px; /*width of sub menus*/
 	height: 28px;
-	padding: 0 20px;
+	padding: 0 10px;
 	margin: 0 2px;
 	line-height: 28px;
 	font-size: 11px;	
@@ -106,7 +110,7 @@
 	border-bottom: none;
 }
 
-.ddsmoothmenu ul li ul li a.selected, .ddsmoothmenu ul li ul li a:hover {
+.ddsmoothmenu ul li ul li .menu_item.selected, .ddsmoothmenu ul li ul li .menu_item:hover {
 	color: #fff;
 	font-weight: 700;
 	/*background: none;*/

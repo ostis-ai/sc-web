@@ -12,7 +12,7 @@ urlpatterns = patterns('',
     url(r'^scg', 'nav.viewKeynode.scg', ),
     
     url(r'^api/commands', 'api.api.get_menu_commands'),
-    url(r'^api/doCommand', 'api.api.command'),
+    url(r'^api/doCommand', 'api.api.doCommand'),
     url(r'^api/outputLangs', 'api.api.available_output_langs'),
     url(r'^api/idtfLangs', 'api.api.available_idtf_langs'),
     

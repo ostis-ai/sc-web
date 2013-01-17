@@ -38,6 +38,9 @@ var scuiRoot = function(){
 
 scuiRoot.prototype = {
     
+    // test
+    arguments: ['0_5', '0_6'],
+    
     // --- initialization of semantic user interface ---
     init:function(options){
         this.initMenu();
@@ -63,17 +66,28 @@ scuiRoot.prototype = {
         this.updateIdtfLanguages();
         
         // identifiers laguage selection
-        this.currentIdtfLanguage = $(id_select_idtf_language + ' :selected').val();
         $(id_select_idtf_language).change(function() {
-            this.currentIdtfLanguage = $(id_select_idtf_language + ' :selected').val();
         });
 
-        // output language selection        
-        this.currentOutputLanguage = $(id_select_output_language + ' :selected').val();
-        $(id_select_output_language).change(function() {
-            this.currentOutputLanguage = $(id_select_output_language + ' :selected').val();
-        });
     },
+    
+    /*
+     * Returns currently selected output language
+     * @methodOf {scuiRoot}
+     * @return Return string that contains sc-addr of selected output language
+     */
+    getOutputLanguage: function(){
+        return $(id_select_output_language + ' :selected').val();
+    },
+    
+    /*
+     * Returns currently selected identifiers language
+     * @methodOf {scuiRoot}
+     * @return Return string that contains sc-addr of scelected identifier language
+     */
+     getItdfLanguage: function(){
+         return $(id_select_idtf_language + ' :selected').val();
+     },
     
     /*
      * Function tha resolve identifiers for specified objects
@@ -119,7 +133,7 @@ scuiRoot.prototype = {
     parseMenuItem: function(item){
 
         this.menuItems.push(item.id);
-        var res = '<li><a href="" id="menu_' + item.id + '">' + item.id + '</a>';
+        var res = '<li><div id="' + item.id + '" class="menu_item ' + item.cmd_type + '" >' + item.id + '</div>';
         if (item.hasOwnProperty('childs')){
             res += '<ul>'
             for (idx in item.childs){
@@ -155,6 +169,10 @@ scuiRoot.prototype = {
         $('#templatemo_menu').append(menuHtml)
 
         this.resolveIdentifiers(this.menuItems, this.updateMenuTranslation, this);
+        
+        $('.cmd_atom').click(function() {
+            scuiRoot().doCommand(this.id);
+        });
     },
     
     /*
@@ -168,7 +186,7 @@ scuiRoot.prototype = {
         if (this.menuItems == null)
             return; // do nothing
         
-        _updateTranslation('menu_', this.menuItems, identifiers);
+        _updateTranslation('', this.menuItems, identifiers);
         
         if (this.hasOwnProperty('_notifyUpdateMenu')){
             this._notifyUpdateMenu()
@@ -276,6 +294,36 @@ scuiRoot.prototype = {
         
         _updateTranslation('idtf_lang_', this.idtfLanguages, identifiers);
     },
+    
+    /* Method to initiate user command on server
+     * @param {cmd_addr} sc-addr of command
+     * @param {output_addr} sc-addr of output language
+     * @param {arguments} List that contains sc-addrs of command arguments
+     * @methodOf {scuiRoot}
+     */
+     doCommand: function(cmd_addr){
+        
+        var arguments = '';
+        for (idx in this.arguments){
+            var arg = this.arguments[idx];
+            arguments += idx.toString() + '_=' + arg + '&';
+        }
+        arguments += 'cmd=' + cmd_addr + '&';
+        arguments += 'output=' + this.getOutputLanguage();
+        
+        $.ajax({
+            type: "GET",
+            url: "api/doCommand",
+            data: arguments,
+            context: this,
+
+            // ajax
+            success: function(data){
+                alert("Get answer");
+            }
+        });
+     }
+
     
     
 };

@@ -111,12 +111,12 @@ def parse_menu_command(cmd_addr, sctp_client, keys):
 									keynode_ui_user_command_atom,
 									ScElementType.sc_type_arc_pos_const_perm,
 									cmd_addr) is not None:
-		cmd_type = "atom"
+		cmd_type = "cmd_atom"
 	elif sctp_client.iterate_elements(sctpIteratorType.SCTP_ITERATOR_3F_A_F,
 									  keynode_ui_user_command_noatom,
 									  ScElementType.sc_type_arc_pos_const_perm,
 									  cmd_addr) is not None:
-		cmd_type = "noatom"
+		cmd_type = "cmd_noatom"
 	
 	attrs = {}
 	attrs["cmd_type"] = cmd_type
@@ -184,75 +184,82 @@ def findTranslation(construction_addr, keynode_nrel_translation, sctp_client):
 										ScElementType.sc_type_link,
 										ScElementType.sc_type_arc_pos_const_perm,
 										keynode_nrel_translation)
-def command(request):
+def doCommand(request):
 	result = "[]"
 	if request.is_ajax() or True:
 		#result = u'[{"type": "node", "id": "1", "identifier": "node1"},' \
 		#		 u'{"type": "arc", "id": "2", "begin": "1", "end": "3"},' \
 		#		 u'{"type": "node", "id": "3", "identifier": "node2"}]'
-		sctp_client = sctpClient()
-		sctp_client.initialize(settings.SCTP_HOST, settings.SCTP_PORT)
+		sctp_client = newSctpClient()
 		
-		idtf = request.GET.get(u'idtf', None)
-		idtf_addr = None
-		
-		idtf = str(idtf.encode('utf-8'))
-		idtf_addr = sctp_client.find_element_by_system_identifier(idtf)
-		
-		if idtf_addr is not None:
+		cmd_addr = ScAddr.parse_from_string(request.GET.get(u'cmd', None))
+		output_addr = ScAddr.parse_from_string(request.GET.get(u'output', None))
+		# parse arguments
+		first = True
+		arg = None
+		arguments = []
+		idx = 0
+		while first or (arg is not None):
+			arg = ScAddr.parse_from_string(request.GET.get(u'%d_' % idx, None))
+			if arg is not None:
+				arguments.append(arg)
+			first = False
+			idx += 1
+				
+		if (len(arguments) > 0) and (cmd_addr is not None) and (output_addr is not None):
 			
 			keys = Keynodes(sctp_client)
-			
-			keynode_question = keys[KeynodeSysIdentifiers.question]
-			keynode_question_initiated = keys[KeynodeSysIdentifiers.question_initiated]
-			keynode_ui_user = keys[KeynodeSysIdentifiers.ui_user]
-			keynode_nrel_answer = keys[KeynodeSysIdentifiers.question_nrel_answer]
-			keynode_nrel_author = keys[KeynodeSysIdentifiers.nrel_author]
-			keynode_format_scg_json = keys[KeynodeSysIdentifiers.format_scg_json]
-			keynode_ui_nrel_user_answer_formats = keys[KeynodeSysIdentifiers.ui_nrel_user_answer_formats]
-			keynode_nrel_translation = keys[KeynodeSysIdentifiers.nrel_translation]
-			
-			# create question in sc-memory
-			question_node = sctp_client.create_node(ScElementType.sc_type_node | ScElementType.sc_type_const)
-			sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_question, question_node)
-			sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, question_node, idtf_addr)
-			
-			
-			
-			# create author
-			user_node = sctp_client.create_node(ScElementType.sc_type_node | ScElementType.sc_type_const)
-			sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_user, user_node)
-			
-			author_arc = sctp_client.create_arc(ScElementType.sc_type_arc_common | ScElementType.sc_type_const, question_node, user_node)
-			sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_nrel_author, author_arc)		
-			
-			# create output formats set
-			output_formats_node = sctp_client.create_node(ScElementType.sc_type_node | ScElementType.sc_type_const)
-			sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, output_formats_node, format_scg_json)
-			
-			format_arc = sctp_client.create_arc(ScElementType.sc_type_arc_common | ScElementType.sc_type_const, question_node, output_formats_node)
-			sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_nrel_user_answer_formats, format_arc)
-			
-			# initiate question
-			sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_question_initiated, question_node)
-			
-			# first of all we need to wait answer to this question
-			#print sctp_client.iterate_elements(sctpIteratorType.SCTP_ITERATOR_3F_A_A, keynode_question_initiated, 0, 0)
-			
-			answer = findAnswer(question_node, keynode_nrel_answer, sctp_client)
-			while answer is None:
-				time.sleep(0.1)
-				answer = findAnswer(question_node, keynode_nrel_answer, sctp_client)
-			
-			answer_addr = answer[0][2]
-			translation = findTranslation(answer_addr, keynode_nrel_translation, sctp_client)
-			while translation is None:
-				time.sleep(0.1)
-				translation = findTranslation(answer_addr, keynode_nrel_translation, sctp_client)
-				
-			# get output string
-			translation_addr = translation[0][2]
-			result = sctp_client.get_link_content(translation_addr)
+#			
+#			keynode_question = keys[KeynodeSysIdentifiers.question]
+#			keynode_question_initiated = keys[KeynodeSysIdentifiers.question_initiated]
+#			keynode_ui_user = keys[KeynodeSysIdentifiers.ui_user]
+#			keynode_nrel_answer = keys[KeynodeSysIdentifiers.question_nrel_answer]
+#			keynode_nrel_author = keys[KeynodeSysIdentifiers.nrel_author]
+#			keynode_format_scg_json = keys[KeynodeSysIdentifiers.format_scg_json]
+#			keynode_ui_nrel_user_answer_formats = keys[KeynodeSysIdentifiers.ui_nrel_user_answer_formats]
+#			keynode_nrel_translation = keys[KeynodeSysIdentifiers.nrel_translation]
+#			
+#			# create question in sc-memory
+#			question_node = sctp_client.create_node(ScElementType.sc_type_node | ScElementType.sc_type_const)
+#			sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_question, question_node)
+#			sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, question_node, idtf_addr)
+#			
+#			
+#			
+#			# create author
+#			user_node = sctp_client.create_node(ScElementType.sc_type_node | ScElementType.sc_type_const)
+#			sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_user, user_node)
+#			
+#			author_arc = sctp_client.create_arc(ScElementType.sc_type_arc_common | ScElementType.sc_type_const, question_node, user_node)
+#			sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_nrel_author, author_arc)		
+#			
+#			# create output formats set
+#			output_formats_node = sctp_client.create_node(ScElementType.sc_type_node | ScElementType.sc_type_const)
+#			sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, output_formats_node, format_scg_json)
+#			
+#			format_arc = sctp_client.create_arc(ScElementType.sc_type_arc_common | ScElementType.sc_type_const, question_node, output_formats_node)
+#			sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_nrel_user_answer_formats, format_arc)
+#			
+#			# initiate question
+#			sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_question_initiated, question_node)
+#			
+#			# first of all we need to wait answer to this question
+#			#print sctp_client.iterate_elements(sctpIteratorType.SCTP_ITERATOR_3F_A_A, keynode_question_initiated, 0, 0)
+#			
+#			answer = findAnswer(question_node, keynode_nrel_answer, sctp_client)
+#			while answer is None:
+#				time.sleep(0.1)
+#				answer = findAnswer(question_node, keynode_nrel_answer, sctp_client)
+#			
+#			answer_addr = answer[0][2]
+#			translation = findTranslation(answer_addr, keynode_nrel_translation, sctp_client)
+#			while translation is None:
+#				time.sleep(0.1)
+#				translation = findTranslation(answer_addr, keynode_nrel_translation, sctp_client)
+#				
+#			# get output string
+#			translation_addr = translation[0][2]
+#			result = sctp_client.get_link_content(translation_addr)
 		
 	
 	return HttpResponse(result, 'application/json')
