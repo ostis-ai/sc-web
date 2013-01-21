@@ -15,6 +15,7 @@ urlpatterns = patterns('',
     url(r'^api/doCommand', 'api.api.doCommand'),
     url(r'^api/outputLangs', 'api.api.available_output_langs'),
     url(r'^api/idtfLangs', 'api.api.available_idtf_langs'),
+    url(r'^api/scAddrs', 'api.api.scAddrs'),
     
     url(r'^api/idtf', 'api.api.get_identifier'),
     # url(r'^sc_web/', include('sc_web.foo.urls')),

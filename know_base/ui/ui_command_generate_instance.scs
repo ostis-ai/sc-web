@@ -1,0 +1,4 @@
+ui_command_generate_instance <- sc_node_not_relation;;
+
+ui_command_generate_instance => nrel_main_ru_idtf:
+	[команда генерации экземпляра пользовательской команды];;

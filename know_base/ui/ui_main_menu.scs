@@ -49,13 +49,20 @@ ui_menu_na_view_kb <= nrel_decomposition:
 	<= nrel_decomposition:
 		{
 			ui_menu_view_output_arcs
-			(* 
-			<- ui_user_command_atom;;
-			=> nrel_main_ru_idtf: [Выходящие дуги];;
-			=> nrel_main_en_idtf: [Otput arcs];;
-			*)
 		};;
 	*)
 };;
+
+ui_menu_view_output_arcs <- ui_user_command_atom;;
+ui_menu_view_output_arcs => nrel_main_ru_idtf: [Выходящие дуги];;
+ui_menu_view_output_arcs => nrel_main_en_idtf: [Otput arcs];;
+ui_menu_view_output_arcs => ui_nrel_command_template:
+	[*
+		question_search_all_output_arcs _-> .question_search_all_output_arcs_instance
+			(*
+				_-> ui_arg_1;;
+			*);;
+	*];;
+
 
 

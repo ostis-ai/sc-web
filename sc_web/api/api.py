@@ -42,7 +42,7 @@ def newSctpClient():
 def get_identifier(request):
 	
 	result = None
-	if request.is_ajax() or True:
+	if request.is_ajax():
 		lang_code = ScAddr.parse_from_string(request.GET.get(u'language', None))
 		
 		if lang_code is None:
@@ -182,6 +182,14 @@ def get_menu_commands(request):
 	return HttpResponse(result, 'application/json')
 
 # -------------------------------------------
+def findCmdResult(command_addr, keynode_ui_nrel_command_result, sctp_client):
+	return sctp_client.iterate_elements(sctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
+										command_addr,
+										ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
+										ScElementType.sc_type_link,
+										ScElementType.sc_type_arc_pos_const_perm,
+										keynode_ui_nrel_command_result)
+	
 def findAnswer(question_addr, keynode_nrel_answer, sctp_client):
 	return sctp_client.iterate_elements(sctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
 										question_addr,
@@ -199,7 +207,7 @@ def findTranslation(construction_addr, keynode_nrel_translation, sctp_client):
 										keynode_nrel_translation)
 def doCommand(request):
 	result = "[]"
-	if request.is_ajax() or True:
+	if request.is_ajax():
 		#result = u'[{"type": "node", "id": "1", "identifier": "node1"},' \
 		#		 u'{"type": "arc", "id": "2", "begin": "1", "end": "3"},' \
 		#		 u'{"type": "node", "id": "3", "identifier": "node2"}]'
@@ -215,14 +223,58 @@ def doCommand(request):
 		while first or (arg is not None):
 			arg = ScAddr.parse_from_string(request.GET.get(u'%d_' % idx, None))
 			if arg is not None:
-				arguments.append(arg)
+				# check if sc-element exist
+				if sctp_client.check_element(arg):
+					arguments.append(arg)
+				else:
+					return HttpResponse(None, 'application/json')
+					
 			first = False
 			idx += 1
 				
 		if (len(arguments) > 0) and (cmd_addr is not None) and (output_addr is not None):
 			
 			keys = Keynodes(sctp_client)
-#			
+
+			keynode_ui_rrel_commnad = keys[KeynodeSysIdentifiers.ui_rrel_commnad]
+			keynode_ui_rrel_command_arguments = keys[KeynodeSysIdentifiers.ui_rrel_command_arguments]
+			keynode_ui_nrel_command_result = keys[KeynodeSysIdentifiers.ui_nrel_command_result]
+			keynode_ui_command_generate_instance = keys[KeynodeSysIdentifiers.ui_command_generate_instance]
+			keynode_ui_command_initiated = keys[KeynodeSysIdentifiers.ui_command_initiated]
+			keynode_ui_nrel_command_result = keys[KeynodeSysIdentifiers.ui_nrel_command_result]
+			
+			# create command in sc-memory
+			inst_cmd_addr = sctp_client.create_node(ScElementType.sc_type_node | ScElementType.sc_type_const)
+			sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_command_generate_instance, inst_cmd_addr)
+			
+			inst_cmd_arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, inst_cmd_addr, cmd_addr)
+			sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_rrel_commnad, inst_cmd_arc)
+			
+			# create arguments
+			args_addr = sctp_client.create_node(ScElementType.sc_type_node | ScElementType.sc_type_const)
+			args_arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, inst_cmd_addr, args_addr)
+			
+			idx = 1
+			for arg in arguments:
+				arg_arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, args_addr, arg)
+				if arg_arc is None:
+					return HttpResponse(None, 'application/json')
+				
+				idx_addr = sctp_client.find_element_by_system_identifier(str(u'rrel_%d' % idx))
+				if idx_addr is None:
+					return HttpResponse(None, 'application/json')
+				idx += 1
+				sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, idx_addr, arg_arc)
+				
+			# initialize command
+			sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_command_initiated, inst_cmd_addr)
+			cmd_result = findAnswer(inst_cmd_addr, keynode_ui_nrel_command_result, sctp_client)
+			while cmd_result is None:
+				time.sleep(0.1)
+				cmd_result = findAnswer(inst_cmd_addr, keynode_ui_nrel_command_result, sctp_client)
+			
+			# now wait wilhe get result of this command
+			
 #			keynode_question = keys[KeynodeSysIdentifiers.question]
 #			keynode_question_initiated = keys[KeynodeSysIdentifiers.question_initiated]
 #			keynode_ui_user = keys[KeynodeSysIdentifiers.ui_user]
@@ -281,7 +333,7 @@ def available_output_langs(request):
 	"""Returns list of available output languages
 	"""
 	result = "[]"
-	if request.is_ajax() or True:
+	if request.is_ajax():
 		sctp_client = newSctpClient()
 		
 		keys = Keynodes(sctp_client)
@@ -305,7 +357,7 @@ def available_idtf_langs(request):
 	"""Returns list of available identifier languages
 	"""
 	result = "[]"
-	if request.is_ajax() or True:
+	if request.is_ajax():
 		sctp_client = newSctpClient()
 		
 		keys = Keynodes(sctp_client)
@@ -321,5 +373,34 @@ def available_idtf_langs(request):
 				result.append(items[2].to_id())
 				
 			result = json.dumps(result)
+		
+	return HttpResponse(result, 'application/json')
+
+def scAddrs(request):
+	
+	result = "[]"
+	if request.is_ajax():
+		sctp_client = newSctpClient()
+		
+		# parse arguments
+		first = True
+		arg = None
+		arguments = []
+		idx = 0
+		while first or (arg is not None):
+			arg_str = u'%d_' % idx
+			arg = ScAddr.parse_from_string(request.GET.get(arg_str, None))
+			if arg is not None:
+				arguments.append(arg)
+			first = False
+			idx += 1
+		
+		res = {}
+		for idtf in arguments:
+			addr = sctp_client.find_element_by_system_identifier(idtf)
+			if addr is not None:
+				res[idtf] = addr
+		
+		result = json.dumps(res)
 		
 	return HttpResponse(result, 'application/json')

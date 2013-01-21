@@ -60,6 +60,11 @@ class KeynodeSysIdentifiers:
     ui_output_languages = 'ui_output_languages'
     ui_idtf_languages = 'ui_idtf_languages'
     ui_nrel_idtf_language_relation = 'ui_nrel_idtf_language_relation'
+    ui_rrel_command_arguments = 'ui_rrel_command_arguments'
+    ui_rrel_commnad = 'ui_rrel_command'
+    ui_nrel_command_result = 'ui_nrel_command_result'
+    ui_command_generate_instance = 'ui_command_generate_instance'
+    ui_command_initiated = 'ui_command_initiated'
     
     
     format_scs = 'format_scs'
