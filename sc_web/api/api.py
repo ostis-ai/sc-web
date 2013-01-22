@@ -253,6 +253,7 @@ def doCommand(request):
 			# create arguments
 			args_addr = sctp_client.create_node(ScElementType.sc_type_node | ScElementType.sc_type_const)
 			args_arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, inst_cmd_addr, args_addr)
+			sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_rrel_command_arguments, args_arc)
 			
 			idx = 1
 			for arg in arguments:
