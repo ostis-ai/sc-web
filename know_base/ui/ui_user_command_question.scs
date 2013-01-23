@@ -1,0 +1,4 @@
+ui_user_command_question <- sc_node_not_relaltion;;
+
+ui_user_command_question => nrel_main_ru_idtf:
+	[команда-вопрос пользовательского интерфейса];;

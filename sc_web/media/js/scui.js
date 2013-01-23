@@ -63,7 +63,7 @@ scuiRoot.prototype = {
     arguments: ['0_5', '0_6'],
     
     // Registered viewers factory
-    viewerFacctories: {},
+    viewerFactories: {},
     
     // --- initialization of semantic user interface ---
     init:function(options){
@@ -357,7 +357,8 @@ scuiRoot.prototype = {
 
             // ajax
             success: function(data){
-                alert("Get answer");
+                //alert("Get answer");
+                $('#templatemo_main').text(data.toString());
             }
         });
      },
@@ -387,12 +388,12 @@ scuiRoot.prototype = {
      * @methodOf {scuiRoot}
      */
     registerViewerFactory: function(outLang, factory){
-        if (!this.viewerFacctories.hasOwnProperty(outputLanguage)){
+        if (!this.viewerFactories.hasOwnProperty(outputLanguage)){
             var list_factories = new Array();
             list_factories.append(factory);
-            this.viewerFacctories[outLang] = list_factories;
+            this.viewerFactories[outLang] = list_factories;
         }else{
-            this.viewerFacctories[outLang].append(factory);
+            this.viewerFactories[outLang].append(factory);
         }
         
         alert("Registered factory " + factory.toString());

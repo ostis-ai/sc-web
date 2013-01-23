@@ -57,6 +57,7 @@ class KeynodeSysIdentifiers:
     ui_main_menu = 'ui_main_menu'
     ui_user_command_atom = 'ui_user_command_atom'
     ui_user_command_noatom = 'ui_user_command_noatom'
+    ui_user_command_question = 'ui_user_command_question'
     ui_output_languages = 'ui_output_languages'
     ui_idtf_languages = 'ui_idtf_languages'
     ui_nrel_idtf_language_relation = 'ui_nrel_idtf_language_relation'
@@ -65,6 +66,7 @@ class KeynodeSysIdentifiers:
     ui_nrel_command_result = 'ui_nrel_command_result'
     ui_command_generate_instance = 'ui_command_generate_instance'
     ui_command_initiated = 'ui_command_initiated'
+    ui_command_finished = 'ui_command_finished'
     
     
     format_scs = 'format_scs'
