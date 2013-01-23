@@ -20,6 +20,27 @@ function _updateTranslation(id_prefix, objects, identifiers){
     }
 }
 
+/*
+ * Function that request sc-addrs of specified sc-elements
+ * @param {identifiers} List of system identifiers, that need to be resolved
+ * @param {callback} Callback function that calls, when sc-addrs resovled. It
+ * takes object that contains map of resolved sc-addrs as parameter
+ */
+function resolveScAddr(idtfList, callback){
+    var arguments = '';
+    for (idx in idtfList){
+        var arg = idtfList[idx];
+        arguments += idx.toString() + '_=' + arg + '&';
+    }
+    
+    $.ajax({
+        type: "GET",
+        url: "api/scAddrs",
+        data: arguments,
+        success: callback
+    });
+}
+
 var id_select_idtf_language = '#select_idtf_language';
 var id_select_output_language = '#select_output_language';
 
@@ -40,6 +61,9 @@ scuiRoot.prototype = {
     
     // test
     arguments: ['0_5', '0_6'],
+    
+    // Registered viewers factory
+    viewerFacctories: {},
     
     // --- initialization of semantic user interface ---
     init:function(options){
@@ -63,6 +87,7 @@ scuiRoot.prototype = {
     
     initControls: function(){
         this.updateIdtfLanguages();
+        // need to wait shile identifiers languages will be filled
         this.updateOutputLanguages();
         
         // identifiers laguage selection
@@ -335,8 +360,42 @@ scuiRoot.prototype = {
                 alert("Get answer");
             }
         });
-     }
+     },
+     
+    /* 
+     * Function load script from specified file on server
+     * 
+     * @param {scriptUrl} Url to script
+     * @param {success} Success callback function (not calls on script loaded, but not executed)
+     * @methodOf {scuiRoot}
+     */
+    loadScript: function(scriptUrl, success){
+        
+        $.ajax({
+            url: scriptUrl,
+            dataType: "script",
+            success: function (script) { alert(script); }
+        });
+        
+        //$.getScript(scriptUrl, function (script, textStatus) { alert(textStatus); });
+    },
 
-    
+    /*
+     * Registers new viewer factory
+     * @param {outLang} sc-addr of supported output language
+     * @param {factory} Function, that return new instance of viewer
+     * @methodOf {scuiRoot}
+     */
+    registerViewerFactory: function(outLang, factory){
+        if (!this.viewerFacctories.hasOwnProperty(outputLanguage)){
+            var list_factories = new Array();
+            list_factories.append(factory);
+            this.viewerFacctories[outLang] = list_factories;
+        }else{
+            this.viewerFacctories[outLang].append(factory);
+        }
+        
+        alert("Registered factory " + factory.toString());
+    }
     
 };

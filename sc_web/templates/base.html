@@ -14,8 +14,12 @@
 	</script>
 
 	<link rel="stylesheet" type="text/css" href="/media/css/ddsmoothmenu.css" />
+	<link rel="stylesheet" type="text/css" href="/media/css/jquery-ui-1.9.2.custom.css" />
 
-	<script type="text/javascript" src="media/js/jquery/jquery-1.8.2.min.js"></script>
+	<script type="text/javascript" src="media/js/jquery/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript" src="media/js/jquery/jquery-ui-1.9.2.custom.min.js"></script>
+	<script type="text/javascript" src="media/js/scui.js"></script>
+	
 	<script type="text/javascript" src="media/js/ddsmoothmenu.js">
 
 	/***********************************************
@@ -26,90 +30,6 @@
 
 	</script>
 
-	<script type="text/javascript">
-
-	
-
-	$.ajax({
-		type: "GET",
-		url: "api/commands",
-		data:{
-		},
-
-            // ajax
-            success : function(mainMenu){
-
-		var menuItems = new Array();
-		// this function parse menu item and return 
-		// html string that represent it. 
-		// It calls recursively for child items
-		function parseMenuItem(item){
-
-			menuItems.push(item.id)
-			var res = '<li><a href="" id="menu_' + item.id + '">' + item.id + '</a>';
-			if (item.hasOwnProperty('childs'))
-			{
-				res += '<ul>'
-				for (idx in item.childs)
-				{
-					var subMenu = item.childs[idx];
-					res += parseMenuItem(subMenu);
-				}
-				res += '</ul>'
-			}
-
-			return res + '</li>'
-		}
-		
-		var menuHtml = '<ul>';
-
-		menuHtml += parseMenuItem(mainMenu) + '</ul>' + '<br style="clear: left"></br>';
-		$(menuHtml).appendTo('#templatemo_menu')
-
-		// resolve identifiers
-		var idtfRequest = 'api/idtf?language=ru'
-		for (idx in menuItems)
-		{
-			var id = menuItems[idx];
-			var arg = parseInt(idx) + 1
-			idtfRequest += "&" + arg.toString() + "_=" + id;
-		}
-
-		$.ajax({
-			type: "GET",
-			url: idtfRequest,
-			data:{
-			},
-
-			// ajax
-			success : function(identifiers){
-				
-				for (idx in menuItems)
-				{
-					var item = menuItems[idx];
-					if (identifiers.hasOwnProperty(item))
-					{
-						$('#menu_' + item).text(identifiers[item]);
-					}					
-				}
-			}
-		});
-		
-		ddsmoothmenu.init({
-			mainmenuid: "templatemo_menu", //menu DIV id
-			orientation: 'h', //Horizontal or vertical menu: Set to "h" or "v"
-			classname: 'ddsmoothmenu', //class added to menu's outer DIV
-			//customtheme: ["#1c5a80", "#18374a"],
-			contentsource: "markup" //"markup" or ["container_id", "path_to_menu_file"]
-			})
-            }
-
-
-        }) ;
-
-
-	</script> 
-
 	{% block head %}{% endblock %}
 </head>
 
@@ -118,11 +38,20 @@
 	<!-- header -->
 	<div id="templatemo_header_wrapper">
 	    <div id="templatemo_header">
-		<div id="site_title"><a href="http://www.ostis.net">IMS<span> OSTIS</span></a></div>
-		<div id="templatemo_menu" class="ddsmoothmenu">
-		    
-		    <br style="clear: left" />
-		</div> <!-- end of templatemo_menu -->
+			<div id="site_title"><a href="http://www.ostis.net">IMS<span> OSTIS</span></a></div>
+            <div id="templatemo_selectors">
+                <select class="combobox" id="select_output_language">
+                    <!-- Options will be inserted on start -->
+                </select>
+                <select class="combobox" id="select_idtf_language">
+                    <!-- Options will be inserted on start -->
+                </select>
+            </div>
+			<div id="templatemo_menu" class="ddsmoothmenu">
+				<!-- there will be placed menu items -->
+				
+				<br style="clear: left" />
+			</div> <!-- end of templatemo_menu -->
 	    </div> <!-- END of header -->
 	</div>
 
@@ -134,31 +63,13 @@
 		</div>
 
 	</div> <!-- END of main -->
-	
 
 
 	<!-- footer -->
 	<div id="templatemo_footer_wrapper">
 		<div id="templatemo_footer">
 	
-		<div class="col col_14">
-			<h5>Pages</h5>
-		    <ul class="footer_list">
-		    	<li><a href="index.html">Home</a></li>
-		        <li><a href="about.html">About</a></li>
-		        <li><a href="portfolio.html">Portfolio</a></li>
-		        <li><a href="blog.html">Blog</a></li>
-		        <li><a href="contact.html">Contact</a></li>
-				</ul>
-		</div>
-		
-		
 		<div class="col col_14 no_margin_right">
-			<h5>Newsletter</h5>
-		    <form action="#" method="get">
-		      <input type="text" value="Subscribe" name="email" id="subemail" title="email" onfocus="clearText(this)" onblur="clearText(this)" class="newsletter_txt" />
-		      <input type="submit" name="Subscribe" value=" Subscribe " alt="Subscribe" id="subscribe_button" title="Subscribe" class="subscribe_button"  />
-		    </form>
 		    <div class="cleaner h30"></div>
 		    Copyright © 2012 <a href="#">OSTIS</a> Designed by <a href="http://www.templatemo.com" target="_parent">Free CSS Templates</a>
 		</div>
@@ -166,6 +77,32 @@
 	    <div class="cleaner"></div>
 	    </div>
 	</div> <!-- END of footer -->
+	
+	
+	<!-- Initialize user interface -->
+	<script type="text/javascript">
+		var _scui = new scuiRoot();
+        
+        _scui._notifyCreated = function(){
+        }
+        _scui["_notifyUpdateMenu"] = function(){
+             ddsmoothmenu.init({
+                mainmenuid: "templatemo_menu", //menu DIV id
+                orientation: 'h', //Horizontal or vertical menu: Set to "h" or "v"
+                classname: 'ddsmoothmenu', //class added to menu's outer DIV
+                //customtheme: ["#1c5a80", "#18374a"],
+                contentsource: "markup" //"markup" or ["container_id", "path_to_menu_file"]
+            })
+        }
+		_scui.init({});
+		
+		// load example extension
+        function example_loaded(script, textStatus){
+            alert(textStatus);
+        }
+        _scui.loadScript("media/js/example/example.js", example_loaded);
+	</script> 
+	
 </body>
 
 </html>
