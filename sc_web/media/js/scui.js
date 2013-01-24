@@ -202,7 +202,7 @@ scuiRoot.prototype = {
                 menuHtml += this.parseMenuItem(subMenu);
             }
         }
-        menuHtml += '</ul>' + '<br style="clear: left"></br>';
+        menuHtml += '</ul>';
         $('#menu_container').append(menuHtml)
 
         this.resolveIdentifiers(this.menuItems, this.applyMenuTranslation, this);
@@ -367,7 +367,7 @@ scuiRoot.prototype = {
             // ajax
             success: function(data){
                 //alert("Get answer");
-                $('#templatemo_main').text(data.toString());
+                $('#answer_container').text(data.toString());
             }
         });
      },

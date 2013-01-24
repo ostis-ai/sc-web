@@ -9,6 +9,7 @@
 	<link rel="stylesheet" type="text/css" href="/media/css/bootstrap/bootstrap-responsive.min.css" />
 	<link rel="stylesheet" type="text/css" href="/media/css/bootstrap/bootstrap.min.css" />
 	<link rel="stylesheet" type="text/css" href="/media/css/bootstrap/bootstrap-multilevel.css" />
+	<link rel="stylesheet" type="text/css" href="/media/css/common.css" />
 
 	<script type="text/javascript" src="media/js/jquery/jquery-1.8.3.min.js"></script>
 	<script type="text/javascript" src="media/js/bootstrap/bootstrap.min.js"></script>
@@ -30,7 +31,7 @@
 			<div id="menu_container">
 				<!-- there will be placed menu items -->				
 			</div>
-			<div class="language_selectors">
+			<div class="language_selectors navbar-form pull-right">
 				<select class="combobox" id="select_output_language">
 					<!-- Options will be inserted on start -->
 				</select>
@@ -43,26 +44,21 @@
 	
 
 	<!-- main content -->
-	<div id="templatemo_main_top"></div>
-		<div id="templatemo_main">
-			{% block content %}{% endblock %}
-			<div class="cleaner"></div>
-		</div>
-
+	<div id="main_container"></div>
+		<ul class="nav nav-tabs">
+			<li class="active">
+				<a href="#">Test</a>
+				<div id="answer_container"></div>
+			</li>
+		</ul>
+		<!--{% block content %}{% endblock %}-->
 	</div> <!-- END of main -->
 
 
 	<!-- footer -->
-	<div id="templatemo_footer_wrapper">
-		<div id="templatemo_footer">
-	
-		<div class="col col_14 no_margin_right">
-		    <div class="cleaner h30"></div>
-		    Copyright © 2012 <a href="#">OSTIS</a> Designed by <a href="http://www.templatemo.com" target="_parent">Free CSS Templates</a>
-		</div>
-		
-	    <div class="cleaner"></div>
-	    </div>
+	<div id="footer">
+		<hr/>
+		Copyright © 2012 <a href="#">OSTIS</a> 
 	</div> <!-- END of footer -->
 	
 	
@@ -79,7 +75,7 @@
         function example_loaded(script, textStatus){
             alert(textStatus);
         }
-        _scui.loadScript("media/js/example/example.js", example_loaded);
+        //_scui.loadScript("media/js/example/example.js", example_loaded);
 	</script> 
 	
 </body>
