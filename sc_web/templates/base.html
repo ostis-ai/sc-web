@@ -5,55 +5,42 @@
 	<title>{{ title }}</title>
 	<link href="/media/css/templatemo_style.css" rel="stylesheet" type="text/css" />
 
-	<script language="javascript" type="text/javascript">
-	function clearText(field)
-	{
-	    if (field.defaultValue == field.value) field.value = '';
-	    else if (field.value == '') field.value = field.defaultValue;
-	}
-	</script>
 
-	<link rel="stylesheet" type="text/css" href="/media/css/ddsmoothmenu.css" />
-	<link rel="stylesheet" type="text/css" href="/media/css/jquery-ui-1.9.2.custom.css" />
+	<link rel="stylesheet" type="text/css" href="/media/css/bootstrap/bootstrap-responsive.min.css" />
+	<link rel="stylesheet" type="text/css" href="/media/css/bootstrap/bootstrap.min.css" />
+	<link rel="stylesheet" type="text/css" href="/media/css/bootstrap/bootstrap-multilevel.css" />
 
 	<script type="text/javascript" src="media/js/jquery/jquery-1.8.3.min.js"></script>
-	<script type="text/javascript" src="media/js/jquery/jquery-ui-1.9.2.custom.min.js"></script>
+	<script type="text/javascript" src="media/js/bootstrap/bootstrap.min.js"></script>
 	<script type="text/javascript" src="media/js/scui.js"></script>
 	
-	<script type="text/javascript" src="media/js/ddsmoothmenu.js">
-
-	/***********************************************
-	* Smooth Navigational Menu- (c) Dynamic Drive DHTML code library (www.dynamicdrive.com)
-	* This notice MUST stay intact for legal use
-	* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
-	***********************************************/
-
-	</script>
-
+	
 	{% block head %}{% endblock %}
 </head>
 
 <body id="home">
 
 	<!-- header -->
-	<div id="templatemo_header_wrapper">
-	    <div id="templatemo_header">
-			<div id="site_title"><a href="http://www.ostis.net">IMS<span> OSTIS</span></a></div>
-            <div id="templatemo_selectors">
-                <select class="combobox" id="select_output_language">
-                    <!-- Options will be inserted on start -->
-                </select>
-                <select class="combobox" id="select_idtf_language">
-                    <!-- Options will be inserted on start -->
-                </select>
-            </div>
-			<div id="templatemo_menu" class="ddsmoothmenu">
-				<!-- there will be placed menu items -->
-				
-				<br style="clear: left" />
-			</div> <!-- end of templatemo_menu -->
-	    </div> <!-- END of header -->
+	<!--<div class="page-header">
+		<h1>IMS<small>OSTIS</small></h1>
+    </div>-->
+	<div class="navbar">
+		<div class="navbar-inner">
+			<a class="brand" href="#">OSTIS</a>
+			<div id="menu_container">
+				<!-- there will be placed menu items -->				
+			</div>
+			<div class="language_selectors">
+				<select class="combobox" id="select_output_language">
+					<!-- Options will be inserted on start -->
+				</select>
+				<select class="combobox" id="select_idtf_language">
+					<!-- Options will be inserted on start -->
+				</select>
+			</div>
+		</div>
 	</div>
+	
 
 	<!-- main content -->
 	<div id="templatemo_main_top"></div>
@@ -85,15 +72,7 @@
         
         _scui._notifyCreated = function(){
         }
-        _scui["_notifyUpdateMenu"] = function(){
-             ddsmoothmenu.init({
-                mainmenuid: "templatemo_menu", //menu DIV id
-                orientation: 'h', //Horizontal or vertical menu: Set to "h" or "v"
-                classname: 'ddsmoothmenu', //class added to menu's outer DIV
-                //customtheme: ["#1c5a80", "#18374a"],
-                contentsource: "markup" //"markup" or ["container_id", "path_to_menu_file"]
-            })
-        }
+        _scui["_notifyUpdateMenu"] = function(){}
 		_scui.init({});
 		
 		// load example extension

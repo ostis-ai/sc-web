@@ -161,9 +161,18 @@ scuiRoot.prototype = {
     parseMenuItem: function(item){
 
         this.menuItems.push(item.id);
-        var res = '<li><div id="' + item.id + '" class="menu_item ' + item.cmd_type + '" >' + item.id + '</div>';
+		var item_class = "dropdown";
+		var res = '';
+		if (item.cmd_type == 'atom'){
+			res = '<li class="' + item_class + '"><a id="' + item.id + '" class="menu_item ' + item.cmd_type + '" >' + item.id + '</a>';
+		}
+		else{
+			res = '<li class="' + item_class + '"><a id="' + item.id + '" class="menu_item ' + item.cmd_type + ' dropdown-toggle" data-toggle="dropdown" href="#" >' + item.id + '</a>';
+		}
+			
+			
         if (item.hasOwnProperty('childs')){
-            res += '<ul>'
+            res += '<ul class="dropdown-menu">'
             for (idx in item.childs){
                 var subMenu = item.childs[idx];
                 res += this.parseMenuItem(subMenu);
@@ -185,7 +194,7 @@ scuiRoot.prototype = {
             delete menuItems;
             
         this.menuItems = new Array();       
-        var menuHtml = '<ul>';
+        var menuHtml = '<ul class="nav">';
 
         if (mainMenu.hasOwnProperty('childs')){
             for (idx in mainMenu.childs){
@@ -194,7 +203,7 @@ scuiRoot.prototype = {
             }
         }
         menuHtml += '</ul>' + '<br style="clear: left"></br>';
-        $('#templatemo_menu').append(menuHtml)
+        $('#menu_container').append(menuHtml)
 
         this.resolveIdentifiers(this.menuItems, this.applyMenuTranslation, this);
         
