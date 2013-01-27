@@ -15,7 +15,7 @@
 	<script type="text/javascript" src="media/js/jquery/jquery.namespace.js"></script>
 	<script type="text/javascript" src="media/js/bootstrap/bootstrap.min.js"></script>
 	<script type="text/javascript" src="media/js/scui.js"></script>
-	<script type="text/javascript" src="media/js/sc-web-core.js"></script>
+{#	<script type="text/javascript" src="media/js/sc-web-core.js"></script>#}
 
 	
 	{% block head %}{% endblock %}
@@ -67,18 +67,18 @@
 	<!-- Initialize user interface -->
 	<script type="text/javascript">
 		var _scui = new scuiRoot();
-        
+
         _scui._notifyCreated = function(){
         }
         _scui["_notifyUpdateMenu"] = function(){}
 		_scui.init({});
-		
+
 		// load example extension
         function example_loaded(script, textStatus){
             alert(textStatus);
         }
         //_scui.loadScript("media/js/example/example.js", example_loaded);
-	</script> 
+	</script>
 	
 </body>
 
