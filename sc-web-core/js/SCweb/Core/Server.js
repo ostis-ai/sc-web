@@ -31,6 +31,7 @@ SCWeb.core.Server = {
             data += '&' + index + '=' + id;
         }
 
+        //TODO: change to POST because the data may reach the limit of GET parameters string
         $.ajax({
             type: 'GET',
             url: 'api/idtf',

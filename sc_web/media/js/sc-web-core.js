@@ -2,10 +2,18 @@ $.namespace('SCWeb.core');
 
 SCWeb.core.Main = {
     init: function() {
-        console.log('core init');
-        SCWeb.core.ui.Menu.init();
-        SCWeb.core.ui.IdentifiersLanguages.init();
-        SCWeb.core.ui.OutputLanguages.init();
+        this._initUI();
+    },
+
+    _initUI: function() {
+        SCWeb.core.ui.Menu.init(function() {
+            SCWeb.core.ui.IdentifiersLanguages.init(function() {
+                SCWeb.core.ui.OutputLanguages.init(function() {
+                    var language = SCWeb.core.ui.IdentifiersLanguages.getLanguage();
+                    SCWeb.core.Translation.translate(language);
+                });
+            });
+        });
     }
 };
 
@@ -46,6 +54,7 @@ SCWeb.core.Server = {
             data += '&' + index + '=' + id;
         }
 
+        //TODO: change to POST because the data may reach the limit of GET parameters string
         $.ajax({
             type: 'GET',
             url: 'api/idtf',
@@ -142,12 +151,22 @@ SCWeb.core.ui.IdentifiersLanguages = {
     _menuId: 'select_idtf_language',
     _languages: null,
 
-    init: function() {
-        this.update();
+    init: function(callback) {
+        this.update(callback);
     },
 
-    update: function() {
-        SCWeb.core.Server.getIdentifierLanguages($.proxy(this._updateLanguages, this));
+    update: function(callback) {
+        var me = this;
+        SCWeb.core.Server.getIdentifierLanguages(function(languages) {
+            me._updateLanguages(languages);
+            if(callback) {
+                callback();
+            }
+        });
+    },
+
+    getLanguage: function(){
+        return $('#' + this._menuId +' :selected').val();
     },
 
     _updateLanguages: function(languages) {
@@ -170,14 +189,12 @@ SCWeb.core.ui.IdentifiersLanguages = {
 
         this._registerMenuHandler();
 
-        //TODO: decide how to treat ajax query
-        SCWeb.core.Translation.translate('0_60');
     },
 
     _registerMenuHandler: function() {
         var me = this;
         $('#' + this._menuId).change(function() {
-                var language = $('#' + me._menuId +' :selected').val();
+                var language = me.getLanguage();
                 SCWeb.core.Translation.translate(language);
             }
         );
@@ -189,8 +206,14 @@ SCWeb.core.ui.Menu= {
     _menuContainerId: 'menu_container',
     _items: null,
 
-    init: function() {
-        SCWeb.core.Server.getCommands($.proxy(this._build, this));
+    init: function(callback) {
+        var me = this;
+        SCWeb.core.Server.getCommands(function(menuData) {
+            me._build(menuData);
+            if(callback) {
+                callback();
+            }
+        });
     },
 
     _build: function(menuData) {
@@ -216,9 +239,6 @@ SCWeb.core.ui.Menu= {
 
         SCWeb.core.Translation.addIdentifiers(this._items);
         SCWeb.core.Translation.addContainer(this._menuContainerId);
-
-        //TODO: decide how to treat ajax query
-        SCWeb.core.Translation.translate('0_60');
 
         this._registerMenuHandler();
     },
@@ -261,12 +281,18 @@ SCWeb.core.ui.OutputLanguages = {
     _menuId: 'select_output_language',
     _languages: null,
 
-    init: function() {
-        this.update();
+    init: function(callback) {
+        this.update(callback);
     },
 
-    update: function() {
-        SCWeb.core.Server.getOutputLanguages($.proxy(this._updateLanguages, this));
+    update: function(callback) {
+        var me = this;
+        SCWeb.core.Server.getOutputLanguages(function(languages) {
+            me._updateLanguages(languages);
+            if(callback) {
+                callback();
+            }
+        });
     },
 
     getLanguage: function(){
@@ -291,8 +317,6 @@ SCWeb.core.ui.OutputLanguages = {
         SCWeb.core.Translation.addIdentifiers(this._languages);
         SCWeb.core.Translation.addContainer(this._menuId);
 
-        //TODO: decide how to treat ajax query
-        SCWeb.core.Translation.translate('0_60');
     }
 };
 

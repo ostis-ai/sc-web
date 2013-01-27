@@ -1,6 +1,17 @@
 SCWeb.core.Main = {
     init: function() {
-        console.log('core init');
+        this._initUI();
+    },
+
+    _initUI: function() {
+        SCWeb.core.ui.Menu.init(function() {
+            SCWeb.core.ui.IdentifiersLanguages.init(function() {
+                SCWeb.core.ui.OutputLanguages.init(function() {
+                    var language = SCWeb.core.ui.IdentifiersLanguages.getLanguage();
+                    SCWeb.core.Translation.translate(language);
+                });
+            });
+        });
     }
 };
 

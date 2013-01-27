@@ -2,8 +2,14 @@ SCWeb.core.ui.Menu= {
     _menuContainerId: 'menu_container',
     _items: null,
 
-    init: function() {
-        SCWeb.core.Server.getCommands($.proxy(this._build, this));
+    init: function(callback) {
+        var me = this;
+        SCWeb.core.Server.getCommands(function(menuData) {
+            me._build(menuData);
+            if(callback) {
+                callback();
+            }
+        });
     },
 
     _build: function(menuData) {
@@ -29,9 +35,6 @@ SCWeb.core.ui.Menu= {
 
         SCWeb.core.Translation.addIdentifiers(this._items);
         SCWeb.core.Translation.addContainer(this._menuContainerId);
-
-        //TODO: decide how to treat ajax query
-        SCWeb.core.Translation.translate('0_60');
 
         this._registerMenuHandler();
     },
