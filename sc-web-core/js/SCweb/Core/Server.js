@@ -25,9 +25,9 @@ SCWeb.core.Server = {
         var id;
         var index;
         var i;
-        for(i=0; i < identifiers.length; i++) {
+        for(i = 0; i < identifiers.length; i++) {
             id = identifiers[i];
-            index = (i+1) + '_';
+            index = (i + 1) + '_';
             data += '&' + index + '=' + id;
         }
 

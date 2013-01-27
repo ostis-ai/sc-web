@@ -16,8 +16,8 @@ SCWeb.core.ui.IdentifiersLanguages = {
         });
     },
 
-    getLanguage: function(){
-        return $('#' + this._menuId +' :selected').val();
+    getLanguage: function() {
+        return $('#' + this._menuId + ' :selected').val();
     },
 
     _updateLanguages: function(languages) {
@@ -29,7 +29,7 @@ SCWeb.core.ui.IdentifiersLanguages = {
         var language;
         for(i = 0; i < languages.length; i++) {
             language = languages[i];
-            dropdownHtml += '<option value="' + language + '"' + 'id="idtf_lang_' + language + '" data-sc-addr="'+ language + '">' + language + '</option>';
+            dropdownHtml += '<option value="' + language + '"' + 'id="idtf_lang_' + language + '" data-sc-addr="' + language + '">' + language + '</option>';
             this._languages.push(language);
         }
 
@@ -47,7 +47,6 @@ SCWeb.core.ui.IdentifiersLanguages = {
         $('#' + this._menuId).change(function() {
                 var language = me.getLanguage();
                 SCWeb.core.Translation.translate(language);
-            }
-        );
+            });
     }
 };

@@ -6,11 +6,14 @@ SCWeb.core.Main = {
     },
 
     _initUI: function() {
+        SCWeb.core.ui.Locker.show();
         SCWeb.core.ui.Menu.init(function() {
             SCWeb.core.ui.IdentifiersLanguages.init(function() {
                 SCWeb.core.ui.OutputLanguages.init(function() {
                     var language = SCWeb.core.ui.IdentifiersLanguages.getLanguage();
-                    SCWeb.core.Translation.translate(language);
+                    SCWeb.core.Translation.translate(language, function() {
+                        SCWeb.core.ui.Locker.hide();
+                    });
                 });
             });
         });
@@ -48,9 +51,9 @@ SCWeb.core.Server = {
         var id;
         var index;
         var i;
-        for(i=0; i < identifiers.length; i++) {
+        for(i = 0; i < identifiers.length; i++) {
             id = identifiers[i];
-            index = (i+1) + '_';
+            index = (i + 1) + '_';
             data += '&' + index + '=' + id;
         }
 
@@ -104,7 +107,8 @@ SCWeb.core.Translation = {
         for(i = 0; i < identifiers.length; i++) {
             id = identifiers[i];
             if(this._identifiers.indexOf(id) === -1) {
-                this._identifiers.push(id);            }
+                this._identifiers.push(id);
+            }
         }
     },
 
@@ -119,9 +123,16 @@ SCWeb.core.Translation = {
     /**
      *
      * @param {String} language
+     * @param {Function} callback (optional)
      */
-    translate: function(language) {
-        SCWeb.core.Server.resolveIdentifiers(this._identifiers, language, $.proxy(this._applyTranslation, this));
+    translate: function(language, callback) {
+        var me = this;
+        SCWeb.core.Server.resolveIdentifiers(this._identifiers, language, function(namesMap) {
+            me._applyTranslation(namesMap);
+            if(callback) {
+                callback();
+            }
+        });
     },
 
     /**
@@ -165,8 +176,8 @@ SCWeb.core.ui.IdentifiersLanguages = {
         });
     },
 
-    getLanguage: function(){
-        return $('#' + this._menuId +' :selected').val();
+    getLanguage: function() {
+        return $('#' + this._menuId + ' :selected').val();
     },
 
     _updateLanguages: function(languages) {
@@ -178,7 +189,7 @@ SCWeb.core.ui.IdentifiersLanguages = {
         var language;
         for(i = 0; i < languages.length; i++) {
             language = languages[i];
-            dropdownHtml += '<option value="' + language + '"' + 'id="idtf_lang_' + language + '" data-sc-addr="'+ language + '">' + language + '</option>';
+            dropdownHtml += '<option value="' + language + '"' + 'id="idtf_lang_' + language + '" data-sc-addr="' + language + '">' + language + '</option>';
             this._languages.push(language);
         }
 
@@ -196,13 +207,28 @@ SCWeb.core.ui.IdentifiersLanguages = {
         $('#' + this._menuId).change(function() {
                 var language = me.getLanguage();
                 SCWeb.core.Translation.translate(language);
-            }
-        );
+            });
     }
 };
 
 
-SCWeb.core.ui.Menu= {
+SCWeb.core.ui.Locker = {
+    _locker: null,
+
+    show: function() {
+        if(!this._locker) {
+            this._locker = $('<div id="uilocker"></div>').appendTo('body');
+        }
+        this._locker.addClass('shown');
+    },
+
+    hide: function() {
+        this._locker.removeClass('shown');
+    }
+};
+
+
+SCWeb.core.ui.Menu = {
     _menuContainerId: 'menu_container',
     _items: null,
 
@@ -223,11 +249,11 @@ SCWeb.core.ui.Menu= {
         var menuHtml = '<ul class="nav">';
 
         //TODO: change to children, remove intermediate 'childs'
-        if (menuData.hasOwnProperty('childs')){
+        if(menuData.hasOwnProperty('childs')) {
             var id;
             var subMenu;
             var i;
-            for(i=0; i < menuData.childs.length; i++) {
+            for(i = 0; i < menuData.childs.length; i++) {
                 subMenu = menuData.childs[i];
                 menuHtml += this._parseMenuItem(subMenu);
             }
@@ -249,19 +275,19 @@ SCWeb.core.ui.Menu= {
 
         var item_class = 'dropdown';
         var itemHtml = '';
-        if (item.cmd_type == 'atom'){
+        if(item.cmd_type == 'atom') {
             itemHtml = '<li class="' + item_class + '"><a id="' + item.id + '"data-sc-addr="' + item.id + '" class="menu_item ' + item.cmd_type + '" >' + item.id + '</a>';
-        } else{
+        } else {
             itemHtml = '<li class="' + item_class + '"><a id="' + item.id + '"data-sc-addr="' + item.id + '" class="menu_item ' + item.cmd_type + ' dropdown-toggle" data-toggle="dropdown" href="#" >' + item.id + '</a>';
         }
 
 
-        if (item.hasOwnProperty('childs')){
+        if(item.hasOwnProperty('childs')) {
             itemHtml += '<ul class="dropdown-menu">';
             var id;
             var subMenu;
             var i;
-            for(i=0; i < item.childs.length; i++) {
+            for(i = 0; i < item.childs.length; i++) {
                 subMenu = item.childs[i];
                 itemHtml += this._parseMenuItem(subMenu);
             }
@@ -295,8 +321,8 @@ SCWeb.core.ui.OutputLanguages = {
         });
     },
 
-    getLanguage: function(){
-        return $('#' + this._menuId +' :selected').val();
+    getLanguage: function() {
+        return $('#' + this._menuId + ' :selected').val();
     },
 
     _updateLanguages: function(languages) {
@@ -308,7 +334,7 @@ SCWeb.core.ui.OutputLanguages = {
         var language;
         for(i = 0; i < languages.length; i++) {
             language = languages[i];
-            dropdownHtml += '<option value="' + language + '"' + 'id="output_lang_' + language + '" data-sc-addr="'+ language + '">' + language + '</option>';
+            dropdownHtml += '<option value="' + language + '"' + 'id="output_lang_' + language + '" data-sc-addr="' + language + '">' + language + '</option>';
             this._languages.push(language);
         }
 

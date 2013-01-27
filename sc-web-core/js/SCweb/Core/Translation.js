@@ -12,7 +12,8 @@ SCWeb.core.Translation = {
         for(i = 0; i < identifiers.length; i++) {
             id = identifiers[i];
             if(this._identifiers.indexOf(id) === -1) {
-                this._identifiers.push(id);            }
+                this._identifiers.push(id);
+            }
         }
     },
 
@@ -27,9 +28,16 @@ SCWeb.core.Translation = {
     /**
      *
      * @param {String} language
+     * @param {Function} callback (optional)
      */
-    translate: function(language) {
-        SCWeb.core.Server.resolveIdentifiers(this._identifiers, language, $.proxy(this._applyTranslation, this));
+    translate: function(language, callback) {
+        var me = this;
+        SCWeb.core.Server.resolveIdentifiers(this._identifiers, language, function(namesMap) {
+            me._applyTranslation(namesMap);
+            if(callback) {
+                callback();
+            }
+        });
     },
 
     /**

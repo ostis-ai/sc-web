@@ -16,8 +16,8 @@ SCWeb.core.ui.OutputLanguages = {
         });
     },
 
-    getLanguage: function(){
-        return $('#' + this._menuId +' :selected').val();
+    getLanguage: function() {
+        return $('#' + this._menuId + ' :selected').val();
     },
 
     _updateLanguages: function(languages) {
@@ -29,7 +29,7 @@ SCWeb.core.ui.OutputLanguages = {
         var language;
         for(i = 0; i < languages.length; i++) {
             language = languages[i];
-            dropdownHtml += '<option value="' + language + '"' + 'id="output_lang_' + language + '" data-sc-addr="'+ language + '">' + language + '</option>';
+            dropdownHtml += '<option value="' + language + '"' + 'id="output_lang_' + language + '" data-sc-addr="' + language + '">' + language + '</option>';
             this._languages.push(language);
         }
 
