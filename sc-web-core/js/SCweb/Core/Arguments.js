@@ -34,9 +34,10 @@ SCWeb.core.Arguments = {
     
     /**
      * Remove argument by specified index
-     * @param {} idx Index of argument to remove
+     * @param {Number} idx Index of argument to remove
      */
     removeArgumentByIndex: function(idx) {
+        
         if (idx < this._arguments.length) {
             var arg = this._arguments[idx];
             this._arguments.splice(idx, 1);
@@ -67,7 +68,7 @@ SCWeb.core.Arguments = {
     /** 
      * Notify listener on argument added
      * @param {String} argument Argument, that was added
-     * * @param {Integer} Index of added argument
+     * * @param {Number} Index of added argument
      */
     _fireArgumentAppended: function(argument, idx) {
         if (this._listener != null) {
@@ -78,7 +79,7 @@ SCWeb.core.Arguments = {
     /**
      * Notify listener on argument removed
      * @param {String} argument Argument, that was removed
-     * @param {Integer} Index of removed argument
+     * @param {Number} Index of removed argument
      */
     _fireArgumentRemoved: function(argument, idx) {
         if (this._listener != null) {

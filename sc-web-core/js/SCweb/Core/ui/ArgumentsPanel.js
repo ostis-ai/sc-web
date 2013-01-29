@@ -10,23 +10,36 @@ SCWeb.core.ui.ArgumentsPanel = {
             SCWeb.core.Arguments.clear();
         });
         
+        $(document).on("click", ".arguments_item", function(event) {
+            var idx = $(this).attr('arg_idx');
+            SCWeb.core.Arguments.removeArgumentByIndex(parseInt(idx));
+        });
+        
         if (callback)
             callback();
     },
     
     // ------- Arguments listener interface -----------
     argumentAppended: function (argument, idx) {
-        var new_button = '<button class="btn arguments_item" sc_addr="' + argument + '" arg_idx="' + idx.toString() + '">' + argument + '</button>';
+        var idx_str = idx.toString();
+        var new_button = '<button class="btn arguments_item" sc_addr="' + argument + '" arg_idx="' + idx_str + '" id="argument_' + idx_str + '">' + argument + '</button>';
         $(this._container).append(new_button);
         
-        $(this._container + ' [arg_idx]').click(function () {
-            var idx = $(this).attr('arg_idx');
-            SCWeb.core.Arguments.removeArgumentByIndex(parseInt(idx));
-        });
+        
     },
     
     argumentRemoved: function(argument, idx) {
-        $(this._container + ' [arg_idx]').remove();
+        $('#argument_' + idx.toString()).remove();
+        // update indicies
+        $(this._container + ' [arg_idx]').each(function (index, element) {
+            var v = parseInt($(this).attr('arg_idx'));
+
+            if (v > idx) {
+                v = v - 1;
+                $(this).attr('arg_idx', v.toString());
+                $(this).attr('id', 'argument_' + v.toString());
+            }
+        });
     },
      
     argumentsCleared: function() {

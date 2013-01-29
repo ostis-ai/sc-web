@@ -53,7 +53,7 @@ SCWeb.core.ui.IdentifiersLanguages = {
     // ---------- Translation listener interface ------------
     updateTranslation: function(namesMap) {
         // apply translation
-        $('#select_idtf_language [sc_addr]').each(function(index, element) {
+        $('#' + this._menuId + ' [sc_addr]').each(function(index, element) {
             var addr = $(element).attr('sc_addr');
             if(namesMap[addr]) {
                 $(element).text(namesMap[addr]);
