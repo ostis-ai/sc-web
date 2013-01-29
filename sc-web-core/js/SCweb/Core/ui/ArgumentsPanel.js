@@ -5,6 +5,7 @@ SCWeb.core.ui.ArgumentsPanel = {
         SCWeb.core.Translation.registerListener(this);
         
         SCWeb.core.Arguments.setListener(this);
+        SCWeb.core.Translation.registerListener(this);
         
         $('#arguments_clear_button').click(function () {
             SCWeb.core.Arguments.clear();
@@ -22,9 +23,18 @@ SCWeb.core.ui.ArgumentsPanel = {
     // ------- Arguments listener interface -----------
     argumentAppended: function (argument, idx) {
         var idx_str = idx.toString();
-        var new_button = '<button class="btn arguments_item" sc_addr="' + argument + '" arg_idx="' + idx_str + '" id="argument_' + idx_str + '">' + argument + '</button>';
-        $(this._container).append(new_button);
+        var self = this;
         
+         // translate added command
+        SCWeb.core.Translation.translate([argument], null, function(namesMap) {
+            var value = argument;
+            if (namesMap[argument]) {
+                value = namesMap[argument];
+            }
+            
+            var new_button = '<button class="btn arguments_item" sc_addr="' + argument + '" arg_idx="' + idx_str + '" id="argument_' + idx_str + '">' + value + '</button>';
+            $(self._container).append(new_button);
+        });
         
     },
     

@@ -31,7 +31,7 @@ SCWeb.core.Translation = {
      * @param {String} sc-addr of new identifiers language 
      */
     languageChanged: function(language) {
-        current_language = language;
+        this.current_language = language;
          
         // collect objects, that need to be translated
         var objects = [];
@@ -61,7 +61,7 @@ SCWeb.core.Translation = {
     translate: function(objects, language, callback) {
         var lang = language;
         
-        if (language == null)
+        if (!language)
             lang = this.current_language;
         
         SCWeb.core.Server.resolveIdentifiers(objects, lang, function(namesMap) {
