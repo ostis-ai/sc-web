@@ -77,12 +77,18 @@ SCWeb.core.ui.Menu = {
             }else{
             
                 if ($(this).hasClass('cmd_atom')) {
-                    //scuiRoot().doCommand(this.id);
+                    
                     var output_lang = SCWeb.core.ui.OutputLanguages.getLanguage();
-                    var arguments_list = SCWeb.core.Arguments._arguments;
-                    SCWeb.core.Server.doCommand(sc_addr, output_lang, arguments_list, function(data) {
-                        alert("recieve: " + data.toString());
-                    });
+                    
+                    if (!output_lang) {
+                        alert("There are no any output language selected");
+                    }else{
+                    
+                        var arguments_list = SCWeb.core.Arguments._arguments;
+                        SCWeb.core.Server.doCommand(sc_addr, output_lang, arguments_list, function(data) {
+                            alert("recieve: " + data.toString());
+                        });
+                    }
                 }
             }
         });

@@ -89,4 +89,25 @@ SCWeb.core.Server = {
             success: callback
         });
     },
+    
+    /**
+     * Function that resolve sc-addrs for specified sc-elements by their system identifiers
+     * @param {identifiers} List of system identifiers, that need to be resolved
+     * @param {callback} Callback function that calls, when sc-addrs resovled. It
+     * takes object that contains map of resolved sc-addrs as parameter
+     */
+    resolveScAddr: function(idtfList, callback){
+        var arguments = '';
+        for (i = 0; i < idtfList.length; i++){
+            var arg = idtfList[i];
+            arguments += i.toString() + '_=' + arg + '&';
+        }
+        
+        $.ajax({
+            type: "GET",
+            url: "api/scAddrs",
+            data: arguments,
+            success: callback
+        });
+    }
 };

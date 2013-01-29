@@ -5,6 +5,7 @@ SCWeb.core.ui.OutputLanguages = {
     init: function(callback) {
         this.update(callback);
         SCWeb.core.Translation.registerListener(this);
+        SCWeb.core.ComponentManager.setListener(this);
     },
 
     update: function(callback) {
@@ -21,20 +22,31 @@ SCWeb.core.ui.OutputLanguages = {
         return $('#' + this._menuId + ' :selected').val();
     },
 
+    /**
+     * Appends language into selection control
+     */
+    _appendLanguageToControl: function(language) {
+        
+        
+        $('#' + this._menuId).append(
+            '<option value="' + language + '"' + 'id="output_lang_' + language + '" sc_addr="' + language + '">' + language + '</option>'
+        );
+    },
+
     _updateLanguages: function(languages) {
         this._languages = [];
 
-        var dropdownHtml = '';
-
-        var i;
         var language;
-        for(i = 0; i < languages.length; i++) {
+        for(var i = 0; i < languages.length; i++) {
+            
             language = languages[i];
-            dropdownHtml += '<option value="' + language + '"' + 'id="output_lang_' + language + '" sc_addr="' + language + '">' + language + '</option>';
             this._languages.push(language);
+            // do not appen languages, that haven't viewers
+            if (!SCWeb.core.ComponentManager.checkViewer(language))
+                continue;
+            
+            this._appendLanguageToControl(language);
         }
-
-        $('#' + this._menuId).append(dropdownHtml);
 
     },
     
@@ -54,5 +66,17 @@ SCWeb.core.ui.OutputLanguages = {
      */
     getObjectsToTranslate: function() {
         return this._languages;
+    },
+    
+    // ----------- Component listener ----------------
+    componentRegistered: function(compDescr) {
+        var sc_addr = compDescr.outputLangAddr;
+        if (sc_addr) {
+            this._appendLanguageToControl(sc_addr);
+        }
+    },
+    
+    componentUnregistered: function(compDescr) {
+        
     }
 };

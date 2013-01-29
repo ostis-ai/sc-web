@@ -12,7 +12,9 @@ SCWeb.core.Main = {
             SCWeb.core.ui.OutputLanguages.init(function() {
                 SCWeb.core.ui.IdentifiersLanguages.init(function() {
                     SCWeb.core.ui.ArgumentsPanel.init(function() {
-                        SCWeb.core.ui.Locker.hide();
+                        SCWeb.core.ComponentManager.init(function() {
+                            SCWeb.core.ui.Locker.hide();
+                        });
                     });
                 });
             });
