@@ -4,6 +4,7 @@ SCWeb.core.ui.OutputLanguages = {
 
     init: function(callback) {
         this.update(callback);
+        SCWeb.core.Translation.registerListener(this);
     },
 
     update: function(callback) {
@@ -29,14 +30,29 @@ SCWeb.core.ui.OutputLanguages = {
         var language;
         for(i = 0; i < languages.length; i++) {
             language = languages[i];
-            dropdownHtml += '<option value="' + language + '"' + 'id="output_lang_' + language + '" data-sc-addr="' + language + '">' + language + '</option>';
+            dropdownHtml += '<option value="' + language + '"' + 'id="output_lang_' + language + '" sc_addr="' + language + '">' + language + '</option>';
             this._languages.push(language);
         }
 
         $('#' + this._menuId).append(dropdownHtml);
 
-        SCWeb.core.Translation.addIdentifiers(this._languages);
-        SCWeb.core.Translation.addContainer(this._menuId);
-
+    },
+    
+    // ---------- Translation listener interface ------------
+    updateTranslation: function(namesMap) {
+        // apply translation
+        $('#select_output_language [sc_addr]').each(function(index, element) {
+            var addr = $(element).attr('sc_addr');
+            if(namesMap[addr]) {
+                $(element).text(namesMap[addr]);
+            }
+        });
+    },
+    
+    /**
+     * @return Returns list obj sc-elements that need to be translated
+     */
+    getObjectsToTranslate: function() {
+        return this._languages;
     }
 };

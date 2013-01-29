@@ -1,61 +1,72 @@
 SCWeb.core.Translation = {
-    _identifiers: [],
-    _containers: [],
-
-    /**
-     *
-     * @param {Array} identifiers
+    
+    current_language: null,
+    listeners: [],
+    
+    /** 
+     * @param {Object} listener Listener object that will be notified on translation.
+     * It must has two functions:
+     * - getObjectsToTranslate() - funciton returns array of sc-addrs, that need to be 
+     * translated
+     * - updateTranslation(identifiers) - fucntion, that calls when translation finished,
+     * and notify, that view must be updated
      */
-    addIdentifiers: function(identifiers) {
-        var i;
-        var id;
-        for(i = 0; i < identifiers.length; i++) {
-            id = identifiers[i];
-            if(this._identifiers.indexOf(id) === -1) {
-                this._identifiers.push(id);
-            }
+    registerListener: function(listener) {
+        if (this.listeners.indexOf(listener) == -1) {
+            this.listeners.push(listener);
         }
     },
-
+    
     /**
-     *
-     * @param {String} containerId
+     * @param {Object} listener Listener objects that need to be unregistered
      */
-    addContainer: function(containerId) {
-        this._containers.push(containerId);
+    unregisterListener: function(listener) {
+        var idx = this.listeners.indexOf(listener);
+        if (idx >= 0) {
+            this.listeners.splice(idx, 1);
+        }
     },
-
+    
     /**
-     *
-     * @param {String} language
-     * @param {Function} callback (optional)
+     * @param {String} sc-addr of new identifiers language 
      */
-    translate: function(language, callback) {
-        var me = this;
-        SCWeb.core.Server.resolveIdentifiers(this._identifiers, language, function(namesMap) {
-            me._applyTranslation(namesMap);
-            if(callback) {
-                callback();
+    languageChanged: function(language) {
+        current_language = language;
+         
+        // collect objects, that need to be translated
+        var objects = [];
+        for (var i = 0; i < this.listeners.length; i++) {
+            objects = objects.concat(this.listeners[i].getObjectsToTranslate());
+        }
+        
+        // @todo need to remove duplicates from object list
+        // translate
+        var self = this;
+        this.translate(objects, language, function(namesMap) {
+            // notify listeners for new translations
+            for (var i = 0; i < self.listeners.length; i++) {
+                self.listeners[i].updateTranslation(namesMap);
             }
+        });
+        
+     },
+      
+    /**
+     * @param {Array} objects List of sc-addrs, that need to be translated
+     * @param {String} language It it value is null, then current language used
+     * @return Return object, that contains [key, value], where 
+     * key is sc-addr of element and value is identifier.
+     * If there are no key in returned object, then identifier wasn't found
+     */
+    translate: function(objects, language, callback) {
+        var lang = language;
+        
+        if (language == null)
+            lang = this.current_language;
+        
+        SCWeb.core.Server.resolveIdentifiers(objects, lang, function(namesMap) {
+            callback(namesMap);
         });
     },
 
-    /**
-     *
-     * @param {Object} namesMap
-     */
-    _applyTranslation: function(namesMap) {
-        var containerId;
-        var i;
-        var id;
-        for(i = 0; i < this._containers.length; i++) {
-            containerId = this._containers[i];
-            $('#' + containerId + ' [data-sc-addr]').each(function(index, element) {
-                id = $(element).data('sc-addr');
-                if(namesMap[id]) {
-                    $(element).text(namesMap[id]);
-                }
-            });
-        }
-    }
 };

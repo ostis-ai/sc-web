@@ -415,7 +415,7 @@ def scAddrs(request):
 		idx = 0
 		while first or (arg is not None):
 			arg_str = u'%d_' % idx
-			arg = ScAddr.parse_from_string(request.GET.get(arg_str, None))
+			arg = request.GET.get(arg_str, None)
 			if arg is not None:
 				arguments.append(arg)
 			first = False
@@ -423,9 +423,9 @@ def scAddrs(request):
 		
 		res = {}
 		for idtf in arguments:
-			addr = sctp_client.find_element_by_system_identifier(idtf)
+			addr = sctp_client.find_element_by_system_identifier(str(idtf))
 			if addr is not None:
-				res[idtf] = addr
+				res[idtf] = addr.to_id()
 		
 		result = json.dumps(res)
 		

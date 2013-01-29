@@ -4,6 +4,7 @@ SCWeb.core.ui.IdentifiersLanguages = {
 
     init: function(callback) {
         this.update(callback);
+        SCWeb.core.Translation.registerListener(this);
     },
 
     update: function(callback) {
@@ -29,14 +30,13 @@ SCWeb.core.ui.IdentifiersLanguages = {
         var language;
         for(i = 0; i < languages.length; i++) {
             language = languages[i];
-            dropdownHtml += '<option value="' + language + '"' + 'id="idtf_lang_' + language + '" data-sc-addr="' + language + '">' + language + '</option>';
+            dropdownHtml += '<option value="' + language + '"' + 'id="idtf_lang_' + language + '" sc_addr="' + language + '">' + language + '</option>';
             this._languages.push(language);
         }
 
         $('#' + this._menuId).append(dropdownHtml);
 
-        SCWeb.core.Translation.addIdentifiers(this._languages);
-        SCWeb.core.Translation.addContainer(this._menuId);
+        SCWeb.core.Translation.languageChanged(this.getLanguage());        
 
         this._registerMenuHandler();
 
@@ -46,7 +46,26 @@ SCWeb.core.ui.IdentifiersLanguages = {
         var me = this;
         $('#' + this._menuId).change(function() {
                 var language = me.getLanguage();
-                SCWeb.core.Translation.translate(language);
+                SCWeb.core.Translation.languageChanged(language);
             });
+    },
+    
+    // ---------- Translation listener interface ------------
+    updateTranslation: function(namesMap) {
+        // apply translation
+        $('#select_idtf_language [sc_addr]').each(function(index, element) {
+            var addr = $(element).attr('sc_addr');
+            if(namesMap[addr]) {
+                $(element).text(namesMap[addr]);
+            }
+        });
+        
+    },
+    
+    /**
+     * @return Returns list obj sc-elements that need to be translated
+     */
+    getObjectsToTranslate: function() {
+        return this._languages;
     }
 };

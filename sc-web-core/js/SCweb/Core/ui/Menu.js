@@ -4,6 +4,10 @@ SCWeb.core.ui.Menu = {
 
     init: function(callback) {
         var me = this;
+        
+        // register for translation updates
+        SCWeb.core.Translation.registerListener(this);
+        
         SCWeb.core.Server.getCommands(function(menuData) {
             me._build(menuData);
             if(callback) {
@@ -33,9 +37,6 @@ SCWeb.core.ui.Menu = {
 
         $('#' + this._menuContainerId).append(menuHtml);
 
-        SCWeb.core.Translation.addIdentifiers(this._items);
-        SCWeb.core.Translation.addContainer(this._menuContainerId);
-
         this._registerMenuHandler();
     },
 
@@ -46,9 +47,9 @@ SCWeb.core.ui.Menu = {
         var item_class = 'dropdown';
         var itemHtml = '';
         if(item.cmd_type == 'atom') {
-            itemHtml = '<li class="' + item_class + '"><a id="' + item.id + '"data-sc-addr="' + item.id + '" class="menu_item ' + item.cmd_type + '" >' + item.id + '</a>';
+            itemHtml = '<li class="' + item_class + '"><a id="' + item.id + '"sc_addr="' + item.id + '" class="menu_item ' + item.cmd_type + '" >' + item.id + '</a>';
         } else {
-            itemHtml = '<li class="' + item_class + '"><a id="' + item.id + '"data-sc-addr="' + item.id + '" class="menu_item ' + item.cmd_type + ' dropdown-toggle" data-toggle="dropdown" href="#" >' + item.id + '</a>';
+            itemHtml = '<li class="' + item_class + '"><a id="' + item.id + '"sc_addr="' + item.id + '" class="menu_item ' + item.cmd_type + ' dropdown-toggle" data-toggle="dropdown" href="#" >' + item.id + '</a>';
         }
 
 
@@ -70,5 +71,24 @@ SCWeb.core.ui.Menu = {
 //        $('.cmd_atom').click(function() {
 //            scuiRoot().doCommand(this.id);
 //        });
+    },
+    
+    // ---------- Translation listener interface ------------
+    updateTranslation: function(namesMap) {
+        // apply translation
+        $('#menu_container [sc_addr]').each(function(index, element) {
+            var addr = $(element).attr('sc_addr');
+            if(namesMap[addr]) {
+                $(element).text(namesMap[addr]);
+            }
+        });
+        
+    },
+    
+    /**
+     * @return Returns list obj sc-elements that need to be translated
+     */
+    getObjectsToTranslate: function() {
+        return this._items;
     }
 };

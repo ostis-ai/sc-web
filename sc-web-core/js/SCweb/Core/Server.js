@@ -36,7 +36,9 @@ SCWeb.core.Server = {
             type: 'GET',
             url: 'api/idtf',
             data: data,
-            success: callback
+            success: function(result) {
+                callback(result);
+            }
         });
     },
 
