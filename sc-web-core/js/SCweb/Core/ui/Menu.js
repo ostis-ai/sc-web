@@ -70,12 +70,20 @@ SCWeb.core.ui.Menu = {
     _registerMenuHandler: function() {
         $('.menu_item').click(function() {
             
+            var sc_addr = $(this).attr('sc_addr');
             // append as argument
             if (SCWeb.core.utils.Keyboard.ctrl) {
-                SCWeb.core.Arguments.appendArgument($(this).attr('sc_addr'));
+                SCWeb.core.Arguments.appendArgument(sc_addr);
             }else{
             
-            //scuiRoot().doCommand(this.id);
+                if ($(this).hasClass('cmd_atom')) {
+                    //scuiRoot().doCommand(this.id);
+                    var output_lang = SCWeb.core.ui.OutputLanguages.getLanguage();
+                    var arguments_list = SCWeb.core.Arguments._arguments;
+                    SCWeb.core.Server.doCommand(sc_addr, output_lang, arguments_list, function(data) {
+                        alert("recieve: " + data.toString());
+                    });
+                }
             }
         });
     },

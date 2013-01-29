@@ -36,9 +36,7 @@ SCWeb.core.Server = {
             type: 'GET',
             url: 'api/idtf',
             data: data,
-            success: function(result) {
-                callback(result);
-            }
+            success: callback
         });
     },
 
@@ -66,5 +64,29 @@ SCWeb.core.Server = {
             data: null,
             success: callback
         });
-    }
+    },
+    
+    /** Function to initiate user command on server
+    * @param {cmd_addr} sc-addr of command
+    * @param {output_addr} sc-addr of output language
+    * @param {arguments_list} List that contains sc-addrs of command arguments
+    * @param {callback} Function, that will be called with recieved data
+    */
+    doCommand: function(cmd_addr, output_addr, arguments_list, callback){
+
+        var arguments = '';
+        for (var i = 0; i < arguments_list.length; i++){
+            var arg = arguments_list[i];
+            arguments += i.toString() + '_=' + arg + '&';
+        }
+        arguments += 'cmd=' + cmd_addr + '&';
+        arguments += 'output=' + output_addr;
+
+        $.ajax({
+            type: "GET",
+            url: "api/doCommand",
+            data: arguments,
+            success: callback
+        });
+    },
 };
