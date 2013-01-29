@@ -53,58 +53,24 @@
 		<ul class="nav nav-tabs">
 			<li class="active">
 				<a href="#">Test</a>
-				<div id="answer_container">
-                    <div id="canvas-container">
-                        <input id="query" type="text" /> <br/>
-                        <button id="button_query" type="button">Append</button>
-                        <div id="canvas"></div>
-                    </div>
-                </div>
 			</li>
 		</ul>
 		<!--{% block content %}{% endblock %}-->
 	</div> <!-- END of main -->
 
-
-	<!-- footer -->
-	<div id="footer">
-		<hr/>
-		Copyright © 2012 <a href="#">OSTIS</a> 
-	</div> <!-- END of footer -->
-	
-	
-	<!-- Initialize user interface -->
-	<!--<script type="text/javascript">
-		var _scui = new scuiRoot();
-
-        _scui._notifyCreated = function(){
-        }
-        _scui["_notifyUpdateMenu"] = function(){}
-		_scui.init({});
-
-		// load example extension
-        function example_loaded(script, textStatus){
-            alert(textStatus);
-        }
-        //_scui.loadScript("media/js/example/example.js", example_loaded);
+    <div id="arguments_container" class="well">
+        <div id="arguments_buttons" class="btn-group">           
+            <!-- Buttons will be inserted on arguments append -->
+        </div>
         
-        
-        $("#button_query").click(function(){
-            var value = $("#query").val();
-            resolveScAddr([value], 
-                            function(idtfs) {
-                                if (idtfs.hasOwnProperty(value)) {
-                                    scuiRoot().appendArgument(idtfs[value]);
-                                    alert("Added " + value);
-                                }else
-                                {
-                                    alert("Can't resolve identifier '" + value  + "'");
-                                }
-                            }
-            );
-        });
-    </script>-->
-	
+        <button id="arguments_clear_button" class="close">Clear</button>
+    </div>
+    
+    <div id="footer">
+        Copyright © 2012 <a href="#">OSTIS</a> 
+    </div> 
+
+
 </body>
 
 </html>

@@ -68,9 +68,16 @@ SCWeb.core.ui.Menu = {
     },
 
     _registerMenuHandler: function() {
-//        $('.cmd_atom').click(function() {
-//            scuiRoot().doCommand(this.id);
-//        });
+        $('.menu_item').click(function() {
+            
+            // append as argument
+            if (SCWeb.core.utils.Keyboard.ctrl) {
+                SCWeb.core.Arguments.appendArgument($(this).attr('sc_addr'));
+            }else{
+            
+            //scuiRoot().doCommand(this.id);
+            }
+        });
     },
     
     // ---------- Translation listener interface ------------

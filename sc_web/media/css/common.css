@@ -13,3 +13,8 @@
 #uilocker.shown {
     display: block;
 }
+
+#main_container {
+    overflow-y: scroll;
+}
+
