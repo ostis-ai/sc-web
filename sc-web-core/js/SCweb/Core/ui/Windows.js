@@ -2,7 +2,7 @@ SCWeb.core.ui.Windows = {
     
     _container: "#tabs_container",
     window_counter: 0,
-    windows: [],   // map of currently created windows
+    windows: {},   // map of currently created windows
     active_window: null,
     
     init: function(callback) {
@@ -14,6 +14,13 @@ SCWeb.core.ui.Windows = {
             var idx = $(this).attr('window_num');
             SCWeb.core.ui.Windows.setActiveWindow(idx);
         });
+
+        $('#tabs_container').delegate('button.close', 'click', function(event) {
+            var windowId = $(this).attr('window_num');
+            SCWeb.core.ui.Windows.destroyWindow(windowId);
+            // to prevent handling 'click' event on a '.sc_window' tab
+            event.stopPropagation();
+        });
         
         if (callback)
             callback();
@@ -24,7 +31,7 @@ SCWeb.core.ui.Windows = {
      */
     onCreateWindow: function() {
         
-        outputLang = SCWeb.core.ui.OutputLanguages.getLanguage();
+        var outputLang = SCWeb.core.ui.OutputLanguages.getLanguage();
         
         if (outputLang) {
             this.createWindow(outputLang);
@@ -42,8 +49,8 @@ SCWeb.core.ui.Windows = {
         var window_data_container = 'window_data_' + this.window_counter;
         
         // fist of all we need to append tab
-        $('#tabs_container').append('<li id="' + window_id + '" class="sc_window" window_num="' + window_num_str + '"><a href="#">Window ' + window_num_str + '</a></li>');
-        $('#tabs_data_container').append('<div id="' + window_data_container + '" class="sc_window_data" window_num="' + window_num_str + '"></div>')
+        $('#tabs_container').append('<li id="' + window_id + '" class="sc_window" window_num="' + window_num_str + '"><a href="#">Window ' + window_num_str + '</a><button class="close" window_num="' + window_num_str + '">×</button></li>');
+        $('#tabs_data_container').append('<div id="' + window_data_container + '" class="sc_window_data" window_num="' + window_num_str + '"></div>');
         var config = {'container': window_data_container};
         var window = SCWeb.core.ComponentManager.createComponentInstance(config, SCWeb.core.ComponentType.viewer, outputLang);
         this.windows[this.window_counter] = window;
@@ -81,7 +88,26 @@ SCWeb.core.ui.Windows = {
             }
         });
     },
-    
+
+    destroyWindow: function(windowId) {
+        var window = this.windows[windowId];
+        //TODO: uncomment when 'destroy' will be implementing
+        //window.destroy();
+        delete this.windows[windowId];
+        var tabSelector = '#tabs_container li[window_num=' + windowId + ']';
+        var dataContainerSelector = '#tabs_data_container div[window_num=' + windowId + ']';
+        $(tabSelector).remove();
+        $(dataContainerSelector).remove();
+        if(this.active_window == windowId) {
+            this.active_window = null;
+            var w;
+            for(w in this.windows) {
+                this.active_window = w;
+                this.setActiveWindow(w);
+            }
+        }
+    },
+
     /**
      * Function, to send data into specified window
      * @param {Number} windowId Id of a window, where data need to be sent
@@ -100,9 +126,9 @@ SCWeb.core.ui.Windows = {
     },
     
     /**
-     * @return Returns list obj sc-elements that need to be translated
+     * @return {Array} Returns list obj sc-elements that need to be translated
      */
     getObjectsToTranslate: function() {
         return [];
-    },
+    }
 };

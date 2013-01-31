@@ -67,6 +67,6 @@ SCWeb.core.Translation = {
         SCWeb.core.Server.resolveIdentifiers(objects, lang, function(namesMap) {
             callback(namesMap);
         });
-    },
+    }
 
 };

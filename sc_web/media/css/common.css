@@ -18,6 +18,11 @@
     overflow-y: scroll;
 }
 
+#tabs_container button.close {
+    margin-right: 5px;
+    margin-top: -40px;
+}
+
 .hidden {
     display:none;
 }
