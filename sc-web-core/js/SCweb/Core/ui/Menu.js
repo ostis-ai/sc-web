@@ -85,9 +85,14 @@ SCWeb.core.ui.Menu = {
                     }else{
                     
                         var arguments_list = SCWeb.core.Arguments._arguments;
-                        SCWeb.core.Server.doCommand(sc_addr, output_lang, arguments_list, function(data) {
-                            alert("recieve: " + data.toString());
-                        });
+                        var current_window = SCWeb.core.ui.Windows.active_window;
+                        if (!current_window) {
+                            alert("There are no any active window to output answer");
+                        }else{
+                            SCWeb.core.Server.doCommand(sc_addr, output_lang, arguments_list, function(data) {
+                                SCWeb.core.ui.Windows.sendDataToWindow(current_window, data);
+                            });
+                        }
                     }
                 }
             }

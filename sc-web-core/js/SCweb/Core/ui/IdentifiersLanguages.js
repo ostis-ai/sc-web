@@ -3,8 +3,8 @@ SCWeb.core.ui.IdentifiersLanguages = {
     _languages: null,
 
     init: function(callback) {
-        this.update(callback);
         SCWeb.core.Translation.registerListener(this);
+        this.update(callback);
     },
 
     update: function(callback) {

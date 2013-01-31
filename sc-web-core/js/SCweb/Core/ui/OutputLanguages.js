@@ -1,11 +1,14 @@
 SCWeb.core.ui.OutputLanguages = {
     _menuId: 'select_output_language',
-    _languages: null,
+    _languages: [],
 
     init: function(callback) {
-        this.update(callback);
         SCWeb.core.Translation.registerListener(this);
         SCWeb.core.ComponentManager.setListener(this);
+        
+        //this.update(callback);
+        if (callback)
+            callback();
     },
 
     update: function(callback) {
@@ -73,6 +76,7 @@ SCWeb.core.ui.OutputLanguages = {
         var sc_addr = compDescr.outputLangAddr;
         if (sc_addr) {
             this._appendLanguageToControl(sc_addr);
+            this._languages.push(sc_addr);
         }
     },
     

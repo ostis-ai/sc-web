@@ -38,6 +38,7 @@
 				<!-- there will be placed menu items -->
 			</div>
 			<div class="language_selectors navbar-form pull-right">
+                <button id="btn_add_new_window" class="btn"><i class="icon-plus-sign"></i></button>
 				<select class="combobox" id="select_output_language">
 					<!-- Options will be inserted on start -->
 				</select>
@@ -51,11 +52,12 @@
 
 	<!-- main content -->
 	<div id="main_container"></div>
-		<ul class="nav nav-tabs">
-			<li class="active">
-				<a href="#">Test</a>
-			</li>
+		<ul id="tabs_container" class="nav nav-tabs">
+            <!-- Tabs will be added later -->
 		</ul>
+        <div id="tabs_data_container" class="well well-small">
+            <!-- Containers will be added automaticaly -->
+        </div>
 		<!--{% block content %}{% endblock %}-->
 	</div> <!-- END of main -->
 
@@ -71,6 +73,12 @@
         Copyright © 2012 <a href="#">OSTIS</a> 
     </div> 
 
+    <script type="text/javascript">
+        
+        $(document).ready(function() {
+            SCWeb.core.Main.init();
+        });
+    </script>
 
 </body>
 

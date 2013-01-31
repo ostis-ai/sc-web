@@ -113,7 +113,11 @@ SCWeb.core.ComponentManager = {
     },
     
     /**
-     * Create instance of specified component
+     * Create instance of specified component.
+     * Each editor and view components must have such funcitons as:
+     * - receiveData - function, that receive json data to show
+     * - translateIdentifiers - function, that notify window, that it need to translate identifiers
+     * - getIdentifiersLanguage - fucntion, that return sc-addr of used identifier language
      * @param {Object} config Object that contains configuration for editor/viewer
      * @param {Number} compType Component type @see SCWeb.core.ComponentType
      * @param {String} outputLang SC-addr of output language, that will be used to
@@ -121,12 +125,13 @@ SCWeb.core.ComponentManager = {
      * @return If component created, then return it instance; otherwise return null
      */
     createComponentInstance: function(config, compType, outputLang) {
-        var comp_map = this.getComponentsMap(compDescr.type);
+        var comp_map = this.getComponentsMap(compType);
         
         if (comp_map) {
             var comp_descr = comp_map[outputLang];
             if (comp_descr) {
-                return comp_descr.factory(config);
+                var comp = comp_descr.factory(config);
+                return comp;
             }
         }
     },
