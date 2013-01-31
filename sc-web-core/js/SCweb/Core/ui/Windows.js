@@ -23,7 +23,12 @@ SCWeb.core.ui.Windows = {
      * Event hadler for new window button
      */
     onCreateWindow: function() {
-        this.createWindow(SCWeb.core.ui.OutputLanguages.getLanguage());
+        
+        outputLang = SCWeb.core.ui.OutputLanguages.getLanguage();
+        
+        if (outputLang) {
+            this.createWindow(outputLang);
+        }
     },
     
     /**
