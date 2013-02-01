@@ -1,0 +1,11 @@
+ui_main_menu <- sc_node_not_relation;;
+
+ui_main_menu => nrel_main_ru_idtf: [главное меню];;
+
+ui_main_menu <= nrel_decomposition:
+{
+	ui_menu_na_help;
+	ui_menu_na_view_kb
+};;
+
+

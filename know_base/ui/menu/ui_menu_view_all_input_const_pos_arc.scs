@@ -1,0 +1,14 @@
+ui_menu_view_all_input_const_pos_arc <- ui_user_command_atom; ui_user_command_question;;
+
+ui_menu_view_all_input_const_pos_arc => nrel_main_ru_idtf: 
+	[Позитивные, константные входящие дуги];;
+ui_menu_view_all_input_const_pos_arc => nrel_main_en_idtf: 
+	[Positive and constant input arcs];;
+ui_menu_view_all_input_const_pos_arc => ui_nrel_command_template:
+	[*
+		question_search_all_input_const_pos_arcs _-> _.question_search_all_input_const_pos_arcs_instance
+			(*
+				_-> ui_arg_1;;				
+			*);;
+		_.question_search_all_input_const_pos_arcs_instance _<- question;;
+	*];;
