@@ -104,6 +104,7 @@ SCWeb.core.ui.Windows = {
             for(w in this.windows) {
                 this.active_window = w;
                 this.setActiveWindow(w);
+                return;
             }
         }
     },
