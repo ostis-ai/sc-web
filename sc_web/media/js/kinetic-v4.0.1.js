@@ -5264,6 +5264,7 @@ Kinetic.Line.prototype = {
                 y += dx < 0 && dy < 0 ? step * -1 : step;
             }
             context[draw ? 'lineTo' : 'moveTo'](x, y);
+
             distRemaining -= dashLength;
             draw = !draw;
         }
