@@ -116,13 +116,23 @@ SCWeb.core.ui.Windows = {
     sendDataToWindow: function(windowId, data) {
         var wind = SCWeb.core.ui.Windows.windows[windowId];
         
+        
         if (wind) {
-            wind.recieveData(data);
+            wind.receiveData(data);
+            wind.translateIdentifiers(SCWeb.core.Translation.current_language);
+            
         }
     },
     
     // ---------- Translation listener interface ------------
     updateTranslation: function(namesMap) {
+        var wind = SCWeb.core.ui.Windows.windows[this.active_window];
+        if (wind) {
+            var current_language = SCWeb.core.Translation.current_language;
+            if (wind.getIdentifiersLanguage() != current_language) {
+                wind.translateIdentifiers(current_language);
+            }
+        }
     },
     
     /**
