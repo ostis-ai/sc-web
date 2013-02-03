@@ -261,6 +261,8 @@ scgViewerWindow.prototype = {
 
         this.renderer = null;
 
+        this._currentLanguage = null;
+
     },
 
     /**
@@ -293,15 +295,6 @@ scgViewerWindow.prototype = {
     },
 
     /**
-     * Emit translate identifiers
-     */
-    translateIdentifiers    : function(){
-
-        console.log("scgViewer translate event", this);
-
-    },
-
-    /**
      * Build scGraph from JSON
      * @param {Object} data
      * @return {scGraph}
@@ -310,6 +303,57 @@ scgViewerWindow.prototype = {
     _buildGraph : function(data){
         var graph = GraphBuilder.buildGraph(data);
         return graph;
+    },
+
+
+    /**
+     * Emit translate identifiers
+     */
+    translateIdentifiers    : function(language){
+
+        var objects = this._getObjectsForTranslate();
+        var self = this;
+        SCWeb.core.Translation.translate(objects, language, function(namesMap) {
+            self._translateObjects(namesMap);
+        });
+
+    },
+
+    /**
+     * Get current language in viewer
+     * @return String
+     */
+    getIdentifiersLanguage  : function(){
+        return this._currentLanguage;
+    },
+
+    _getObjectsForTranslate : function(){
+
+        /** @var graph {scGraph} **/
+        var graph = this.renderer.getGraph();
+        var nodes = graph.nodes;
+        var objects = [];
+        for(var scAddr in nodes){
+            objects.push(scAddr);
+        }
+        return objects;
+    },
+
+    _translateObjects       : function(namesMap){
+
+        var graph = this.renderer.getGraph();
+        var nodes = graph.nodes;
+        var objects = [];
+        for(var scAddr in namesMap){
+            var node = graph.getNodeById(scAddr);
+            if(node){
+                node.idf = namesMap[scAddr];
+            }
+        }
+
+        this.renderer.reDraw();
+        this.renderer._layerNodes.draw();
+
     }
 
 };
@@ -1809,6 +1853,7 @@ scgNode.prototype = {
     _getIdf : function(){
 
         if(this.idfDrawObj != null){
+            this.idfDrawObj.setText(this.node.idf);
             return this.idfDrawObj;
         };
 
