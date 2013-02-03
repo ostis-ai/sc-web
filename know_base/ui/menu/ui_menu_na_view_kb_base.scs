@@ -7,7 +7,7 @@ ui_menu_na_view_kb_base => nrel_main_en_idtf:
 
 ui_menu_na_view_kb_base <= nrel_decomposition:
 {
-	ui_menu_view_output_arcs;
+	/* ui_menu_view_output_arcs; */
 	ui_menu_view_all_output_const_pos_arc;
 	ui_menu_view_all_input_const_pos_arc;
 	ui_menu_view_all_output_const_pos_arc_with_rel;
