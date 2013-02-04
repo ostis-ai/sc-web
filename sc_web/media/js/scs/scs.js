@@ -25,6 +25,7 @@ SCsViewer.prototype = {
     // ---- window interface -----
     receiveData: function(data) {
         var outputHtml = ''
+        this._objects = [];
         for (var i = 0; i < data.length; i++) {
             var sentence = data[i];
             
@@ -35,6 +36,7 @@ SCsViewer.prototype = {
             this._objects.push(sentence[2]);
         }
         
+        $(this._container).empty();
         $(this._container).append(outputHtml);
     },
     
