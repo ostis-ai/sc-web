@@ -91,8 +91,8 @@ SCWeb.core.ui.Windows = {
 
     destroyWindow: function(windowId) {
         var window = this.windows[windowId];
-        //TODO: uncomment when 'destroy' will be implementing
-        //window.destroy();
+        
+        window.destroy();
         delete this.windows[windowId];
         var tabSelector = '#tabs_container li[window_num=' + windowId + ']';
         var dataContainerSelector = '#tabs_data_container div[window_num=' + windowId + ']';
