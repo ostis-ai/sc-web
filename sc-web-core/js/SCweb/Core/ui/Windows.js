@@ -81,10 +81,10 @@ SCWeb.core.ui.Windows = {
             var v = $(this).attr('window_num');
             
             if (v == window_id_str) {
-                $(this).removeClass('hidden');
+                $(this).removeClass('no_display');
                 self.active_window = windowId;
             }else{
-                $(this).addClass('hidden');
+                $(this).addClass('no_display');
             }
         });
     },

@@ -38,6 +38,10 @@
 			<div id="menu_container">
 				<!-- there will be placed menu items -->
 			</div>
+            <div id="task_panel" class="task_icon navbar-form pull-right">
+                <div id="task_num" class="task_text">16</div>
+            </div>
+            
 			<div class="language_selectors navbar-form pull-right">
                 <button id="btn_add_new_window" class="btn"><i class="icon-plus-sign"></i></button>
 				<select class="combobox" id="select_output_language">
@@ -47,12 +51,14 @@
 					<!-- Options will be inserted on start -->
 				</select>
 			</div>
+            
+            
 		</div>
 	</div>
 	
 
 	<!-- main content -->
-	<div id="main_container"></div>
+	<div id="main_container">
 		<ul id="tabs_container" class="nav nav-tabs">
             <!-- Tabs will be added later -->
 		</ul>
@@ -60,7 +66,7 @@
             <!-- Containers will be added automaticaly -->
         </div>
 		<!--{% block content %}{% endblock %}-->
-	</div> <!-- END of main -->
+    </div>
 
     <div id="arguments_container" class="well">
         <div id="arguments_buttons" class="btn-group">           
