@@ -35,7 +35,7 @@ scgLayout.prototype = {
         MAX_FORCE               : 15.0,
 
         NUM_STEP_ITERATION      : 5,
-        MIN_MOVEMENT            : 1
+        MIN_MOVEMENT            : 2
     },
 
     setGraph        : function(graph){
@@ -295,6 +295,15 @@ scgViewerWindow.prototype = {
     },
 
     /**
+     * //@TODO clean memory and stop layout
+     * Destroy window
+     * @return {Boolean}
+     */
+    destroy : function(){
+        return true;
+    },
+
+    /**
      * Build scGraph from JSON
      * @param {Object} data
      * @return {scGraph}
@@ -363,6 +372,10 @@ SCgComponent = {
     outputLang: 'format_scg_json',
     factory: function(config) {
         return new scgViewerWindow(config);
+    },
+
+    addArgument : function(arg){
+        SCWeb.core.Arguments.appendArgument(arg);
     }
 };
 
@@ -748,7 +761,7 @@ var GraphBuilder = {
 
         var nodeCfg = {
             id : jsonElem.id,
-            idf : jsonElem.identifier,
+            idf : jsonElem.id,
             type : jsonElem.el_type
         };
         return new scNode(nodeCfg);
@@ -775,7 +788,7 @@ var GraphBuilder = {
 
         var linkCfg = {
             id : jsonElem.id,
-            idf : jsonElem.identifier + this.LINK_SUFFIX,
+            idf : jsonElem.id + this.LINK_SUFFIX,
             type : this.nodeType.LINK
         };
         return new scNode(linkCfg);
@@ -910,7 +923,7 @@ scNode.prototype = {
             'tuple'     : sc_type_node_tuple,
             'struct'    : sc_type_node_struct,
             'role'      : sc_type_node_role,
-            'norole'    : sc_type_node_norole,
+            'relation'  : sc_type_node_norole,
             'class'     : sc_type_node_class,
             'abstract'  : sc_type_node_abstract,
             'material'  : sc_type_node_material
@@ -954,6 +967,8 @@ scgArc.prototype = {
 
         this._arc   = arc;
         this._layer = layer;
+
+        this._drawFunc = this._getDrawFunc();
 
         this._drawObject = null;
 
@@ -1004,10 +1019,14 @@ scgArc.prototype = {
      */
     _draw   : function(){
 
+
         var drawObj = new Kinetic.Line(this.__defaultLineConfig);
         var self = this;
         drawObj.setDrawFunc( function(context){
             self._lineDrawFunc.call(this, context, self);
+        });
+        drawObj.on("mousemove", function(){
+            console.log("move");
         });
 
         var points = this._prepareLinePoints();
@@ -1047,6 +1066,7 @@ scgArc.prototype = {
             context.lineCap = this.attrs.lineCap;
         }
 
+
     },
 
     /**
@@ -1058,52 +1078,65 @@ scgArc.prototype = {
      * @private
      */
     _lineDrawPart : function(context, from, to, self){
+
+        for( var i = 0; i < this._drawFunc.length; i++ ){
+            this._drawFunc[i](context, from, to);
+        }
+
+    },
+
+    _getDrawFunc           : function(){
+
+        var drawFunc = [];
+
         /** @var arc scArc */
-        var arc = self._arc;
+        var arc = this._arc;
 
         /** temporal */
         if(arc.isTemporal() && arc.isVariable()){
-            scgDrawFunction.dashVarLine(context, from, to);
+            drawFunc.push(scgDrawFunction.dashVarLine);
         }
         if(arc.isTemporal() && !arc.isVariable()){
-            scgDrawFunction.dashLine(context, from, to);
+            drawFunc.push(scgDrawFunction.dashLine);
         }
 
         /** variable */
         if(arc.isVariable() && !arc.isTemporal() && !arc.isUndefined(2,3)){
-            scgDrawFunction.varLine(context, from, to);
+            drawFunc.push(scgDrawFunction.varLine);
         }
 
         /** negative */
         if(arc.isNegative()){
-            scgDrawFunction.negLine(context, from, to);
+            drawFunc.push(scgDrawFunction.negLine);
         }
         if(arc.isFuzzy()){
-            scgDrawFunction.fuzLine(context, from, to);
+            drawFunc.push(scgDrawFunction.fuzLine);
         }
 
         switch(arc.type){
 
             case (sc_type_edge_common | sc_type_const):
             case (sc_type_arc_common | sc_type_const ):
-                scgDrawFunction.undefinedConstPairLine(context, from, to);
-                return;
+                drawFunc.push(scgDrawFunction.undefinedConstPairLine);
+                return drawFunc;
             case (sc_type_edge_common | sc_type_var):
             case (sc_type_arc_common | sc_type_var ):
-                scgDrawFunction.undefinedVarPairLine(context, from, to);
-                return;
+                drawFunc.push(scgDrawFunction.undefinedVarPairLine);
+                return drawFunc;
             case sc_type_edge_common:
             case sc_type_arc_common:
-                scgDrawFunction.undefinedPairLine(context, from, to);
-                return;
+                drawFunc.push(scgDrawFunction.undefinedPairLine);
+                return drawFunc;
             case sc_type_arc_access:
-                scgDrawFunction.simpleAccessoryLine(context, from, to);
-                return;
+                drawFunc.push(scgDrawFunction.simpleAccessoryLine);
+                return drawFunc;
         }
 
         if(!arc.isVariable() && !arc.isTemporal()){
-            scgDrawFunction.simpleLine(context, from, to);
+            drawFunc.push(scgDrawFunction.simpleLine);
         }
+
+        return drawFunc;
 
     },
 
@@ -1302,7 +1335,8 @@ scgArc.prototype = {
         stroke: 'black',
         lineCap: 'butt',
         points  : [0,0,1,1],
-        lineJoin : 'round'
+        lineJoin : 'round',
+        detectionType : 'pixel'
     }
 
 };
@@ -1926,6 +1960,13 @@ scgNodeConst.prototype = {
                 self.setColor('#000');
                 self.getRenderer().reDraw();
             });
+
+            this._circle.on("click", function(){
+                if(SCWeb.core.utils.Keyboard.ctrl){
+                    SCgComponent.addArgument(self.node.id);
+                }
+            });
+
         };
 
         this._circle.setStroke(this.color);
@@ -2099,6 +2140,13 @@ scgNodeVar.prototype = {
             this._rect.on("mouseout",function(){
                 self.node.isActive = false;
             });
+
+            this._rect.on("click", function(){
+                if(SCWeb.core.utils.Keyboard.ctrl){
+                    SCgComponent.addArgument(self.node.id);
+                }
+            });
+
         };
 
         this._rect.setStroke(this.color);

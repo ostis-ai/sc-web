@@ -57,6 +57,9 @@ SCsViewer.prototype = {
     
     getIdentifiersLanguage: function() {
         return this._current_language;
+    },
+    
+    destroy: function() {
     }
 };
 
