@@ -4,8 +4,8 @@
 import os, sys
 sys.path.append(os.getcwd())
 
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
+#DEBUG = True
+#TEMPLATE_DEBUG = DEBUG
 
 APP_ROOT = os.path.abspath(os.path.dirname(__file__))
 
@@ -15,6 +15,8 @@ ADMINS = (
 
 SCTP_HOST = "localhost"
 SCTP_PORT = 55770
+
+EVENT_WAIT_TIMEOUT = 10
 
 MANAGERS = ADMINS
 
