@@ -1,6 +1,6 @@
 SCWeb.core.Arguments = {
     
-    _listener: null,
+    _listeners: [],
     _arguments: [],
 
     /**
@@ -54,15 +54,27 @@ SCWeb.core.Arguments = {
         this._fireArgumentCleared();
     },
     
-    /**
+    /** 
      * @param {Object} listener Listener object, that will recieve notifitacions
      * on arguments list changes. It must have such functions as:
      * - argumentAppended(argument, idx) 
      * - argumentRemoved(argument, idx)
      * - argumentsCleared()
      */
-    setListener: function(listener) {
-        this._listener = listener;
+    registerListener: function(listener) {
+        if (this._listeners.indexOf(listener) == -1) {
+            this._listeners.push(listener);
+        }
+    },
+    
+    /**
+     * @param {Object} listener Listener objects that need to be unregistered
+     */
+    unregisterListener: function(listener) {
+        var idx = this._listeners.indexOf(listener);
+        if (idx >= 0) {
+            this._listeners.splice(idx, 1);
+        }
     },
     
     /** 
@@ -71,8 +83,8 @@ SCWeb.core.Arguments = {
      * * @param {Number} Index of added argument
      */
     _fireArgumentAppended: function(argument, idx) {
-        if (this._listener != null) {
-            this._listener.argumentAppended(argument, idx);
+        for (var i = 0; i < this._listeners.length; i++) {
+            this._listeners[i].argumentAppended(argument, idx);
         }
     },
     
@@ -82,8 +94,8 @@ SCWeb.core.Arguments = {
      * @param {Number} Index of removed argument
      */
     _fireArgumentRemoved: function(argument, idx) {
-        if (this._listener != null) {
-            this._listener.argumentRemoved(argument, idx);
+         for (var i = 0; i < this._listeners.length; i++) {
+            this._listeners[i].argumentRemoved(argument, idx);
         }
     },
     
@@ -91,8 +103,8 @@ SCWeb.core.Arguments = {
      * Notify listener on argument clear
      */
     _fireArgumentCleared: function() {
-        if (this._listener != null) {
-            this._listener.argumentsCleared();
+         for (var i = 0; i < this._listeners.length; i++) {
+            this._listeners[i].argumentsCleared();
         }
     }
     
