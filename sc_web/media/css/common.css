@@ -52,4 +52,10 @@
     font-size: 10px;
 }
 
+.help_button {
+    margin-top: 3px;
+    vertical-align: middle;
+    cursor: help;
+}
+
 
