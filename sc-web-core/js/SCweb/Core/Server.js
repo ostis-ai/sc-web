@@ -1,15 +1,68 @@
 SCWeb.core.Server = {
+    
+    _listeners: [],
+    
+    /*!
+     * Append new listener to server tasks
+     * @param {Object} listener Listener object.
+     * It must have such functions as:
+     * - taskStarted - function that calls on new task started. No any arguments
+     * - taskFinished - function that calls on new task finished. No any arguments
+     */
+    appendListener: function(listener) {
+        if (this._listeners.indexOf(listener) == -1) {
+            this._listeners.push(listener);
+        }
+    },
+    
+    /*!
+     * Removes specified listener
+     * @param {Object} listener Listener object to remove
+     */
+    removeListener: function(listener) {
+        var idx = this._listeners.indexOf(listener);
+        if (idx >= 0) {
+            this._listeners.splice(idx, 1);
+        }
+    },
+    
+    /*!
+     * Notify all registere listeners task started
+     */
+    _fireTaskStarted: function() {
+        for (var i = 0; i < this._listeners.length; ++i) {
+            $.proxy(this._listeners[i].taskStarted(), this._listeners[i]);
+        }
+    },
+    
+    /*!
+     * Notify all registered listeners on task finished
+     */
+    _fireTaskFinished: function() {
+        for (var i = 0; i < this._listeners.length; ++i) {
+            $.proxy(this._listeners[i].taskFinished(), this._listeners[i]);
+        }
+    },    
+    
+    // ----------------------
+    
     /**
      * Gets command menu structure.
      *
      * @param {Function} callback
      */
     getCommands: function(callback) {
+        
+        SCWeb.core.Server._fireTaskStarted();
+        
         $.ajax({
             type: 'GET',
             url: 'api/commands',
             data: null,
-            success: callback
+            success: callback,
+            complete: function(data) { 
+                SCWeb.core.Server._fireTaskFinished();
+            }
         });
     },
 
@@ -31,12 +84,16 @@ SCWeb.core.Server = {
             data += '&' + index + '=' + id;
         }
 
+        SCWeb.core.Server._fireTaskStarted();
         //TODO: change to POST because the data may reach the limit of GET parameters string
         $.ajax({
             type: 'GET',
             url: 'api/idtf',
             data: data,
-            success: callback
+            success: callback,
+            complete: function(data) { 
+                SCWeb.core.Server._fireTaskFinished();
+            }
         });
     },
 
@@ -45,11 +102,15 @@ SCWeb.core.Server = {
      * @param {Function} callback
      */
     getOutputLanguages: function(callback) {
+        SCWeb.core.Server._fireTaskStarted();
         $.ajax({
             type: 'GET',
             url: 'api/outputLangs',
             data: null,
-            success: callback
+            success: callback,
+            complete: function(data) { 
+                SCWeb.core.Server._fireTaskFinished();
+            }
         });
     },
 
@@ -58,11 +119,15 @@ SCWeb.core.Server = {
      * @param {Function} callback
      */
     getIdentifierLanguages: function(callback) {
+        SCWeb.core.Server._fireTaskStarted();
         $.ajax({
             type: 'GET',
             url: 'api/idtfLangs',
             data: null,
-            success: callback
+            success: callback,
+            complete: function(data) { 
+                SCWeb.core.Server._fireTaskFinished();
+            }
         });
     },
     
@@ -82,11 +147,15 @@ SCWeb.core.Server = {
         arguments += 'cmd=' + cmd_addr + '&';
         arguments += 'output=' + output_addr;
 
+        SCWeb.core.Server._fireTaskStarted();
         $.ajax({
             type: "GET",
             url: "api/doCommand",
             data: arguments,
-            success: callback
+            success: callback,
+            complete: function(data) { 
+                SCWeb.core.Server._fireTaskFinished();
+            }
         });
     },
     
@@ -103,11 +172,15 @@ SCWeb.core.Server = {
             arguments += i.toString() + '_=' + arg + '&';
         }
         
+        SCWeb.core.Server._fireTaskStarted();
         $.ajax({
             type: "GET",
             url: "api/scAddrs",
             data: arguments,
-            success: callback
+            success: callback,
+            complete: function(data) { 
+                SCWeb.core.Server._fireTaskFinished();
+            }
         });
     }
 };

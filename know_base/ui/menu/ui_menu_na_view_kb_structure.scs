@@ -1,0 +1,10 @@
+
+ui_menu_na_view_kb_structure <- ui_user_command_noatom;;
+ui_menu_na_view_kb_structure => nrel_main_ru_idtf: 
+	[Просмотр структуры];;
+ui_menu_na_view_kb_structure => nrel_main_en_idtf: 
+	[View structure];;
+ui_menu_na_view_kb_structure <= nrel_decomposition:
+{
+	ui_menu_view_decomposition
+};;

@@ -4,7 +4,7 @@ SCWeb.core.ui.ArgumentsPanel = {
     init: function(callback) {
         SCWeb.core.Translation.registerListener(this);
         
-        SCWeb.core.Arguments.setListener(this);
+        SCWeb.core.Arguments.registerListener(this);
         SCWeb.core.Translation.registerListener(this);
         
         $('#arguments_clear_button').click(function () {

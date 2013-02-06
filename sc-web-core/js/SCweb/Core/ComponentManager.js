@@ -118,6 +118,7 @@ SCWeb.core.ComponentManager = {
      * - receiveData - function, that receive json data to show
      * - translateIdentifiers - function, that notify window, that it need to translate identifiers
      * - getIdentifiersLanguage - fucntion, that return sc-addr of used identifier language
+     * - destroy - function, that calls when component destroyed. There component need to destroy all created objects
      * @param {Object} config Object that contains configuration for editor/viewer
      * @param {Number} compType Component type @see SCWeb.core.ComponentType
      * @param {String} outputLang SC-addr of output language, that will be used to

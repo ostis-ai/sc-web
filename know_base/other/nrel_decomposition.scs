@@ -1,4 +1,7 @@
 nrel_decomposition <- sc_node_norole_relation;;
 
 nrel_decomposition => nrel_main_ru_idtf:
-	[декоспозиция*];;
+	[декомпозиция*];;
+
+nrel_decomposition => nrel_main_en_idtf:
+	[decomposition*];;

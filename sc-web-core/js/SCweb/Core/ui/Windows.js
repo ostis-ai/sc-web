@@ -81,18 +81,18 @@ SCWeb.core.ui.Windows = {
             var v = $(this).attr('window_num');
             
             if (v == window_id_str) {
-                $(this).removeClass('hidden');
+                $(this).removeClass('no_display');
                 self.active_window = windowId;
             }else{
-                $(this).addClass('hidden');
+                $(this).addClass('no_display');
             }
         });
     },
 
     destroyWindow: function(windowId) {
         var window = this.windows[windowId];
-        //TODO: uncomment when 'destroy' will be implementing
-        //window.destroy();
+        
+        window.destroy();
         delete this.windows[windowId];
         var tabSelector = '#tabs_container li[window_num=' + windowId + ']';
         var dataContainerSelector = '#tabs_data_container div[window_num=' + windowId + ']';
@@ -117,13 +117,23 @@ SCWeb.core.ui.Windows = {
     sendDataToWindow: function(windowId, data) {
         var wind = SCWeb.core.ui.Windows.windows[windowId];
         
+        
         if (wind) {
-            wind.recieveData(data);
+            wind.receiveData(data);
+            wind.translateIdentifiers(SCWeb.core.Translation.current_language);
+            
         }
     },
     
     // ---------- Translation listener interface ------------
     updateTranslation: function(namesMap) {
+        var wind = SCWeb.core.ui.Windows.windows[this.active_window];
+        if (wind) {
+            var current_language = SCWeb.core.Translation.current_language;
+            if (wind.getIdentifiersLanguage() != current_language) {
+                wind.translateIdentifiers(current_language);
+            }
+        }
     },
     
     /**

@@ -22,7 +22,7 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 """
 
 import os, sys
-import socket, struct
+import socket, struct, time
 
 from types import sctpCommandType, sctpResultCode
 from sctp.types import ScAddr, sctpIteratorType
@@ -33,6 +33,15 @@ class sctpClient:
 	
 	def __init__(self):
 		self.sock = None
+        
+	def receiveData(self, dataSize):
+		res = ''
+		while (len(res) < dataSize):
+			data = self.sock.recv(dataSize)
+			res += data
+			time.sleep(0.001)
+		assert len(res) == dataSize
+		return res
 
 	def initialize(self, host, port):
 		"""Initialize network session with server
@@ -62,7 +71,7 @@ class sctpClient:
 		self.sock.send(alldata)
 		
 		# recieve response
-		data = self.sock.recv(10)
+		data = self.receiveData(10)
 		cmdCode, cmdId, resCode, resSize = struct.unpack('=BIBI', data)
 		
 		if resCode != sctpResultCode.SCTP_RESULT_OK:
@@ -70,7 +79,7 @@ class sctpClient:
 		
 		content_data = None
 		if resSize > 0:
-			content_data = self.sock.recv(resSize) 
+			content_data = self.receiveData(resSize) 
 		
 		return content_data
 
@@ -88,7 +97,7 @@ class sctpClient:
 		self.sock.send(alldata)
 		
 		# recieve response
-		data = self.sock.recv(10)
+		data = self.receiveData(10)
 		cmdCode, cmdId, resCode, resSize = struct.unpack('=BIBI', data)
 		
 		return resCode == sctpResultCode.SCTP_RESULT_OK
@@ -107,12 +116,12 @@ class sctpClient:
 		self.sock.send(alldata)
 		
 		# recieve response
-		data = self.sock.recv(10)
+		data = self.receiveData(10)
 		cmdCode, cmdId, resCode, resSize = struct.unpack('=BIBI', data)
 		if resCode != sctpResultCode.SCTP_RESULT_OK:
 			return None
 		
-		data = self.sock.recv(2)
+		data = self.receiveData(2)
 		elType = struct.unpack("=H", data)[0]
 		
 		return elType
@@ -131,13 +140,13 @@ class sctpClient:
 		self.sock.send(alldata)
 		
 		# recieve response
-		data = self.sock.recv(10)
+		data = self.receiveData(10)
 		cmdCode, cmdId, resCode, resSize = struct.unpack('=BIBI', data)
 		if resCode != sctpResultCode.SCTP_RESULT_OK:
 			return None
 		
 		addr = ScAddr(0, 0)
-		data = self.sock.recv(4)
+		data = self.receiveData(4)
 		addr.seg, addr.offset = struct.unpack('=HH', data)
 		
 		return addr
@@ -153,13 +162,13 @@ class sctpClient:
 		self.sock.send(alldata)
 		
 		# recieve response
-		data = self.sock.recv(10)
+		data = self.receiveData(10)
 		cmdCode, cmdId, resCode, resSize = struct.unpack('=BIBI', data)
 		if resCode != sctpResultCode.SCTP_RESULT_OK:
 			return None
 		
 		addr = ScAddr(0, 0)
-		data = self.sock.recv(4)
+		data = self.receiveData(4)
 		addr.seg, addr.offset = struct.unpack('=HH', data)
 		
 		return addr
@@ -179,13 +188,13 @@ class sctpClient:
 		self.sock.send(alldata)
 		
 		# recieve response
-		data = self.sock.recv(10)
+		data = self.receiveData(10)
 		cmdCode, cmdId, resCode, resSize = struct.unpack('=BIBI', data)
 		if resCode != sctpResultCode.SCTP_RESULT_OK:
 			return None
 		
 		addr = ScAddr(0, 0)
-		data = self.sock.recv(4)
+		data = self.receiveData(4)
 		addr.seg, addr.offset = struct.unpack('=HH', data)
 		
 		return addr
@@ -203,13 +212,13 @@ class sctpClient:
 		self.sock.send(alldata)
 		
 		# recieve response
-		data = self.sock.recv(10)
+		data = self.receiveData(10)
 		cmdCode, cmdId, resCode, resSize = struct.unpack('=BIBI', data)
 		if resCode != sctpResultCode.SCTP_RESULT_OK or resSize < 4:
 			return None
 		
 		res = []
-		data = self.sock.recv(resSize)
+		data = self.receiveData(resSize)
 		resCount = struct.unpack('=I', data[:4])[0]
 		for i in xrange(resCount):
 			addr = ScAddr(0, 0)
@@ -260,12 +269,12 @@ class sctpClient:
 		self.sock.send(alldata)
 		
 		# recieve response
-		data = self.sock.recv(10)
+		data = self.receiveData(10)
 		cmdCode, cmdId, resCode, resSize = struct.unpack('=BIBI', data)
 		if resCode != sctpResultCode.SCTP_RESULT_OK or resSize == 0:
 			return None
 		
-		res_count_data = self.sock.recv(4)
+		res_count_data = self.receiveData(4)
 		res_count = struct.unpack('=I', res_count_data)[0]
 		
 		if res_count == 0:
@@ -275,7 +284,7 @@ class sctpClient:
 		for idx in xrange(res_count):
 			result_item = []
 			for j in xrange(params_count):
-				addr_data = self.sock.recv(4)
+				addr_data = self.receiveData(4)
 				addr = ScAddr(0, 0)
 				addr.seg, addr.offset = struct.unpack('=HH', addr_data)
 				result_item.append(addr)
@@ -299,13 +308,13 @@ class sctpClient:
 		self.sock.send(alldata)
 		
 		# recieve response
-		data = self.sock.recv(10)
+		data = self.receiveData(10)
 		cmdCode, cmdId, resCode, resSize = struct.unpack('=BIBI', data)
 		if resCode != sctpResultCode.SCTP_RESULT_OK or resSize < 4:
 			return None
 		
 		addr = ScAddr(0, 0)
-		data = self.sock.recv(4)
+		data = self.receiveData(4)
 		addr.seg, addr.offset = struct.unpack('=HH', data)
 		
 		return addr

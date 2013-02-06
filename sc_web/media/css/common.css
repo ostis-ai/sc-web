@@ -15,7 +15,7 @@
 }
 
 #main_container {
-    overflow-y: scroll;
+    
 }
 
 #tabs_container button.close {
@@ -24,6 +24,38 @@
 }
 
 .hidden {
-    display:none;
+    visibility:hidden;
 }
+
+.no_display {
+    display: none;
+}
+
+
+.task_icon.active {
+    background-image: url('../images/task-cog.gif'); 
+}
+
+.task_icon {
+    width: 32px;
+    height: 32px;
+    margin-top: 5px;
+    margin-left: 10px;
+    text-align: center;
+    
+    background-image: url('../images/task-complete.png'); 
+}
+
+.task_text {
+    margin-top: 6px;
+    vertical-align: middle;
+    font-size: 10px;
+}
+
+.help_button {
+    margin-top: 3px;
+    vertical-align: middle;
+    cursor: help;
+}
+
 
