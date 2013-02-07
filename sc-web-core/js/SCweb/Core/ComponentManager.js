@@ -11,7 +11,12 @@ SCWeb.core.ComponentManager = {
      * - editors
      * Each type contains mapping of output language to component
      */
-    components: {
+    componentsByLang: {
+        viewers: {},
+        editors: {}
+    },
+    
+    componentsByFormats: {
         viewers: {},
         editors: {}
     },
@@ -43,34 +48,60 @@ SCWeb.core.ComponentManager = {
      * @param {Object} compDescr Component description object
      * @return If sc-addr resolved, then callback calls
      */
-    resolveOutpuLangAddr: function(compDescr, callback) {
+    resolveScAddrs: function(compDescr, callback) {
         
         if (compDescr.outputLangAddr) {
             callback();
         }
         
-        SCWeb.core.Server.resolveScAddr([compDescr.outputLang], function(addrs) {
+        SCWeb.core.Server.resolveScAddr([compDescr.outputLang].concat(compDescr.formats), function(addrs) {
             var sc_addr = addrs[compDescr.outputLang];
             if (sc_addr) {
                 compDescr["outputLangAddr"] = sc_addr;
-                callback();
             }
+            
+            // process formats
+            compDescr["formatAddrs"] = {};
+            if (compDescr.formats) {
+                for (var idx = 0; i < compDescr.formats.length; idx++) {
+                    var format = compDescr.formats[idx];
+                    var sc_addr = addrs[format];
+                    if (sc_addr) {
+                        compDescr.formatAddrs[format] = sc_addr;
+                    }
+                }
+            }
+            
+            callback();
         });
     },
     
     /**
-     * Returns components map for specified type
-     * @param {Number} compType Component type
+     * Returns output language components map for specified type of component
+     * @param {Number} compType Type of component
      */
-    getComponentsMap: function(compType) {
+    getComponentsLangMap: function(compType) {
         if (compType == SCWeb.core.ComponentType.viewer) {
-            return this.components.viewers;
+            return this.componentsByLang.viewers;
         }else {
-            return this.components.editors;
+            return this.componentsByLang.editors;
         }
         
         return null;
     },
+    
+    /**
+     * Returns supported formats components map for specified type of component
+     * @param {Number} compType Type of component
+     */
+     getComponentsFormatMap: function(compType) {
+         if (compType == SCWeb.core.ComponentType.viewer) {
+             return this.componentsByFormats.viewers; 
+         }else {
+             return this.componentsByFormats.editors;
+         }
+         return null;
+     },
     
     /**
      * Register new component
@@ -84,12 +115,21 @@ SCWeb.core.ComponentManager = {
     registerComponent: function(compDescr) {
         
         var self = this;
-        this.resolveOutpuLangAddr(compDescr, function() {
-            var comp_map = self.getComponentsMap(compDescr.type);
+        this.resolveScAddrs(compDescr, function() {
+            var comp_map = self.getComponentsLangMap(compDescr.type);
                 
             if (comp_map) {
-                comp_map[compDescr.outputLangAddr] = compDescr;
+                if (compDescr.outputLangAddr) {
+                    comp_map[compDescr.outputLangAddr] = compDescr;
+                }
                 $.proxy(self._fireComponentRegistered(compDescr), self);
+            }
+            
+            comp_map = self.getComponentsFormatMap(compDescr.type);
+            if (comp_map) {
+                $.each(compDescr.formatAddrs, function(format, addr) {
+                    comp_map[addr] = compDescr;
+                });
             }
         });
     },
@@ -102,8 +142,8 @@ SCWeb.core.ComponentManager = {
     unregisterComponent: function(compDescr) {
         
         var self = this;
-        this.resolveOutpuLangAddr(compDescr, function() {
-            var comp_map = self.getComponentsMap(compDescr.type);
+        this.resolveScAddrs(compDescr, function() {
+            var comp_map = self.getComponentsLangMap(compDescr.type);
             
             if (comp_map) {
                 delete comp_map[compDescr.outputLangAddr];
@@ -113,23 +153,41 @@ SCWeb.core.ComponentManager = {
     },
     
     /**
-     * Create instance of specified component.
+     * Create instance of specified component with supported output language
      * Each editor and view components must have such funcitons as:
      * - receiveData - function, that receive json data to show
      * - translateIdentifiers - function, that notify window, that it need to translate identifiers
      * - getIdentifiersLanguage - fucntion, that return sc-addr of used identifier language
      * - destroy - function, that calls when component destroyed. There component need to destroy all created objects
      * @param {Object} config Object that contains configuration for editor/viewer
-     * @param {Number} compType Component type @see SCWeb.core.ComponentType
+     * @param {Number} compType Type of component @see SCWeb.core.ComponentType
      * @param {String} outputLang SC-addr of output language, that will be used to
      * view or edit in component
      * @return If component created, then return it instance; otherwise return null
      */
-    createComponentInstance: function(config, compType, outputLang) {
-        var comp_map = this.getComponentsMap(compType);
+    createComponentInstanceByOutputLnaguage: function(config, compType, outputLang) {
+        var comp_map = this.getComponentsLangMap(compType);
         
         if (comp_map) {
             var comp_descr = comp_map[outputLang];
+            if (comp_descr) {
+                var comp = comp_descr.factory(config);
+                return comp;
+            }
+        }
+    },
+    
+    /**
+     * Create instance of specified component with supported output format
+     * @param {Object} config Object that contains configuration for editor/viewer
+     * @param {Number} compType Type of component @see SCWeb.core.ComponentType 
+     * @param {String} format SC-addr of format, that will be used to view or edit in component
+     */
+    createComponentInstanceByFormat: function(config, compType, format) {
+        var comp_map = this.getComponentsFormatMap(compType);
+        
+        if (comp_map) {
+            var comp_descr = comp_map[format];
             if (comp_descr) {
                 var comp = comp_descr.factory(config);
                 return comp;
@@ -144,7 +202,7 @@ SCWeb.core.ComponentManager = {
      * otherwise return false.
      */
     checkViewer: function(outputLang) {
-        if (this.components[SCWeb.core.ComponentType.viewer]) {
+        if (this.componentsByLang[SCWeb.core.ComponentType.viewer]) {
             return true;
         }
         

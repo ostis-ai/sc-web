@@ -27,6 +27,7 @@ from django.template import Context, loader
 from sctp.types import ScAddr, sctpIteratorType, ScElementType
 from sctp.client import sctpClient
 from keynodes import KeynodeSysIdentifiers, Keynodes
+import base64
 import keynodes
 import settings, json
 import time
@@ -447,4 +448,49 @@ def scAddrs(request):
         
         result = json.dumps(res)
         
+    return HttpResponse(result, 'application/json')
+
+
+def linkData(request):
+    result = '{}'
+    if not request.is_ajax():
+        sctp_client = newSctpClient()
+        
+        # parse arguments
+        first = True
+        arg = None
+        arguments = []
+        idx = 0
+        while first or (arg is not None):
+            arg_str = u'%d_' % idx
+            arg = ScAddr.parse_from_string(request.GET.get(arg_str, None))
+            if arg is not None:
+                arguments.append(arg)
+            first = False
+            idx += 1
+                       
+        keys = Keynodes(sctp_client)
+        keynode_nrel_format = keys[KeynodeSysIdentifiers.nrel_format]
+        
+        result = []
+        for arg in arguments:
+            
+            # try to resolve format
+            format = sctp_client.iterate_elements(sctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
+                                                  arg,
+                                                  ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
+                                                  ScElementType.sc_type_node | ScElementType.sc_type_const,
+                                                  ScElementType.sc_type_arc_pos_const_perm,
+                                                  keynode_nrel_format)
+            if format is not None:
+                item = { "format": format[0][2].to_id() }
+                
+                data = sctp_client.get_link_content(arg)
+                if data is not None:
+                    item["data"] = base64.b64encode(data)
+                result.append(item)
+                
+        result = json.dumps(result)
+                 
+    
     return HttpResponse(result, 'application/json')

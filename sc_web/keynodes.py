@@ -46,6 +46,7 @@ class KeynodeSysIdentifiers:
     nrel_translation = 'nrel_translation'
     nrel_decomposition = 'nrel_decomposition'
     nrel_author = 'nrel_author'
+    nrel_format = 'hypermedia_nrel_format'
     
     question = 'question'
     question_nrel_answer = 'question_nrel_answer'

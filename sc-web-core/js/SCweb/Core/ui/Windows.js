@@ -52,7 +52,7 @@ SCWeb.core.ui.Windows = {
         $('#tabs_container').append('<li id="' + window_id + '" class="sc_window" window_num="' + window_num_str + '"><a href="#">Window ' + window_num_str + '</a><button class="close" window_num="' + window_num_str + '"><i class="icon-remove-sign"></i></button></li>');
         $('#tabs_data_container').append('<div id="' + window_data_container + '" class="sc_window_data" window_num="' + window_num_str + '"></div>');
         var config = {'container': window_data_container};
-        var window = SCWeb.core.ComponentManager.createComponentInstance(config, SCWeb.core.ComponentType.viewer, outputLang);
+        var window = SCWeb.core.ComponentManager.createComponentInstanceByOutputLnaguage(config, SCWeb.core.ComponentType.viewer, outputLang);
         this.windows[this.window_counter] = window;
         
         this.setActiveWindow(this.window_counter);
