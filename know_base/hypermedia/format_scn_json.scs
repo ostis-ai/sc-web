@@ -1,7 +1,0 @@
-format_scn_json <- sc_node_not_relation;;
-
-format_scn_json => nrel_main_ru_idtf:
-	[формат scn (json)];;
-
-format_scn_json => nrel_main_en_idtf:
-	[format scn (json)];;

@@ -1,0 +1,7 @@
+hypermedia_format_scs_json <- sc_node_not_relation;;
+
+hypermedia_format_scs_json => nrel_main_ru_idtf:
+	[формат scs (json)];;
+hypermedia_format_scs_json => nrel_main_en_idtf:
+	[format scs (json)];;
+

@@ -1,4 +1,0 @@
-nrel_translation <- sc_node_norole_relation;;
-
-nrel_translation => nrel_main_ru_idtf:
-	[трансляция*];;

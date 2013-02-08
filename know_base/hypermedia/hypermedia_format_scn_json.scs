@@ -1,0 +1,7 @@
+hypermedia_format_scn_json <- sc_node_not_relation;;
+
+hypermedia_format_scn_json => nrel_main_ru_idtf:
+	[формат scn (json)];;
+
+hypermedia_format_scn_json => nrel_main_en_idtf:
+	[format scn (json)];;
