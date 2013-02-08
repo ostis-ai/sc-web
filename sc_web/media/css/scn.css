@@ -38,7 +38,7 @@
 }
 
 .SCnFieldMarker {
-	/*width: 20px;*/
+	width: 15px;
 	text-align: left;
 	float: left;
 	margin-top: -2px;
@@ -80,4 +80,8 @@
 
 #scncontainer a.SCnLink {
     color: #0088CC;
+}
+
+.SCnLevel{
+	padding-left: 15px;
 }

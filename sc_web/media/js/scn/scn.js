@@ -13,7 +13,7 @@ Ostis.ui.scn.Viewer = function(config) {
 
         _onNewContent : function(event, data) {
 
-//            var scPartition = $.parseJSON(data);
+            // var scPartition = $.parseJSON(data);
             var outputData = htmlBuilder.buildTree(data);
             nodeLabels = [];
             toTranslate = [];
@@ -81,7 +81,6 @@ Ostis.ui.scn.HtmlBuilder = function() {
         FILE : 'file',
         REF_FILE : 'ref_file'
     };
-
     return {
 
         buildTree : function(data) {
@@ -158,23 +157,28 @@ Ostis.ui.scn.HtmlBuilder = function() {
             var resSen = "<div class='" + Ostis.ui.scn.SCnCssClass.SENTENCE
                     + "'>";
             var buildMarker = true;
+            var shiftLevel = false;
             if (arc.SCAttributes) {
                 resSen += this._buildField(arc, $.proxy(this._buildAttrValue,
-                        this), buildMarker);
+                        this), buildMarker, shiftLevel);
                 buildMarker = false;
+                shiftLevel = true;
             }
             if (arc.SCNode) {
                 resSen += this._buildField(arc, $.proxy(this._buildNodeValue,
-                        this), buildMarker);
+                        this), buildMarker, shiftLevel);
             }
             resSen += "</div>";
             return resSen;
         },
 
-        _buildField : function(arc, valContVisitor, buildMarker) {
+        _buildField : function(arc, valContVisitor, buildMarker, shiftLevel) {
 
-            var fieldRes = "<div class='" + Ostis.ui.scn.SCnCssClass.FIELD
-                    + "'>";
+            var fieldRes = "<div class='" + Ostis.ui.scn.SCnCssClass.FIELD;
+            if (shiftLevel) {
+                fieldRes = fieldRes + " " + Ostis.ui.scn.SCnCssClass.LEVEL;
+            }
+            fieldRes = fieldRes + "'>";
             if (buildMarker && arc.type) {
                 fieldRes += this._buildMarker(arc);
             }
@@ -350,8 +354,10 @@ Ostis.ui.scn.SCnCssClass = {
     LOOP : 'SCnTransContent',
     SELECTABLE : 'SCnSelectable',
     HOVERED : 'SCnHovered',
-    SELECTED : 'SCnSelected'
+    SELECTED : 'SCnSelected',
+    LEVEL : 'SCnLevel'
 };
+
 
 Ostis.ui.scn.Selection = function(parent) {
 
