@@ -1,0 +1,12 @@
+/!* keyword: scs_divider_double_plus */
+scs_divider_double_plus => nrel_main_ru_idtf: 
+	[sc.s-разделитель двойной плюс] ;;
+
+scs_divider_double_plus <= nrel_inclusion:
+	scs_divider_modifier;;
+scs_divider_double_plus <= scs_nrel_representation_scs_editor:
+	[++];;
+scs_divider_double_plus <= scs_nrel_representation_standart_editor:
+	[++];;
+scs_divider_double_plus <= nrel_explanation:
+	[Является изображением переменной позитивной стационарной sc-дуги, проведенной из узла, имя которого находится слева от данного разделителя, в sc-коннектор, связывающий модификатор, имя которого стоит после данного разделителя, и модифицируемый указанным модификатором sc-коннектор. Если указанные разделители встречаются в предложении несколько раз, то такая запись указывает, что все уточнения типа относятся к одному и тому же коннектору.];;

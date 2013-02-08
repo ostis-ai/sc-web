@@ -1,0 +1,7 @@
+/!* keyword: rrel_year */
+sc_node_role_relation -> rrel_year;;
+rrel_year => nrel_main_ru_idtf: 
+		[год'] ;;
+rrel_year => nrel_main_en_idtf: 		
+		[year'] ;;
+	

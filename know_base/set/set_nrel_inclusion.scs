@@ -1,0 +1,6 @@
+/!* keyword: set_nrel_inclusion */
+sc_node_norole_relation -> set_nrel_inclusion;;
+set_nrel_inclusion => nrel_main_ru_idtf: 
+  [включение*] ;;
+set_nrel_inclusion => nrel_main_en_idtf: 
+  [inclusion*] ;;

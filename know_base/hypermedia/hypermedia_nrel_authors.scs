@@ -1,0 +1,7 @@
+/!* keyword: hypermedia_nrel_authors */
+sc_node_norole_relation -> hypermedia_nrel_authors;;
+hypermedia_nrel_authors => nrel_main_ru_idtf: 	
+		[авторы*] ;;
+hypermedia_nrel_authors => nrel_main_en_idtf: 
+		[authors*] ;;
+	

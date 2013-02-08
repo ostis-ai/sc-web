@@ -1,0 +1,17 @@
+/!* keyword: scs_divider_common_type_arc */ 
+scs_divider_common_type_arc => nrel_main_ru_idtf: 
+	[sc.s-дуга общего вида] ;;
+scs_divider_common_type_arc <= nrel_inclusion:
+	scs_divider_connector_kernel;;
+scs_divider_common_type_arc <= scs_nrel_representation_scs_editor:
+	[→];;
+scs_divider_common_type_arc <= scs_nrel_representation_scs_editor:
+	[←];;
+scs_divider_common_type_arc <= scs_nrel_representation_standart_editor:
+	[<];;
+scs_divider_common_type_arc <= scs_nrel_representation_standart_editor:
+	[>];;
+scs_divider_common_type_arc => scs_nrel_representation_scg_code:
+	"file://../images/scs_divider/scs_divider_connector_kernel/image004.gif";;
+scs_divider_common_type_arc => scs_nrel_representation_scg_code:
+	"file://../images/scs_divider/scs_divider_connector_kernel/image005.gif";;

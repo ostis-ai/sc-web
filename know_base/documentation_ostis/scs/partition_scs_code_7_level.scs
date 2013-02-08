@@ -1,0 +1,13 @@
+/!* keyword: Partition_SCs_code_7_level */
+Partition_SCs_code_7_level => nrel_main_ru_idtf: 
+	[Раздел. SCs-код. Уровень 7] ;;
+Partition_SCs_code_7_level <- doc_atomic_partition;;
+Partition_SCs_code_7_level <= nrel_superpartition:
+	Partition_SCs_code;;
+Partition_SCs_code_7_level => nrel_basic_consequence:
+	Partition_scs_divider;;
+Partition_SCs_code_7_level <= nrel_basic_consequence:
+	Partition_SCs_code_6_level;;
+Partition_SCs_code_7_level = 
+	[*^"file://merged_content/partition_scs_code_7_level_content.scsi"*]
+;;

@@ -1,0 +1,4 @@
+/!* keyword: hypermedia_nrel_using_example */
+sc_node_norole_relation -> hypermedia_nrel_using_example;;
+hypermedia_nrel_using_example => nrel_main_ru_idtf:
+  [пример использования*] ;;

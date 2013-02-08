@@ -1,0 +1,6 @@
+/!* keyword: nrel_statements */
+sc_node_norole_relation -> nrel_statements;;
+nrel_statements => nrel_main_ru_idtf: 
+  [утверждения*] ;;
+nrel_statements => nrel_main_en_idtf: 
+  [statements*] ;;

@@ -1,0 +1,18 @@
+/!* keyword: scs_divider_const_pos_stat_accessory_arc */
+scs_divider_const_pos_stat_accessory_arc => nrel_main_ru_idtf: 
+	[константная позитивная стационарная sc.s-дуга принадлежности] ;;
+
+scs_divider_const_pos_stat_accessory_arc <= nrel_inclusion:
+	scs_divider_connector_kernel;;
+scs_divider_const_pos_stat_accessory_arc <= scs_nrel_representation_scs_editor:
+	[∍];;
+scs_divider_const_pos_stat_accessory_arc <= scs_nrel_representation_scs_editor:
+	[∊];;
+scs_divider_const_pos_stat_accessory_arc <= scs_nrel_representation_standart_editor:
+	[<-];;
+scs_divider_const_pos_stat_accessory_arc <= scs_nrel_representation_standart_editor:
+	[->];;
+scs_divider_const_pos_stat_accessory_arc => scs_nrel_representation_scg_code:
+	"file://../images/scs_divider/scs_divider_connector_kernel/image010.gif";;
+scs_divider_const_pos_stat_accessory_arc => scs_nrel_representation_scg_code:
+	"file://../images/scs_divider/scs_divider_connector_kernel/image011.gif";;
