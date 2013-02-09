@@ -1,0 +1,5 @@
+/!* keyword: set_different_type_set_class */
+set_different_type_set_class => nrel_main_ru_idtf:
+	[класс множеств различного семантического типа] ;;
+set_different_type_set_class => nrel_main_en_idtf: 
+	[different type set class] ;;	
