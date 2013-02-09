@@ -1,4 +1,4 @@
-;/!* keyword: set_singleton*/
+/!* keyword: set_singleton*/
 set_singleton => nrel_main_ru_idtf: 
 	[синглетон] ;;
 set_singleton => nrel_main_en_idtf: 

@@ -31,7 +31,7 @@ set_multiset => nrel_explanation:
 		S2 является как минимум однократным элементом множества S;<br>
 		S3 является как минимум однократным элементом множества S;<br>
 		S4 является как минимум четырехкратным элементом множества S;<br>
-	];;	
+	]
 	(*
 		<=> nrel_semantic_equivalence: "file://images/set_multiset.png";;
 		<=> nrel_semantic_equivalence: 

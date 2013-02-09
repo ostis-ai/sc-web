@@ -37,7 +37,7 @@ set_cantor_set => nrel_explanation:
 set_cantor_set => nrel_explanation:
 	[
 		Понятие натуральное число является канторовским множеством.
-	];;
+	]
 	(*
 		<=> nrel_semantic_equivalence: "file://images/set_cantor_set.png";;
 	*);;

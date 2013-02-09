@@ -15,7 +15,7 @@ set_nrel_power  <-  set_cantor_set  ;;
 set_nrel_power  <-  set_relation  ;;
 
 set_nrel_power => nrel_explanation:
-	[Мощность всех натуральных и целых чисел обозначается "алеф-нуль".] ;; 
+	[Мощность всех натуральных и целых чисел обозначается "алеф-нуль".]
 	(*
 		<=> nrel_semantic_equivalence: 	"file://images/set_nrel_power.png";;
 	*);;
