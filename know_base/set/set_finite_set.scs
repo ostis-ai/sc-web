@@ -1,0 +1,11 @@
+/!* keyword: set_finite_set*/
+set_finite_set => nrel_main_ru_idtf: 
+	[конечное множество] ;;
+set_finite_set <= nrel_subdividing:
+{
+	set_empty_set;
+	set_singleton;
+	set_couple;
+	set_triple;
+	set_quadruple
+};;	

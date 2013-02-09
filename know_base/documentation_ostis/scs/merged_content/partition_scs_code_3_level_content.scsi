@@ -44,9 +44,7 @@ scs_text_3_level -> rrel_example:
 			"file://../images/scs_divider/common_illusration.png";;
 	*);;
 scs_text_3_level -> rrel_example:
-	[
-		X => r1: r2: r3: Y;;</br>
-	]
+	[X => r1: r2: r3: Y;;]
 	(*
 		<=> nrel_semantic_equivalence: "file://../images/scs_text_example_3.png";;
 	*);;
