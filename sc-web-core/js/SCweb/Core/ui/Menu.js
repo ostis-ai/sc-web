@@ -78,7 +78,7 @@ SCWeb.core.ui.Menu = {
             
                 if ($(this).hasClass('cmd_atom')) {
                     
-                    var output_lang = SCWeb.core.ui.OutputLanguages.getLanguage();
+                    var output_lang = SCWeb.core.ui.Windows.getActiveWindowOtputLanguage();//SCWeb.core.ui.OutputLanguages.getLanguage();
                     
                     if (!output_lang) {
                         alert("There are no any output language selected");

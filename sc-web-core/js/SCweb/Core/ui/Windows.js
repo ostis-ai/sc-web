@@ -52,7 +52,7 @@ SCWeb.core.ui.Windows = {
         $('#tabs_container').append('<li id="' + window_id + '" class="sc_window" window_num="' + window_num_str + '"><a href="#">Window ' + window_num_str + '</a><button class="close" window_num="' + window_num_str + '"><i class="icon-remove-sign"></i></button></li>');
         $('#tabs_data_container').append('<div id="' + window_data_container + '" class="sc_window_data" window_num="' + window_num_str + '"></div>');
         var config = {'container': window_data_container};
-        var window = SCWeb.core.ComponentManager.createComponentInstanceByOutputLnaguage(config, SCWeb.core.ComponentType.viewer, outputLang);
+        var window = SCWeb.core.ComponentManager.createComponentInstanceByOutputLanguage(config, SCWeb.core.ComponentType.viewer, outputLang);
         this.windows[this.window_counter] = window;
 
         this._bindSemanticNeighbourhoodHandler(window_num_str, outputLang);
@@ -129,6 +129,21 @@ SCWeb.core.ui.Windows = {
         }
     },
     
+    /**
+     * Returns sc-addr of output language for currently active window
+     * If there are no any active windows, thern returns null
+     */
+    getActiveWindowOtputLanguage: function() {
+        if (this.active_window) {
+            var window = this.windows[this.active_window];
+            if (window) {
+                return window._outputLang;
+            }
+        }
+        
+        return null;
+    },
+    
     // ---------- Translation listener interface ------------
     updateTranslation: function(namesMap) {
         var wind = SCWeb.core.ui.Windows.windows[this.active_window];
@@ -170,5 +185,31 @@ SCWeb.core.ui.Windows = {
     _unbindSemanticNeighbourhoodHandler: function(windowId) {
         var windowContainerId = '#window_data_' + windowId;
         $(windowContainerId).unbind('semanticNeighbourhood');
+    },
+    
+    /**
+     * Create viewers for specified sc-links
+     * @param {Array} linkAddrs List of sc-link addrs
+     * @param {Object} containers Map of viewer containers (key: sc-link addr, value: container)
+     * @param {Function} success Function that calls on success result
+     * @param {Function} error Function that calls on error result
+     */
+    createViewersForScLinks: function(linkAddrs, container, success, error) {
+        SCWeb.core.Server.getLinksFormat(linkAddrs, 
+            function(formats) {
+                
+                for (var i = 0; i < linkAddrs.length; i++) {
+                    var fmt = formats[linkAddrs[i]];
+                    if (fmt) {
+                        var config = {"dataAddr": linkAddrs[i], "container": container};
+                        SCWeb.core.ComponentManager.createComponentInstanceByFormat(config, 
+                                SCWeb.core.ComponentType.viewer, fmt);
+                    }
+                }
+                
+                success();
+            },
+            error
+        );
     }
 };

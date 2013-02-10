@@ -209,25 +209,53 @@ SCWeb.core.Server = {
     /**
      * Function that get sc-link data from server
      * @param {Array} links List of sc-link addrs to get data
-     * @param {Function} callback Callback function, that recieve map of
-     * resolved sc-links data as argument. Data will be encoded in base64
+     * @param {Function} success Callback function, that recieve map of
+     * resolved sc-links format (key: sc-link addr, value: format addr).
+     * @param {Function} error Callback function, that calls on error
      */
-    getLinksData: function(links, callback) {
+    getLinksFormat: function(links, success, error) {
         var arguments = '';
         for (i = 0; i < links.length; i++){
-            var arg = links[i].addr;
+            var arg = links[i];
             arguments += i.toString() + '_=' + arg + '&';
         }
         
         SCWeb.core.Server._fireTaskStarted();
         $.ajax({
             type: "GET",
-            url: "api/linkData",
+            url: "api/linkFormat",
             data: arguments,
-            success: callback,
+            success: success,
+            error: error,
             complete: function(data) { 
                 SCWeb.core.Server._fireTaskFinished();
             }
         });
+    },
+    
+    
+    _buildLinkContentUrl: function(linkAddr) {
+        return 'api/linkContent?addr=' + linkAddr;
+    },
+    /**
+     * Returns data of specified content
+     * @param {String} addr sc-addr of sc-link to get data
+     * @param {String} fmt sc-addr of sc-link format node
+     * @param {Function} success Callback function, that recieve data.
+     * @param {Function} error Callback function, that calls on error
+     */
+    getLinkContent: function(addr, fmt, success, error) {
+        SCWeb.core.Server._fireTaskStarted();
+        
+        $.ajax({
+                url: this._linkContentUrl,
+                data: {"addr": addr},
+                success: success,
+                error: error,
+                dataType: dataType,
+                complete: function(data) { 
+                    SCWeb.core.Server._fireTaskFinished();
+                }
+            });
     }
 };

@@ -22,7 +22,7 @@ SCWeb.core.ComponentManager = {
     },
     
     _listener: null,
-    
+    _counter: 0,    
     _initialize_funcs: [],
     
     init: function(callback) {
@@ -63,7 +63,7 @@ SCWeb.core.ComponentManager = {
             // process formats
             compDescr["formatAddrs"] = {};
             if (compDescr.formats) {
-                for (var idx = 0; i < compDescr.formats.length; idx++) {
+                for (var idx = 0; idx < compDescr.formats.length; idx++) {
                     var format = compDescr.formats[idx];
                     var sc_addr = addrs[format];
                     if (sc_addr) {
@@ -109,8 +109,11 @@ SCWeb.core.ComponentManager = {
      * This object must to have attributes:
      * - type - component type. @see SCWeb.core.ComponentType
      * - factory - function, that return instance of component.
-     * It takes config object as a parameter, that passed into component.
      * - outputLang - output language that supports by component
+     * It takes config object as a parameter, that passed into component.
+     * Config object contains field such as:
+     * container - id of dom caontainer to append component
+     * dataAddr - sc-addr of sc-link, with data
      */
     registerComponent: function(compDescr) {
         
@@ -165,13 +168,15 @@ SCWeb.core.ComponentManager = {
      * view or edit in component
      * @return If component created, then return it instance; otherwise return null
      */
-    createComponentInstanceByOutputLnaguage: function(config, compType, outputLang) {
+    createComponentInstanceByOutputLanguage: function(config, compType, outputLang) {
         var comp_map = this.getComponentsLangMap(compType);
         
         if (comp_map) {
             var comp_descr = comp_map[outputLang];
             if (comp_descr) {
                 var comp = comp_descr.factory(config);
+                comp._outputLang = outputLang;
+                comp._id = SCWeb.core.ComponentManager._counter++;
                 return comp;
             }
         }
@@ -190,6 +195,8 @@ SCWeb.core.ComponentManager = {
             var comp_descr = comp_map[format];
             if (comp_descr) {
                 var comp = comp_descr.factory(config);
+                comp._id = SCWeb.core.ComponentManager._counter++;
+                comp._format = format;
                 return comp;
             }
         }
@@ -238,5 +245,4 @@ SCWeb.core.ComponentManager = {
             this._listener.componentUnregistered(compDescr);
         }
     }
-    
 };
