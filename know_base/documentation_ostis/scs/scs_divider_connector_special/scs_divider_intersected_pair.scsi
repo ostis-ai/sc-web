@@ -6,7 +6,7 @@ scs_divider_intersected_pair <= nrel_inclusion:
 scs_divider_intersected_pair <= scs_nrel_representation_scs_editor:
 	[⊃⊂];;
 scs_divider_intersected_pair <= nrel_explanation:
-	[Изображение связки отношения <i>пара пересекающихся множеств*</i>];;
+	[Изображение связки отношения пара пересекающихся множеств*];;
 scs_divider_intersected_pair <= nrel_using_example:
 	[треугольник ⊃⊂ правильный многоугольник;;]
 	(*

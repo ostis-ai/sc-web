@@ -9,7 +9,7 @@ scs_divider_non_inclusion <= scs_nrel_representation_scs_editor:
 scs_divider_non_inclusion <= scs_nrel_representation_scs_editor:
 	[⊅];;
 scs_divider_non_inclusion <= nrel_explanation:
-	[Изображение связки, не принадлежащей отношению <i>включение*</i>];;
+	[Изображение связки, не принадлежащей отношению включение*];;
 scs_divider_non_inclusion <= nrel_using_example:
 	[треугольник ⊄ правильный многоугольник;;]
 	(*
