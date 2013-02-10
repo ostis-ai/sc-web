@@ -18,14 +18,14 @@ set_nrel_union <- set_relation;;
 set_nrel_union <= rrel_example:
 	[Пример изображения отношения объединения множеств.];;
 	
-set_nrel_union <= nrel_illustration: "file://set_nrel_union1.png"
+set_nrel_union <= nrel_illustration: "file://images/set_nrel_union1.png"
 	(*
 		<=> nrel_semantic_equivalence: 
 		[<{sj,si}, объединение_:s> включение* объединение* 
 		<br>/*на теоретико-множественном математическом языке*/];;
 	*);;		
 
-set_nrel_union <= nrel_illustration: "file://set_nrel_union2.png"
+set_nrel_union <= nrel_illustration: "file://images/set_nrel_union2.png"
 	(*
 		=> nrel_explanation: 
 			[При объединении цепи и цикла получаем маршрут.];;

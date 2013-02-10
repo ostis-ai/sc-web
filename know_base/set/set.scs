@@ -122,7 +122,7 @@ set => nrel_explanation:
 		/*в SCg-коде*/
 	]
 	(*
-		<=> nrel_semantic_equivalence: "file://../images/set1.png";;
+		<=> nrel_semantic_equivalence: "file://images/set1.png";;
 	*);;
 
 set => nrel_explanation:
@@ -131,7 +131,7 @@ set => nrel_explanation:
 		/*в SCg-коде*/
 	]
 	(*
-		<=> nrel_semantic_equivalence: "file://../images/set2.png";;
+		<=> nrel_semantic_equivalence: "file://images/set2.png";;
 		<=> nrel_semantic_equivalence: [
 				/*на теоретико-множественном математическом языке:*/<br>
 				N = {1, 2, 3, ...}.
