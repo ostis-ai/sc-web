@@ -89,6 +89,9 @@ SCWeb.core.ui.Windows = {
                 $(this).addClass('no_display');
             }
         });
+
+        // translate activated window
+        this.updateTranslation();
     },
 
     destroyWindow: function(windowId) {
