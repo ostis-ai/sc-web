@@ -192,6 +192,6 @@ scs_divider_subsentence <= nrel_explanation:
 scs_divider_subsentence => nrel_using_example:
 	[Треугк(ТчкB;ТчкC;ТчкD) => сторона*: Отр(ТчкC;ТчкD) (* => граничная точка*: ТчкC; ТчкD;; *);;]
 	(*
-		<=> nrel_semantic_equivalence: [*Треугк(ТчкВ;ТчкС;ТчкD) => сторона*: Отр(ТчкС;ТчкD);; Отр(ТчкС;ТчкD)=> граничная точка*: ТчкС; ТчкD;;*];;
+		<=> nrel_semantic_equivalence: [Треугк(ТчкВ;ТчкС;ТчкD) => сторона*: Отр(ТчкС;ТчкD);; Отр(ТчкС;ТчкD)=> граничная точка*: ТчкС; ТчкD;;];;
 		<=> nrel_semantic_equivalence: "file://../images/scs_divider/example_subsentence.png";;
 	*);;
