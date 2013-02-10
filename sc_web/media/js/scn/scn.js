@@ -549,7 +549,7 @@ Ostis.ui.scn.Viewer = function(config) {
         },
 
         translateIdentifiers : function(language) {
-
+            currentLanguage = language;
             var proxyUpdateTrans = $.proxy(this.updateTranslation, this);
             SCWeb.core.Translation.translate(toTranslate, language, proxyUpdateTrans);
         },
