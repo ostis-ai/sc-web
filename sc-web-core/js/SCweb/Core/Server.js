@@ -240,19 +240,17 @@ SCWeb.core.Server = {
     /**
      * Returns data of specified content
      * @param {String} addr sc-addr of sc-link to get data
-     * @param {String} fmt sc-addr of sc-link format node
      * @param {Function} success Callback function, that recieve data.
      * @param {Function} error Callback function, that calls on error
      */
-    getLinkContent: function(addr, fmt, success, error) {
+    getLinkContent: function(addr, success, error) {
         SCWeb.core.Server._fireTaskStarted();
         
         $.ajax({
-                url: this._linkContentUrl,
+                url: 'api/linkContent',
                 data: {"addr": addr},
                 success: success,
                 error: error,
-                dataType: dataType,
                 complete: function(data) { 
                     SCWeb.core.Server._fireTaskFinished();
                 }

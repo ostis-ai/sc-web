@@ -54,7 +54,15 @@ SCWeb.core.ComponentManager = {
             callback();
         }
         
-        SCWeb.core.Server.resolveScAddr([compDescr.outputLang].concat(compDescr.formats), function(addrs) {
+        var addrs = [];
+        if (compDescr.outputLang) {
+            addrs.push(compDescr.outputLang);
+        }
+        if (compDescr.formats) {
+            addrs = addrs.concat(compDescr.formats);
+        }
+        
+        SCWeb.core.Server.resolveScAddr(addrs, function(addrs) {
             var sc_addr = addrs[compDescr.outputLang];
             if (sc_addr) {
                 compDescr["outputLangAddr"] = sc_addr;
@@ -71,6 +79,8 @@ SCWeb.core.ComponentManager = {
                     }
                 }
             }
+            
+            compDescr._addrs_map = addrs;
             
             callback();
         });

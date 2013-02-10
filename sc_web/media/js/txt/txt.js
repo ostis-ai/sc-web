@@ -22,11 +22,15 @@ TextViewer.prototype = {
         this._config = config;
         
         if (this._config.dataAddr) {
-            $.ajax({
+            /*$.ajax({
                 url: SCWeb.core.Server._buildLinkContentUrl(this._config.dataAddr),
                 success: $.proxy(this.receiveData, this),
                 dataType: "text"
-            });
+            });*/
+            
+            SCWeb.core.Server.getLinkContent(this._config.dataAddr, 
+                                            $.proxy(this.receiveData, this),
+                                            function () {});
         }
     },
     
