@@ -1,0 +1,6 @@
+/!* keyword: set_nrel_subdividing */
+sc_node_norole_relation -> set_nrel_subdividing;;
+set_nrel_subdividing => nrel_main_ru_idtf: 
+  [разбиение*] ;;
+set_nrel_subdividing => nrel_main_en_idtf: 
+  [subdividing*] ;;

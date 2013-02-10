@@ -1,0 +1,7 @@
+/!* keyword: rrel_month */
+sc_node_role_relation -> rrel_month;;
+rrel_month => nrel_main_ru_idtf: 
+		[месяц'] ;;
+rrel_month => nrel_main_en_idtf: 
+		[month'] ;;
+	

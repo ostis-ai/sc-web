@@ -182,5 +182,30 @@ SCWeb.core.Server = {
                 SCWeb.core.Server._fireTaskFinished();
             }
         });
+    },
+    
+    /**
+     * Function that get sc-link data from server
+     * @param {Array} links List of sc-link addrs to get data
+     * @param {Function} callback Callback function, that recieve map of
+     * resolved sc-links data as argument. Data will be encoded in base64
+     */
+    getLinksData: function(links, callback) {
+        var arguments = '';
+        for (i = 0; i < links.length; i++){
+            var arg = links[i].addr;
+            arguments += i.toString() + '_=' + arg + '&';
+        }
+        
+        SCWeb.core.Server._fireTaskStarted();
+        $.ajax({
+            type: "GET",
+            url: "api/linkData",
+            data: arguments,
+            success: callback,
+            complete: function(data) { 
+                SCWeb.core.Server._fireTaskFinished();
+            }
+        });
     }
 };

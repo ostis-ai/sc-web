@@ -1,0 +1,6 @@
+/!* keyword: hypermedia_nrel_translation */
+sc_node_norole_relation -> hypermedia_nrel_translation;;
+hypermedia_nrel_translation => nrel_main_ru_idtf: 
+		[трансляция*] ;;		
+hypermedia_nrel_translation => nrel_main_en_idtf: 
+		[translation*] ;;

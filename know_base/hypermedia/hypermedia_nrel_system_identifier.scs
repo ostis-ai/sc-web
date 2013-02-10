@@ -1,0 +1,11 @@
+hypermedia_nrel_system_identifier <- sc_node_norole_relation;;
+
+/* identifiers */
+hypermedia_nrel_system_identifier => hypermedia_nrel_system_identifier:
+	[hypermedia_nrel_system_identifier];;
+
+hypermedia_nrel_system_identifier => nrel_main_ru_idtf:
+	[системный идентификатор*];;
+
+hypermedia_nrel_system_identifier => nrel_main_en_idtf:
+	[system_identifier*];;

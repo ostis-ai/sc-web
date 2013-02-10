@@ -1,0 +1,6 @@
+/!* keyword: hypermedia_nrel_definition_type_statement */
+sc_node_norole_relation -> hypermedia_nrel_definition_type_statement;;
+hypermedia_nrel_definition_type_statement => nrel_main_ru_idtf: 
+  [утверждение определяющего типа*] ;;
+hypermedia_nrel_definition_type_statement => nrel_main_en_idtf: 
+  [statement of defining type*] ;;

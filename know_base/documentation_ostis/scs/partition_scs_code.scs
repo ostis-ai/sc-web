@@ -1,0 +1,22 @@
+/!* keyword: Partition_SCs_code */
+Partition_SCs_code => nrel_main_ru_idtf: 
+	[Раздел. SCs-код] ;;
+Partition_SCs_code => nrel_ru_idtf: 
+	[Раздел. SCs-код версии 0.1.0] ;;
+
+Partition_SCs_code <= nrel_decomposition: 
+	{
+		Partition_SCs_code_1_level;
+		Partition_SCs_code_2_level;
+		Partition_SCs_code_3_level;
+		Partition_SCs_code_4_level;
+		Partition_SCs_code_5_level;
+		Partition_SCs_code_6_level;
+		Partition_SCs_code_7_level;
+		Partition_scs_divider
+	};;
+	
+Partition_SCs_code <- doc_non_atomic_partition;;
+Partition_SCs_code => nrel_introduction:
+		[*^"file://scs_code.scsi"*]
+	;;

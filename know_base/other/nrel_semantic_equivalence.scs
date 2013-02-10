@@ -1,0 +1,4 @@
+/!* keyword: nrel_semantic_equivalence */
+sc_node_norole_relation -> nrel_semantic_equivalence;;
+nrel_semantic_equivalence => nrel_main_ru_idtf:
+  [семантическая эквивалентность*] ;;

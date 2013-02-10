@@ -1,0 +1,6 @@
+/!* keyword: hypermedia_nrel_illustration */
+sc_node_norole_relation -> hypermedia_nrel_illustration;;
+hypermedia_nrel_illustration => nrel_main_ru_idtf: 
+  [иллюстрация*] ;;
+hypermedia_nrel_illustration => nrel_main_en_idtf: 
+  [illustration*] ;;

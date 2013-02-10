@@ -1,0 +1,6 @@
+/!* keyword: rrel_day */
+sc_node_role_relation -> rrel_day;;
+rrel_day => nrel_main_ru_idtf: 
+		[день'] ;;
+rrel_day => nrel_main_en_idtf: 
+		[day'] ;;

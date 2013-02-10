@@ -1,0 +1,7 @@
+/!* keyword: rrel_width */
+sc_node_role_relation -> rrel_width;;
+rrel_width => nrel_main_ru_idtf: 
+		[ширина'] ;;
+rrel_width => nrel_main_en_idtf: 
+		[width'] ;;
+	

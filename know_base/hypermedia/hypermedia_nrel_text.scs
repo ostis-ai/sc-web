@@ -1,0 +1,6 @@
+/!* keyword: hypermedia_nrel_text */
+sc_node_norole_relation -> hypermedia_nrel_text;;
+hypermedia_nrel_text => nrel_main_ru_idtf: 
+  [текст*] ;;
+hypermedia_nrel_text => nrel_main_en_idtf:   
+  [text*] ;;

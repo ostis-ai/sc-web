@@ -1,0 +1,12 @@
+/!* keyword: scs_divider_double_semicolon */
+scs_divider_double_semicolon => nrel_main_ru_idtf: 
+	[sc.s-разделитель двойная точка с запятой] ;;
+
+scs_divider_double_semicolon <= nrel_inclusion:
+	scs_divider_semicolon;;
+scs_divider_double_semicolon <= nrel_representation_scs_editor:
+	[;;];;
+scs_divider_double_semicolon <= nrel_representation_standart_editor:
+	[;;];;
+scs_divider_double_semicolon <= nrel_explanation:
+	[Разделяет sc.s-предложения в рамках sc.s-текста];;

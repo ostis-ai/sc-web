@@ -1,0 +1,4 @@
+/!* keyword: hypermedia_nrel_explanation */
+sc_node_norole_relation -> hypermedia_nrel_explanation;;
+hypermedia_nrel_explanation => nrel_main_ru_idtf: 
+  [пояснение*] ;;

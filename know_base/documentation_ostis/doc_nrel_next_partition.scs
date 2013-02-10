@@ -1,0 +1,4 @@
+/!* keyword: doc_nrel_next_partition */
+sc_node_norole_relation -> doc_nrel_next_partition;;
+doc_nrel_next_partition => nrel_main_ru_idtf:
+  [следующий раздел*] ;;

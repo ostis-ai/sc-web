@@ -1,0 +1,7 @@
+/!* keyword: hypermedia_nrel_description */
+sc_node_norole_relation -> hypermedia_nrel_description;;
+hypermedia_nrel_description => nrel_main_ru_idtf: 
+		[описание*] ;;
+hypermedia_nrel_description => nrel_main_en_idtf: 		
+		[description*] ;;
+	
