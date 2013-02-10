@@ -6,7 +6,8 @@ ui_menu_na_view_kb <= nrel_decomposition:
 {
 	ui_menu_na_view_kb_base;
 	ui_menu_na_view_kb_structure;
-	ui_menu_na_view_kb_semantic_square
+	ui_menu_na_view_kb_semantic_square;
+	ui_menu_na_view_kb_identifiers
 };;
 
 

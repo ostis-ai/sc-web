@@ -1,0 +1,9 @@
+question_search_all_identifiers <- sc_node_not_relation;;
+
+question_search_all_identifiers <- question;;
+
+question_search_all_identifiers => nrel_main_ru_idtf:
+	[вопрос поиска всех идентификаторов];;
+
+question_search_all_identifiers => nrel_main_en_idtf:
+	[question to search for all identifiers];;
