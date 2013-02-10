@@ -1,5 +1,8 @@
 SCWeb.core.Server = {
-    
+    _semanticNeighborhood: {
+        commandId: 'ui_menu_view_full_semantic_neighborhood',
+        commandAddr: null
+    },
     _listeners: [],
     
     /*!
@@ -157,6 +160,25 @@ SCWeb.core.Server = {
                 SCWeb.core.Server._fireTaskFinished();
             }
         });
+    },
+
+    /**
+     * Gets semantic neighbourhood for the specified node.
+     *
+     * @param {String} scAddr The SC address of node
+     * @param {String} outputLanguage The output language SC address
+     * @param {Function} callback
+     */
+    getSemanticNeighbourhood: function(scAddr, outputLanguage, callback) {
+        if(this._semanticNeighborhood.commandAddr) {
+            this.doCommand(this._semanticNeighborhood.commandAddr, outputLanguage, [scAddr], callback);
+        } else {
+            var me = this;
+            this.resolveScAddr([this._semanticNeighborhood.commandId], function(addressMap) {
+                me._semanticNeighborhood.commandAddr = addressMap[me._semanticNeighborhood.commandId];
+                me.doCommand(me._semanticNeighborhood.commandAddr, outputLanguage, [scAddr], callback);
+            });
+        }
     },
     
     /**

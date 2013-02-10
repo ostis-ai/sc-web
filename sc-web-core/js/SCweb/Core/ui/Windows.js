@@ -54,6 +54,8 @@ SCWeb.core.ui.Windows = {
         var config = {'container': window_data_container};
         var window = SCWeb.core.ComponentManager.createComponentInstanceByOutputLnaguage(config, SCWeb.core.ComponentType.viewer, outputLang);
         this.windows[this.window_counter] = window;
+
+        this._bindSemanticNeighbourhoodHandler(window_num_str, outputLang);
         
         this.setActiveWindow(this.window_counter);
     },
@@ -91,7 +93,9 @@ SCWeb.core.ui.Windows = {
 
     destroyWindow: function(windowId) {
         var window = this.windows[windowId];
-        
+
+        this._unbindSemanticNeighbourhoodHandler(windowId);
+
         window.destroy();
         delete this.windows[windowId];
         var tabSelector = '#tabs_container li[window_num=' + windowId + ']';
@@ -141,5 +145,30 @@ SCWeb.core.ui.Windows = {
      */
     getObjectsToTranslate: function() {
         return [];
+    },
+
+    /**
+     * Binds component event handler for the obtaining semantic neighbourhood.
+     *
+     * @param {String} windowId The component window id
+     * @param {String} outputLanguage The SC address of the component output language
+     */
+    _bindSemanticNeighbourhoodHandler: function(windowId, outputLanguage) {
+        var windowContainerId = '#window_data_' + windowId;
+        $(windowContainerId).bind('semanticNeighbourhood', function(event, scAddr) {
+            SCWeb.core.Server.getSemanticNeighbourhood(scAddr, outputLanguage, function(data) {
+                SCWeb.core.ui.Windows.sendDataToWindow(windowId, data);
+            });
+        });
+    },
+
+    /**
+     * Unbinds component event handler for the obtaining semantic neighbourhood.
+     *
+     * @param {String} windowId The component window id
+     */
+    _unbindSemanticNeighbourhoodHandler: function(windowId) {
+        var windowContainerId = '#window_data_' + windowId;
+        $(windowContainerId).unbind('semanticNeighbourhood');
     }
 };
