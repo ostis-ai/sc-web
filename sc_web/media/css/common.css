@@ -15,7 +15,8 @@
 }
 
 #main_container {
-    
+    padding-top: 50px;
+    padding-bottom: 100px;
 }
 
 #tabs_container button.close {
@@ -50,6 +51,7 @@
     margin-top: 6px;
     vertical-align: middle;
     font-size: 10px;
+    color:  #aaa;
 }
 
 .help_button {
