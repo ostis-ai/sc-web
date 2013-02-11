@@ -46,11 +46,6 @@ sc_element_alphabet => nrel_ru_idtf:
 	[Алфавит атомарных фрагментов sc-конструкций] ;;
 sc_element_alphabet => nrel_ru_idtf: 
 	[Алфавит SC-кода] ;;
-sc_element_alphabet -> sc_node;;
-sc_element_alphabet -> sc_edge;;
-sc_element_alphabet -> sc_arc_common;;
-sc_element_alphabet -> sc_arc_main;;
-sc_element_alphabet -> sc_link;;
 
 /!* keyword: sc_node */
 sc_node => nrel_main_ru_idtf: 
@@ -220,6 +215,4 @@ sc-ребра выполняют одинаковые роли. Компонен
 у которого есть два компонента, но ни один из них не является вторым, а sc-дуга представляет собой такой sc-коннектор, у которого один компонент является вторым компонентом
  (компонентом номер два), а другой компонент – просто компонентом (без номера).
 	];;
-
-
 
