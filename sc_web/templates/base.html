@@ -25,6 +25,7 @@
     
     <script src="media/js/scn/scn.js" type="text/javascript"></script>
     <script src="media/js/txt/txt.js" type="text/javascript"></script>
+    <script src="media/js/image/image.js" type="text/javascript"></script>
 
 	
 	{% block head %}{% endblock %}
@@ -36,7 +37,7 @@
 	<!--<div class="page-header">
 		<h1>IMS<small>OSTIS</small></h1>
     </div>-->
-	<div class="navbar">
+	<div class="navbar navbar-inverse navbar-fixed-top">
 		<div class="navbar-inner">
 			<a class="brand" href="#">OSTIS</a>
             <!-- Help button -->
@@ -52,7 +53,7 @@
             </div>
             
 			<div class="language_selectors navbar-form pull-right">
-                <button id="btn_add_new_window" class="btn"><i class="icon-plus-sign"></i></button>
+                <button id="btn_add_new_window" class="btn btn-inverse"><i class="icon-plus-sign icon-white"></i></button>
 				<select class="combobox" id="select_output_language">
 					<!-- Options will be inserted on start -->
 				</select>
@@ -73,17 +74,16 @@
         </div>
 		<!--{% block content %}{% endblock %}-->
     </div>
-
-    <div id="arguments_container" class="well">
-        <div id="arguments_buttons" class="btn-group">           
-            <!-- Buttons will be inserted on arguments append -->
-        </div>
-        
-        <button id="arguments_clear_button" class="close">Clear</button>
-    </div>
     
-    <div id="footer" class="navbar navbar-fixed-bottom">
+    <div id="footer" class="navbar navbar-inverse navbar-fixed-bottom">
         <div class="navbar-inner">
+            <div id="arguments_container" class="well well-small">
+                <div id="arguments_buttons" class="btn-group">           
+                    <!-- Buttons will be inserted on arguments append -->
+                </div>
+        
+                <button id="arguments_clear_button" class="close">Clear</button>
+            </div>
             Copyright © 2012 <a href="#">OSTIS</a> 
         </div>
     </div> 
