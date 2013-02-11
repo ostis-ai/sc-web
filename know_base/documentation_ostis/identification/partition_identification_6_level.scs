@@ -1,0 +1,16 @@
+/!* keyword: partition_identification_6_level */
+partition_identification_6_level => nrel_main_ru_idtf: 
+	[Раздел ОSTIS. Правила построения неатомарных sc-идентификаторов sc-коннекторов, используемых в sc.s-текстах шестого уровня сложности] ;;
+
+partition_identification_6_level <= nrel_superpartition:
+	partition_identification_common_regulations;;
+
+partition_identification_6_level => doc_nrel_next_partition:
+	partition_identification_naming_rule;;
+
+partition_identification_6_level <- doc_atomic_partition;;
+
+partition_identification_6_level => nrel_explanation:
+	[В sc.s-предложениях уровня 6 разрешается использовать любые виды неатомарных идентификаторов.];;
+
+partition_identification_6_level = [*^"file://content/partition_identification_6_level_content.scsi"*];;

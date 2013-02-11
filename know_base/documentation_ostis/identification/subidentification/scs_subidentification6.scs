@@ -1,0 +1,12 @@
+/!* keyword: scs_subidentification_6 */
+scs_subidentification_6 => nrel_main_ru_idtf: 
+	[Раздел OSTIS. Имена собственные и имена нарицательные в идентификаторах] ;;
+
+scs_subidentification_6 <= nrel_superpartition:
+partition_identification_common_regulations;;
+
+scs_subidentification_6 => doc_nrel_next_partition:
+scs_subidentification_7;;
+
+scs_subidentification_6 => nrel_introduction:
+[В рамках базы знаний используются идентификаторы как имен собственных, так и нарицательных. Для идентификаторов каждого из типов объектов существуют свои правила формирования идентификаторов];;

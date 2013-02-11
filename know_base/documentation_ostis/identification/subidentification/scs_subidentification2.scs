@@ -1,0 +1,14 @@
+/!* keyword: scs_subidentification_2 */
+scs_subidentification_2 => nrel_main_ru_idtf: 
+	[Раздел OSTIS. Общие требования, предъявляемые к sc-идентификаторам] ;;
+	
+scs_subidentification_2 <= nrel_superpartition:
+partition_identification_common_regulations;;
+
+scs_subidentification_2 => doc_nrel_next_partition:
+scs_subidentification_3;;
+
+scs_subidentification_2 => nrel_introduction:
+[В базе знаний хранятся как константные элементы, так и  переменные. Для именования переменных элементов используется символ нижнего подчеркивания, который ставится перед именем переменной. Для именования константных элементов не существует каких-либо особых признаков, поэтому будем считать элементы константными, если в начале его идентификатора не используется знак нижнего подчеркивания
+
+scs_subidentification_2 = [*^"file://../content/scs_subidentification_2_content.scsi"*];;

@@ -1,0 +1,9 @@
+/!* keyword: scs_subidentification_3 */
+scs_subidentification_3 => nrel_main_ru_idtf: 
+	[Раздел OSTIS. Формальная трактовка sc-идентификатора как элемента семантической сети] ;;
+	
+scs_subidentification_3 <= nrel_superpartition:
+partition_identification_common_regulations;;
+
+scs_subidentification_3 => doc_nrel_next_partition:
+scs_subidentification_4;;

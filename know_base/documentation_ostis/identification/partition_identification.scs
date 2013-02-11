@@ -1,0 +1,28 @@
+/!* keyword: partition_identification */
+partition_identification => nrel_main_ru_idtf: 
+	[Раздел OSTIS. sc-идентификатор] ;;
+	
+partition_identification => nrel_ru_idtf:
+[Идентификация sc-элементов];;
+
+partition_identification => nrel_ru_idtf:
+[Правила построения идентификаторов sc-элементов];;
+
+partition_identification => nrel_ru_idtf:
+[Раздел базы знаний OSTIS, описывающий sc-идентификаторы];;
+
+partition_identification <- scs_ostis_section;;
+
+partition_identification <- doc_non_atomic_partition;;
+
+partition_identification => nrel_introduction:
+[Данный раздел описывает правила построения идентификаторов sc-элементов];;
+
+partition_identification <= nrel_decomposition: 
+	{
+		partition_identification_common_regulations;
+		partition_identification_1_level;
+		partition_identification_2_level;
+		partition_identification_6_level;
+		partition_identification_naming_rule
+	};;

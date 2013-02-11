@@ -1,0 +1,25 @@
+/!* keyword: partition_identification_common_regulations */
+partition_identification_common_regulations => nrel_main_ru_idtf: 
+	[Раздел OSTIS. Общее положение построения идентификаторов sc-элементов] ;;
+
+partition_identification_common_regulations <= nrel_superpartition:
+[Раздел OSTIS. sc-идентификатор];;
+
+partition_identification_common_regulations => doc_nrel_next_partition:
+partition_identification_1_level;;
+
+partition_identification_common_regulations <- doc_non_atomic_partition;;
+
+partition_identification_common_regulations => nrel_introduction:
+[Данный раздел описывает общие правила построения идентификаторов sc-элементов];;
+
+partition_identification_common_regulations <= nrel_decomposition: 
+	{
+		scs_subidentification_1;
+		scs_subidentification_2;
+		scs_subidentification_3;
+		scs_subidentification_4;
+		scs_subidentification_5;
+		scs_subidentification_6;
+		scs_subidentification_7
+	};;
