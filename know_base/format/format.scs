@@ -9,9 +9,10 @@ format => nrel_main_en_idtf:
 
 format = 
 { 
-	hypermedia_format_scs_json; 
-	hypermedia_format_scg_json; 
-	hypermedia_format_scn_json;
-	hypermedia_format_png;
-	hypermedia_format_jpg
+	format_scs_json; 
+	format_scg_json; 
+	format_scn_json;
+	format_png;
+	format_jpg;
+	format_txt
 };;

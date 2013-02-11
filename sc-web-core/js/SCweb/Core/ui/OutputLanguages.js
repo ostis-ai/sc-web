@@ -1,20 +1,19 @@
 SCWeb.core.ui.OutputLanguages = {
     _menuId: 'select_output_language',
     _languages: [],
+    _transl_languages: [], // list of output languages that has translation support
 
     init: function(callback) {
         SCWeb.core.Translation.registerListener(this);
         SCWeb.core.ComponentManager.setListener(this);
         
-        //this.update(callback);
-        if (callback)
-            callback();
+        this.update(callback);
     },
 
     update: function(callback) {
-        var me = this;
+        var self = this;
         SCWeb.core.Server.getOutputLanguages(function(languages) {
-            me._updateLanguages(languages);
+            self._updateLanguages(languages);
             if(callback) {
                 callback();
             }
@@ -30,25 +29,19 @@ SCWeb.core.ui.OutputLanguages = {
      */
     _appendLanguageToControl: function(language) {
         
-        
         $('#' + this._menuId).append(
             '<option value="' + language + '"' + 'id="output_lang_' + language + '" sc_addr="' + language + '">' + language + '</option>'
         );
     },
 
     _updateLanguages: function(languages) {
-        this._languages = [];
 
+        this._transl_languages = [];
         var language;
         for(var i = 0; i < languages.length; i++) {
             
             language = languages[i];
-            this._languages.push(language);
-            // do not appen languages, that haven't viewers
-            if (!SCWeb.core.ComponentManager.checkViewer(language))
-                continue;
-            
-            this._appendLanguageToControl(language);
+            this._transl_languages.push(language);
         }
 
     },
@@ -74,7 +67,7 @@ SCWeb.core.ui.OutputLanguages = {
     // ----------- Component listener ----------------
     componentRegistered: function(compDescr) {
         var sc_addr = compDescr.outputLangAddr;
-        if (sc_addr) {
+        if (sc_addr && this._transl_languages.indexOf(sc_addr) >= 0) {
             this._appendLanguageToControl(sc_addr);
             this._languages.push(sc_addr);
         }

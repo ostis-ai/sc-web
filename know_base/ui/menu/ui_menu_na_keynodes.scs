@@ -8,5 +8,6 @@ ui_menu_na_keynodes => nrel_main_en_idtf:
 ui_menu_na_keynodes <= nrel_decomposition:
 {
 	Partition_SCn_code;
-	Partition_SCs_code
+	Partition_SCs_code;
+	format_txt
 };;

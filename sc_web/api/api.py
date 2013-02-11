@@ -451,9 +451,9 @@ def scAddrs(request):
     return HttpResponse(result, 'application/json')
 
 
-def linkData(request):
+def linkFormat(request):
     result = '{}'
-    if not request.is_ajax():
+    if request.is_ajax():
         sctp_client = newSctpClient()
         
         # parse arguments
@@ -472,7 +472,7 @@ def linkData(request):
         keys = Keynodes(sctp_client)
         keynode_nrel_format = keys[KeynodeSysIdentifiers.nrel_format]
         
-        result = []
+        result = {}
         for arg in arguments:
             
             # try to resolve format
@@ -483,14 +483,26 @@ def linkData(request):
                                                   ScElementType.sc_type_arc_pos_const_perm,
                                                   keynode_nrel_format)
             if format is not None:
-                item = { "format": format[0][2].to_id() }
+                result[arg.to_id()] = format[0][2].to_id()
                 
-                data = sctp_client.get_link_content(arg)
-                if data is not None:
-                    item["data"] = base64.b64encode(data)
-                result.append(item)
                 
         result = json.dumps(result)
                  
     
     return HttpResponse(result, 'application/json')
+
+def linkContent(request):
+    result = '{}'
+    if request.is_ajax():
+        sctp_client = newSctpClient()
+        
+        # parse arguments
+        addr = ScAddr.parse_from_string(request.GET.get('addr', None))
+        if addr is None:
+            return serialize_error(404, "Invalid arguments")
+        
+        result = sctp_client.get_link_content(addr)
+        if result is None:
+            return serialize_error(404, "Content not found")
+    
+    return HttpResponse(result)
