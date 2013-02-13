@@ -1,0 +1,12 @@
+/!* keyword: concept */
+concept => nrel_main_ru_idtf: 
+	[концепт] ;;
+
+concept => nrel_ru_idtf: 
+	[класс сущностей, не являющихся однотипными связками] ;;
+concept => nrel_ru_idtf: 
+	[абсолютное понятие] ;;
+concept => nrel_ru_idtf: 
+	[неотносительное понятие] ;;
+concept => nrel_ru_idtf: 
+	[понятие, не являющееся отношением] ;;

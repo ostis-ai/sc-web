@@ -1,3 +1,9 @@
 /!* keyword: set_relation */
 set_relation => nrel_main_ru_idtf: 
 	[отношение] ;;
+
+set_relation => nrel_ru_idtf: 
+	[класс однотипных связок] ;;
+set_relation => nrel_ru_idtf: 
+	[относительное понятие] ;;
+set_relation => nrel_inclusion: set_role_relation ;;
