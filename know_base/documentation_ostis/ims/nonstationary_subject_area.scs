@@ -1,0 +1,10 @@
+/!* keyword: nonstationary_subject_area */
+nonstationary_subject_area => nrel_main_ru_idtf: 
+	[нестационарная предметная область] ;;
+
+nonstationary_subject_area => nrel_ru_idtf: 
+	[динамическая предметная область] ;;
+	
+nonstationary_subject_area => nrel_explanation: 
+	[Это предметная область, в которой некоторые связи между сущностями, входящими в ее состав, меняются со временем (то есть носят ситуационный, нестационарный характер).] ;;
+	

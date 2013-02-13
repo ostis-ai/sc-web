@@ -1,0 +1,5 @@
+/!* keyword: logical_formula */
+logical_formula => nrel_main_ru_idtf: 
+	[логическая формула] ;;
+logical_formula => nrel_ru_idtf: 
+	[компонент высказывания] ;;
