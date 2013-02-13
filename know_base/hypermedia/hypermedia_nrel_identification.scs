@@ -5,4 +5,4 @@ hypermedia_nrel_identification => nrel_main_ru_idtf:
 hypermedia_nrel_identification => nrel_main_en_idtf:   
   [identification*];;
 
-hypermedia_nrel_identification -> nrel_main_ru_idtf; nrel_main_en_idtf;;
+hypermedia_nrel_identification => set_nrel_inclusion: nrel_main_ru_idtf; nrel_main_en_idtf;;

@@ -1,2 +1,4 @@
 conf_ostis => hypermedia_nrel_logo:
 	"file://images/logo4.png";;
+
+conf_ostis -> "file://images/logo4.png";;
