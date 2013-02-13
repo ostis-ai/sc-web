@@ -9,10 +9,8 @@ Ostis.ui.scn.SCnComponent = {
     }
 };
 
-$(document).ready(function() {
-    SCWeb.core.ComponentManager.appendComponentInitialize(function() {
-        SCWeb.core.ComponentManager.registerComponent(Ostis.ui.scn.SCnComponent);
-    });
+SCWeb.core.ComponentManager.appendComponentInitialize(function() {
+    SCWeb.core.ComponentManager.registerComponent(Ostis.ui.scn.SCnComponent);
 });
 
 Ostis.ui.scn.HtmlAttributes = {

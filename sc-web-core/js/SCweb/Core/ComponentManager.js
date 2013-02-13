@@ -24,14 +24,16 @@ SCWeb.core.ComponentManager = {
     _listener: null,
     _counter: 0,    
     _initialize_funcs: [],
+    _callback: null,
+    _componentCount: 0,
     
     init: function(callback) {
+        // callback will be invoked when all component will be registered
+        this._callback = callback;
+        this._componentCount = this._initialize_funcs.length;
+
         for (var i = 0; i < this._initialize_funcs.length; i++) {
             this._initialize_funcs[i]();
-        }
-        
-        if (callback) {
-            callback();
         }
     },
     
@@ -96,8 +98,6 @@ SCWeb.core.ComponentManager = {
         }else {
             return this.componentsByLang.editors;
         }
-        
-        return null;
     },
     
     /**
@@ -122,7 +122,7 @@ SCWeb.core.ComponentManager = {
      * - outputLang - output language that supports by component
      * It takes config object as a parameter, that passed into component.
      * Config object contains field such as:
-     * container - id of dom caontainer to append component
+     * container - id of dom container to append component
      * dataAddr - sc-addr of sc-link, with data
      */
     registerComponent: function(compDescr) {
@@ -143,6 +143,13 @@ SCWeb.core.ComponentManager = {
                 $.each(compDescr.formatAddrs, function(format, addr) {
                     comp_map[addr] = compDescr;
                 });
+            }
+
+            // one more component was completely registered
+            self._componentCount--;
+            // all components were registered, invoke main callback
+            if(self._componentCount === 0) {
+                self._callback();
             }
         });
     },
@@ -167,10 +174,10 @@ SCWeb.core.ComponentManager = {
     
     /**
      * Create instance of specified component with supported output language
-     * Each editor and view components must have such funcitons as:
+     * Each editor and view components must have such functions as:
      * - receiveData - function, that receive json data to show
      * - translateIdentifiers - function, that notify window, that it need to translate identifiers
-     * - getIdentifiersLanguage - fucntion, that return sc-addr of used identifier language
+     * - getIdentifiersLanguage - function, that return sc-addr of used identifier language
      * - destroy - function, that calls when component destroyed. There component need to destroy all created objects
      * @param {Object} config Object that contains configuration for editor/viewer
      * @param {Number} compType Type of component @see SCWeb.core.ComponentType

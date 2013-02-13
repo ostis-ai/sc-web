@@ -379,13 +379,9 @@ SCgComponent = {
     }
 };
 
-$(document).ready(function() {
-    SCWeb.core.ComponentManager.appendComponentInitialize(function() {
-        SCWeb.core.ComponentManager.registerComponent(SCgComponent);
-    });
+SCWeb.core.ComponentManager.appendComponentInitialize(function() {
+    SCWeb.core.ComponentManager.registerComponent(SCgComponent);
 });
-
-
 
 /**
  * sc Arc model
