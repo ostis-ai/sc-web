@@ -51,8 +51,6 @@ TextViewer.prototype = {
     }
 };
 
-$(document).ready(function() {
-    SCWeb.core.ComponentManager.appendComponentInitialize(function() {
-        SCWeb.core.ComponentManager.registerComponent(TextComponent);
-    });
+SCWeb.core.ComponentManager.appendComponentInitialize(function() {
+    SCWeb.core.ComponentManager.registerComponent(TextComponent);
 });
