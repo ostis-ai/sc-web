@@ -1,0 +1,6 @@
+
+system_element => nrel_main_ru_idtf:
+	[Системный sc-элемент];;
+
+system_element => nrel_main_en_idtf:
+	[System sc-element];;

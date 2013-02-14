@@ -21,7 +21,7 @@
     <script src="media/js/scs/scs.js" type="text/javascript"></script>
     
     <script src="media/js/kinetic-v4.0.1.js" type="text/javascript"></script>
-    <script src="media/js/scg/scg.min.js" type="text/javascript"></script>
+    <script src="media/js/scg/scg.js" type="text/javascript"></script>
     
     <script src="media/js/scn/scn.js" type="text/javascript"></script>
     <script src="media/js/txt/txt.js" type="text/javascript"></script>
@@ -101,7 +101,19 @@
     <script type="text/javascript">
         
         $(document).ready(function() {
-            SCWeb.core.Main.init();
+            SCWeb.core.ui.Locker.show();
+            SCWeb.core.Main.init(function() {
+                SCWeb.core.Server.resolveScAddr(['project_ostis', 'format_scn_json', 'ui_menu_view_full_semantic_neighborhood'], function(addrs) {
+                    var outputAddr = addrs['format_scn_json'];
+                    var argumentAddr = addrs['project_ostis'];
+                    var cmdAddr = addrs['ui_menu_view_full_semantic_neighborhood'];
+                    var window = SCWeb.core.ui.Windows.createWindow(outputAddr);
+                    SCWeb.core.Server.doCommand(cmdAddr, outputAddr, [argumentAddr], function(data){
+                        SCWeb.core.ui.Windows.sendDataToWindow(window, data);
+                        SCWeb.core.ui.Locker.hide();
+                    });
+                });
+            });
         });
         
         $('#help_button').click(function() {
