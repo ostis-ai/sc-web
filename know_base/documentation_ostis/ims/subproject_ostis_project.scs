@@ -1,0 +1,19 @@
+/!* keyword: subproject_ostis_project */
+subproject_ostis_project => nrel_main_ru_idtf:
+	[подпроект Проекта OSTIS];;
+subproject_ostis_project => nrel_explanation:
+	[
+	Это множество элементами которого являются сам Проект OSTIS, все непосредственные (собственные) 
+	подпроекты Проекта OSTIS, все собственные подпроекты всех собственных проектов Проекта OSTIS и т.д.
+	] (* <= nrel_inclusion: 
+			subproject_project_ostis_development_integrated_intelligent_system
+				(* <= nrel_inclusion: project_ims_ostis;
+									  project_is_graphtheory;
+									  project_is_geometry;;
+				*);
+			subproject_project_ostis_development_subsystem_relevant_intelligent_system;
+			subproject_project_ostis_ui_development_relevant_intelligent_system;
+			subproject_project_ostis_development_managment_subsystem_users_dialogue;
+			subproject_project_ostis_development_subsystem_autodevelop_intelligent_system;
+			subproject_project_ostis_development_managment_subsystem_develop_relevant_system;;
+	  *);;

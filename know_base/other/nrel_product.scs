@@ -1,0 +1,7 @@
+/!* keyword: nrel_product */
+nrel_product => nrel_main_ru_idtf:
+	[продукт*];;
+nrel_product => nrel_ru_idtf:
+	[
+		быть продуктом соответствующей деятельности (в том числе и явно обозначенного, явно заявленного проекта)
+	] (* <= nrel_inclusion: basic_product (* <= nrel_ru_idtf: [быть основным продуктом данной деятельности (в том числе проекта)];; *);; *);;

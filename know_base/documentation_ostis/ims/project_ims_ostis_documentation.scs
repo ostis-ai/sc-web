@@ -1,0 +1,16 @@
+/!* keyword: project_ims_ostis_documentation */
+project_ims_ostis_documentation => nrel_main_ru_idtf: 
+	[Документация Проекта IMS.OSTIS];;
+project_ims_ostis_documentation <= nrel_decomposition:
+	introduction_project_ims_ostis
+		(* => nrel_ru_idtf: [Краткая характеристика Проекта IMS.OSTIS];; *);
+	metasystem_ims_ostis_documentation
+		(* => nrel_ru_idtf: [Описание конечного продукта Проекта IMS.OSTIS];; *);
+	partition_current_stage_ims_ostis_developement;
+	partition_main_work_directions_developed_next_version_metasystem_ims_ostis;
+	partition_further_development_strategy_of_metasystem_ims_ostis;
+	partition_business_model_and_plan_development_project_ims_ostis;
+	partition_project_ims_ostis_team_information;
+	partition_presentation_project_ims_ostis;;
+project_ims_ostis_documentation => nrel_annotation: 
+	[Документация Проекта IMS.OSTIS, направленного на разработку и постоянное совершенствование Метасистемы IMS.OSTIS, является важнейшим разделом базы знаний этой метасистемы. Указанный раздел базы знаний является основой для организации управления проектированием. Проект IMS.OSTIS рассматривается как иерархическая система его проектов.];;
