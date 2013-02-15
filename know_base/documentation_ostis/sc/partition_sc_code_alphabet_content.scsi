@@ -1,4 +1,3 @@
-
 /!* keyword: sc_element */
 sc_element => nrel_main_ru_idtf: 
 	[sc-элемент] ;;
@@ -8,18 +7,36 @@ sc_element => nrel_ru_idtf:
 	[атомарный фрагмент sc-конструкции] ;;
 sc_element => nrel_ru_idtf: 
 	[неделимый фрагмент sc-конструкции] ;;
+sc_element => nrel_ru_idtf:
+	[атомарный фрагмент sc-графа];;
 sc_element => nrel_ru_idtf: 
 	[символ, входящий в состав sc-конструкции] ;;
 sc_element => nrel_ru_idtf: 
 	[примитив, входящий в состав sc-конструкции] ;;
+
 sc_element <= nrel_subdividing:
-{
-	sc_node;
-	sc_edge;
-	sc_arc_common;
-	sc_arc_main;
-	sc_link
-};;
+	{
+		sc_node;
+		sc_edge;
+		sc_arc
+	};;
+sc_element <= nrel_subdividing:
+	{
+		sc_const;
+		sc_variable
+	};;
+sc_element <= nrel_subdividing:
+	{
+		sc_connector;
+		sc_tuple;
+		sc_structure;
+		sc_concept;
+		sc_relation;
+		sc_primary_node;
+		sc_link
+	};;
+sc_element => nrel_inclusion:
+	sc_arc_main;;
 
 /!* keyword: sc_element_alphabet */
 sc_element_alphabet => nrel_main_ru_idtf: 
@@ -132,18 +149,17 @@ sc_arc <= nrel_subdividing:
 	sc_arc_main
 };;
 
-
 /!* keyword: sc_connector */
 sc_connector => nrel_main_ru_idtf: 
 	[sc-коннектор] ;;
 sc_connector => nrel_ru_idtf: 
-	[ sc-ребро ⋃ sc-дуга ] ;;
+	[sc-ребро ⋃ sc-дуга] ;;
 sc_connector => nrel_ru_idtf: 
-	[ sc-ребро или sc-дуга] ;;
+	[sc-ребро или sc-дуга] ;;
 sc_connector => nrel_ru_idtf: 
-	[ Понятие, являющееся результатом объединения Понятия sc-ребра и Понятия sc-дуги] ;;
+	[Понятие, являющееся результатом объединения Понятия sc-ребра и Понятия sc-дуги] ;;
 sc_connector => nrel_ru_idtf: 
-	[ атомарный связующий sc-элемент] ;;
+	[атомарный связующий sc-элемент] ;;
 	
 sc_connector <= nrel_subdividing:
 {

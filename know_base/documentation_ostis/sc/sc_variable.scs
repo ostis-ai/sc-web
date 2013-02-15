@@ -1,0 +1,4 @@
+/!* keyword: sc_variable */
+sc_variable => nrel_main_ru_idtf:
+	[sc-переменная] ;;
+

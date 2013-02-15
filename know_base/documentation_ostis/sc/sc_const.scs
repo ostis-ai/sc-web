@@ -1,0 +1,4 @@
+/!* keyword: sc_const */
+sc_const => nrel_main_ru_idtf:
+	[sc-константа] ;;
+

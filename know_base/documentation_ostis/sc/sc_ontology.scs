@@ -1,0 +1,7 @@
+/!* keyword: sc_ontology */
+sc_ontology => nrel_main_ru_idtf:
+	[sc-модель онтологии] ;;
+sc_ontology => nrel_ru_idtf:
+	[sc-онтология];;
+sc_ontology => nrel_explanation::
+	[Это онтология некоторой предметной области, представленной в SC-коде (т.е. в виде sc-графа)];;
