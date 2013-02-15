@@ -45,7 +45,7 @@ class KeynodeSysIdentifiers:
     nrel_system_identifier = 'hypermedia_nrel_system_identifier'
     nrel_translation = 'hypermedia_nrel_translation'
     nrel_decomposition = 'nrel_decomposition'
-    nrel_author = 'nrel_author'
+    nrel_authors = 'hypermedia_nrel_authors'
     nrel_format = 'hypermedia_nrel_format'
     
     question = 'question'
@@ -73,4 +73,6 @@ class KeynodeSysIdentifiers:
     format_scs = 'format_scs'
     format_scg_json = 'format_scg_json'
     format_scn_json = 'format_scn_json'
+    
+    system_element = 'system_element'
     

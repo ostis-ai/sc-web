@@ -1,13 +1,12 @@
 SCWeb.core.Main = {
-    init: function() {
+    init: function(callback) {
         var self = this;
         SCWeb.core.utils.Keyboard.init(function() {
-            self._initUI();
+            self._initUI(callback);
         });
     },
 
-    _initUI: function() {
-        SCWeb.core.ui.Locker.show();
+    _initUI: function(callback) {
         SCWeb.core.ui.TaskPanel.init(function() {
             SCWeb.core.ui.Menu.init(function() {           
                 SCWeb.core.ui.OutputLanguages.init(function() {
@@ -15,7 +14,7 @@ SCWeb.core.Main = {
                         SCWeb.core.ui.ArgumentsPanel.init(function() {
                             SCWeb.core.ui.Windows.init(function() {
                                 SCWeb.core.ui.IdentifiersLanguages.init(function() {
-                                    SCWeb.core.ui.Locker.hide();
+                                    callback();
                                 });
                             });
                         });

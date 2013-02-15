@@ -216,7 +216,10 @@ def checkCommandFinished(command_addr, keynode_command_finished, sctp_client):
                                         keynode_command_finished,
                                         ScElementType.sc_type_arc_pos_const_perm,
                                         command_addr)
-    
+
+def appendToSystemElements(sctp_client, keynode_system_element, el):
+    sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_system_element, el)
+
 def doCommand(request):
     result = "[]"
     if request.is_ajax():
@@ -257,29 +260,38 @@ def doCommand(request):
             keynode_ui_command_finished = keys[KeynodeSysIdentifiers.ui_command_finished]
             keynode_ui_nrel_command_result = keys[KeynodeSysIdentifiers.ui_nrel_command_result]
             keynode_ui_user = keys[KeynodeSysIdentifiers.ui_user]
-            keynode_nrel_author = keys[KeynodeSysIdentifiers.nrel_author]
+            keynode_nrel_authors = keys[KeynodeSysIdentifiers.nrel_authors]
             keynode_ui_nrel_user_answer_formats = keys[KeynodeSysIdentifiers.ui_nrel_user_answer_formats]
             keynode_nrel_translation = keys[KeynodeSysIdentifiers.nrel_translation]
             keynode_nrel_answer = keys[KeynodeSysIdentifiers.question_nrel_answer]
             keynode_question_initiated = keys[KeynodeSysIdentifiers.question_initiated]
             keynode_question = keys[KeynodeSysIdentifiers.question]
+            keynode_system_element = keys[KeynodeSysIdentifiers.system_element]
 
             
             # create command in sc-memory
             inst_cmd_addr = sctp_client.create_node(ScElementType.sc_type_node | ScElementType.sc_type_const)
-            sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_command_generate_instance, inst_cmd_addr)
+            appendToSystemElements(sctp_client, keynode_system_element, inst_cmd_addr)
+            arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_command_generate_instance, inst_cmd_addr)
+            appendToSystemElements(sctp_client, keynode_system_element, arc)
             
             inst_cmd_arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, inst_cmd_addr, cmd_addr)
-            sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_rrel_commnad, inst_cmd_arc)
+            appendToSystemElements(sctp_client, keynode_system_element, inst_cmd_arc)
+            arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_rrel_commnad, inst_cmd_arc)
+            appendToSystemElements(sctp_client, keynode_system_element, arc)
             
             # create arguments
             args_addr = sctp_client.create_node(ScElementType.sc_type_node | ScElementType.sc_type_const)
+            appendToSystemElements(sctp_client, keynode_system_element, args_addr)
             args_arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, inst_cmd_addr, args_addr)
-            sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_rrel_command_arguments, args_arc)
+            appendToSystemElements(sctp_client, keynode_system_element, args_arc)
+            arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_rrel_command_arguments, args_arc)
+            appendToSystemElements(sctp_client, keynode_system_element, arc)
             
             idx = 1
             for arg in arguments:
                 arg_arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, args_addr, arg)
+                appendToSystemElements(sctp_client, keynode_system_element, arg_arc)
                 if arg_arc is None:
                     return serialize_error(404, "Error while create 'create_instance' command")
                 
@@ -287,12 +299,15 @@ def doCommand(request):
                 if idx_addr is None:
                     return serialize_error(404, "Error while create 'create_instance' command")
                 idx += 1
-                sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, idx_addr, arg_arc)
+                arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, idx_addr, arg_arc)
+                appendToSystemElements(sctp_client, keynode_system_element, arc)
 
             wait_time = 0
             wait_dt = 0.1
             # initialize command
-            sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_command_initiated, inst_cmd_addr)
+            arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_command_initiated, inst_cmd_addr)
+            appendToSystemElements(sctp_client, keynode_system_element, arc)
+            
             cmd_finished = checkCommandFinished(inst_cmd_addr, keynode_ui_command_finished, sctp_client)
             while cmd_finished is None:
                 time.sleep(wait_dt)
@@ -329,20 +344,29 @@ def doCommand(request):
             
             # create author
             user_node = sctp_client.create_node(ScElementType.sc_type_node | ScElementType.sc_type_const)
-            sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_user, user_node)
+            appendToSystemElements(sctp_client, keynode_system_element, user_node)
+            arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_user, user_node)
+            appendToSystemElements(sctp_client, keynode_system_element, arc)
             
             author_arc = sctp_client.create_arc(ScElementType.sc_type_arc_common | ScElementType.sc_type_const, question, user_node)
-            sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_nrel_author, author_arc)       
+            appendToSystemElements(sctp_client, keynode_system_element, author_arc)
+            arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_nrel_authors, author_arc)
+            appendToSystemElements(sctp_client, keynode_system_element, arc)       
             
             # create output formats set
             output_formats_node = sctp_client.create_node(ScElementType.sc_type_node | ScElementType.sc_type_const)
-            sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, output_formats_node, output_addr)
+            appendToSystemElements(sctp_client, keynode_system_element, output_formats_node)
+            arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, output_formats_node, output_addr)
+            appendToSystemElements(sctp_client, keynode_system_element, arc)
             
             format_arc = sctp_client.create_arc(ScElementType.sc_type_arc_common | ScElementType.sc_type_const, question, output_formats_node)
-            sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_nrel_user_answer_formats, format_arc)
+            appendToSystemElements(sctp_client, keynode_system_element, format_arc)
+            arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_nrel_user_answer_formats, format_arc)
+            appendToSystemElements(sctp_client, keynode_system_element, arc)
             
             # initiate question
-            sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_question_initiated, question)
+            arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_question_initiated, question)
+            appendToSystemElements(sctp_client, keynode_system_element, arc)
             
             # first of all we need to wait answer to this question
             #print sctp_client.iterate_elements(sctpIteratorType.SCTP_ITERATOR_3F_A_A, keynode_question_initiated, 0, 0)

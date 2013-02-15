@@ -41,6 +41,7 @@ SCWeb.core.ui.Windows = {
     /**
      * Create new window with specified output language
      * @param {String} outputLang SC-addr of output language
+     * @return Returns created window id
      */
     createWindow: function(outputLang) {
         
@@ -58,6 +59,7 @@ SCWeb.core.ui.Windows = {
         this._bindSemanticNeighbourhoodHandler(window_num_str, outputLang);
         
         this.setActiveWindow(this.window_counter);
+        return this.window_counter;
     },
     
     /**
