@@ -1,7 +1,7 @@
 TextComponent = {
     type: 0,
     outputLang: null,
-    formats: ['format_txt'],
+    formats: ['hypermedia_format_txt'],
     factory: function(config) {
         return new TextViewer(config);
     }

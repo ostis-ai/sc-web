@@ -1,0 +1,10 @@
+
+
+hypermedia_format_txt => nrel_main_ru_idtf:
+	[текстовый формат];;
+
+hypermedia_format_txt => nrel_main_en_idtf:
+	[text format];;
+
+hypermedia_format_txt => hypermedia_nrel_mimetype:
+	[text/plain];;

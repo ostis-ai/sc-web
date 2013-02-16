@@ -517,8 +517,12 @@ def linkFormat(request):
 
 def linkContent(request):
     result = '{}'
-    if request.is_ajax():
+    if True: #request.is_ajax():
         sctp_client = newSctpClient()
+        
+        keys = Keynodes(sctp_client)
+        keynode_nrel_format = keys[KeynodeSysIdentifiers.nrel_format]
+        keynode_nrel_mimetype = keys[KeynodeSysIdentifiers.nrel_mimetype] 
         
         # parse arguments
         addr = ScAddr.parse_from_string(request.GET.get('addr', None))
@@ -528,5 +532,26 @@ def linkContent(request):
         result = sctp_client.get_link_content(addr)
         if result is None:
             return serialize_error(404, "Content not found")
+        
+        mimetype_str = u'text/plain'
+        # determine format and mimetype
+        format = sctp_client.iterate_elements(sctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
+                                              addr,
+                                              ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
+                                              ScElementType.sc_type_node | ScElementType.sc_type_const,
+                                              ScElementType.sc_type_arc_pos_const_perm,
+                                              keynode_nrel_format)
+        if format is not None:           
+            # fetermine mimetype
+            mimetype = sctp_client.iterate_elements(sctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
+                                                    format[0][2],
+                                                    ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
+                                                    ScElementType.sc_type_link,
+                                                    ScElementType.sc_type_arc_pos_const_perm,
+                                                    keynode_nrel_mimetype)
+            if mimetype is not None:
+                mime_value = sctp_client.get_link_content(mimetype[0][2])
+                if mime_value is not None:
+                    mimetype_str = mime_value
     
-    return HttpResponse(result)
+    return HttpResponse(result, mimetype_str)

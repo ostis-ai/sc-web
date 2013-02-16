@@ -11,3 +11,6 @@ project_ostis => nrel_subproject:
 	project_is_geometry;
 	project_conf_ostis (* => nrel_subproject: project_is_conf_ostis;; *);
 	project_iit_bsuir (* => nrel_subproject: project_is_iit_bsuir;; *);;
+
+project_ostis => hypermedia_nrel_logo:
+	"file://images/logo.png";;

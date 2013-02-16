@@ -457,7 +457,7 @@ Ostis.ui.scn.HtmlLinkBuilder = function() {
 
 Ostis.ui.scn.SCnComponent = {
     type : SCWeb.core.ComponentType.viewer,
-    outputLang : 'format_scn_json',
+    outputLang : 'hypermedia_format_scn_json',
     formats : [],
     factory : function(config) {
         return new Ostis.ui.scn.Viewer(config);
