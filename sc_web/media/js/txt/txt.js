@@ -37,7 +37,7 @@ TextViewer.prototype = {
     // ---- window interface -----
     receiveData: function(data) {
         $(this._container).empty();
-        $(this._container).text( '[' + data + ']' );
+        $(this._container).text( data );
     },
     
     translateIdentifiers: function(language) {

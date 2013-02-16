@@ -1,52 +1,133 @@
 $.namespace('Ostis.ui.scn');
 
-Ostis.ui.scn.SCnComponent = {
-    type : SCWeb.core.ComponentType.viewer,
-    outputLang : 'format_scn_json',
-    formats : [],
-    factory : function(config) {
-        return new Ostis.ui.scn.Viewer(config);
-    }
+Ostis.ui.scn.IdentifierGenerator = function() {
+
+    var sequenceNumber = 0;
+    return {
+        generateLinkId : function(viewerId, linkAddr) {
+
+            return viewerId + "_" + linkAddr + "_" + this._nextSequenceNumber();
+        },
+
+        _nextSequenceNumber : function() {
+
+            return sequenceNumber++;
+        }
+
+    };
+}();
+
+Ostis.ui.scn.Viewer = function(config) {
+
+    var viewerId = config['container'];
+    var viewerSelector = '#' + viewerId;
+    var htmlBuilder = new Ostis.ui.scn.HtmlBuilder(viewerId);
+    var selectionHandler = Ostis.ui.scn.Selection(viewerSelector);
+    selectionHandler.init();
+    var nodeLabels = [];
+    var toTranslate = [];
+    var currentLanguage = null;
+    return {
+
+        _onNewContent : function(event, data) {
+
+            var outputData = htmlBuilder.buildTree(data);
+            nodeLabels = [];
+            toTranslate = [];
+            $(viewerSelector).empty().append(outputData);
+            this._initNodes();
+            this._loadLinksData();
+        },
+
+        _initNodes : function() {
+
+            var translXPath = viewerSelector + " ["
+                    + Ostis.ui.scn.HtmlAttributes.LABEL + "]";
+            $(translXPath).each(
+                    function(index, element) {
+
+                        nodeLabels.push(element);
+                        var scnAddr = $(element).attr(
+                                Ostis.ui.scn.HtmlAttributes.LABEL);
+                        toTranslate.push(scnAddr);
+                    });
+        },
+
+        _loadLinksData : function() {
+
+            var linksXPath = viewerSelector + " ["
+                    + Ostis.ui.scn.HtmlAttributes.LINK + "]";
+            $(linksXPath).each(
+                    function(index, element) {
+
+                        var scAddr = $(element).attr(
+                                Ostis.ui.scn.HtmlAttributes.LINK);
+                        var containerId = $(element).attr(
+                                Ostis.ui.scn.HtmlAttributes.HTML_ID);
+                        SCWeb.core.ui.Windows.createViewersForScLinks(
+                                [ scAddr ], containerId, function() { // success
+
+                                }, function() { // error
+
+                                });
+                    });
+
+        },
+
+        /**
+         * to support component interface
+         */
+        destroy : function() {
+
+        },
+
+        // -----
+        receiveData : function(data) {
+
+            this._onNewContent(null, data);
+        },
+
+        translateIdentifiers : function(language) {
+
+            currentLanguage = language;
+            var proxyUpdateTrans = $.proxy(this.updateTranslation, this);
+            SCWeb.core.Translation.translate(toTranslate, language,
+                    proxyUpdateTrans);
+        },
+
+        updateTranslation : function(namesMap) {
+
+            for ( var nodeInd = 0; nodeInd < nodeLabels.length; nodeInd++) {
+                var nodeEl = nodeLabels[nodeInd];
+                var addr = $(nodeEl).attr(Ostis.ui.scn.HtmlAttributes.LABEL);
+                var label = namesMap[addr];
+                if (label) {
+                    $(nodeEl).text(label);
+                }
+            }
+        },
+
+        getIdentifiersLanguage : function() {
+
+            return currentLanguage;
+        }
+    };
 };
 
-SCWeb.core.ComponentManager.appendComponentInitialize(function() {
-    SCWeb.core.ComponentManager.registerComponent(Ostis.ui.scn.SCnComponent);
-});
 
-Ostis.ui.scn.HtmlAttributes = {
-    ID : 'scn_addr',
-    LABEL : 'scnLableFor'
-};
-
-Ostis.ui.scn.SCnCssClass = {
-    KEYWORD : 'SCnKeyword',
-    SENTENCE : 'Sentence',
-    FIELD : 'SCnField',
-    LINK : 'SCnLink',
-    MARKER : 'SCnFieldMarker',
-    VALUE : 'SCnFieldValue',
-    FILE : 'SCnNoTransContent',
-    LOOP : 'SCnTransContent',
-    SELECTABLE : 'SCnSelectable',
-    HOVERED : 'SCnHovered',
-    SELECTED : 'SCnSelected',
-    LEVEL : 'SCnLevel'
-};
-
-
-Ostis.ui.scn.HtmlBuilder = function() {
+Ostis.ui.scn.HtmlBuilder = function(parentId) {
 
     var NodeType = {
         TUPLE : 'tuple',
         LOOP : 'loop'
     };
 
-    var ContentType = {
-        TEXT : 'text',
-        IMAGE : 'image',
-        FILE : 'file',
-        REF_FILE : 'ref_file'
-    };
+    // var ContentType = {
+    // TEXT : 'text',
+    // IMAGE : 'image',
+    // FILE : 'file',
+    // REF_FILE : 'ref_file'
+    // };
     return {
 
         buildTree : function(data) {
@@ -74,8 +155,10 @@ Ostis.ui.scn.HtmlBuilder = function() {
 
         _buildKeywordNode : function(node) {
 
-            var result = "<div " + "class='" + Ostis.ui.scn.SCnCssClass.KEYWORD
-                    + "'>";
+            var result = "<div "
+                    + Ostis.ui.scn.HtmlAttributeBuilder
+                            .buildClassAttr(Ostis.ui.scn.SCnCssClass.KEYWORD)
+                    + ">";
             result += this._buildAtomicNode(node);
             result += "</div>";
             return result;
@@ -91,15 +174,20 @@ Ostis.ui.scn.HtmlBuilder = function() {
 
         _startSelectableNode : function(node) {
 
-            return "<a " + Ostis.ui.scn.HtmlAttributes.ID + "='" + node.id
-                    + "' class='" + Ostis.ui.scn.SCnCssClass.LINK + " "
-                    + Ostis.ui.scn.SCnCssClass.SELECTABLE + "'>";
+            var cssClass = Ostis.ui.scn.SCnCssClass.LINK + " "
+                    + Ostis.ui.scn.SCnCssClass.SELECTABLE;
+            return "<a "
+                    + Ostis.ui.scn.HtmlAttributeBuilder.buildScnIdAttr(node)
+                    + " "
+                    + Ostis.ui.scn.HtmlAttributeBuilder
+                            .buildClassAttr(cssClass) + ">";
         },
 
         _getNodeLabel : function(node) {
 
-            return "<span " + Ostis.ui.scn.HtmlAttributes.LABEL + "='"
-                    + node.id + "'> " + node.id + "</span>";
+            return "<span "
+                    + Ostis.ui.scn.HtmlAttributeBuilder.buildLabelAttr(node)
+                    + ">" + node.id + "</span>";
         },
 
         _closeSelectableNode : function() {
@@ -120,8 +208,10 @@ Ostis.ui.scn.HtmlBuilder = function() {
 
         _buildOneSentence : function(arc) {
 
-            var resSen = "<div class='" + Ostis.ui.scn.SCnCssClass.SENTENCE
-                    + "'>";
+            var resSen = "<div "
+                    + Ostis.ui.scn.HtmlAttributeBuilder
+                            .buildClassAttr(Ostis.ui.scn.SCnCssClass.SENTENCE)
+                    + ">";
             var buildMarker = true;
             var shiftLevel = false;
             if (arc.SCAttributes) {
@@ -140,11 +230,14 @@ Ostis.ui.scn.HtmlBuilder = function() {
 
         _buildField : function(arc, valContVisitor, buildMarker, shiftLevel) {
 
-            var fieldRes = "<div class='" + Ostis.ui.scn.SCnCssClass.FIELD;
+            var fieldRes = "<div ";
+            var fieldClass = Ostis.ui.scn.SCnCssClass.FIELD;
             if (shiftLevel) {
-                fieldRes = fieldRes + " " + Ostis.ui.scn.SCnCssClass.LEVEL;
+                fieldClass = fieldClass + " " + Ostis.ui.scn.SCnCssClass.LEVEL;
             }
-            fieldRes = fieldRes + "'>";
+            fieldRes += Ostis.ui.scn.HtmlAttributeBuilder
+                    .buildClassAttr(fieldClass);
+            fieldRes += ">";
             if (buildMarker && arc.type) {
                 fieldRes += this._buildMarker(arc);
             }
@@ -155,8 +248,10 @@ Ostis.ui.scn.HtmlBuilder = function() {
 
         _buildMarker : function(arc) {
 
-            var markerRes = "<div class='" + Ostis.ui.scn.SCnCssClass.MARKER
-                    + "'>";
+            var markerRes = "<div "
+                    + Ostis.ui.scn.HtmlAttributeBuilder
+                            .buildClassAttr(Ostis.ui.scn.SCnCssClass.MARKER)
+                    + ">";
             markerRes += this._startSelectableNode(arc);
             markerRes += Ostis.ui.scn.TypeResolver.resolveArc(arc.type,
                     arc.backward);
@@ -167,7 +262,10 @@ Ostis.ui.scn.HtmlBuilder = function() {
 
         _buildValue : function(arc, valContVisitor) {
 
-            var valRes = "<div class='" + Ostis.ui.scn.SCnCssClass.VALUE + "'>";
+            var valRes = "<div "
+                    + Ostis.ui.scn.HtmlAttributeBuilder
+                            .buildClassAttr(Ostis.ui.scn.SCnCssClass.VALUE)
+                    + ">";
             valRes += valContVisitor(arc);
             valRes += "</div>";
             return valRes;
@@ -197,21 +295,119 @@ Ostis.ui.scn.HtmlBuilder = function() {
         _buildNodeContent : function(node) {
 
             var nodeCont = '';
-            var con = node.content;
-            if (con) {
-                if (con.type == ContentType.TEXT) {
-                    nodeCont = con.value;
-                } else if (con.type == ContentType.IMAGE) {
-                    nodeCont = this._buildImageContent(con);
-                } else if (con.type == ContentType.FILE) {
-                    nodeCont = this._buildFileContent(con);
-                } else if (con.type == ContentType.REF_FILE) {
-                    nodeCont = this._buildRefFileContent(con);
-                }
+            if (console) {
+                console.log("---" + node.id + " " + node.type);
+            }
+            if (node.type & sc_type_link) {
+                nodeCont = Ostis.ui.scn.HtmlLinkBuilder.buildTextLink(parentId,
+                        node);
             } else if (node.id) {
                 nodeCont = this._buildAtomicNode(node);
             }
+            // else if (con.type == ContentType.IMAGE) {
+            // nodeCont = this._buildImageContent(con);
+            // } else if (con.type == ContentType.FILE) {
+            // nodeCont = this._buildFileContent(con);
+            // } else if (con.type == ContentType.REF_FILE) {
+            // nodeCont = this._buildRefFileContent(con);
+            // }
             return nodeCont;
+        },
+
+        _startWrapper : function(node) {
+
+            var result = '';
+            if (node.type && node.type.class) {
+                if (node.type.class == NodeType.TUPLE) {
+                    result = "<div "
+                            + Ostis.ui.scn.HtmlAttributeBuilder
+                                    .buildScnIdAttr(node) + ">";
+                    result += "<div>{</div>";
+                } else if (node.type.class == NodeType.LOOP) {
+                    result = "<span "
+                            + Ostis.ui.scn.HtmlAttributeBuilder
+                                    .buildScnIdAttr(node)
+                            + " "
+                            + Ostis.ui.scn.HtmlAttributeBuilder
+                                    .buildClassAttr(+Ostis.ui.scn.SCnCssClass.LOOP)
+                            + ">";
+                }
+            }
+            return result;
+        },
+
+        _closeWrapper : function(node) {
+
+            var result = '';
+            if (node.type && node.type.class) {
+                if (node.type.class == NodeType.TUPLE) {
+                    result = "<div>}</div></div>";
+                } else if (node.type.class == NodeType.LOOP) {
+                    result = "</span>";
+                }
+            }
+            return result;
+        }
+    };
+};
+
+Ostis.ui.scn.HtmlAttributeBuilder = function() {
+
+    return {
+        buildIdAttr : function(idVal) {
+
+            return "id='" + idVal + "'";
+        },
+
+        buildClassAttr : function(cls) {
+
+            return "class='" + cls + "'";
+        },
+
+        buildScnIdAttr : function(node) {
+
+            return Ostis.ui.scn.HtmlAttributes.ID + "='" + node.id + "' ";
+        },
+
+        buildLabelAttr : function(node) {
+
+            return Ostis.ui.scn.HtmlAttributes.LABEL + "='" + node.id + "' ";
+        },
+
+        buildLinkAttr : function(node) {
+
+            return Ostis.ui.scn.HtmlAttributes.LINK + "='" + node.id + "'";
+        }
+    };
+}();
+
+Ostis.ui.scn.HtmlLinkBuilder = function() {
+
+    return {
+
+        buildTextLink : function(container, link) {
+
+            var result = this._startFileWrapper(link);
+            result += this._beginLinkContainer(container, link);
+            result += this._endLinkContainer();
+            result += this._closeFileWrapper();
+            return result;
+        },
+
+        _beginLinkContainer : function(viewerId, node) {
+
+            var containerId = Ostis.ui.scn.IdentifierGenerator.generateLinkId(
+                    viewerId, node.id);
+            return "<div "
+                    + Ostis.ui.scn.HtmlAttributeBuilder
+                            .buildIdAttr(containerId) + " "
+                    + Ostis.ui.scn.HtmlAttributeBuilder.buildLinkAttr(node)
+                    + ">";
+        },
+
+        _endLinkContainer : function() {
+
+            return "</div>";
         },
 
         _buildImageContent : function(content) {
@@ -240,47 +436,58 @@ Ostis.ui.scn.HtmlBuilder = function() {
             return result;
         },
 
-        _startFileWrapper : function() {
+        _startFileWrapper : function(node) {
 
-            return "<span class='" + Ostis.ui.scn.SCnCssClass.FILE + " "
-                    + Ostis.ui.scn.SCnCssClass.SELECTABLE + "'>";
+            var cssClass = Ostis.ui.scn.SCnCssClass.FILE + " "
+                    + Ostis.ui.scn.SCnCssClass.SELECTABLE;
+            return "<span "
+                    + Ostis.ui.scn.HtmlAttributeBuilder
+                            .buildClassAttr(cssClass) + " "
+                    + Ostis.ui.scn.HtmlAttributeBuilder.buildScnIdAttr(node)
+                    + ">";
         },
 
         _closeFileWrapper : function() {
 
             return "</span>";
-        },
-
-        _startWrapper : function(node) {
-
-            var result = '';
-            if (node.type && node.type.class) {
-                if (node.type.class == NodeType.TUPLE) {
-                    result = "<div " + Ostis.ui.scn.HtmlAttributes.ID + "='"
-                            + node.id + "'>";
-                    result += "<div>{</div>";
-                } else if (node.type.class == NodeType.LOOP) {
-                    result = "<span " + Ostis.ui.scn.HtmlAttributes.ID + "='"
-                            + node.id + "' class='"
-                            + Ostis.ui.scn.SCnCssClass.LOOP + "'>";
-                }
-            }
-            return result;
-        },
-
-        _closeWrapper : function(node) {
-
-            var result = '';
-            if (node.type && node.type.class) {
-                if (node.type.class == NodeType.TUPLE) {
-                    result = "<div>}</div></div>";
-                } else if (node.type.class == NodeType.LOOP) {
-                    result = "</span>";
-                }
-            }
-            return result;
         }
     };
+}();
+
+
+Ostis.ui.scn.SCnComponent = {
+    type : SCWeb.core.ComponentType.viewer,
+    outputLang : 'format_scn_json',
+    formats : [],
+    factory : function(config) {
+        return new Ostis.ui.scn.Viewer(config);
+    }
+};
+
+SCWeb.core.ComponentManager.appendComponentInitialize(function() {
+    SCWeb.core.ComponentManager.registerComponent(Ostis.ui.scn.SCnComponent);
+});
+
+Ostis.ui.scn.HtmlAttributes = {
+    ID : 'scn_addr',
+    LABEL : 'scnLableFor',
+    LINK : 'scnLinkFor',
+    HTML_ID : "id"
+};
+
+Ostis.ui.scn.SCnCssClass = {
+    KEYWORD : 'SCnKeyword',
+    SENTENCE : 'Sentence',
+    FIELD : 'SCnField',
+    LINK : 'SCnLink',
+    MARKER : 'SCnFieldMarker',
+    VALUE : 'SCnFieldValue',
+    FILE : 'SCnNoTransContent',
+    LOOP : 'SCnTransContent',
+    SELECTABLE : 'SCnSelectable',
+    HOVERED : 'SCnHovered',
+    SELECTED : 'SCnSelected',
+    LEVEL : 'SCnLevel'
 };
 
 
@@ -497,78 +704,5 @@ Ostis.ui.scn.TypeResolver = function() {
         }
     };
 }();
-
-
-Ostis.ui.scn.Viewer = function(config) {
-
-    var viewerId = '#' + config['container'];
-    var htmlBuilder = new Ostis.ui.scn.HtmlBuilder();
-    var selectionHandler = Ostis.ui.scn.Selection(viewerId);
-    selectionHandler.init();
-    var nodeLabels = [];
-    var toTranslate = [];
-    var currentLanguage = null;
-    return {
-
-        _onNewContent : function(event, data) {
-
-            var outputData = htmlBuilder.buildTree(data);
-            nodeLabels = [];
-            toTranslate = [];
-            $(viewerId).empty().append(outputData);
-            this._initNodes();
-        },
-
-        _initNodes : function() {
-
-            var translXPath = viewerId + " ["
-                    + Ostis.ui.scn.HtmlAttributes.LABEL + "]";
-            $(translXPath).each(
-                    function(index, element) {
-
-                        nodeLabels.push(element);
-                        var scnAddr = $(element).attr(
-                                Ostis.ui.scn.HtmlAttributes.LABEL);
-                        toTranslate.push(scnAddr);
-                    });
-        },
-
-        /**
-         * to support component interface
-         */
-        destroy: function() {
-
-        },
-
-        // -----
-        receiveData : function(data) {
-
-            this._onNewContent(null, data);
-        },
-
-        translateIdentifiers : function(language) {
-            currentLanguage = language;
-            var proxyUpdateTrans = $.proxy(this.updateTranslation, this);
-            SCWeb.core.Translation.translate(toTranslate, language, proxyUpdateTrans);
-        },
-
-        updateTranslation : function(namesMap) {
-
-            for ( var nodeInd = 0; nodeInd < nodeLabels.length; nodeInd++) {
-                var nodeEl = nodeLabels[nodeInd];
-                var addr = $(nodeEl).attr(Ostis.ui.scn.HtmlAttributes.LABEL);
-                var label = namesMap[addr];
-                if (label) {
-                    $(nodeEl).text(label);
-                }
-            }
-        },
-
-        getIdentifiersLanguage : function() {
-
-            return currentLanguage;
-        }
-    };
-};
 
 
