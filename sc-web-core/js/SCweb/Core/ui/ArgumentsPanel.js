@@ -19,7 +19,9 @@ SCWeb.core.ui.ArgumentsPanel = {
             SCWeb.core.Arguments.removeArgumentByIndex(parseInt(idx));
         });
 
-        if (callback){callback();}
+        if (callback) {
+            callback();
+        }
     },
 
     // ------- Arguments listener interface -----------
@@ -69,7 +71,7 @@ SCWeb.core.ui.ArgumentsPanel = {
         });
     },
 
-    argumentsCleared : function(arguments) {
+    argumentsCleared : function() {
 
         $(this._container).empty();
     },
