@@ -1,0 +1,18 @@
+/!* keyword: Partition_SCg_code */
+Partition_SCg_code => nrel_main_ru_idtf: 
+	[Раздел. SCg-код] ;;
+Partition_SCg_code => nrel_ru_idtf: 
+	[Раздел. SCg-код версии 0.1.0] ;;
+
+Partition_SCg_code <= nrel_decomposition: 
+	{
+		Partition_SCg_code_1_level;
+		Partition_SCg_code_2_level;
+		Partition_SCg_code_3_level;
+		Partition_SCg_code_4_level
+	};;
+	
+Partition_SCg_code <- doc_non_atomic_partition;;
+Partition_SCg_code => nrel_introduction:
+		[*^"file://scg_code.scsi"*]
+	;;

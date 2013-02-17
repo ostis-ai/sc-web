@@ -1,0 +1,11 @@
+/!* keyword: Partition_SCg_code_1_level */
+Partition_SCg_code_1_level => nrel_main_ru_idtf: 
+	[Раздел. SCg-код. Уровень 1] ;;
+Partition_SCg_code_1_level <- doc_atomic_partition;;
+Partition_SCg_code_1_level <= nrel_superpartition:
+	Partition_SCg_code;;
+Partition_SCg_code_1_level => nrel_basic_consequence:
+	Partition_SCg_code_2_level;;
+	
+Partition_SCg_code_1_level = 
+	[*^"file://merged_content/Partition_SCg_code_1_level_content.scsi"*];;
