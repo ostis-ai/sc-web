@@ -6,4 +6,4 @@ Partition_SCg_code_4_level <= nrel_superpartition:
 	Partition_SCg_code;;
 	
 Partition_SCg_code_4_level = 
-	[*^"file://merged_content/Partition_SCg_code_4_level_content.scsi"*];;
+	[*^"file://merged_content/partition_scg_code_4_level_content.scsi"*];;

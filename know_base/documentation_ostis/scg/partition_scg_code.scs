@@ -14,5 +14,4 @@ Partition_SCg_code <= nrel_decomposition:
 	
 Partition_SCg_code <- doc_non_atomic_partition;;
 Partition_SCg_code => nrel_introduction:
-		[*^"file://scg_code.scsi"*]
-	;;
+		[*^"file://scg_code.scsi"*];;
