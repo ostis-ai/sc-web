@@ -1,0 +1,7 @@
+/!* keyword: doc_nrel_subproject */
+doc_nrel_subproject => nrel_main_ru_idtf: 
+	[документация*] ;;
+doc_nrel_subproject => nrel_ru_idtf: 
+	[быть документацией*] ;;
+
+doc_nrel_subproject => nrel_inclusion: nrel_description ;;

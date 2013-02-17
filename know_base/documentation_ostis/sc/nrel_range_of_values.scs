@@ -1,0 +1,10 @@
+/!* keyword: nrel_range_of_values */
+nrel_range_of_values => nrel_main_ru_idtf: 
+	[область значений*] ;;
+	
+nrel_range_of_values => nrel_ru_idtf: 
+	[Отношение, связывающее sc-переменную с областью её значений] ;;
+nrel_range_of_values => nrel_ru_idtf: 
+	[быть областью значений заданной sc-переменной] (* => nrel_comment: [в частности, это может быть множеством корней некоторого уравнения ];;  *);;
+nrel_range_of_values => nrel_ru_idtf: 
+	[множество sc-элементов, которое пробегает заданная sc-переменная] ;;

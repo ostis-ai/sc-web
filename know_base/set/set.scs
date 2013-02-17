@@ -3,7 +3,7 @@ set => nrel_main_ru_idtf:
 	[множество] ;;
 set => nrel_main_en_idtf: 
 	[set] ;;
-	
+
 set => nrel_ru_idtf: 
 	[вид] ;;
 set => nrel_ru_idtf: 
@@ -32,7 +32,11 @@ set => nrel_ru_idtf:
 	[понятие множества] ;;
 set => nrel_ru_idtf: 
 	[универсальное множество] ;;
-	
+set => nrel_ru_idtf: 
+	[конкретное множество] ;;
+set => nrel_ru_idtf: 
+	[множество sc-элементов] ;;
+
 set => nrel_explanation:
 	[
 		Множество – мысленная сущность, которая связывает одну или несколько сущностей в целое.
@@ -101,9 +105,17 @@ set <= nrel_subdividing:
 	set_semantically_non_normalized_singleton
 };;
 
+set <=	nrel_subdividing: 
+	{
+		set_of_const;
+		set_of_const_and_values;
+		set_of_values
+	
+	}(* => nrel_comment: [По признаку константности элементов множества];;  *);;
+
 set => nrel_ru_idtf: 
 	[Разбиение (по семантическому типу множества)] ;;
-	
+
 set => nrel_explanation:
 	[
 		SCg-конструкция, представляющая в SCg-коде фрагмент приведённого выше описания семантической окрестности понятия множества

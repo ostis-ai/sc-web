@@ -1,0 +1,8 @@
+/!* keyword: set_of_values */
+set_of_values => nrel_main_ru_idtf: 
+	[множество переменных] ;;
+
+set_of_values => nrel_ru_idtf: 
+	[множество, состоящее только из sc-переменных] ;;
+set_of_values => nrel_ru_idtf: 
+	[множество sc-переменных] ;;

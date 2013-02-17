@@ -8,7 +8,7 @@ subproject_ostis_project => nrel_explanation:
 	] (* <= nrel_inclusion: 
 			subproject_project_ostis_development_integrated_intelligent_system
 				(* <= nrel_inclusion: project_ims_ostis;
-									  project_is_graphtheory;
+									  project_graphtheory;
 									  project_geometry;;
 				*);
 			subproject_project_ostis_development_subsystem_relevant_intelligent_system;
