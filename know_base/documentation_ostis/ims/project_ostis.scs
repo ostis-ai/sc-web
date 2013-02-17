@@ -8,7 +8,7 @@ project_ostis => nrel_note: [Основным продуктом Проекта 
 project_ostis => nrel_subproject:
 	project_ims_ostis;
 	project_is_graphtheory;
-	project_is_geometry;
+	project_geometry;
 	project_conf_ostis (* => nrel_subproject: project_is_conf_ostis;; *);
 	project_iit_bsuir (* => nrel_subproject: project_is_iit_bsuir;; *);;
 
