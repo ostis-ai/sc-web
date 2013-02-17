@@ -1,7 +1,0 @@
-
-
-format_txt => nrel_main_ru_idtf:
-	[текстовый формат];;
-
-format_txt => nrel_main_en_idtf:
-	[text format];;

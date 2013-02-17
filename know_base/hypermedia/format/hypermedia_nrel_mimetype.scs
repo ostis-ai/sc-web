@@ -1,0 +1,8 @@
+hypermedia_nrel_mimetype <- sc_node_norole_relation;;
+
+hypermedia_nrel_mimetype => nrel_main_ru_idtf:
+	[MIME тип*];;
+
+hypermedia_nrel_mimetype => nrel_main_en_idtf:
+	[MIME type*];;
+

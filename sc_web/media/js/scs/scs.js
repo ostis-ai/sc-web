@@ -1,6 +1,6 @@
 SCsComponent = {
     type: 0,
-    outputLang: 'format_scs_json',
+    outputLang: 'hypermedia_format_scs_json',
     formats: [],
     factory: function(config) {
         return new SCsViewer(config);

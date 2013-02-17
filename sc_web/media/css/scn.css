@@ -11,7 +11,7 @@
 	background-color: #CDC7C6;
 	display: inline-block;
 	padding: 3px;
-	background:url("./images/content_corner.png") 0 0 no-repeat #eeeeee;
+	background:url("../images/scn/content_corner.png") 0 0 no-repeat #eeeeee;
 }
 
 .SCnTransContent {
@@ -58,13 +58,15 @@
 /* selection purpose class */
 .SCnHovered {
     cursor: pointer !important;
-    border: dashed #669933 2px !important;
+    /*border: dashed #669933 2px !important;*/
+    border-bottom: solid #336699 1px !important;
 }
 
 /* selection purpose class */
 .SCnSelected {
     cursor: pointer !important;
-    border: solid #993300 2px !important;
+    /*border: solid #993300 2px !important;*/
+    border: dotted #ff8844 1px !important;
 }
 
 #ContentWrap {

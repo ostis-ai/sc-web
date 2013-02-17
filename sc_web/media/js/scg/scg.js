@@ -575,7 +575,7 @@ scgViewerWindow.prototype = {
 
 SCgComponent = {
     type: 0,
-    outputLang: 'format_scg_json',
+    outputLang: 'hypermedia_format_scg_json',
     factory: function(config) {
         return new scgViewerWindow(config);
     },

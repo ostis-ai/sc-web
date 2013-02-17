@@ -1,0 +1,9 @@
+
+hypermedia_format_png => nrel_main_ru_idtf:
+	[формат png];;
+
+hypermedia_format_png => nrel_main_en_idtf:
+	[format png];;
+
+hypermedia_format_png => hypermedia_nrel_mimetype:
+	[image/png];;
