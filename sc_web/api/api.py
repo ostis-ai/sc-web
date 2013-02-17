@@ -260,6 +260,7 @@ def doCommand(request):
             keynode_ui_command_finished = keys[KeynodeSysIdentifiers.ui_command_finished]
             keynode_ui_nrel_command_result = keys[KeynodeSysIdentifiers.ui_nrel_command_result]
             keynode_ui_user = keys[KeynodeSysIdentifiers.ui_user]
+            keynode_ui_displayed_answer = keys[KeynodeSysIdentifiers.ui_displayed_answer]
             keynode_nrel_authors = keys[KeynodeSysIdentifiers.nrel_authors]
             keynode_ui_nrel_user_answer_formats = keys[KeynodeSysIdentifiers.ui_nrel_user_answer_formats]
             keynode_nrel_translation = keys[KeynodeSysIdentifiers.nrel_translation]
@@ -394,7 +395,9 @@ def doCommand(request):
             # get output string
             translation_addr = translation[0][2]
             result = sctp_client.get_link_content(translation_addr);
-        
+            
+            # mark answer as displayed
+            sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_displayed_answer, answer_addr)        
     
     return HttpResponse(result, 'application/json')
 

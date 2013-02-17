@@ -1,0 +1,5 @@
+ui_displayed_answer => nrel_main_ru_idtf:
+	[отображенный пользователю ответ];;
+
+ui_displayed_answer => nrel_main_en_idtf:
+	[displayed to user answer];;

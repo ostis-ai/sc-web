@@ -69,6 +69,7 @@ class KeynodeSysIdentifiers:
     ui_command_generate_instance = 'ui_command_generate_instance'
     ui_command_initiated = 'ui_command_initiated'
     ui_command_finished = 'ui_command_finished'
+    ui_displayed_answer = 'ui_displayed_answer'
     
     
     format_scs = 'hypermedia_format_scs'
