@@ -59,7 +59,7 @@
 .SCnHovered {
     cursor: pointer !important;
     /*border: dashed #669933 2px !important;*/
-    border-bottom: solid #336699 1px !important;
+    border: dotted #336699 1px !important;
 }
 
 /* selection purpose class */
