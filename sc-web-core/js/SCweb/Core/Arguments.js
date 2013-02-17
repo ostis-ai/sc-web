@@ -58,17 +58,17 @@ SCWeb.core.Arguments = {
      * Clears arguments list
      */
     clear : function() {
-
+        this._arguments = [];
         this._fireArgumentCleared();
-        this._arguments.splice(0, this._arguments.length);
     },
 
     /**
      * @param {Object}
      *            listener Listener object, that will recieve notifitacions on
-     *            arguments list changes. It must have such functions as: -
-     *            argumentAppended(argument, idx) - argumentRemoved(argument,
-     *            idx) - argumentsCleared(arguments)
+     *            arguments list changes. It must have such functions as: 
+     *            - argumentAppended(argument, idx) 
+     *            - argumentRemoved(argument, idx)
+     *            - argumentsCleared(arguments)
      */
     registerListener : function(listener) {
 
