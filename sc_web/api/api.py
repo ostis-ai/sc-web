@@ -343,6 +343,8 @@ def doCommand(request):
             
             question = question[0][2]
             
+            appendToSystemElements(sctp_client, keynode_system_element, question)
+            
             # create author
             user_node = sctp_client.create_node(ScElementType.sc_type_node | ScElementType.sc_type_const)
             appendToSystemElements(sctp_client, keynode_system_element, user_node)
