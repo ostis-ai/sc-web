@@ -15,4 +15,3 @@ ostis_technology_tools <= nrel_inclusion:
 		family_tools_develop_stored_programs;
 		family_tools_develop_processing_machines;
 		family_tools_develop_ui;;
-	*);;

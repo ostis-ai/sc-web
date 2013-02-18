@@ -4,6 +4,6 @@ quasybinary_relation -> nrel_decomposition;;
 quasybinary_relation -> nrel_subdividing;;
 
 quasybinary_relation => nrel_main_ru_idtf: 
-  [квазибинарное отношение*] ;;
+  [РєРІР°Р·РёР±РёРЅР°СЂРЅРѕРµ РѕС‚РЅРѕС€РµРЅРёРµ*] ;;
 quasybinary_relation => nrel_main_en_idtf: 
   [quasybinary relation*] ;;
