@@ -1,0 +1,6 @@
+/!* keyword: nrel_project_partner */
+nrel_project_partner => nrel_main_ru_idtf:
+	[партнер проекта*];;
+nrel_project_partner => nrel_ru_idtf:
+	[быть партнером соответствующего проекта*];
+	[быть коллективным участником соответствующего проекта*];;

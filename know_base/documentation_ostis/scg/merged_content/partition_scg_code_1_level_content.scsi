@@ -20,7 +20,7 @@ scg_code_1_level => nrel_explanation:
 *);;
 	
 scg_code_1_level => nrel_explanation:
-	"file://files/scg_code_1_level_table1.html";;
+	"file://files/level1_table.png";;
 
 scg_code_1_level -> rrel_example:
 	"file://files/level1_triangle_ABC.png"

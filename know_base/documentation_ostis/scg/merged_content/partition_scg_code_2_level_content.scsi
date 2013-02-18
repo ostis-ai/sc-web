@@ -30,7 +30,7 @@ scg_code_2_level => nrel_explanation:
 	[
 		Переход от элементов SСg-кода 1-го уровня к SСg-коду 2-го уровня осуществляется по правилам описанным в таблице: 
 	](*
-		=> "file://files/scg_code_2_level_table1.html";;
+		=> "file://files/level2_table.png";;
 	*);;
 
 scg_code_2_level -> rrel_example:

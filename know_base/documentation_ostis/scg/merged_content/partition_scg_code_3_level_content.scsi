@@ -23,5 +23,5 @@ scg_code_3_level => nrel_explanation:
 	[
 		Переход от элементов SСg-кода 1-го уровня к SСg-коду 3-го уровня осуществляется по правилам описанным в таблице:
 	](*
-		=> "file://files/scg_code_3_level_table1.html";;
+		=> "file://files/level3_table.png";;
 	*);;

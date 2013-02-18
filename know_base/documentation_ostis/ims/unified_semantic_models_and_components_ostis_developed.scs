@@ -1,0 +1,10 @@
+/!* keyword: unified_semantic_models_and_components_ostis_developed */
+unified_semantic_models_and_components_ostis_developed => nrel_main_ru_idtf:
+	[Унифицированные семантические модели интеллектуальных систем и их компонентов, разработанные по Технологии OSTIS];;
+unified_semantic_models_and_components_ostis_developed => nrel_ru_idtf:
+	[sc-модель интеллектуальной системы или ее компонента];;
+unified_semantic_models_and_components_ostis_developed <= nrel_inclusion:
+	sc_model_intelligent_system;
+	sc_model_knowledge_base;
+	sc_machine_model_knowledge_processing;
+	sc_ui_model;;

@@ -1,0 +1,21 @@
+/!* keyword: languages_internal_representation_knowledge_ostis_developed */
+languages_internal_representation_knowledge_ostis_developed => nrel_main_ru_idtf:
+	[Языки внутреннего представления знаний, разрабатываемых по Технологии OSTIS];;
+languages_internal_representation_knowledge_ostis_developed => nrel_ru_idtf:
+	[Семейство всевозможных языков внутреннего представления знаний, разрабатываемых по Технологии OSTIS];
+	[язык представления знаний в виде унифицированных семантических сетей];
+	[язык представления определенного вида знаний с помощью sc-графов];
+	[язык, текстами которого являются sc-графы];
+	[sc-язык]
+	(*
+		<= nrel_inclusion:
+		logical_sc_language;
+		sets_theoretic_sc_language;
+		informational_purposes_and_objectives_sc_language;
+		family_sc_programming_languages(* <= nrel_inclusion: scp_language;; *);
+		sc_code
+		(* <= nrel_ru_idtf:
+			base_sc_graphs_language;
+			base_unified_semantic_networks_language;;
+		*);;
+	*);;

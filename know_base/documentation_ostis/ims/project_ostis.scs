@@ -9,8 +9,8 @@ project_ostis => doc_nrel_subproject:
 	project_ims_ostis;
 	project_graphtheory;
 	project_geometry;
-	project_conf_ostis (* => doc_nrel_subproject: project_is_conf_ostis;; *);
-	project_iit_bsuir (* => doc_nrel_subproject: project_is_iit_bsuir;; *);;
+	project_conf_ostis (* => doc_nrel_subproject: project_conf_ostis;; *);
+	project_iit_bsuir (* => doc_nrel_subproject: project_iit_bsuir;; *);;
 
 project_ostis => hypermedia_nrel_logo:
 	"file://images/logo.png";;

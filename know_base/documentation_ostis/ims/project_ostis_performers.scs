@@ -1,0 +1,16 @@
+/!* keyword: project_ostis_performers */
+project_ostis_performers => nrel_main_ru_idtf:
+	[Исполнители Проекта OSTIS];;
+project_ostis_performers => nrel_ru_idtf:
+	[Рабочая группа Проекта OSTIS];
+	[исполнитель Проекта OSTIS];;
+project_ostis_performers => nrel_explanation:
+	[Это множество всех персон, связанных с Проектом OSTIS отношением быть исполнителем*];;
+project_ostis_performers => nrel_accession_procedure:
+	[
+		Для того, чтобы войти в число исполнителей Проекта OSTIS, необходимо:
+		•	выбрать интересующий Вас подпроект Проекта OSTIS (лучше, если это будет атомарный подпроект, не разбиваемый на подпроекты);
+		•	направить свои предложения координатору выбранного подпроекта
+	];;
+project_ostis_performers <= nrel_inclusion:
+	project_ostis_main_performers;;

@@ -1,0 +1,14 @@
+/!* keyword: intelligent_systems_ostis_developed */
+intelligent_systems_ostis_developed => nrel_main_ru_idtf:
+	[Интеллектуальные системы, разработанные по Технологии OSTIS];;
+intelligent_systems_ostis_developed => nrel_ru_idtf:
+	[Множество всевозможных интеллектуальных систем, разработанных по Технологии OSTIS]
+	(*
+		<= nrel_inclusion:
+			metasystem_ims_ostis;
+			project_geometry;
+			project_graphtheory;
+			project_conf_ostis;
+			project_iit_bsuir;;
+		<= rrel_main_element: metasystem_ims_ostis;;
+	*);;
