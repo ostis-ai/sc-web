@@ -1,6 +1,8 @@
 /!* keyword: information_program */
 information_program => nrel_main_ru_idtf: 
 	[информационная программа] ;;
+information_program => nrel_main_en_idtf: 
+	[information program] ;;
 	
 information_program => nrel_ru_idtf: 
 	[обобщенная информация, достаточная для решения произвольной информационной задачи из некоторого класса однотипных информационных задач] ;;

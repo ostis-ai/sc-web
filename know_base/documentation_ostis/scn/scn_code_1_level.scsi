@@ -1,6 +1,9 @@
 /!* keyword: scn_code_1_level*/
 scn_code_1_level => nrel_main_ru_idtf: 
 	[SCn-код уровня 1];;
+scn_code_1_level => nrel_main_en_idtf: 
+	[SCn-code level 1];;
+
 scn_code_1_level => nrel_explanation:
 	[
 	Данный уровень SCn-кода представляет собой определенный способ форматирования произвольных sc.s-текстов.

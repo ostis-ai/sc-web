@@ -1,6 +1,9 @@
 /!* keyword: event_of_situation_initiation */
 event_of_situation_initiation => nrel_main_ru_idtf: 
 	[событие инициирования ситуации] ;;
+event_of_situation_initiation => nrel_main_en_idtf: 
+	[event of situation initiation] ;;
+
 	
 event_of_situation_initiation => nrel_explanation: 
 	[Это упорядоченная пара ситуаций, в которая удовлетворяет следующим дополнительным требованиям:  

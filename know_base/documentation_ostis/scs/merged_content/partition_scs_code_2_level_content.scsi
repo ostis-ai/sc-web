@@ -1,6 +1,9 @@
 /!* keyword: scs_code_2_level */
 scs_code_2_level => nrel_main_ru_idtf: 
 		[SCs-код уровня 2] ;;
+scs_code_2_level => nrel_main_en_idtf: 
+		[SCs-code level 2] ;;
+
 scs_code_2_level => nrel_explanation:
 	[
 		На данном уровне SCs-кода вводятся средства минимизации числа специально придумываемых имен sc-коннекторов.
@@ -12,6 +15,8 @@ scs_code_2_level => nrel_explanation:
 /!* keyword: scs_sentence_2_level */
 scs_sentence_2_level => nrel_main_ru_idtf: 
 		[sc.s-предложение уровня 2] ;;
+scs_sentence_2_level => nrel_main_en_idtf: 
+		[sc.s-sentence level 2] ;;
 		
 scs_sentence_2_level <= nrel_explanation: 
 	[  В sc.s-предложениях уровня 2 обеспечивается возможность не вводить имена для всех sc-коннекторов.
@@ -40,6 +45,9 @@ scs_sentence_2_level -> rrel_example:
 /!* keyword: scs_text_2_level */
 scs_text_2_level => nrel_main_ru_idtf: 
 	[sc.s-текст уровня 2] ;;
+scs_text_2_level => nrel_main_en_idtf: 
+		[sc.s-text level 2] ;;
+
 scs_text_2_level <= nrel_explanation: 
 	[sc.s-текст уровня 2 - sc.s-текст, содержащий хотя бы одно sc.s-предложение уровня 2 и не содержащий sc.s-предложений уровня 3 и выше];;
 scs_text_2_level -> rrel_example:

@@ -1,6 +1,9 @@
 /!* keyword: intelligent_system */
 intelligent_system => nrel_main_ru_idtf: 
 	[интеллектуальная система] ;;
+intelligent_system => nrel_main_en_idtf: 
+	[intelligent system] ;;
+
 intelligent_system => nrel_ru_idtf: 
 	[компьютерная система основанная на знаниях] ;;
 

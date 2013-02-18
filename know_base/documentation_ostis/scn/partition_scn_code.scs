@@ -1,7 +1,10 @@
 /!* keyword: Partition_SCn_code */
 Partition_SCn_code => nrel_main_ru_idtf: 
-	[Раздел. SCn-код] (* <- ru_lang;; *);;
+	[Раздел. SCn-код];;
+Partition_SCn_code => nrel_main_en_idtf: 
+	[Partition. SCn-code];;
 
+	
 Partition_SCn_code <- non_atomic_partition;;
 
 Partition_SCn_code <= nrel_decomposition:

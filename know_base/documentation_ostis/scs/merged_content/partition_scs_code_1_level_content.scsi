@@ -1,6 +1,9 @@
 /!* keyword: scs_code_1_level */
 scs_code_1_level => nrel_main_ru_idtf: 
 		[SCs-код уровня 1] ;;
+scs_code_1_level => nrel_main_en_idtf: 
+		[SCs-code level 1] ;;
+
 scs_code_1_level => nrel_explanation:
 	[
 		SCs-код уровня 1 аналогичен SCg-коду уровня 1 и представляет собой простейшее универсальное средство кодирования (представления)
@@ -11,6 +14,9 @@ scs_code_1_level => nrel_explanation:
 /!* keyword: scs_sentence_1_level */
 scs_sentence_1_level => nrel_main_ru_idtf: 
 		[sc.s-предложение уровня 1] ;;
+scs_sentence_1_level => nrel_main_en_idtf: 
+		[sc.s-sentence level 1] ;;
+
 scs_sentence_1_level <= nrel_explanation: 
 	[
 		sc.s-предложение уровня 1 - sc.s-предложение, содержащее только sc.s-разделители инцидентности и имена sc-элементов.
@@ -46,6 +52,9 @@ scs_sentence_1_level -> rrel_example:
 /!* keyword: scs_text_1_level */
 scs_text_1_level => nrel_main_ru_idtf: 
 		[sc.s-текст уровня 1] ;;
+scs_text_1_level => nrel_main_en_idtf: 
+		[sc.s-text level 1] ;;
+
 scs_text_1_level <= nrel_explanation: 
 		[sc.s-текст уровня 1 - sc.s-текст, содержащий только sc.s-предложения уровня 1];;
 scs_text_1_level -> rrel_example:

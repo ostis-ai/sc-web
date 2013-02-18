@@ -1,6 +1,8 @@
 /!* keyword: Partition_SCs_code_4_level */
 Partition_SCs_code_4_level => nrel_main_ru_idtf: 
 	[Раздел. SCs-код. Уровень 4] ;;
+Partition_SCs_code_4_level => nrel_main_en_idtf: 
+	[Partition. SCs-code. Level 4] ;;
 Partition_SCs_code_4_level <- doc_atomic_partition;;
 Partition_SCs_code_4_level <= nrel_superpartition:
 	Partition_SCs_code;;

@@ -1,6 +1,9 @@
 /!* keyword: project */
 project => nrel_main_ru_idtf:
 	[проект];;
+project => nrel_main_en_idtf:
+	[project];;
+
 project => nrel_explanation:
 	[Это целенаправленная деятельность, результатом которой является определенный ранее не существовавший продукт];;
 project => nrel_note:

@@ -2,6 +2,9 @@
 
 nrel_authors => nrel_main_ru_idtf: 
 	[авторы*] ;;
+nrel_authors => nrel_main_en_idtf: 
+	[authors*] ;;
+
 nrel_authors => nrel_ru_idtf: 
 	[быть авторами*] ;;
 

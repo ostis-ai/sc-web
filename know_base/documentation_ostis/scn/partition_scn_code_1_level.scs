@@ -1,6 +1,9 @@
 /!* keyword: Partition_SCn_code_1_level*/
 Partition_SCn_code_1_level => nrel_main_ru_idtf: 
-	[Раздел. SCn-код 0.1.0. Уровень 1];;
+	[Раздел. SCn-код. Уровень 1];;
+Partition_SCn_code_1_level => nrel_main_en_idtf: 
+	[Partition. SCn-code. Level 1];;
+
 Partition_SCn_code_1_level <- atomic_partition;;
 Partition_SCn_code_1_level <= nrel_superpartition:
 	Partition_SCn_code;;

@@ -1,3 +1,5 @@
 /!* keyword: bond_sign */
 bond_sign => nrel_main_ru_idtf: 
 	[знак связи] ;;
+bond_sign => nrel_main_en_idtf: 
+	[bond sign] ;;

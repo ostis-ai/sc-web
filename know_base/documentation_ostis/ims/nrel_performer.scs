@@ -1,6 +1,9 @@
 /!* keyword: nrel_performer */
 nrel_performer => nrel_main_ru_idtf:
 	[исполнитель*];;
+nrel_performer => nrel_main_en_idtf:
+	[performer*];;
+
 nrel_performer => nrel_ru_idtf:
 	[быть индивидуальным участником некоторой целенаправленной деятельности*](* <= nrel_comment: [/*в том числе некоторого проекта*/];; *);
 	[быть исполнителем*];;

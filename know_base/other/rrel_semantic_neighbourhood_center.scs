@@ -3,3 +3,5 @@ sc_node_role_relation -> rrel_semantic_neighbourhood_center;;
 rrel_semantic_neighbourhood_center => nrel_main_ru_idtf: 
 		[центр семантической окрестности'] ;;
 	
+rrel_semantic_neighbourhood_center => nrel_main_en_idtf: 
+		[semantic neighbourhood center'] ;;

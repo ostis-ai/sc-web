@@ -1,6 +1,9 @@
 /!* keyword: library_reusable_components_ostis_developed */
 library_reusable_components_ostis_developed => nrel_main_ru_idtf:
 	[Библиотека многократно используемых компонентов интеллектуальных систем, проектируемых по Технологии OSTIS];;
+library_reusable_components_ostis_developed => nrel_main_en_idtf:
+	[Library of reusable intelligent systems components, developed on OSTIS Technology];;
+
 library_reusable_components_ostis_developed => nrel_ru_idtf:
 	[многократно используемый компонент интеллектуальных систем проектируемых по Технологии OSTIS];;
 library_reusable_components_ostis_developed <= nrel_inclusion:

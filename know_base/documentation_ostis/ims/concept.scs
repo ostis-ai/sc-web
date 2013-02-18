@@ -1,6 +1,8 @@
 /!* keyword: concept */
 concept => nrel_main_ru_idtf: 
 	[концепт] ;;
+concept => nrel_main_en_idtf: 
+	[concept] ;;
 
 concept => nrel_ru_idtf: 
 	[класс сущностей, не являющихся однотипными связками] ;;

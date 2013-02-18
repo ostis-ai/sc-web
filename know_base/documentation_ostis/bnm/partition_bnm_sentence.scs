@@ -1,6 +1,8 @@
 /!* keyword: Partition_bnm_sentence */
 Partition_bnm_sentence => nrel_main_ru_idtf: 
 	[Раздел. Предложение метаязыка Бэкуса-Наура] ;;
+Partition_bnm_sentence => nrel_main_en_idtf: 
+	[Partition. Backus-Naur metalanguage sentence] ;;
 Partition_bnm_sentence <- atomic_partition;;
 Partition_bnm_sentence <= nrel_superpartition:
 	Partition_backus_naur_metalanguage;;

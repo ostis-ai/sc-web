@@ -1,6 +1,8 @@
 /!* keyword: doc_partition */
 doc_partition => nrel_main_ru_idtf:
 	[раздел документации];;
+doc_partition => nrel_main_en_idtf:
+	[documentation partition];;
 doc_partition => nrel_ru_idtf:
 	[Множество всевозможных разделов, входящих в состав различных документации];;
 doc_partition => nrel_notation:

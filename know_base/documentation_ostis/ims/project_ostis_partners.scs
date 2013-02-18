@@ -1,6 +1,9 @@
 /!* keyword: project_ostis_partners */
 project_ostis_partners => nrel_main_ru_idtf:
 	[Партнеры проекта OSTIS];;
+project_ostis_partners => nrel_main_en_idtf:
+	[Project OSTIS partners];;
+
 project_ostis_partners => nrel_ru_idtf:
 	[Коллективные участники Проекта OSTIS];;
 project_ostis_partners <= nrel_inclusion:

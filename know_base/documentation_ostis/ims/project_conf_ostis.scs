@@ -1,6 +1,9 @@
 /!* keyword: project_conf_ostis */
 project_conf_ostis => nrel_main_ru_idtf:
 	[Проект Conf.OSTIS];;
+project_conf_ostis => nrel_main_en_idtf:
+	[Project Conf.OSTIS];;
+
 project_conf_ostis => nrel_ru_idtf:
 	[Проект, направленный на подготовку и проведение ежегодных конференций по открытым семантическим технологиям проектирования интеллектуальных систем];;
 project_conf_ostis => doc_nrel_subproject:

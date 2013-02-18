@@ -1,7 +1,11 @@
 /!* keyword: partition_metasystem_ims_ostis_coomon_characteristics */
 partition_metasystem_ims_ostis_coomon_characteristics => nrel_main_ru_idtf: 
 	[Раздел. Основные характеристики Метасистемы IMS.OSTIS];;
+partition_metasystem_ims_ostis_coomon_characteristics => nrel_main_en_idtf: 
+	[Partition. IMS.OSTIS Metasystem main characteristics];;
+
 partition_metasystem_ims_ostis_coomon_characteristics <= nrel_decomposition:
+	{
 	subsection_type_developed_metasystem_ims_ostis;
 	subsection_composition_amount_meta_knowledge_ims_ostis;
 	subsection_structuring_and_systematization_knowledge_in_metasystem_ims_ostis;
@@ -20,4 +24,5 @@ partition_metasystem_ims_ostis_coomon_characteristics <= nrel_decomposition:
 	subsection_competitive_advantages_and_benefits_metasystem_ims_ostis;
 	subsection_example_dialogue_user_metasystem_ims_ostis_demonstrating_power_and_advantages_metasystem;
 	subsection_novelty_and_originality_solutions_implemented_in_metasystem_ims_ostis;
-	subsection_novelty_and_efficiency_technologies_used_in_development_metasystem_ims_ostis;;
+	subsection_novelty_and_efficiency_technologies_used_in_development_metasystem_ims_ostis
+	};;

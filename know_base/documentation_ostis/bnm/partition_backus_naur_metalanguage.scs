@@ -1,6 +1,9 @@
 /!* keyword: Partition_backus_naur_metalanguage */
 Partition_backus_naur_metalanguage => nrel_main_ru_idtf: 
 	[Раздел. Метаязык Бэкуса-Наура] ;;
+Partition_backus_naur_metalanguage => nrel_main_en_idtf: 
+	[Partition. Backus-Naur metalanguage] ;;
+	
 Partition_backus_naur_metalanguage <- doc_non_atomic_partition;;
 Partition_backus_naur_metalanguage <= nrel_decomposition: 
 	{

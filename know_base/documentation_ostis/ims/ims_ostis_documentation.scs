@@ -1,6 +1,9 @@
 /!* keyword: ims_ostis_documentation */
 ims_ostis_documentation => nrel_main_ru_idtf:
 	[Документация IMS.OSTIS];;
+ims_ostis_documentation => nrel_main_en_idtf:
+	[Documentation IMS.OSTIS];;
+
 ims_ostis_documentation => nrel_ru_idtf:
 	[Документация Метасистемы IMS.OSTIS];
 	[Документация Технологии OSTIS как комплекса моделей, средстви методов проектирования интеллектуальных систем на основе унифицированных семантических моделей];;

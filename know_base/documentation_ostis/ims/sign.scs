@@ -1,6 +1,9 @@
 /!* keyword: sign */
 sign => nrel_main_ru_idtf: 
 	[знак] ;;
+sign => nrel_main_en_idtf: 
+	[sign] ;;
+
 sign => nrel_ru_idtf: 
 	[фрагмент знаковой конструкции, обозначающий некоторую описываемую сущность] ;;
 

@@ -1,6 +1,9 @@
 /!* keyword: ostis_technology_tools */
 ostis_technology_tools => nrel_main_ru_idtf:
 	[Инструментальные средства Технологии OSTIS];;
+ostis_technology_tools => nrel_main_en_idtf:
+	[OSTIS Technology tools];;
+
 ostis_technology_tools => nrel_ru_idtf:
 	[Инструментальные средства автоматизации проектирования интеллектуальных систем на основе Технологии OSTIS]
 	(* 

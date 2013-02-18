@@ -1,6 +1,8 @@
 /!* keyword: Partition_SCs_code */
 Partition_SCs_code => nrel_main_ru_idtf: 
 	[Раздел. SCs-код] ;;
+Partition_SCs_code => nrel_main_en_idtf: 
+	[Partition. SCs-code] ;;
 Partition_SCs_code => nrel_ru_idtf: 
 	[Раздел. SCs-код версии 0.1.0] ;;
 

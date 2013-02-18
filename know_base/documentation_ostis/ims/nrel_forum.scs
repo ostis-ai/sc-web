@@ -1,6 +1,9 @@
 /!* keyword: nrel_forum */
 nrel_forum => nrel_main_ru_idtf:
 	[форум*];;
+nrel_forum => nrel_main_en_idtf:
+	[forum*];;
+
 nrel_forum => nrel_ru_idtf:
 	[быть форумом*];;
 nrel_forum => nrel_explanation:

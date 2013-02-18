@@ -1,3 +1,5 @@
 /!* keyword: theory_of_stationary_subject_area */
 theory_of_stationary_subject_area => nrel_main_ru_idtf: 
 	[теория стационарной предметной области] ;;
+theory_of_stationary_subject_area => nrel_main_en_idtf: 
+	[theory of stationary subject area] ;;

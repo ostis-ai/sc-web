@@ -1,5 +1,6 @@
 /!* keyword: bnm_divider */
 	bnm_divider => nrel_main_ru_idtf: [разделитель метаязыка Бэкуса-Наура] ;;
+	bnm_divider => nrel_main_en_idtf: [Backus-Naur metalanguage divider] ;;
 	bnm_divider <= nrel_subdividing:
 	{
 		bnm_divider_variable;
@@ -13,6 +14,9 @@
 	/!* keyword: bnm_divider_absent_construction */
 bnm_divider_absent_construction => nrel_main_ru_idtf: 
 	[скобки, ограничивающие конструкцию, которая может отсутствовать] ;;
+bnm_divider_absent_construction => nrel_main_en_idtf: 
+	[brackets, limiting construction that can be absent] ;;
+
 bnm_divider_absent_construction <= nrel_inclusion:
 	bnm_divider;;
 bnm_divider_absent_construction <= nrel_representation_scs_editor:
@@ -28,6 +32,9 @@ bnm_divider_absent_construction <= nrel_using_example:
 	/!* keyword: bnm_divider_alternative */
 bnm_divider_alternative => nrel_main_ru_idtf: 
 	[разделитель альтернатив] ;;
+bnm_divider_alternative => nrel_main_en_idtf: 
+	[alternatives divider] ;;
+
 bnm_divider_alternative <= nrel_inclusion:
 	bnm_divider;;
 bnm_divider_alternative <= nrel_explanation:
@@ -42,7 +49,10 @@ bnm_divider_alternative <= nrel_using_example:
 	
 /!* keyword: bnm_divider_alternative_bracket */
 bnm_divider_alternative_bracket => nrel_main_ru_idtf: 
-	[скобки, ограничивающие список альтернатив.] ;;
+	[скобки, ограничивающие список альтернатив] ;;
+bnm_divider_alternative_bracket => nrel_main_ru_idtf: 
+	[brackets limiting alternatives list] ;;
+
 bnm_divider_alternative_bracket <= nrel_inclusion:
 	bnm_divider;;
 bnm_divider_alternative_bracket <= nrel_explanation:
@@ -61,6 +71,9 @@ bnm_divider_alternative_bracket <= nrel_using_example:
 /!* keyword: bnm_divider_assignment */ 
 bnm_divider_assignment => nrel_main_ru_idtf: 
 	[разделитель присваивания] ;;
+bnm_divider_assignment => nrel_main_en_idtf: 
+	[assignment divider] ;;
+
 bnm_divider_assignment <= nrel_inclusion:
 	bnm_divider;;
 bnm_divider_assignment <= nrel_explanation:
@@ -91,6 +104,9 @@ bnm_divider_repeat_construction <= nrel_using_example:
 /!* keyword: bnm_divider_variable */
 bnm_divider_variable => nrel_main_ru_idtf: 
 	[скобки, ограничивающие лингвистические переменные] ;;
+bnm_divider_variable => nrel_main_en_idtf: 
+	[brackets limiting linguistic variables] ;;
+
 bnm_divider_variable <= nrel_inclusion:
 	bnm_divider;;
 bnm_divider_variable <= nrel_representation_scs_editor:

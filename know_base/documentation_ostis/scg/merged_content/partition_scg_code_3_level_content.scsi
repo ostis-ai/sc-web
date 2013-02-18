@@ -1,6 +1,8 @@
 /!* keyword: scg_code_3_level */
 scg_code_3_level => nrel_main_ru_idtf: 
 	[SCg-код уровня 3] ;;
+scg_code_3_level => nrel_main_en_idtf: 
+	[SCg-code level 3] ;;
 
 scg_code_3_level => nrel_explanation:
 	[

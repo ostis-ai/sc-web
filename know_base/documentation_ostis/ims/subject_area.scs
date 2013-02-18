@@ -1,6 +1,8 @@
 /!* keyword: subject_area */
 subject_area => nrel_main_ru_idtf: 
 	[предметная область] ;;
+subject_area => nrel_main_ru_idtf: 
+	[subject area] ;;
 	
 subject_area => nrel_explanation: 
 	[Понятие предметной области является важнейшим методологическим приемом, позволяющим выделить из всего многообразия исследуемого Мира

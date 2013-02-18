@@ -1,6 +1,9 @@
 /!* keyword: languages_internal_representation_knowledge_ostis_developed */
 languages_internal_representation_knowledge_ostis_developed => nrel_main_ru_idtf:
 	[Языки внутреннего представления знаний, разрабатываемых по Технологии OSTIS];;
+languages_internal_representation_knowledge_ostis_developed => nrel_main_en_idtf:
+	[Languages of internal representation of knowledges, developed on OSTIS Technology];;
+
 languages_internal_representation_knowledge_ostis_developed => nrel_ru_idtf:
 	[Семейство всевозможных языков внутреннего представления знаний, разрабатываемых по Технологии OSTIS];
 	[язык представления знаний в виде унифицированных семантических сетей];

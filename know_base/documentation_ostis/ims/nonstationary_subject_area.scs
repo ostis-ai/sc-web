@@ -1,6 +1,8 @@
 /!* keyword: nonstationary_subject_area */
 nonstationary_subject_area => nrel_main_ru_idtf: 
 	[нестационарная предметная область] ;;
+nonstationary_subject_area => nrel_main_en_idtf: 
+	[nonstationary subject area] ;;
 
 nonstationary_subject_area => nrel_ru_idtf: 
 	[динамическая предметная область] ;;

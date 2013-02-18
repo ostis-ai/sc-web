@@ -1,7 +1,7 @@
 /!* keyword: doc_nrel_documentation */
 doc_nrel_documentation => nrel_main_ru_idtf: 
 	[документация*] ;;
+doc_nrel_documentation => nrel_main_en_idtf: 
+	[documentation*] ;;
 doc_nrel_documentation => nrel_ru_idtf: 
 	[быть документацией*] ;;
-
-doc_nrel_documentation => nrel_inclusion: nrel_description ;;
