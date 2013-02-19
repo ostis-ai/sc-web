@@ -15,7 +15,8 @@ conference_ostis_2013 <- scientific_and_technical_conferences (* => nrel_main_ru
 
 conference_ostis_2013 <= nrel_email: [ostisconf@gmail.com];;
 
-nrel_email => nrel_main_ru_idtf, nrel_main_en_idtf: [e-mail*] ;;
+nrel_email => nrel_main_ru_idtf: [e-mail*] ;;
+nrel_email => nrel_main_en_idtf: [e-mail*] ;;
 
 nrel_hold_time => nrel_main_ru_idtf: 
 	[время проведения*] ;;

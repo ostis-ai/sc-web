@@ -50,6 +50,7 @@ conference_ostis => nrel_subjects:
 
 conference_ostis => nrel_address: [Республика Беларусь, г. Минск, ул. Платонова, д. 39];;
 conference_ostis => nrel_location: "file://map.googlemaplink";;
+conference_ostis => nrel_logo: "file://logo4.png";;
 
 nrel_subjects => nrel_main_ru_idtf: 
 	[тематика*] ;;
