@@ -1,0 +1,14 @@
+/!* keyword: sc_knowledge_base_model */
+sc_knowledge_base_model => nrel_main_ru_idtf: 
+	[sc-модель базы знаний] ;;
+sc_knowledge_base_model <= nrel_inclusion: knowledge_base;;
+sc_knowledge_base_model => nrel_ru_idtf:
+	[уточнение базы знаний, принятое в Технологии OSTIS];;
+sc_knowledge_base_model => nrel_ru_idtf:
+	[база знаний, представленная в виде унифицированной семантической сети с базовой теоретико-множественной семантической интерпретацией ее элементов];;
+sc_knowledge_base_model => nrel_ru_idtf:
+	[база знаний, представленная в виде sc-графа];;
+sc_knowledge_base_model => nrel_ru_idtf:
+	[база знаний, представленная в виде SC-коде];;
+sc_knowledge_base_model => nrel_ru_idtf:
+	[база знаний некоторой интеллектуальной системы, полностью представленная в виде sc-графа];;

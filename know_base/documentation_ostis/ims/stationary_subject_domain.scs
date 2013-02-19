@@ -1,12 +1,12 @@
-/!* keyword: stationary_subject_area */
-stationary_subject_area => nrel_main_ru_idtf: 
+/!* keyword: stable_subject_domain */
+stable_subject_domain => nrel_main_ru_idtf: 
 	[стационарная предметная область] ;;
-stationary_subject_area => nrel_main_en_idtf: 
-	[stationary subject area] ;;
+stable_subject_domain => nrel_main_en_idtf: 
+	[stable subject area] ;;
 
-stationary_subject_area => nrel_ru_idtf: 
+stable_subject_domain => nrel_ru_idtf: 
 	[статическая предметная область] ;;
 	
-stationary_subject_area => nrel_explanation: 
+stable_subject_domain => nrel_explanation: 
 	[Это предметная область, в которой связи между сущностями, входящими в ее состав, не зависят от времени (не меняются во времени).
 	При этом некоторые из указанных сущностей могут иметь конечное время "жизни" (конечное время существования).] ;;

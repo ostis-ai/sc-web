@@ -1,0 +1,17 @@
+/!* keyword: secondary_subject_domain */
+secondary_subject_domain => nrel_main_ru_idtf: 
+	[вторичная предметная область] ;;
+secondary_subject_domain => nrel_main_en_idtf: 
+	[Secondary subject area] ;;
+	
+secondary_subject_domain => nrel_ru_idtf: 
+	[предметная область, состоящая из определенного вида надстроек над различными предметными областями /*не обязательно первичными*/] ;;
+	
+secondary_subject_domain => nrel_ru_idtf: 
+	[предметная метаобласть] ;;
+	
+secondary_subject_domain -> Subject_domain_of_formal_theories_and_statements ;;
+secondary_subject_domain -> Subject_domain_of_set_theoretic_ontology ;;
+secondary_subject_domain -> Subject_domain_of_the_logical_ontology ;;
+secondary_subject_domain -> Subject_domain_of_terminological_ontologies ;;
+secondary_subject_domain -> Subject_domain_of_situations_and_events ;;
