@@ -1,6 +1,8 @@
 /!* keyword: partition_identification_common_regulations */
 partition_identification_common_regulations => nrel_main_ru_idtf: 
 	[Раздел OSTIS. Общее положение построения идентификаторов sc-элементов] ;;
+partition_identification_common_regulations => nrel_main_en_idtf: 
+	[Partition OSTIS. Sc-elements identifiers building rules common regulations] ;;
 
 partition_identification_common_regulations <= nrel_superpartition:
 [Раздел OSTIS. sc-идентификатор];;

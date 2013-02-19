@@ -1,6 +1,8 @@
 /!* keyword: partition_identification_naming_rule */
 partition_identification_naming_rule => nrel_main_ru_idtf: 
 	[Раздел OSTIS. Правила построения sc-идентификаторов для различных классов объектов] ;;
+partition_identification_naming_rule => nrel_main_en_idtf: 
+	[Partition OSTIS. Sc-elements identifiers building rules for different object classes] ;;
 
 partition_identification_naming_rule => nrel_explanation:
 	[Для наиболее часто употребляемых идентификаторов некоторых классов объектов вводятся унифицированные правила именования этих объектов.];;

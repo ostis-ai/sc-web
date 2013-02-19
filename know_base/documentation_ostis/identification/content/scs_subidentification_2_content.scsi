@@ -1,6 +1,8 @@
 
 idtf_sc_var => nrel_main_ru_idtf:
 [идентификатор sc-переменной];;
+idtf_sc_var => nrel_main_en_idtf:
+	[sc-variable identifier];;
 
 idtf_sc_var => idtf_nrel_element_identification_rule:
 [При идентификации переменных узлов используется нижнее подчеркивание перед sc-идентификатором];;
@@ -10,6 +12,9 @@ idtf_sc_var => nrel_explanation:
 
 idtf_sc_const => nrel_main_ru_idtf:
 [идентификатор sc-константы];;
+idtf_sc_const => nrel_main_en_idtf:
+	[sc-constant identifier];;
+
 
 idtf_sc_const => idtf_nrel_element_identification_rule:
 [При идентификации константных узлов не используется нижнее подчеркивание перед sc-идентификатором];;
@@ -22,6 +27,8 @@ idtf_sc_norole => nrel_comment:
 
 idtf_sc_norole => nrel_main_ru_idtf:
 [идентификатор неролевого отношения];;
+idtf_sc_norole => nrel_main_en_idtf:
+	[norole relation identifier];;
 
 idtf_sc_norole => idtf_nrel_element_identification_rule:
 [При идентификации sc-узла, являющегося знаком отношения, в конце идентификатора ставится звездочкам]
@@ -31,6 +38,8 @@ idtf_sc_norole => nrel_comment:
 
 idtf_sc_role => nrel_main_ru_idtf:
 [идентификатор ролевого отношения];;
+idtf_sc_role => nrel_main_en_idtf:
+	[role relation identifier];;
 
 idtf_sc_role => idtf_nrel_element_identification_rule:
 [При идентификации sc-узла, являющегося знаком атрибутивного отношения, в конце идентификатора ставится штрих]

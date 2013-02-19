@@ -1,6 +1,8 @@
 /!* keyword: scs_subidentification_6 */
 scs_subidentification_6 => nrel_main_ru_idtf: 
 	[Раздел OSTIS. Имена собственные и имена нарицательные в идентификаторах] ;;
+scs_subidentification_6 => nrel_main_en_idtf: 
+	[Partition OSTIS. Proper names and common names in identifiers] ;;
 
 scs_subidentification_6 <= nrel_superpartition:
 partition_identification_common_regulations;;

@@ -1,6 +1,8 @@
 /!* keyword: scs_subidentification_7 */
 scs_subidentification_7 => nrel_main_ru_idtf: 
 	[Раздел OSTIS. Системные, основные, уникальные, омонимичные, синонимичные sc-идентификаторы] ;;
+scs_subidentification_7 => nrel_main_en_idtf: 
+	[Partition OSTIS. System, main, unique, homonymous, synonymous sc-identifiers] ;;
 	
 scs_subidentification_7 <= nrel_superpartition:
 partition_identification_common_regulations;;

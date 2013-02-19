@@ -1,6 +1,8 @@
 /!* keyword: partition_identification */
 partition_identification => nrel_main_ru_idtf: 
 	[Раздел OSTIS. sc-идентификатор] ;;
+partition_identification => nrel_main_ru_idtf: 
+	[Partititon OSTIS. sc-identifier] ;;
 	
 partition_identification => nrel_ru_idtf:
 [Идентификация sc-элементов];;

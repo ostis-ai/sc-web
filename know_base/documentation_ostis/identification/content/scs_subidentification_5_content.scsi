@@ -1,5 +1,7 @@
 idtf_atomic => nrel_main_ru_idtf:
 [атомарный sc-идентификатор];;
+idtf_atomic => nrel_main_en_idtf:
+[atomic sc-identifier];;
 
 idtf_atomic => nrel_explanation:
 [Это sc-идентификатор, не включающий в свой состав другие sc-идентификаторы];;
@@ -9,6 +11,8 @@ idtf_atomic -> rrel_example:
 
 idtf_non_atomic => nrel_main_ru_idtf:
 [неатомарный sc-идентификатор];;
+idtf_non_atomic => nrel_main_en_idtf:
+[non-atomic sc-identifier];;
 
 idtf_non_atomic => nrel_explanation:
 [Это sc-идентификатор, состоящий из других sc-идентификаторов];;

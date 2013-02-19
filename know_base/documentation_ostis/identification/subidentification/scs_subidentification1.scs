@@ -1,6 +1,8 @@
 /!* keyword: scs_subidentification_1 */
 scs_subidentification_1 => nrel_main_ru_idtf: 
 	[Раздел OSTIS. Зачем нужна идентификация] ;;
+scs_subidentification_1 => nrel_main_en_idtf: 
+	[Partition OSTIS. For what identification is used] ;;
 
 scs_subidentification_1 <= nrel_superpartition:
 partition_identification_common_regulations;;

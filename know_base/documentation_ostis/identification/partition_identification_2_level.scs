@@ -1,6 +1,8 @@
 /!* keyword: partition_identification_2_level */
 partition_identification_2_level => nrel_main_ru_idtf: 
 	[Раздел ОSTIS. Правила построения неатомарных sc-идентификаторов sc-коннекторов, используемых в sc.s-текстах второго уровня сложности] ;;
+partition_identification_2_level => nrel_main_en_idtf: 
+	[Partition ОSTIS. Building rules for atomic identifiers, used in sc.s-texts level 2] ;;
 
 partition_identification_2_level <= nrel_superpartition:
 [Раздел OSTIS. sc-идентификатор];;

@@ -5,8 +5,6 @@ doc_partition => idtf_nrel_element_identification_rule:
 
 doc_partition => nrel_explanation:
 [
-
-[
 Раздел OSTIS. SС-идентификаторы
 	<= декомпозиция на разделы*:
 {
