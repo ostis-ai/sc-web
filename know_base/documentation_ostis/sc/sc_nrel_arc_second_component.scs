@@ -1,6 +1,9 @@
 /!* keyword: sc_nrel_arc_second_component  */
 sc_nrel_arc_second_component => nrel_main_ru_idtf: 
 	[второй компонент sc-дуги*] ;;	
+sc_nrel_arc_second_component => nrel_main_en_idtf: 
+	[sc-arc second component*] ;;	
+
 sc_nrel_arc_second_component => nrel_ru_idtf:
 	[отношение быть вторым компонентом sc-дуги*] ;;
 sc_nrel_arc_second_component => nrel_ru_idtf:

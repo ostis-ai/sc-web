@@ -1,6 +1,9 @@
 /!* keyword: sc_nrel_connector_component */
 sc_nrel_connector_component => nrel_main_ru_idtf: 
-	[компонент sc-коннектора*] ;;	
+	[компонент sc-коннектора*] ;;
+sc_nrel_connector_component => nrel_main_en_idtf: 
+	[sc-connector component*] ;;	
+
 sc_nrel_connector_component => nrel_ru_idtf:
 	[отношение быть компонентом sc-коннектора*] ;;
 sc_nrel_connector_component => nrel_ru_idtf:

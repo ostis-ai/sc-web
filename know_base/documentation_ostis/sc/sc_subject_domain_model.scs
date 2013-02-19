@@ -1,6 +1,9 @@
 /!* keyword: sc_subject_domain_model */
 sc_subject_domain_model => nrel_main_ru_idtf:
 	[sc-модель предметной области] ;;
+sc_subject_domain_model => nrel_main_en_idtf:
+	[subject domain sc-model] ;;
+
 sc_subject_domain_model => nrel_ru_idtf:
 	[предметная область, представленная в виде sc-графа];;
 sc_subject_domain_model => nrel_annotation:

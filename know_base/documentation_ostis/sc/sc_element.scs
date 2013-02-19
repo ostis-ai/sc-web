@@ -1,6 +1,8 @@
 /!* keyword: sc_element */
 sc_element => nrel_main_ru_idtf: 
 	[sc-элемент] ;;
+sc_element => nrel_main_en_idtf: 
+	[sc-element] ;;
 	
 sc_element => nrel_comment: [Итак, по признаку константности множество sc-элементов разбивается на класс sc-констант и класс sc-переменных.] ;;
 

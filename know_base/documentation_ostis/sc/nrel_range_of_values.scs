@@ -1,6 +1,8 @@
 /!* keyword: nrel_range_of_values */
 nrel_range_of_values => nrel_main_ru_idtf: 
 	[область значений*] ;;
+nrel_range_of_values => nrel_main_en_idtf: 
+	[range of values*] ;;
 	
 nrel_range_of_values => nrel_ru_idtf: 
 	[Отношение, связывающее sc-переменную с областью её значений] ;;

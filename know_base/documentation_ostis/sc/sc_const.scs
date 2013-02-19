@@ -1,6 +1,8 @@
 /!* keyword: sc_const */
 sc_const => nrel_main_ru_idtf: 
 	[sc-константа] ;;
+sc_const => nrel_main_en_idtf: 
+	[sc-constant] ;;
 	
 sc_const => nrel_ru_idtf: 
 	[Класс всевозможных sc-констант] ;;

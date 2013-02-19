@@ -1,6 +1,9 @@
 /!* keyword: partition_sc_code_alphabet */
 partition_sc_code_alphabet => nrel_main_ru_idtf:
 	[Раздел. Алфавит и инцидентность элементов унифицированных семантических сетей] ;;
+partition_sc_code_alphabet => nrel_main_en_idtf:
+	[Partition. Alphabet and incidence of unified semantic nets elements] ;;
+
 partition_sc_code_alphabet => nrel_introduction:
 	[Рассмотрим синтаксическую типологию sc-элементов.] ;;
 partition_sc_code_alphabet = [*^"file://partition_sc_code_alphabet_content.scsi"*];;

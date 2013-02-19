@@ -1,6 +1,8 @@
 /!* keyword: primary_sc_variable */
 primary_sc_variable => nrel_main_ru_idtf: 
 	[первичная sc-переменная] ;;
+primary_sc_variable => nrel_main_en_idtf: 
+	[primary sc-variable] ;;
 	
 primary_sc_variable => nrel_ru_idtf: 
 	[sc-переменная первого логико-семантического уровня] ;;

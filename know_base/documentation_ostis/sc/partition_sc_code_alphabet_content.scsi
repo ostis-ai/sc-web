@@ -41,6 +41,8 @@ sc_element => nrel_inclusion:
 /!* keyword: sc_element_alphabet */
 sc_element_alphabet => nrel_main_ru_idtf: 
 	[Алфавит sc-элементов] ;;
+sc_element_alphabet => nrel_main_ru_idtf: 
+	[Sc-elements alphabet] ;;
 sc_element_alphabet => nrel_ru_idtf: 
 	[синтаксический вид sc-элементов] ;;
 sc_element_alphabet => nrel_ru_idtf: 
@@ -67,6 +69,9 @@ sc_element_alphabet => nrel_ru_idtf:
 /!* keyword: sc_node */
 sc_node => nrel_main_ru_idtf: 
 	[sc-узел] ;;
+sc_node => nrel_main_en_idtf: 
+	[sc-node] ;;
+
 sc_node => nrel_ru_idtf: 
 	[терминальный элемент sc-конструкции] ;;
 sc_node <- sc_element_alphabet;;
@@ -74,6 +79,9 @@ sc_node <- sc_element_alphabet;;
 /!* keyword: sc_edge */
 sc_edge => nrel_main_ru_idtf: 
 	[sc-ребро] ;;
+sc_edge => nrel_main_en_idtf: 
+	[sc-edge] ;;
+
 sc_edge => nrel_ru_idtf: 
 	[атомарный связующий sc-элемент, являющийся неориентированной парой sc-элементов, либо такой ориентированной парой sc-элементов, направленность которой в текущий момент не известна] ;;
 sc_edge => nrel_ru_idtf: 
@@ -86,6 +94,9 @@ sc_edge <- sc_element_alphabet;;
 /!* keyword: sc_arc_common */
 sc_arc_common => nrel_main_ru_idtf: 
 	[sc-дуга общего вида] ;;
+sc_arc_common => nrel_main_en_idtf: 
+	[common type sc-arc] ;;
+
 sc_arc_common => nrel_ru_idtf: 
 	[атомарный связующий sc-элемент, являющийся ориентированной парой sc-элементов, но не являющийся sc-дугой основного вида] ;;
 sc_arc_common <- sc_element_alphabet;;
@@ -94,6 +105,9 @@ sc_arc_common <- sc_element_alphabet;;
 /!* keyword: sc_arc_main */
 sc_arc_main => nrel_main_ru_idtf: 
 	[sc-дуга основного вида] ;;
+sc_arc_main => nrel_main_en_idtf: 
+	[main type sc-arc] ;;
+
 sc_arc_main => nrel_ru_idtf: 
 	[основная sc-дуга] ;;
 sc_arc_main => nrel_ru_idtf: 
@@ -107,6 +121,9 @@ sc_arc_main <- sc_element_alphabet;;
 /!* keyword: sc_link */
 sc_link => nrel_main_ru_idtf: 
 	[sc-ссылка] ;;
+sc_link => nrel_main_en_idtf: 
+	[sc-link] ;;
+
 sc_link => nrel_ru_idtf: 
 	[sc-ссылка из sc-памяти на фрагмент или подсистему соответствующей sc-системы] ;;
 sc_link => nrel_ru_idtf: 
@@ -133,6 +150,9 @@ sc_link <= nrel_explanation:
 /!* keyword: sc_arc */
 sc_arc => nrel_main_ru_idtf: 
 	[sc-дуга] ;;
+sc_arc => nrel_main_en_idtf: 
+	[sc-arc] ;;
+
 sc_arc => nrel_ru_idtf: 
 	[sc-дуга общего вида ? sc-дуга основного вида] ;;
 sc_arc => nrel_ru_idtf: 
@@ -152,6 +172,9 @@ sc_arc <= nrel_subdividing:
 /!* keyword: sc_connector */
 sc_connector => nrel_main_ru_idtf: 
 	[sc-коннектор] ;;
+sc_connector => nrel_main_en_idtf: 
+	[sc-connector] ;;
+
 sc_connector => nrel_ru_idtf: 
 	[sc-ребро ⋃ sc-дуга] ;;
 sc_connector => nrel_ru_idtf: 
@@ -176,6 +199,9 @@ sc_connector <= nrel_explanation:
 /!* keyword: sc_elements_syntactically_separated_class */
 sc_elements_syntactically_separated_class => nrel_main_ru_idtf: 
 	[синтаксически выделяемый класс sc-элементов] ;;
+sc_elements_syntactically_separated_class => nrel_main_en_idtf: 
+	[sc-elements syntactically separated class] ;;
+
 sc_elements_syntactically_separated_class => nrel_ru_idtf: 
 	[синтаксически задаваемый класс sc-элементов] ;;
 sc_elements_syntactically_separated_class => nrel_ru_idtf: 
@@ -195,6 +221,9 @@ sc_elements_syntactically_separated_class -> sc_connector;;
 /!* keyword: sc_elements_semantically_separated_class */
 sc_elements_semantically_separated_class => nrel_main_ru_idtf: 
 	[семантически выделяемый класс sc-элементов] ;;
+sc_elements_semantically_separated_class => nrel_main_en_idtf: 
+	[sc-elements semantically separated class] ;;
+
 sc_elements_semantically_separated_class => nrel_ru_idtf: 
 	[семантически класс sc-элементов] ;;
 sc_elements_semantically_separated_class => nrel_ru_idtf: 
@@ -203,6 +232,9 @@ sc_elements_semantically_separated_class => nrel_ru_idtf:
 /!* keyword: sc_construction_structure */
 sc_construction_structure => nrel_main_ru_idtf: 
 	[структура sc-конструкций] ;;	
+sc_construction_structure => nrel_main_en_idtf: 
+	[sc-construction structure] ;;	
+
 sc_construction_structure <= nrel_explanation:
 	[Кроме алфавита sc-элементов (алфавита SC-кода) структура sc-конструкций задаётся 
 	двумя бинарными ориентированными отношениями инцидентности, которые связывают sc-элементы между собой.

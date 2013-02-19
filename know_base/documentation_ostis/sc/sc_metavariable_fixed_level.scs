@@ -1,6 +1,8 @@
 /!* keyword: sc_metavariable_fixed_level */
 sc_metavariable_fixed_level => nrel_main_ru_idtf: 
 	[sc-метапеременная фиксированного уровня] ;;
+sc_metavariable_fixed_level => nrel_main_en_idtf: 
+	[fixed level sc-metavariable] ;;
 	
 sc_metavariable_fixed_level => nrel_ru_idtf: 
 	[sc-метапеременная, значениями которой являются sc-переменные одного логико-семантического уровня] ;;

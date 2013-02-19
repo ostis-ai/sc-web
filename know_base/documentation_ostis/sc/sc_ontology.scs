@@ -1,6 +1,9 @@
 /!* keyword: sc_ontology */
 sc_ontology => nrel_main_ru_idtf:
 	[sc-модель онтологии] ;;
+sc_ontology => nrel_main_en_idtf:
+	[sc-ontology] ;;
+
 sc_ontology => nrel_ru_idtf:
 	[sc-онтология];;
 sc_ontology => nrel_explanation:

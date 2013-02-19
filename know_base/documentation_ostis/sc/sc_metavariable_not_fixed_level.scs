@@ -1,6 +1,8 @@
 /!* keyword: sc_metavariable_not_fixed_level */
 sc_metavariable_not_fixed_level => nrel_main_ru_idtf: 
 	[sc-метапеременная нефиксированного уровня] ;;
+sc_metavariable_not_fixed_level => nrel_main_en_idtf: 
+	[not fixed level sc-metavariable] ;;
 	
 sc_metavariable_not_fixed_level => nrel_ru_idtf: 
 	[sc-метапеременная смешанного уровня] ;;

@@ -1,6 +1,9 @@
 /!* keyword: sc_language */
 sc_language => nrel_main_ru_idtf:
 	[sc-язык] ;;
+sc_language => nrel_main_en_idtf:
+	[sc-language] ;;
+
 sc_language => nrel_ru_idtf:
 	[множество всевозможных фрагментов соответствующей sc-модели некоторой предметной области];;
 sc_language => nrel_annotation:

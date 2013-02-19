@@ -1,6 +1,8 @@
 /!* keyword: constant_and_variable_elements_of_unified_semantic_networks */
 constant_and_variable_elements_of_unified_semantic_networks => nrel_main_ru_idtf: 
 	[Константные и переменные элементы унифицированных семантических сетей] ;;
+constant_and_variable_elements_of_unified_semantic_networks => nrel_main_en_idtf: 
+	[constant and variable elements of unified semantic networks] ;;
 	
 constant_and_variable_elements_of_unified_semantic_networks => nrel_comment: [Каждый sc-элемент является обозначением некоторого объекта. При этом речь может идти либо о вполне конкретном объекте, либо о произвольном объекте,
 взятом из некоторого множества объектов. В первом случае мы имеем дело с константными sc-элементами (sc-константами), а во втором – с переменными sc-элементами (sc-переменными). Каждой sc-переменной однозначно ставится

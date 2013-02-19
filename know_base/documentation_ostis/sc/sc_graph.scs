@@ -1,6 +1,9 @@
 /!* keyword: sc_graph */
 sc_graph => nrel_main_ru_idtf:
 	[sc-граф] ;;
+sc_graph => nrel_main_en_idtf:
+	[sc-graph] ;;
+
 sc_graph => nrel_ru_idtf:
 	[sc-текст];;
 sc_graph => nrel_ru_idtf:

@@ -1,6 +1,8 @@
 /!* keyword: sc_variable */
 sc_variable => nrel_main_ru_idtf: 
 	[sc-переменная] ;;
+sc_variable => nrel_main_en_idtf: 
+	[sc-variable] ;;
 	
 sc_variable => nrel_ru_idtf: 
 	[Класс всевозможных sc-переменных] ;;
