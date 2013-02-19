@@ -1,111 +1,40 @@
 $.namespace('Ostis.ui.scn');
 
-Ostis.ui.scn.IdentifierGenerator = (function() {
+Ostis.ui.scn.SCnComponent = {
+    type : SCWeb.core.ComponentType.viewer,
+    outputLang : 'hypermedia_format_scn_json',
+    formats : [],
+    factory : function(config) {
 
-    var sequenceNumber = 0;
-    var _nextSequenceNumber = function() {
+        return new Ostis.ui.scn.Viewer(config);
+    }
+};
 
-        return sequenceNumber++;
-    };
+SCWeb.core.ComponentManager.appendComponentInitialize(function() {
 
-    return {
-        generateLinkId : function(viewerId, linkAddr) {
+    SCWeb.core.ComponentManager.registerComponent(Ostis.ui.scn.SCnComponent);
+});
 
-            return viewerId + "_" + linkAddr + "_" + _nextSequenceNumber();
-        }
-    };
-})();
+Ostis.ui.scn.HtmlAttributes = {
+    ID : 'scn_addr',
+    LABEL : 'scnLableFor',
+    LINK : 'scnLinkFor',
+    HTML_ID : "id"
+};
 
-Ostis.ui.scn.Viewer = function(config) {
-
-    var viewerId = config['container'];
-    var viewerSelector = '#' + viewerId;
-    var htmlBuilder = Ostis.ui.scn.HtmlBuilder(viewerId);
-    var selectionHandler = Ostis.ui.scn.Selection(viewerId);
-    selectionHandler.init();
-    var nodeLabels = [];
-    var toTranslate = [];
-    var currentLanguage = null;
-
-    var _initNodes = function() {
-
-        var translXPath = viewerSelector + " ["
-                + Ostis.ui.scn.HtmlAttributes.LABEL + "]";
-        $(translXPath).each(function(index, element) {
-
-            nodeLabels.push(element);
-            var scnAddr = $(element).attr(Ostis.ui.scn.HtmlAttributes.LABEL);
-            toTranslate.push(scnAddr);
-        });
-    };
-
-    var _loadLinksData = function() {
-
-        var linksXPath = viewerSelector + " ["
-                + Ostis.ui.scn.HtmlAttributes.LINK + "]";
-        $(linksXPath).each(
-                function(index, element) {
-
-                    var scAddr = $(element).attr(
-                            Ostis.ui.scn.HtmlAttributes.LINK);
-                    var containerId = $(element).attr(
-                            Ostis.ui.scn.HtmlAttributes.HTML_ID);
-                    SCWeb.core.ui.Windows.createViewersForScLinks([ scAddr ],
-                            containerId, function() { // success
-
-                            }, function() { // error
-
-                            });
-                });
-
-    };
-
-    return {
-
-        /**
-         * to support component interface
-         */
-        destroy : function() {
-
-        },
-
-        // -----
-        receiveData : function(data) {
-
-            var outputData = htmlBuilder.buildTree(data);
-            nodeLabels = [];
-            toTranslate = [];
-            $(viewerSelector).empty().append(outputData);
-            selectionHandler.preselectArguments();
-            _initNodes();
-            _loadLinksData();
-        },
-
-        translateIdentifiers : function(language) {
-
-            currentLanguage = language;
-            var proxyUpdateTrans = $.proxy(this.updateTranslation, this);
-            SCWeb.core.Translation.translate(toTranslate, language,
-                    proxyUpdateTrans);
-        },
-
-        updateTranslation : function(namesMap) {
-
-            for ( var nodeInd = 0; nodeInd < nodeLabels.length; nodeInd++) {
-                var nodeEl = nodeLabels[nodeInd];
-                var addr = $(nodeEl).attr(Ostis.ui.scn.HtmlAttributes.LABEL);
-                var label = namesMap[addr];
-                if (label) {
-                    $(nodeEl).text(label);
-                }
-            }
-        },
-
-        getIdentifiersLanguage : function() {
-
-            return currentLanguage;
-        }
-    };
+Ostis.ui.scn.SCnCssClass = {
+    KEYWORD : 'SCnKeyword',
+    SENTENCE : 'Sentence',
+    FIELD : 'SCnField',
+    LINK : 'SCnLink',
+    MARKER : 'SCnFieldMarker',
+    VALUE : 'SCnFieldValue',
+    FILE : 'SCnNoTransContent',
+    LOOP : 'SCnTransContent',
+    SELECTABLE : 'SCnSelectable',
+    HOVERED : 'SCnHovered',
+    SELECTED : 'SCnSelected',
+    LEVEL : 'SCnLevel'
 };
 
 
@@ -389,43 +318,21 @@ Ostis.ui.scn.HtmlLinkBuilder = (function() {
 })();
 
 
-Ostis.ui.scn.SCnComponent = {
-    type : SCWeb.core.ComponentType.viewer,
-    outputLang : 'hypermedia_format_scn_json',
-    formats : [],
-    factory : function(config) {
+Ostis.ui.scn.IdentifierGenerator = (function() {
 
-        return new Ostis.ui.scn.Viewer(config);
-    }
-};
+    var sequenceNumber = 0;
+    var _nextSequenceNumber = function() {
 
-SCWeb.core.ComponentManager.appendComponentInitialize(function() {
+        return sequenceNumber++;
+    };
 
-    SCWeb.core.ComponentManager.registerComponent(Ostis.ui.scn.SCnComponent);
-});
+    return {
+        generateLinkId : function(viewerId, linkAddr) {
 
-Ostis.ui.scn.HtmlAttributes = {
-    ID : 'scn_addr',
-    LABEL : 'scnLableFor',
-    LINK : 'scnLinkFor',
-    HTML_ID : "id"
-};
-
-Ostis.ui.scn.SCnCssClass = {
-    KEYWORD : 'SCnKeyword',
-    SENTENCE : 'Sentence',
-    FIELD : 'SCnField',
-    LINK : 'SCnLink',
-    MARKER : 'SCnFieldMarker',
-    VALUE : 'SCnFieldValue',
-    FILE : 'SCnNoTransContent',
-    LOOP : 'SCnTransContent',
-    SELECTABLE : 'SCnSelectable',
-    HOVERED : 'SCnHovered',
-    SELECTED : 'SCnSelected',
-    LEVEL : 'SCnLevel'
-};
-
+            return viewerId + "_" + linkAddr + "_" + _nextSequenceNumber();
+        }
+    };
+})();
 
 Ostis.ui.scn.Selection = function(parent) {
 
@@ -435,11 +342,16 @@ Ostis.ui.scn.Selection = function(parent) {
     var _elementClick = function(event) {
 
         if (event.ctrlKey) {
+            var scAddr;
             $(event.currentTarget).toggleClass(
                     Ostis.ui.scn.SCnCssClass.SELECTED, true);
-            var scAddr = $(event.currentTarget).attr(
+            scAddr = $(event.currentTarget).attr(
                     Ostis.ui.scn.HtmlAttributes.ID);
             SCWeb.core.Arguments.appendArgument(scAddr);
+        } else {
+            scAddr = $(event.currentTarget).attr(
+                Ostis.ui.scn.HtmlAttributes.ID);
+            $(parentSelector).trigger('semanticNeighbourhood', scAddr);
         }
     };
 
@@ -502,7 +414,6 @@ Ostis.ui.scn.Selection = function(parent) {
                     $.proxy(_elementLeave, this));
             $(parentSelector).delegate(hoveredClassExpr, 'click',
                     $.proxy(_elementClick, this));
-            $(parentSelector).delegate('a', 'click', $.proxy(_linkClick, this));
             SCWeb.core.Arguments.registerListener(this);
         },
 
@@ -650,5 +561,98 @@ Ostis.ui.scn.TypeResolver = (function() {
         }
     };
 })();
+
+
+Ostis.ui.scn.Viewer = function(config) {
+
+    var viewerId = config['container'];
+    var viewerSelector = '#' + viewerId;
+    var htmlBuilder = Ostis.ui.scn.HtmlBuilder(viewerId);
+    var selectionHandler = Ostis.ui.scn.Selection(viewerId);
+    selectionHandler.init();
+    var nodeLabels = [];
+    var toTranslate = [];
+    var currentLanguage = null;
+
+    var _initNodes = function() {
+
+        var translXPath = viewerSelector + " ["
+                + Ostis.ui.scn.HtmlAttributes.LABEL + "]";
+        $(translXPath).each(function(index, element) {
+
+            nodeLabels.push(element);
+            var scnAddr = $(element).attr(Ostis.ui.scn.HtmlAttributes.LABEL);
+            toTranslate.push(scnAddr);
+        });
+    };
+
+    var _loadLinksData = function() {
+
+        var linksXPath = viewerSelector + " ["
+                + Ostis.ui.scn.HtmlAttributes.LINK + "]";
+        $(linksXPath).each(
+                function(index, element) {
+
+                    var scAddr = $(element).attr(
+                            Ostis.ui.scn.HtmlAttributes.LINK);
+                    var containerId = $(element).attr(
+                            Ostis.ui.scn.HtmlAttributes.HTML_ID);
+                    SCWeb.core.ui.Windows.createViewersForScLinks([ scAddr ],
+                            containerId, function() { // success
+
+                            }, function() { // error
+
+                            });
+                });
+
+    };
+
+    return {
+
+        /**
+         * to support component interface
+         */
+        destroy : function() {
+
+        },
+
+        // -----
+        receiveData : function(data) {
+
+            var outputData = htmlBuilder.buildTree(data);
+            nodeLabels = [];
+            toTranslate = [];
+            $(viewerSelector).empty().append(outputData);
+            selectionHandler.preselectArguments();
+            _initNodes();
+            _loadLinksData();
+        },
+
+        translateIdentifiers : function(language) {
+
+            currentLanguage = language;
+            var proxyUpdateTrans = $.proxy(this.updateTranslation, this);
+            SCWeb.core.Translation.translate(toTranslate, language,
+                    proxyUpdateTrans);
+        },
+
+        updateTranslation : function(namesMap) {
+
+            for ( var nodeInd = 0; nodeInd < nodeLabels.length; nodeInd++) {
+                var nodeEl = nodeLabels[nodeInd];
+                var addr = $(nodeEl).attr(Ostis.ui.scn.HtmlAttributes.LABEL);
+                var label = namesMap[addr];
+                if (label) {
+                    $(nodeEl).text(label);
+                }
+            }
+        },
+
+        getIdentifiersLanguage : function() {
+
+            return currentLanguage;
+        }
+    };
+};
 
 
