@@ -4,5 +4,5 @@ sc_ontology_situations_and_events_sc_storage => nrel_main_ru_idtf:
 sc_ontology_situations_and_events_sc_storage => nrel_main_en_idtf: 
 	[SC-ontology Subject domain of situations and events in all possible sc-storages] ;;
 
-sc_ontology_situations_and_events_sc_storage <= nrel_ontology:
-	"D:/BSUIR/OSTIS/GIT/SC-GIT-REPO/newOSTIS/sc_ontology_situations_and_events_sc_storage_1.scs";;
+sc_ontology_situations_and_events_sc_storage => nrel_ontology:
+		sc_model_situations_and_events_sc_storage;;
