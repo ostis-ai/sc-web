@@ -35,17 +35,17 @@ belarus <= nrel_cities:
 	vitebsk (* => nrel_main_ru_idtf: [Витебск];; => nrel_main_en_idtf: [Vitebsk];; *);
 	mogilev (* => nrel_main_ru_idtf: [Могилев];; => nrel_main_en_idtf: [Mogilev];; *);
 	grodno (* => nrel_main_ru_idtf: [Гродно];; => nrel_main_en_idtf: [Grodno];; *);
-	gomel (* => nrel_main_ru_idtf: [Гомель];; => nrel_main_en_idtf: [Gomel];; *);
+	gomel (* => nrel_main_ru_idtf: [Гомель];; => nrel_main_en_idtf: [Gomel];; *)
 };;
 
-minsk => nrel_population: [1 900 800];
-brest => nrel_population: [322 105];
-grodno => nrel_population: [327 540];
-vitebsk => nrel_population: [369 411];
-mogilev => nrel_population: [365 793];
-gomel => nrel_population: [507 700];
+minsk => nrel_population: [1 900 800];;
+brest => nrel_population: [322 105];;
+grodno => nrel_population: [327 540];;
+vitebsk => nrel_population: [369 411];;
+mogilev => nrel_population: [365 793];;
+gomel => nrel_population: [507 700];;
 
-belarus => nrel_population: [9 463 300];
+belarus => nrel_population: [9 463 300];;
 
 belarus => nrel_current_time: "file://time.html";;
 minsk => nrel_map: "file://map.googlemaplink";;
@@ -66,4 +66,4 @@ nrel_map => nrel_main_ru_idtf:
 nrel_map => nrel_main_en_idtf: 
 	[map*] ;;
 	
-minsk => nrel_foundation_date: [1067];
+minsk => nrel_foundation_date: [1067];;
