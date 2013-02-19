@@ -1,0 +1,5 @@
+/!* keyword: nrel_describe_entities */
+nrel_describe_entities => nrel_main_ru_idtf: 
+  [описываемые сущности*] ;;
+nrel_describe_entities => nrel_main_en_idtf: 
+  [describe entities*] ;;

@@ -1,0 +1,8 @@
+/!* keyword: sc_ontology_situations_and_events_sc_storage */
+sc_ontology_situations_and_events_sc_storage => nrel_main_ru_idtf: 
+	[SC-онтология Предметной  области ситуаций и событий во всевозможных sc-хранилищах] ;;
+sc_ontology_situations_and_events_sc_storage => nrel_main_en_idtf: 
+	[SC-ontology Subject domain of situations and events in all possible sc-storages] ;;
+
+sc_ontology_situations_and_events_sc_storage <= nrel_ontology:
+	"D:/BSUIR/OSTIS/GIT/SC-GIT-REPO/newOSTIS/sc_ontology_situations_and_events_sc_storage_1.scs";;

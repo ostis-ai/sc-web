@@ -1,0 +1,14 @@
+/!* keyword: sc_model_intelligent_system */
+sc_model_intelligent_system => nrel_main_ru_idtf: 
+	[sc-модель интеллектуальной системы] ;;
+sc_model_intelligent_system => nrel_main_en_idtf: 
+	[intelligent system sc-model] ;;
+
+sc_model_intelligent_system => nrel_ru_idtf: 
+	[унифицированная логико-семантическая модель
+	 интеллектуальной системы, основанная на
+	 использовании sc-графов] ;;
+sc_model_intelligent_system => nrel_ru_idtf: 
+	[полное описание логико-семантического уровня
+	 интеллектуальной системы, оформленное в виде
+	 sc-графа ] ;;
