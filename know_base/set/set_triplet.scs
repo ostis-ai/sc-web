@@ -1,6 +1,9 @@
 /!* keyword: set_triplet */
 set_triplet => nrel_main_ru_idtf: 
 	[тройка] ;;
+set_triplet => nrel_main_en_idtf: 
+	[triplet] ;;
+
 set_triplet => nrel_ru_idtf: 
 	[трехмощное множество] ;
 	[множество с тремя вхождениями элементов];;

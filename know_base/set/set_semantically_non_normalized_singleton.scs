@@ -1,3 +1,5 @@
 /!* keyword: set_semantically_non_normalized_singleton*/
 set_semantically_non_normalized_singleton => nrel_main_ru_idtf: 
 	[семантически ненормализованный синглетон] ;;
+set_semantically_non_normalized_singleton => nrel_main_en_idtf: 
+	[semantically non normalized singleton] ;;

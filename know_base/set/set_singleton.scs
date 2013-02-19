@@ -2,7 +2,7 @@
 set_singleton => nrel_main_ru_idtf: 
 	[синглетон] ;;
 set_singleton => nrel_main_en_idtf: 
-	[set_singleton] ;;
+	[singleton] ;;
 set_singleton => nrel_ru_idtf: 
 	[одномощное множество] ;;
 set_singleton => nrel_ru_idtf: 

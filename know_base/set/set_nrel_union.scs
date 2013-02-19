@@ -1,6 +1,9 @@
 /!* keyword: set_nrel_union */
 set_nrel_union => nrel_main_ru_idtf: 
 	[объединение*] ;;
+set_nrel_union => nrel_main_en_idtf: 
+	[union*] ;;
+
 set_nrel_union => nrel_ru_idtf: 
 	[операция объединения*];
 	[отношение объединения*];

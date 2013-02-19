@@ -1,6 +1,9 @@
 /!* keyword: set_finite_set*/
 set_finite_set => nrel_main_ru_idtf: 
 	[конечное множество] ;;
+set_finite_set => nrel_main_en_idtf: 
+	[finite set] ;;
+
 set_finite_set <= nrel_subdividing:
 {
 	set_empty_set;

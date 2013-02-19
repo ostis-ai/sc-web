@@ -1,6 +1,9 @@
 /!* keyword: set_nrel_power*/
 set_nrel_power => nrel_main_ru_idtf: 
 	[мощность*] ;;	
+set_nrel_power => nrel_main_en_idtf: 
+	[power*] ;;	
+
 set_nrel_power => nrel_ru_idtf: 
 	[кардинальное число*] ;;
 set_nrel_power => nrel_ru_idtf: 

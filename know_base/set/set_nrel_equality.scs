@@ -1,6 +1,8 @@
 /!* keyword: set_nrel_equality*/
 set_nrel_equality => nrel_main_ru_idtf: 
 	[равенство множеств*] ;;	
+set_nrel_equality => nrel_main_en_idtf: 
+	[set equality*] ;;	
 
 set_nrel_equality => nrel_ru_idtf: 
 	[равные множества*] ;;

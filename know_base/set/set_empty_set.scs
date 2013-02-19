@@ -1,6 +1,9 @@
 /!* keyword: set_empty_set*/
 set_empty_set => nrel_main_ru_idtf: 
 	[пустое множество] ;;	
+set_empty_set => nrel_main_en_idtf: 
+	[empty set] ;;	
+
 set_empty_set => nrel_ru_idtf: 
 	[понятие пустого множества] ;;
 set_empty_set => nrel_ru_idtf: 

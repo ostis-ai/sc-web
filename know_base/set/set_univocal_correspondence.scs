@@ -1,6 +1,9 @@
 /!* keyword: set_univocal_correspondence */
 set_univocal_correspondence => nrel_main_ru_idtf: 
-	[однозначное соответствие] ;;
+	[однозначное соответствие*] ;;
+set_univocal_correspondence => nrel_main_en_idtf: 
+	[univocal correspondence*] ;;
+
 set_univocal_correspondence => nrel_ru_idtf: 
 	[функция];
 	[множество всех однозначных соответствий];

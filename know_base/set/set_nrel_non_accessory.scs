@@ -1,6 +1,9 @@
 /!* keyword: set_nrel_non_accessory */
 set_nrel_non_accessory => nrel_main_ru_idtf: 
 	[непринадлежность*] ;;
+set_nrel_non_accessory => nrel_main_en_idtf: 
+	[non accessory*] ;;
+
 set_nrel_non_accessory => nrel_ru_idtf: 
 	[пара непринадлежности*] ;
 	[быть парой непринадлежности*] ;

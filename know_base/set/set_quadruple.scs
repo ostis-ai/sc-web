@@ -1,3 +1,5 @@
 /!* keyword: set_quadruple */
 set_quadruple => nrel_main_ru_idtf: 
 	[четверка] ;;
+set_quadruple => nrel_main_en_idtf: 
+	[quadruple] ;;

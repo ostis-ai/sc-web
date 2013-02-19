@@ -1,6 +1,9 @@
 /!* keyword: set_couple */
 set_couple => nrel_main_ru_idtf: 
 	[пара] ;;
+set_couple => nrel_main_en_idtf: 
+	[couple] ;;
+
 set_couple => nrel_ru_idtf: 
 	[двухмощное множество] ;
 	[множество с двумя вхождениями элементов];;
