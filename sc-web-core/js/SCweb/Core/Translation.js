@@ -2,6 +2,11 @@ SCWeb.core.Translation = {
     
     current_language: null,
     listeners: [],
+
+    /**
+     * cached identifiers
+     */
+    _cacheMap: {},
     
     /** 
      * @param {Object} listener Listener object that will be notified on translation.
@@ -54,19 +59,71 @@ SCWeb.core.Translation = {
     /**
      * @param {Array} objects List of sc-addrs, that need to be translated
      * @param {String} language It it value is null, then current language used
-     * @return Return object, that contains [key, value], where 
+     * @param {Function} callback
      * key is sc-addr of element and value is identifier.
      * If there are no key in returned object, then identifier wasn't found
      */
     translate: function(objects, language, callback) {
-        var lang = language;
-        
-        if (!language)
-            lang = this.current_language;
-        
-        SCWeb.core.Server.resolveIdentifiers(objects, lang, function(namesMap) {
-            callback(namesMap);
-        });
-    }
+        var lang = language || this.current_language;
 
+        var requiredNamesMap;
+        var unachedAddresses = this._getUncachedNames(lang, objects);
+        if(unachedAddresses.length === 0) {
+            requiredNamesMap = this._getRequiredNamesMap(lang, objects);
+            callback(requiredNamesMap);
+        } else {
+            var self = this;
+            SCWeb.core.Server.resolveIdentifiers(unachedAddresses, lang, function(namesMap) {
+                self._cacheNames(lang, namesMap);
+                requiredNamesMap = self._getRequiredNamesMap(lang, objects);
+                callback(requiredNamesMap);
+            });
+        }
+    },
+
+    _getUncachedNames: function(language, addresses) {
+        if(!this._cacheMap[language]) {
+            // nothing is cached for this language yet
+            return addresses;
+        } else {
+            var uncachedAddressed = [];
+            var scAddress;
+            var i;
+            for(i=0; i < addresses.length; i++) {
+                scAddress = addresses[i];
+                // if not in cache for the specified language
+                if(!this._cacheMap[language][scAddress]) {
+                    uncachedAddressed.push(scAddress);
+                }
+            }
+            return uncachedAddressed;
+        }
+    },
+
+    _cacheNames: function(language, namesMap) {
+        if(!this._cacheMap[language]) {
+            this._cacheMap[language] = {};
+        }
+
+        var name;
+        var scAddress;
+        for(scAddress in namesMap) {
+            if(namesMap.hasOwnProperty(scAddress)) {
+                name = namesMap[scAddress];
+                this._cacheMap[language][scAddress] = name;
+            }
+        }
+
+    },
+
+    _getRequiredNamesMap: function(language, addresses) {
+        var names = {};
+        var scAddress;
+        var i;
+        for(i=0; i < addresses.length; i++) {
+            scAddress = addresses[i];
+            names[scAddress] = this._cacheMap[language][scAddress];
+        }
+        return names;
+    }
 };
