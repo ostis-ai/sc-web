@@ -1,0 +1,10 @@
+hypermedia_format_googlemaplink <- sc_node_not_relation;;
+
+hypermedia_format_googlemaplink => nrel_main_ru_idtf:
+	[формат googlemaplink];;
+
+hypermedia_format_googlemaplink => nrel_main_en_idtf:
+	[format googlemaplink];;
+
+hypermedia_format_googlemaplink => hypermedia_nrel_mimetype:
+	[text/plain];;
