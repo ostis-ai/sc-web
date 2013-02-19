@@ -1,0 +1,10 @@
+hypermedia_format_html <- sc_node_not_relation;;
+
+hypermedia_format_html => nrel_main_ru_idtf:
+	[формат html];;
+
+hypermedia_format_html => nrel_main_en_idtf:
+	[format png];;
+
+hypermedia_format_html => hypermedia_nrel_mimetype:
+	[text/html];;

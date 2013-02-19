@@ -559,4 +559,4 @@ def linkContent(request):
                 if mime_value is not None:
                     mimetype_str = mime_value
     
-    return HttpResponse(result, mimetype_str)
+    return HttpResponse(result, mimetype_str + '; charset=UTF-8')
