@@ -1,0 +1,69 @@
+belarus => nrel_main_ru_idtf: 
+	[Республика Беларусь] ;;
+belarus => nrel_main_en_idtf: 
+	[The Republic of Belarus] ;;
+
+nrel_capital => nrel_main_ru_idtf: 
+	[столица*] ;;
+nrel_capital => nrel_main_en_idtf: 
+	[capital*] ;;
+
+nrel_cities => nrel_main_ru_idtf: 
+	[города*] ;;
+nrel_cities => nrel_main_en_idtf: 
+	[cities*] ;;
+	
+nrel_population => nrel_main_ru_idtf: 
+	[популяция*] ;;
+nrel_population => nrel_main_en_idtf: 
+	[population*] ;;
+
+nrel_square => nrel_main_ru_idtf: 
+	[площадь*] ;;
+nrel_square => nrel_main_en_idtf: 
+	[square*] ;;
+	
+city_minsk => nrel_main_ru_idtf: 
+	[Минск] ;;
+city_minsk => nrel_main_en_idtf: 
+	[Minsk] ;;
+
+belarus => nrel_capital: minsk;;
+belarus <= nrel_cities:
+{
+	brest (* => nrel_main_ru_idtf: [Брест];; => nrel_main_en_idtf: [Brest];; *);
+	vitebsk (* => nrel_main_ru_idtf: [Витебск];; => nrel_main_en_idtf: [Vitebsk];; *);
+	mogilev (* => nrel_main_ru_idtf: [Могилев];; => nrel_main_en_idtf: [Mogilev];; *);
+	grodno (* => nrel_main_ru_idtf: [Гродно];; => nrel_main_en_idtf: [Grodno];; *);
+	gomel (* => nrel_main_ru_idtf: [Гомель];; => nrel_main_en_idtf: [Gomel];; *);
+};;
+
+minsk => nrel_population: [1 900 800];
+brest => nrel_population: [322 105];
+grodno => nrel_population: [327 540];
+vitebsk => nrel_population: [369 411];
+mogilev => nrel_population: [365 793];
+gomel => nrel_population: [507 700];
+
+belarus => nrel_population: [9 463 300];
+
+belarus => nrel_current_time: "file://time.html";;
+minsk => nrel_map: "file://map.googlemaplink";;
+belarus => nrel_square: [207 600];;
+
+nrel_current_time => nrel_main_ru_idtf: 
+	[текущее время*] ;;
+nrel_current_time => nrel_main_en_idtf: 
+	[current time*] ;;
+
+nrel_foundation_date => nrel_main_ru_idtf: 
+	[дата основания*] ;;
+nrel_foundation_date => nrel_main_en_idtf: 
+	[foundation date*] ;;
+
+nrel_map => nrel_main_ru_idtf: 
+	[карта*] ;;
+nrel_map => nrel_main_en_idtf: 
+	[map*] ;;
+	
+minsk => nrel_foundation_date: [1067];
