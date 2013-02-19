@@ -1,0 +1,10 @@
+hypermedia_format_youtubelink <- sc_node_not_relation;;
+
+hypermedia_format_youtubelink => nrel_main_ru_idtf:
+	[формат youtube];;
+
+hypermedia_format_youtubelink => nrel_main_en_idtf:
+	[format youtube];;
+
+hypermedia_format_youtubelink => hypermedia_nrel_mimetype:
+	[text/html];;

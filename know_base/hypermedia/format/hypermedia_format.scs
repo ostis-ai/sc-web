@@ -15,5 +15,6 @@ hypermedia_format =
 	hypermedia_format_png;
 	hypermedia_format_jpg;
 	hypermedia_format_txt;
-	hypermedia_format_html
+	hypermedia_format_html;
+	hypermedia_format_youtubelink
 };;
