@@ -1,6 +1,9 @@
 /!* keyword: theory */
 theory => nrel_main_ru_idtf: 
 	[теория] ;;
+theory => nrel_main_en_idtf: 
+	[theory] ;;
+
 theory => nrel_ru_idtf: formal_theory ;;
 
 theory => nrel_inclusion: theory_of_stationary_subject_area ;;

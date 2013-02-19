@@ -1,6 +1,9 @@
 /!* keyword: scg_code_1_level */
 scg_code_1_level => nrel_main_ru_idtf: 
 	[SCg-код уровня 1] ;;
+scg_code_1_level => nrel_main_en_idtf: 
+	[SCg-code level 1] ;;
+
 scg_code_1_level => nrel_main_ru_idtf: 
 	[SCg-ядро] ;;
 
@@ -20,7 +23,7 @@ scg_code_1_level => nrel_explanation:
 *);;
 	
 scg_code_1_level => nrel_explanation:
-	"file://files/scg_code_1_level_table1.html";;
+	"file://files/level1_table.png";;
 
 scg_code_1_level -> rrel_example:
 	"file://files/level1_triangle_ABC.png"

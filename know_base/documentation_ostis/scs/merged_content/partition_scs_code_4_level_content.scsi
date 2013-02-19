@@ -1,6 +1,10 @@
 /!* keyword: scs_code_4_level */
 scs_code_4_level => nrel_main_ru_idtf:
 		[SCs-код уровня 4] ;;
+scs_code_4_level => nrel_main_en_idtf: 
+		[SCs-code level 4] ;;
+
+		
 scs_code_4_level => nrel_explanation:
 	[
 		На данном уровне SCs-кода вводятся средства лаконичной записи группы sc.s-предложений уровня 2 или уровня 3, у которых 
@@ -13,6 +17,9 @@ scs_code_4_level => nrel_explanation:
 /!* keyword: scs_sentence_4_level */
 scs_sentence_4_level => nrel_main_ru_idtf:
 	[sc.s-предложение уровня 4] ;;
+scs_sentence_4_level => nrel_main_en_idtf: 
+		[sc.s-sentence level 4] ;;
+
 scs_sentence_4_level <= nrel_explanation: 
 	[В sc.s-предложениях уровня 4 cокращается число изображений sc-коннекторов путем введения sc.s-разделителя ;. 
 	Более подробно правила использования указанного разделителя рассмотрены в соответствующем разделе. 
@@ -27,6 +34,9 @@ scs_sentence_4_level -> rrel_example:
 /!* keyword: scs_text_4_level */
 scs_text_4_level => nrel_main_ru_idtf: 
 	[sc.s-текст уровня 4] ;;
+scs_text_4_level => nrel_main_en_idtf: 
+		[sc.s-text level 4] ;;
+
 scs_text_4_level <= nrel_explanation: 
 	[sc.s-текст уровня 4 - sc.s-текст, содержащий хотя бы одно sc.s-предложение уровня 4 и не содержащий sc.s-предложений уровня 5];;
 scs_text_4_level -> rrel_example:

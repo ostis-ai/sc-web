@@ -1,6 +1,9 @@
 /!* keyword: formal_theory */
 formal_theory => nrel_main_ru_idtf: 
 	[формальная теория] ;;
+formal_theory => nrel_main_en_idtf: 
+	[formal theory] ;;
+
 	
 formal_theory => nrel_ru_idtf: 
 	[компонент предметной области формальных теорий] ;;

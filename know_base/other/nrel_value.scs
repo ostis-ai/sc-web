@@ -1,6 +1,8 @@
 /!* keyword: nrel_value */
 nrel_value => nrel_main_ru_idtf: 
 	[значение*] ;;
+nrel_value => nrel_main_en_idtf: 
+	[value*] ;;
 	
 nrel_value => nrel_ru_idtf: 
 	[значение sc-элемента*] ;;

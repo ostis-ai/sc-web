@@ -1,6 +1,9 @@
 /!* keyword: scs_code_7_level */
 scs_code_7_level => nrel_main_ru_idtf: 
 		[SCs-код уровня 7] ;;
+scs_code_7_level => nrel_main_en_idtf: 
+		[SCs-code level 7] ;;
+
 scs_code_7_level => nrel_explanation:
 	[
 		На данном уровне SCs-кода разрешается перечисление (через разделитель ;) таких компонентов,
@@ -10,6 +13,9 @@ scs_code_7_level => nrel_explanation:
 /!* keyword: scs_sentence_7_level */
 scs_sentence_7_level => nrel_main_ru_idtf: 
 		[sc.s-предложение уровня 7] ;;
+scs_sentence_7_level => nrel_main_en_idtf: 
+		[sc.s-sentence level 7] ;;
+
 scs_sentence_7_level <= nrel_explanation: 
 	[В sc.s-предложениях уровня 7 разрешается использовать sc.s-разделитель ; во всех случаях, для котрых предназначен данный разделитель. Более подробно правила использования указанного разделителя рассмотрены в соответствующем разделе.
 	Правила умолчания (неотображения) разделителей sc.s-кода:
@@ -44,6 +50,9 @@ scs_sentence_7_level -> rrel_example:
 /!* keyword: scs_text_7_level */
 scs_text_7_level => nrel_main_ru_idtf: 
 	[sc.s-текст уровня 7] ;;
+scs_text_7_level => nrel_main_en_idtf: 
+		[sc.s-text level 7] ;;
+
 scs_text_7_level <= nrel_explanation: 
 	[sc.s-текст уровня 7 - sc.s-текст, содержащий хотя бы одно sc.s-предложение уровня 7];;
 scs_text_7_level -> rrel_example:

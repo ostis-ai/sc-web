@@ -1,0 +1,30 @@
+/!* keyword: ims_ostis_documentation */
+ims_ostis_documentation => nrel_main_ru_idtf:
+	[Документация IMS.OSTIS];;
+ims_ostis_documentation => nrel_main_en_idtf:
+	[Documentation IMS.OSTIS];;
+
+ims_ostis_documentation => nrel_ru_idtf:
+	[Документация Метасистемы IMS.OSTIS];
+	[Документация Технологии OSTIS как комплекса моделей, средстви методов проектирования интеллектуальных систем на основе унифицированных семантических моделей];;
+ims_ostis_documentation <= nrel_decomposition: 
+	partition_metasystem_ims_ostis_common_characteristics;
+	partition_unified_theory_semantic_models_and_their_components;
+	partition_ways_presenting_unified_semantic_networks;
+	partition_library_interpreters_unified_semantic_models;
+	partition_metasystem_ims_ostis_subsystem_support_developing_unified_semantic_models_knowledge_bases;
+	partition_metasystem_ims_ostis_subsystem_support_developing_unified_semantic_models_procedural_and_non_procedural_programs_processing_unified_semantic_models_knowledge_bases;
+	partition_metasystem_ims_ostis_subsystem_support_developing_unified_semantic_models_computer_processing_knowledge_bases;
+	partition_metasystem_ims_ostis_subsystem_support_developing_unified_semantic_models_intelligent_systems_interface;
+	partition_metasystem_ims_ostis_subsystem_support_developing_unified_semantic_models_help_subsystems_developed_intelligent_systems;
+	partition_metasystem_ims_ostis_subsystem_support_developing_unified_semantic_models_subsystems_developed_intelligent_systems_developed_inform_and_update_automation;
+	partition_metasystem_ims_ostis_subsystem_support_developing_unified_semantic_models_subsystems_developed_intelligent_systems_information_support_and_automation_developing_intelligent_systems;
+	partition_metasystem_ims_ostis_subsystem_support_different_classes_of_complex_developing_intelligent_systems_based_on_their_unified_semantic_models;
+	publications_metasystem_ims_ostis
+		(*
+ 			=> nrel_main_ru_idtf: [Публикации по моделям, средствам и методам проектирования интеллектуальных систем на основе унифицированных семантических моделей];;
+		*);
+	bibliography_metasystem_ims_ostis
+		(*
+			=> nrel_main_ru_idtf: [Библиография по моделям, средствам и методам проектирования интеллектуальных систем];;
+		*);;

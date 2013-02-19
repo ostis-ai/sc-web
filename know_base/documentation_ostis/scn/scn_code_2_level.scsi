@@ -1,6 +1,9 @@
 /!* keyword: scn_code_2_level*/
 scn_code_2_level => nrel_main_ru_idtf: 
 	[SCn-код уровня 2];;
+scn_code_2_level => nrel_main_en_idtf: 
+	[SCn-code level 2];;
+
 scn_code_2_level => nrel_explanation:
 	[
 		Данный уровень SCn-кода отличается от предыдущего тем, что форматирование sc.s-предложений

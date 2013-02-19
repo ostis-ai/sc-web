@@ -1,6 +1,9 @@
 /!* keyword: subproject_ostis_project */
 subproject_ostis_project => nrel_main_ru_idtf:
 	[подпроект Проекта OSTIS];;
+subproject_ostis_project => nrel_main_en_idtf:
+	[Project OSTIS subproject];;
+
 subproject_ostis_project => nrel_explanation:
 	[
 	Это множество элементами которого являются сам Проект OSTIS, все непосредственные (собственные) 

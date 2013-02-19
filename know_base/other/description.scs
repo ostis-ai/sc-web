@@ -1,3 +1,5 @@
 /!* keyword: description */
 description => nrel_main_ru_idtf: 
 	[описание] ;;
+description => nrel_main_en_idtf: 
+	[description] ;;

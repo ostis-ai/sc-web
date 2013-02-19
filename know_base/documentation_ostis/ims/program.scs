@@ -1,6 +1,8 @@
 /!* keyword: program */
 program => nrel_main_ru_idtf: 
 	[программа] ;;
+program => nrel_main_en_idtf: 
+	[program] ;;
 	
 program => nrel_ru_idtf: 
 	[процедурное знание] ;;

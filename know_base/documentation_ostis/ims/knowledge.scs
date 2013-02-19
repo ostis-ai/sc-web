@@ -1,6 +1,9 @@
 /!* keyword: knowledge */
 knowledge => nrel_main_ru_idtf: 
 	[знание] ;;
+knowledge => nrel_main_en_idtf: 
+	[knowledge] ;;
+
 knowledge => nrel_ru_idtf: 
 	[Множество всевозможных знаний] ;;
 

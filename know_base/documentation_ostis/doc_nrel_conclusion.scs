@@ -2,3 +2,5 @@
 sc_node_norole_relation -> doc_nrel_conclusion;;
 doc_nrel_conclusion => nrel_main_ru_idtf: 
   [заключение*] ;;
+doc_nrel_conclusion => nrel_main_en_idtf: 
+  [conclusion*] ;;

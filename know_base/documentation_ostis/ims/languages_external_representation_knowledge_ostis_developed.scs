@@ -1,0 +1,15 @@
+/!* keyword: languages_external_representation_knowledge_ostis_developed */
+languages_external_representation_knowledge_ostis_developed => nrel_main_ru_idtf:
+	[Языки внешнего представления знаний, разрабатываемых по Технологии OSTIS];;
+languages_external_representation_knowledge_ostis_developed => nrel_main_en_idtf:
+	[Languages of external representation of knowledges, developed on OSTIS Technology];;
+
+languages_external_representation_knowledge_ostis_developed => nrel_ru_idtf:
+	[Способы изображения sc-графов];
+	[язык внешнего представления sc-графов]
+	(*
+		<= nrel_inclusion:
+		scg_code;
+		scs_code;
+		scn_code;;
+	*);;

@@ -1,0 +1,19 @@
+/!* keyword: sc_model_library_reusable_components_knowledge_bases */
+sc_model_library_reusable_components_knowledge_bases => nrel_main_ru_idtf:
+	[Библиотека sc-моделей многократно используемых компонентов баз знаний];;
+sc_model_library_reusable_components_knowledge_bases => nrel_main_en_idtf:
+	[Knowledge base reusable components sc-models library];;
+
+sc_model_library_reusable_components_knowledge_bases <= nrel_inclusion:
+	library_sc_ontology_models;
+	description_library_used_languages;
+	basic_knowledge_various_library
+	(* <= nrel_inclusion:
+		basic_knowledge_about_sets_and_relations;
+		basic_knowledge_graph_structures;
+		basic_knowledge_numbers_and_numerical_models;
+		basic_knowledge_space_and_spatial_forms;
+		basic_knowledge_about_time_dynamic_systems_situations_events;
+		basic_knowledge_informational_purposes_tasks_and_solutions;
+		basic_knowledge_purposeful_activities_various_actors;;
+	*);;

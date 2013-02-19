@@ -1,0 +1,17 @@
+/!* keyword: ostis_technology_tools */
+ostis_technology_tools => nrel_main_ru_idtf:
+	[Инструментальные средства Технологии OSTIS];;
+ostis_technology_tools => nrel_main_en_idtf:
+	[OSTIS Technology tools];;
+
+ostis_technology_tools => nrel_ru_idtf:
+	[Инструментальные средства автоматизации проектирования интеллектуальных систем на основе Технологии OSTIS]
+	(* 
+		=> nrel_notation: 
+		[Такие средства становятся подсистемами проектируемых интеллектуальных систем, т.к. проектирование считается перманентным процессом, осуществляемым одновременно с эксплуатацией интеллектуальной системы];;
+	*);;
+ostis_technology_tools <= nrel_inclusion:
+		family_tools_develop_knowledge_bases;
+		family_tools_develop_stored_programs;
+		family_tools_develop_processing_machines;
+		family_tools_develop_ui;;

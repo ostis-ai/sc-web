@@ -1,6 +1,8 @@
 /!* keyword: scg_code_2_level */
 scg_code_2_level => nrel_main_ru_idtf: 
 	[SCg-код уровня 2] ;;
+scg_code_2_level => nrel_main_en_idtf: 
+	[SCg-code level 2] ;;
 
 scg_code_2_level => nrel_explanation:
 	[
@@ -30,7 +32,7 @@ scg_code_2_level => nrel_explanation:
 	[
 		Переход от элементов SСg-кода 1-го уровня к SСg-коду 2-го уровня осуществляется по правилам описанным в таблице: 
 	](*
-		=> "file://files/scg_code_2_level_table1.html";;
+		=> "file://files/level2_table.png";;
 	*);;
 
 scg_code_2_level -> rrel_example:

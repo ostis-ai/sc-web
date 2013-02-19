@@ -1,5 +1,3 @@
-doc_partition => nrel_main_ru_idtf:
-	[раздел базы знаний];;
 
 doc_partition => idtf_nrel_element_identification_rule:
 [Идентификатор sc-узла, являющегося знаком структуры, описывающей раздел базы знаний, идентифицируется следующим образом: 

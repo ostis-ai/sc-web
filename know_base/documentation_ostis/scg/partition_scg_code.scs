@@ -1,6 +1,9 @@
 /!* keyword: Partition_SCg_code */
 Partition_SCg_code => nrel_main_ru_idtf: 
 	[Раздел. SCg-код] ;;
+Partition_SCg_code => nrel_main_en_idtf: 
+	[Partition. SCg-code] ;;
+
 Partition_SCg_code => nrel_ru_idtf: 
 	[Раздел. SCg-код версии 0.1.0] ;;
 

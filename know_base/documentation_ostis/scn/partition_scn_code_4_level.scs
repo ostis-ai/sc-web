@@ -1,6 +1,9 @@
 /!* keyword: Partition_SCn_code_4_level*/
 Partition_SCn_code_4_level => nrel_main_ru_idtf: 
-	[Раздел. SCn-код 0.1.0. Уровень 4] (* <- ru_lang;; *);;
+	[Раздел. SCn-код. Уровень 4];;
+Partition_SCn_code_4_level => nrel_main_en_idtf: 
+	[Partition. SCn-code. Level 4];;
+
 Partition_SCn_code_4_level <- atomic_partition;;
 Partition_SCn_code_4_level <= nrel_superpartition:
 	Partition_SCn_code;;

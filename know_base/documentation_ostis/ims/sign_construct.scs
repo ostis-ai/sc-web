@@ -1,6 +1,9 @@
 /!* keyword: sign_construct */
 sign_construct => nrel_main_ru_idtf: 
 	[знаковая конструкция] ;;
+sign_construct => nrel_main_en_idtf: 
+	[sign construction] ;;
+
 sign_construct => nrel_ru_idtf: 
 	[текст] ;;
 sign_construct => nrel_ru_idtf: 

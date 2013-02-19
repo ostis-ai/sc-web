@@ -1,0 +1,16 @@
+/!* keyword: library_reusable_components_ostis_developed */
+library_reusable_components_ostis_developed => nrel_main_ru_idtf:
+	[Библиотека многократно используемых компонентов интеллектуальных систем, проектируемых по Технологии OSTIS];;
+library_reusable_components_ostis_developed => nrel_main_en_idtf:
+	[Library of reusable intelligent systems components, developed on OSTIS Technology];;
+
+library_reusable_components_ostis_developed => nrel_ru_idtf:
+	[многократно используемый компонент интеллектуальных систем проектируемых по Технологии OSTIS];;
+library_reusable_components_ostis_developed <= nrel_inclusion:
+	sc_model_library_reusable_components_knowledge_bases;
+	sc_library_reusable_models_non_atomic_and_atomic_knowledge_processing_agents;
+	sc_model_library_reusable_components_interfaces_intelligent_systems;
+	library_sc_models_typical_subsystems_intelligent_systems;
+	library_different_versions_technical_implementations_sc_memory;
+	library_different_versions_technical_implementations_scp_machine;
+	library_platform_oriented_embodiment_knowledge_processing_agents;;

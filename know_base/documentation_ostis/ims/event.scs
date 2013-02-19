@@ -1,6 +1,8 @@
 /!* keyword: event */
 event => nrel_main_ru_idtf: 
 	[событие] ;;
+event => nrel_main_en_idtf: 
+	[event] ;;
 	
 event => nrel_explanation: 
 	[Это упорядоченная пара ситуаций, удовлетворяющая следующим требованиям: 

@@ -1,6 +1,9 @@
 /!* keyword: knowledge_base */
 knowledge_base => nrel_main_ru_idtf: 
 	[база знаний] ;;
+knowledge_base => nrel_main_en_idtf: 
+	[knowledge base] ;;
+
 knowledge_base => nrel_ru_idtf: 
 	[второй домен отношения быть базой знаний*] ;;
 

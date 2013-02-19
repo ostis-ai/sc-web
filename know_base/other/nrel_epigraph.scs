@@ -2,4 +2,4 @@
 nrel_epigraph => nrel_main_ru_idtf: 
 	[эпиграф*] ;;
 nrel_epigraph => nrel_main_en_idtf: 
-		[epigraph*] ;;
+	[epigraph*] ;;

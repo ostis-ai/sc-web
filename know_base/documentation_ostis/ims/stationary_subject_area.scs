@@ -1,6 +1,8 @@
 /!* keyword: stationary_subject_area */
 stationary_subject_area => nrel_main_ru_idtf: 
 	[стационарная предметная область] ;;
+stationary_subject_area => nrel_main_en_idtf: 
+	[stationary subject area] ;;
 
 stationary_subject_area => nrel_ru_idtf: 
 	[статическая предметная область] ;;

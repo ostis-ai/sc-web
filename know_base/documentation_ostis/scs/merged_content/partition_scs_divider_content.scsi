@@ -1,6 +1,9 @@
 /!* keyword: scs_divider */ 
 scs_divider => nrel_main_ru_idtf: 
 	[sc.s-разделитель] ;;
+scs_divider => nrel_main_en_idtf: 
+	[sc.s-divider] ;;
+
 scs_divider <= nrel_describing_partition:
 	Partition_scs_divider;;
 scs_divider <= nrel_subdividing:
@@ -16,6 +19,9 @@ scs_divider <= nrel_subdividing:
 /!* keyword: scs_divider_connector */
 scs_divider_connector => nrel_main_ru_idtf: 
 	[sc.s-коннектор] ;;
+scs_divider_connector => nrel_main_en_idtf: 
+	[sc.s-connector] ;;
+
 scs_divider_connector => nrel_ru_idtf: 
 	[sc.s-разделитель коннектор] ;;
 scs_divider_connector => nrel_ru_idtf: 
@@ -34,6 +40,9 @@ scs_divider_connector <= nrel_subdividing:
 /!* keyword: scs_divider_connector_kernel */
 scs_divider_connector_kernel => nrel_main_ru_idtf: 
 	[sc.s-коннектор, соответствующий алфавиту SC-кода] ;;
+scs_divider_connector_kernel => nrel_main_en_idtf: 
+	[sc.s-connector, appropriate SC-code alphabet] ;;
+
 scs_divider_connector_kernel => nrel_ru_idtf: 	
 	[sc.s-разделитель, изображающий sc-коннектор, знак которого принадлежит ядру SCg-кода] ;;
 scs_divider_connector_kernel <= nrel_inclusion:
@@ -51,6 +60,8 @@ scs_divider_connector_kernel <= nrel_explanation:
 /!* keyword: scs_divider_connector_extended */
 scs_divider_connector_extended => nrel_main_ru_idtf: 
 	[sc.s-коннектор, соответствующий алфавиту SCg-кода] ;;
+scs_divider_connector_extended => nrel_main_en_idtf: 
+	[sc.s-connector, appropriate SCg-code alphabet] ;;
 scs_divider_connector_extended => nrel_ru_idtf: 
 	[sc.s-разделитель, изображающий sc-коннектор, знак которого принадлежит первому расширению SCg-кода] ;;
 scs_divider_connector_extended <= nrel_inclusion:
@@ -79,6 +90,8 @@ scs_divider_connector_extended <= nrel_explanation:
 /!* keyword: scs_divider_connector_special */
 scs_divider_connector_special => nrel_main_ru_idtf: 
 	[дополнительный sc.s-коннектор] ;;
+scs_divider_connector_special => nrel_main_en_idtf: 
+	[additional sc.s-connector] ;;
 scs_divider_connector_special => nrel_ru_idtf: 
 	[sc.s-разделитель, изображающий sc-коннектор, который принадлежит некоторому заранее известному множеству и для которого нет специального знака, принадлежащего SCg] ;;
 scs_divider_connector_special <= nrel_inclusion:
@@ -103,6 +116,9 @@ scs_divider_connector_special <= nrel_explanation:
 /!* keyword: scs_divider_incidence */
 scs_divider_incidence => nrel_main_ru_idtf:
 	[sc.s-разделитель инцидентности] ;;
+scs_divider_incidence => nrel_main_en_idtf:
+	[sc.s-divider of incidence] ;;
+
 scs_divider_incidence => nrel_ru_idtf:
 	[sc.s-разделитель, изображающий связку инцидентности sc-элементов] ;;
 scs_divider_incidence => nrel_ru_idtf:
@@ -126,6 +142,9 @@ scs_divider_incidence => nrel_using_example:
 /!* keyword: scs_divider_modifier */
 scs_divider_modifier => nrel_main_ru_idtf: 
 	[модификатор sc.s-коннектора] ;;
+scs_divider_modifier => nrel_main_en_idtf: 
+	[sc.s-connector modifier] ;;
+
 scs_divider_modifier <= nrel_inclusion:
 	scs_divider;;
 scs_divider_modifier <= nrel_subdividing: 
@@ -139,6 +158,8 @@ scs_divider_modifier <= nrel_subdividing:
 /!* keyword: scs_divider_double_semicolon */
 scs_divider_double_semicolon => nrel_main_ru_idtf: 
 	[sc.s-разделитель двойная точка с запятой] ;;
+scs_divider_double_semicolon => nrel_main_en_idtf: 
+	[sc.s-divider double semicolon] ;;
 
 scs_divider_double_semicolon <= nrel_inclusion:
 	scs_divider;;
@@ -152,6 +173,8 @@ scs_divider_double_semicolon <= nrel_explanation:
 /!* keyword: scs_divider_simple_semicolon */
 scs_divider_simple_semicolon => nrel_main_ru_idtf: 
 	[sc.s-разделитель простая точка с запятой] ;;
+scs_divider_simple_semicolon => nrel_main_en_idtf: 
+	[sc.s-divider simple semicolon] ;;
 
 scs_divider_simple_semicolon <= nrel_inclusion:
 	scs_divider;;
@@ -181,6 +204,9 @@ scs_divider_simple_semicolon <= nrel_using_example:
 /!* keyword: scs_divider_subsentence */
 scs_divider_subsentence => nrel_main_ru_idtf: 
 	[sc.s-ограничитель встроенных предложений] ;;
+scs_divider_subsentence => nrel_main_en_idtf: 
+	[sc.s-limiter of subsentences] ;;
+
 scs_divider_subsentence <= nrel_inclusion:
 	scs_divider;;
 scs_divider_subsentence <= scs_nrel_representation_scs_editor:

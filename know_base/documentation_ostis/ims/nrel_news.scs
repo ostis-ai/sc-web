@@ -1,0 +1,9 @@
+/!* keyword: nrel_news */
+nrel_news => nrel_main_ru_idtf:
+	[новость*];;
+nrel_news => nrel_main_en_idtf:
+	[news*];;
+
+nrel_news => nrel_ru_idtf:
+	[быть новостью в соответствующей динамической системе*];
+	[быть событием в заданной динамической системе*];;

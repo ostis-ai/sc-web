@@ -1,6 +1,9 @@
 /!* keyword: project_ostis_products */
 project_ostis_products => nrel_main_ru_idtf:
 	[Продукты Проекта OSTIS];;
+project_ostis_products => nrel_main_en_idtf:
+	[Project OSTIS products];;
+
 project_ostis_products <= nrel_inclusion:
 	library_reusable_components_ostis_developed;
 	unified_semantic_models_and_components_ostis_developed;

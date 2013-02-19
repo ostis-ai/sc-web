@@ -1,6 +1,8 @@
 /!* keyword: set_theoretic_ontology */
 set_theoretic_ontology => nrel_main_ru_idtf: 
 	[теоретико-множественная онтология] ;;
+set_theoretic_ontology => nrel_main_en_idtf: 
+	[set theoretic ontology] ;;
 	
 set_theoretic_ontology => nrel_explanation: 
 	[Это описание теоретико-множественных связей между концептами и отношениями заданной предметной области

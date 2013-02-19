@@ -1,6 +1,8 @@
 /!* keyword: sign_of_concept */
 sign_of_concept => nrel_main_ru_idtf: 
 	[знак понятия] ;;
+sign_of_concept => nrel_main_en_idtf: 
+	[sign of concept] ;;
 
 sign_of_concept => nrel_ru_idtf: 
 	[понятие] ;;

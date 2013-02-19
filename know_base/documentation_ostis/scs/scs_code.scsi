@@ -4,6 +4,8 @@ scs_code => nrel_main_ru_idtf:
 scs_code => nrel_ru_idtf: 		
 	[SCs-язык] ;;
 scs_code => nrel_main_en_idtf: 		
+	[SCs-code] ;;
+scs_code => nrel_en_idtf: 		
 	[Semantic code string] ;;
 scs_code <= nrel_explanation:
 	[
