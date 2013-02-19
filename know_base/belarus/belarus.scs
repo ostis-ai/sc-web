@@ -48,7 +48,7 @@ gomel => nrel_population: [507 700];;
 belarus => nrel_population: [9 463 300];;
 
 belarus => nrel_current_time: "file://time.html";;
-minsk => nrel_map: "file://map.googlemaplink";;
+minsk => nrel_location: "file://map.googlemaplink";;
 belarus => nrel_square: [207 600];;
 
 nrel_current_time => nrel_main_ru_idtf: 
@@ -61,9 +61,14 @@ nrel_foundation_date => nrel_main_ru_idtf:
 nrel_foundation_date => nrel_main_en_idtf: 
 	[foundation date*] ;;
 
-nrel_map => nrel_main_ru_idtf: 
-	[карта*] ;;
-nrel_map => nrel_main_en_idtf: 
-	[map*] ;;
+nrel_location => nrel_main_ru_idtf: 
+	[местоположение*] ;;
+nrel_location => nrel_main_en_idtf: 
+	[location*] ;;
 	
 minsk => nrel_foundation_date: [1067];;
+
+nrel_address => nrel_main_ru_idtf: 
+	[адрес*] ;;
+nrel_address => nrel_main_en_idtf: 
+	[address*] ;;

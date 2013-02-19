@@ -12,9 +12,12 @@ project_conf_ostis => doc_nrel_subproject:
 			=> nrel_ru_idtf: 
 				[Проект, направленный на разработку интеллектуальной системы, предназначенной для информационной поддержки подготовки и проведения ежегодных конференций по открытым семантическим технологиям проектирования интеллектуальных систем];;
 			=> nrel_product: system_is_conf_ostis
-				(* => nrel_ru_idtf: [IS.Conf.OSTIS];;
-				   => nrel_ru_idtf: [<a href="www.conf.ostis.net">www.conf.ostis.net</a>];;
+				(* 
+					=> nrel_main_ru_idtf: [IS.Conf.OSTIS];;
 				*);;
+			=> nrel_ru_idtf: "file://files/conf_ostis.html";;
 		*);;
 project_conf_ostis => doc_nrel_subproject: 
 	project_conf_ostis_2013 (* => nrel_product: conference_ostis_2013;; *);;
+
+conference_ostis_2013 <- conference_ostis;;

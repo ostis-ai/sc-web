@@ -1,0 +1,7 @@
+/!* keyword: rrel_to */
+sc_node_role_relation -> rrel_to;;
+rrel_to => nrel_main_ru_idtf: 
+		[по'] ;;
+rrel_to => nrel_main_en_idtf: 		
+		[to'] ;;
+	
