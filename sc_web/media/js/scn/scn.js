@@ -125,7 +125,7 @@ Ostis.ui.scn.HtmlBuilder = function(parentId) {
         } else {
             output += _buildNodeContent(node);
         }
-        output += _buildSynonims(node);
+        output += _buildSynonyms(node);
         output += _buildSentences(node);
         output += _closeWrapper(node);
         return output;
@@ -171,12 +171,12 @@ Ostis.ui.scn.HtmlBuilder = function(parentId) {
         return "</a>";
     };
 
-    var _buildSynonims = function(node) {
+    var _buildSynonyms = function(node) {
 
         var sentOut = '';
         if (node.SCSynonims) {
             for ( var synInd = 0; synInd < node.SCSynonims.length; synInd++) {
-                sentOut += _buildOneSynonim(node.SCSynonims[synInd]);
+                sentOut += _buildOneSynonym(node.SCSynonims[synInd]);
             }
         }
         return sentOut;
@@ -227,14 +227,25 @@ Ostis.ui.scn.HtmlBuilder = function(parentId) {
         return "</div>";
     };
 
-    var _buildOneSynonim = function(arc) {
+    var _buildOneSynonym = function(node) {
 
         var resSen = _buildSentenceBegin();
-        arc.marker = MARKERS.SYNONIM;
-        var valueFuncProxy = $.proxy(_buildNodeValue, this);
-        resSen += _buildField(arc, valueFuncProxy, true, false);
+        resSen += _buildSynonymField(node);
         resSen += _buildSentenceEnd();
         return resSen;
+    };
+
+    var _buildSynonymField = function(node) {
+
+        var fieldRes = "<div ";
+        var fieldClass = Ostis.ui.scn.SCnCssClass.FIELD;
+        fieldRes += Ostis.ui.scn.HtmlAttributeBuilder
+                .buildClassAttr(fieldClass);
+        fieldRes += ">";
+        fieldRes += _buildStaticMarker(MARKERS.SYNONIM);
+        fieldRes += _buildNode(node);
+        fieldRes += "</div>";
+        return fieldRes;
     };
 
     var _buildOneSentence = function(arc) {
@@ -268,14 +279,24 @@ Ostis.ui.scn.HtmlBuilder = function(parentId) {
                 .buildClassAttr(fieldClass);
         fieldRes += ">";
         if (buildMarker && (arc.type || arc.marker)) {
-            fieldRes += _buildMarker(arc);
+            fieldRes += _buildSelectableMarker(arc);
         }
         fieldRes += _buildValue(arc, valContVisitor);
         fieldRes += "</div>";
         return fieldRes;
     };
 
-    var _buildMarker = function(arc) {
+    var _buildStaticMarker = function(marker) {
+
+        var markerRes = "<div "
+                + Ostis.ui.scn.HtmlAttributeBuilder
+                        .buildClassAttr(Ostis.ui.scn.SCnCssClass.MARKER) + ">";
+        markerRes += marker;
+        markerRes += "</div>";
+        return markerRes;
+    };
+
+    var _buildSelectableMarker = function(arc) {
 
         var markerRes = "<div "
                 + Ostis.ui.scn.HtmlAttributeBuilder
@@ -442,7 +463,6 @@ Ostis.ui.scn.HtmlLinkBuilder = (function() {
         }
     };
 })();
-
 
 Ostis.ui.scn.SCnComponent = {
     type : SCWeb.core.ComponentType.viewer,
