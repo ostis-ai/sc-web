@@ -1,3 +1,5 @@
+hypermedia_nrel_logo <- sc_node_norole_relation;;
+
 hypermedia_nrel_logo => nrel_main_ru_idtf:
 	[логотип*];;
 
