@@ -4,7 +4,7 @@ scn_code_1_level => nrel_main_ru_idtf:
 scn_code_1_level => nrel_main_en_idtf: 
 	[SCn-code level 1];;
 
-scn_code_1_level => nrel_explanation:
+scn_code_1_level => hypermedia_nrel_explanation:
 	[
 	Данный уровень SCn-кода представляет собой определенный способ форматирования произвольных sc.s-текстов.
 	Правила форматирования:

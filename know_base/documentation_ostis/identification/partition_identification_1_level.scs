@@ -12,7 +12,7 @@ partition_identification_1_level => doc_nrel_next_partition:
 
 partition_identification_1_level <- doc_atomic_partition;;
 
-partition_identification_1_level => nrel_explanation:
+partition_identification_1_level => hypermedia_nrel_explanation:
 [sc.s-предложение уровня 1 - sc.s-предложение, содержащее только sc.s-разделители инцидентности и имена sc-элементов. 
 Каждое предложение представляет собой тройку, каждая из которых описывает инцидентность некоторого sc-коннектора и двух других sc-элементов.
 Запрещается использование неатомарных идентификаторов, содержащих разделители {...} , <…> или \[...\].

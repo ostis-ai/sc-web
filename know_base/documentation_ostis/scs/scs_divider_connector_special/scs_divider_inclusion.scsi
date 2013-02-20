@@ -7,7 +7,7 @@ scs_divider_inclusion <= scs_nrel_representation_scs_editor:
 	[⊂];;
 scs_divider_inclusion <= scs_nrel_representation_scs_editor:
 	[⊃];;
-scs_divider_inclusion <= nrel_explanation:
+scs_divider_inclusion <= hypermedia_nrel_explanation:
 	[Изображение связки отношения включение*];;
 scs_divider_inclusion <= nrel_using_example:
 	[треугольник ⊂ многоугольник;;]

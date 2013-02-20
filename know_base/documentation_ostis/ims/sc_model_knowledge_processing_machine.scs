@@ -4,7 +4,7 @@ sc_model_knowledge_processing_machine => nrel_main_ru_idtf:
 sc_model_knowledge_processing_machine => nrel_main_en_idtf: 
 	[knowledge processing machine sc-model] ;;
 
-sc_model_knowledge_processing_machine => nrel_explanation:
+sc_model_knowledge_processing_machine => hypermedia_nrel_explanation:
 	[
 	 Это полное описание поведения всех агентов,
 	 входящих в состав соответствующей машины

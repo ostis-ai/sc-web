@@ -6,7 +6,7 @@ scs_divider_non_intersected_pair <= nrel_inclusion:
 	scs_divider_connector_special;;
 scs_divider_non_intersected_pair <= scs_nrel_representation_scs_editor:
 	[⊃|⊂];;
-scs_divider_non_intersected_pair <= nrel_explanation:
+scs_divider_non_intersected_pair <= hypermedia_nrel_explanation:
 	[Изображение связки, не принадлежащей отношению пара пересекающихся множеств*];;
 scs_divider_non_intersected_pair <= nrel_using_example:
 	[треугольник ⊃|⊂ квадрат;;]

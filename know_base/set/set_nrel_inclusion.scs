@@ -24,24 +24,24 @@ set_nrel_inclusion <- set_infinite_set  ;;
 set_nrel_inclusion <- set_semantically_normalized_set ;;
 set_nrel_inclusion <- set_relation ;;
 	
-set_nrel_inclusion <= nrel_explanation:
+set_nrel_inclusion <= hypermedia_nrel_explanation:
 	[
 		множество si является подмножеством sj;
 		множество si включается во множество sj;
 		множество si является включением множества sj;
 		множество sj является надмножеством si.
-	] (* <=> nrel_semantic_equivalence: "file://images/set_nrel_inclusion1.png" (* <= nrel_comment: [/*на графическом языке диаграмм Эйлера*/	];; *);;
-		  <=> nrel_semantic_equivalence: "file://images/set_nrel_inclusion2.png" (* <= nrel_comment: [/*в SCg-коде*/];; *);;
+	] (* <=> nrel_semantic_equivalence: "file://images/set_nrel_inclusion1.png" (* <= hypermedia_nrel_comment: [/*на графическом языке диаграмм Эйлера*/	];; *);;
+		  <=> nrel_semantic_equivalence: "file://images/set_nrel_inclusion2.png" (* <= hypermedia_nrel_comment: [/*в SCg-коде*/];; *);;
 		  <=> nrel_semantic_equivalence: [
 				<sj, si> ∈ включение*;
 				si ⊆ sj;
 				sj ⊇ si;
-			] (* <= nrel_comment: [/*на теоретико-множественном математическом языке*/];; *);;
+			] (* <= hypermedia_nrel_comment: [/*на теоретико-множественном математическом языке*/];; *);;
 	*);;
 		
-set_nrel_inclusion <= nrel_explanation: [
+set_nrel_inclusion <= hypermedia_nrel_explanation: [
 											Множества {1,2,3} и {1,4,5} являются включением множества {1,2,3,4,5}.
-										] (* <=> nrel_semantic_equivalence: "file://images/set_nrel_inclusion3.png" (* <= nrel_comment: [/*в SCg-коде*/];; *);; *);;
-set_nrel_inclusion <= nrel_explanation: [
+										] (* <=> nrel_semantic_equivalence: "file://images/set_nrel_inclusion3.png" (* <= hypermedia_nrel_comment: [/*в SCg-коде*/];; *);; *);;
+set_nrel_inclusion <= hypermedia_nrel_explanation: [
 											Множество квадратов является включением множества прямоугольников.
-										] (* <=> nrel_semantic_equivalence: "file://images/set_nrel_inclusion4.png" (* <= nrel_comment: [/*в SCg-коде*/];; *);; *);;
+										] (* <=> nrel_semantic_equivalence: "file://images/set_nrel_inclusion4.png" (* <= hypermedia_nrel_comment: [/*в SCg-коде*/];; *);; *);;

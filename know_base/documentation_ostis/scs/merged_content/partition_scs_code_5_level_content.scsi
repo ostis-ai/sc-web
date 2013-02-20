@@ -4,7 +4,7 @@ scs_code_5_level => nrel_main_ru_idtf:
 scs_code_5_level => nrel_main_en_idtf: 
 		[SCs-code level 5] ;;
 
-scs_code_5_level => nrel_explanation:
+scs_code_5_level => hypermedia_nrel_explanation:
 	[
 		На данном уровне SCs-кода вводятся средства, позволяющие расширить радиус семантической окрестности
 		описываемого sc-элемента благодаря использованию так называемых встроенных предложений уровня 4, описывающих семантические окрестности любых
@@ -17,7 +17,7 @@ scs_sentence_5_level => nrel_main_ru_idtf:
 scs_sentence_5_level => nrel_main_en_idtf: 
 		[sc.s-sentence level 5] ;;
 
-scs_sentence_5_level <= nrel_explanation: 
+scs_sentence_5_level <= hypermedia_nrel_explanation: 
 	[
 		В sc.s-предложениях уровня 5 сокращается число отображаемых имен sc-элементов за счет введения встроенных sc.s-предложений при помощи разделителя (*...*). Более подробно правила использования данного разделителя описаны в соответствующем разделе.
 		Встроенные предложения внутри ограничителя (*...*), как и все sc.s-предложения, ограничиваются разделителем ;;.
@@ -46,7 +46,7 @@ scs_text_5_level => nrel_main_ru_idtf:
 scs_text_5_level => nrel_main_en_idtf: 
 		[sc.s-text level 5] ;;
 
-scs_text_5_level <= nrel_explanation: 
+scs_text_5_level <= hypermedia_nrel_explanation: 
 	[sc.s-текст уровня 5 - sc.s-текст, содержащий хотя бы одно sc.s-предложение уровня 5 и не содержащий sc.s-предложений уровня 6 и выше];;
 scs_text_5_level -> rrel_example:
 	[

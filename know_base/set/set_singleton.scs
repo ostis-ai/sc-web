@@ -13,12 +13,12 @@ set_singleton => nrel_ru_idtf:
 set_singleton <= nrel_definition:
 	[Множество является синглетоном тогда и только тогда, когда ему однократно принадлежит единственный элемент.];;
 	
-set_singleton <= nrel_explanation:
+set_singleton <= hypermedia_nrel_explanation:
 	"file://images/set_singleton.png";;
 
-set_singleton <= nrel_explanation:
+set_singleton <= hypermedia_nrel_explanation:
 	"file://images/set_singleton1.png"
 	(*
-		=> nrel_explanation:
+		=> hypermedia_nrel_explanation:
 		[Множество { {1,2,3} } является синглетоном: единственный элемент {1, 2, 3} является множеством (которое само по себе не синглетон).];;	
 	*);;

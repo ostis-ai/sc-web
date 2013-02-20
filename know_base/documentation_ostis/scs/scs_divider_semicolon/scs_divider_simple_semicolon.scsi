@@ -8,7 +8,7 @@ scs_divider_simple_semicolon <= nrel_representation_scs_editor:
 	[;];;
 scs_divider_simple_semicolon <= nrel_representation_standart_editor:
 	[;];;
-scs_divider_simple_semicolon <= nrel_explanation:
+scs_divider_simple_semicolon <= hypermedia_nrel_explanation:
 	[Является разделителем компонентов сложного sc.s-предложения.
 		Если данный разделитель встречается правее изображения sc.s-коннектора, то 
 		1) sc-коннекторы проводятся к каждому из sc-элементов, имена которых перечислены через ; 
@@ -17,12 +17,12 @@ scs_divider_simple_semicolon <= nrel_explanation:
 		4) если после разделителя ; явно указаны дополнительные уточнения типа коннектора, то уточнения к типу коннектора для sc-элемента, стоящего левее разделителя ; не учитываются. ( A =>k1: x; k2: y;; ) 
 		Если данный разделитель встречается левее изображения sc.s-коннектора, то sc-коннекторы проводятся из каждого из sc-элементов, имена которых перечислены через ; слева от изображения коннектора 
 	];;
-scs_divider_simple_semicolon <= nrel_explanation:
+scs_divider_simple_semicolon <= hypermedia_nrel_explanation:
 	[Использование данного разделителя является способом превращения нескольких sc.s-предложений, отличающихся только одним именем, в одно sc.s-предложение, в котором эти имена перечислены через ;];;
 scs_divider_simple_semicolon <= nrel_using_example:
 	[Четырехугк(ТчкА;ТчкВ;ТчкС;ТчкD) ; Треугк(ТчкВ;ТчкС;ТчкD) => сторона* : включение* : Отр(ТчкВ;ТчкС); Отр(ТчкС;ТчкD);;]
 	(*
 		<=> nrel_semantic_equivalence: "file://../images/scs_divider/common_example.png" ;;
-		<= nrel_illustration:
+		<= hypermedia_nrel_illustration:
 		"file://../images/scs_divider/common_illusration.png" ;;
 	*);;

@@ -4,7 +4,7 @@ project => nrel_main_ru_idtf:
 project => nrel_main_en_idtf:
 	[project];;
 
-project => nrel_explanation:
+project => hypermedia_nrel_explanation:
 	[Это целенаправленная деятельность, результатом которой является определенный ранее не существовавший продукт];;
 project => nrel_note:
 	[описание (спецификация) каждого проекта включает в себя: 

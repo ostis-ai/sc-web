@@ -8,5 +8,5 @@ scs_divider_double_semicolon <= nrel_representation_scs_editor:
 	[;;];;
 scs_divider_double_semicolon <= nrel_representation_standart_editor:
 	[;;];;
-scs_divider_double_semicolon <= nrel_explanation:
+scs_divider_double_semicolon <= hypermedia_nrel_explanation:
 	[Разделяет sc.s-предложения в рамках sc.s-текста];;

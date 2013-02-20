@@ -4,7 +4,7 @@ project_ostis_news => nrel_main_ru_idtf:
 project_ostis_news => nrel_main_en_idtf:
 	[Project OSTIS news];;
 
-project_ostis_news => nrel_explanation:
+project_ostis_news => hypermedia_nrel_explanation:
 	[Новости Проекта OSTIS представляют собой хронологическую последовательность событий, определяющих развитие Проекта OSTIS. К такого рода событиям, в частности, относятся:
 		•	корректировка системы подпроектов Проекта OSTIS;
 		•	корректировка системы разделов Документации проекта OSTIS;

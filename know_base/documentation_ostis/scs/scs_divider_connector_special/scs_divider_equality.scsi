@@ -7,7 +7,7 @@ scs_divider_equality <= scs_nrel_representation_scs_editor:
 	[=];;
 scs_divider_equality <= scs_nrel_representation_standart_editor:
 	[=];;
-scs_divider_equality <= nrel_explanation:
+scs_divider_equality <= hypermedia_nrel_explanation:
 	[Разделяет имена синонимичных sc-элементов];;
 scs_divider_equality <= nrel_using_example:
 	[Поток 72170x = {721701;721702;721703};;]

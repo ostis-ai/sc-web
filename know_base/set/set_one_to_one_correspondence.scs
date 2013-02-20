@@ -18,11 +18,11 @@ set_one_to_one_correspondence <= nrel_definition:
 set_one_to_one_correspondence <- set_cantor_set;; 
 set_one_to_one_correspondence <- set_relation;; 
 
-set_one_to_one_correspondence <= nrel_explanation:
+set_one_to_one_correspondence <= hypermedia_nrel_explanation:
 	[
 		•	r – отношение соответствия;
 		•	r – бинарное ориентированное отношение с атрибутами 1_ и 2_;
 		•	х1 и х2 – пара;
 		•	у1 и у2 – пара.
 		
-	] (* <=> nrel_semantic_equivalence: "file://images/set_one_to_one_correspondence.png"(* <= nrel_comment: [/*в SCg-коде*/];; *);; *);;
+	] (* <=> nrel_semantic_equivalence: "file://images/set_one_to_one_correspondence.png"(* <= hypermedia_nrel_comment: [/*в SCg-коде*/];; *);; *);;

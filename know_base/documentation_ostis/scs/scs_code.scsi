@@ -7,7 +7,7 @@ scs_code => nrel_main_en_idtf:
 	[SCs-code] ;;
 scs_code => nrel_en_idtf: 		
 	[Semantic code string] ;;
-scs_code <= nrel_explanation:
+scs_code <= hypermedia_nrel_explanation:
 	[
 		SCs-код - строковый линейный вариант представления SC-кода.
 		Предназначен для представления sc-конструкций в виде последовательностей символов,

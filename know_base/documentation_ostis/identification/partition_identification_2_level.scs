@@ -12,7 +12,7 @@ partition_identification_6_level;;
 
 partition_identification_2_level <- doc_atomic_partition;;
 
-partition_identification_2_level => nrel_explanation:
+partition_identification_2_level => hypermedia_nrel_explanation:
 [В sc.s-предложениях уровня 2 обеспечивается возможность не вводить имена для всех sc-коннекторов. 
 Для этого вводятся sc.s-разделители, являющиеся изображениями sc-коннекторов, а также неатомарные идентификаторы коннекторов вида (...).
 

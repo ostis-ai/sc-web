@@ -4,7 +4,7 @@ scn_code_2_level => nrel_main_ru_idtf:
 scn_code_2_level => nrel_main_en_idtf: 
 	[SCn-code level 2];;
 
-scn_code_2_level => nrel_explanation:
+scn_code_2_level => hypermedia_nrel_explanation:
 	[
 		Данный уровень SCn-кода отличается от предыдущего тем, что форматирование sc.s-предложений
 		производится не только в вертикальном, но и горизонтальном направлении.

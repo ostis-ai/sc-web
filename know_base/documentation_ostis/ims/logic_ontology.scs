@@ -4,5 +4,5 @@ logic_ontology => nrel_main_ru_idtf:
 logic_ontology => nrel_main_en_idtf: 
 	[logic ontology] ;;
 	
-logic_ontology => nrel_explanation: 
+logic_ontology => hypermedia_nrel_explanation: 
 	[Это описание системы определений концептов и отношений заданной предметной области.] ;;

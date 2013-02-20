@@ -4,7 +4,7 @@ scs_code_6_level => nrel_main_ru_idtf:
 scs_code_6_level => nrel_main_en_idtf: 
 		[SCs-code level 6] ;;
 
-scs_code_6_level => nrel_explanation:
+scs_code_6_level => hypermedia_nrel_explanation:
 	[
 		На данном уровне SCs-кода для именования sc-структур и sc-файлов (sc-ссылок) разрешается использование таких специальных неатомарных имен sc-элементов, как 
 		1) имя-контур sc-структуры
@@ -21,7 +21,7 @@ scs_sentence_6_level => nrel_main_ru_idtf:
 scs_sentence_6_level => nrel_main_en_idtf: 
 		[sc.s-sentence level 6] ;;
 
-scs_sentence_6_level <= nrel_explanation: 
+scs_sentence_6_level <= hypermedia_nrel_explanation: 
 	[В sc.s-предложениях уровня 6 разрешается использовать любые виды неатомарных идентификаторов.];;
 scs_sentence_6_level -> rrel_example:
 	[
@@ -43,7 +43,7 @@ scs_text_6_level => nrel_main_ru_idtf:
 scs_text_6_level => nrel_main_en_idtf: 
 		[sc.s-text level 6] ;;
 
-scs_text_6_level <= nrel_explanation: 
+scs_text_6_level <= hypermedia_nrel_explanation: 
 	[sc.s-текст уровня 6 - sc.s-текст, содержащий хотя бы одно sc.s-предложение уровня 6 и не содержащий sc.s-предложений уровня 7];;
 scs_text_6_level -> rrel_example:
 	[

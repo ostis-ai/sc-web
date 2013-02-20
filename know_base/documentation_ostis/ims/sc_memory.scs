@@ -3,7 +3,7 @@ sc_memory => nrel_main_ru_idtf:
 	[sc-память] ;;
 sc_memory => nrel_main_en_idtf: 
 	[sc-memory] ;;
-sc_memory => nrel_explanation:
+sc_memory => hypermedia_nrel_explanation:
 	[Это виртуальная память, предназначенная для хранения обрабатываемых sc-графов] ;;
 sc_memory => nrel_ru_idtf: 
 	[виртуальное хранилище sc-графов] ;;

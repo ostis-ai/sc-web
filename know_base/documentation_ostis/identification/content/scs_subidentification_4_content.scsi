@@ -3,7 +3,7 @@ idtf_string => nrel_main_ru_idtf:
 idtf_string => nrel_main_en_idtf:
 	[string sc-identifier];;
 
-idtf_string => nrel_explanation:
+idtf_string => hypermedia_nrel_explanation:
 [
 Наиболее часто используемыми sc-идентификаторами являются строковые sc-идентификаторы, которые представляют собой строку символов какого-либо фиксированного алфавита. Представляет собой строку символов фиксированного алфавита.
 ];;
@@ -19,7 +19,7 @@ idtf_non_string => nrel_main_ru_idtf:
 idtf_non_string => nrel_main_en_idtf:
 [non-string sc-identifier];;
 
-idtf_non_string => nrel_explanation:
+idtf_non_string => hypermedia_nrel_explanation:
 [Помимо строковых идентификаторов, выделяются нестроковые sc-идентификаторы, 
 которые идентифицируют объекты при помощи графических иллюстраций, символов, иероглифов, пиктограмм и др. 
 Представляет собой изображение идентифицируемого объекта

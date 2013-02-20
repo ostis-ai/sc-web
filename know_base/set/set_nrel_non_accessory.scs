@@ -23,18 +23,18 @@ set_nrel_non_accessory <- set_infinite_set  ;;
 set_nrel_non_accessory <- set_semantically_normalized_set ;;
 set_nrel_non_accessory <- set_relation ;;
 	
-set_nrel_non_accessory <= nrel_explanation:
+set_nrel_non_accessory <= hypermedia_nrel_explanation:
 	[
 		si не является элементом sj;
 		si не принадлежит множеству sj;
 		si не входит в состав множества sj в качестве элемента;
 		si не включается во множество sj;
 		множество sj не содержит si.
-	] (* <=> nrel_semantic_equivalence: "file://images/set_nrel_non_accessory.png" (* <= nrel_comment: [/*в SCg-коде*/];; *);;
-		  <=> nrel_semantic_equivalence: "file://images/set_nrel_non_accessory1.png" (* <= nrel_comment: [/*в SCg-коде*/];; *);;
+	] (* <=> nrel_semantic_equivalence: "file://images/set_nrel_non_accessory.png" (* <= hypermedia_nrel_comment: [/*в SCg-коде*/];; *);;
+		  <=> nrel_semantic_equivalence: "file://images/set_nrel_non_accessory1.png" (* <= hypermedia_nrel_comment: [/*в SCg-коде*/];; *);;
 		  <=> nrel_semantic_equivalence: [
 											<sj, si> ∈ непринадлежность*
-										] (* <= nrel_comment: [/*на теоретико-множественном математическом языке*/];; *);;
+										] (* <= hypermedia_nrel_comment: [/*на теоретико-множественном математическом языке*/];; *);;
 		  <=> nrel_semantic_equivalence: [
 											si ∉ sj.
-										] (* <= nrel_comment: [/*ориентированная пара <sj, si> принадлежит отношению непринадлежности*/];; *);; *);;
+										] (* <= hypermedia_nrel_comment: [/*ориентированная пара <sj, si> принадлежит отношению непринадлежности*/];; *);; *);;

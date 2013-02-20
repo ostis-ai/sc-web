@@ -8,7 +8,7 @@ scn_code => nrel_ru_idtf:
 	[SCn-язык] ;;
 scn_code => nrel_en_idtf: 
 	[Semantic code natural];;
-scn_code <= nrel_explanation:
+scn_code <= hypermedia_nrel_explanation:
 	[
 		SCn-код - строковый нелинейный вариант представления SC-кода. С формальной точки зрения SCn-код  - множество sc.n-текстов.
 		

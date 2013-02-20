@@ -19,5 +19,5 @@ sc_nrel_connector_component => nrel_ru_idtf:
 sc_nrel_connector_component => nrel_ru_idtf:
 	[первое отношение инцидентности sc-элементов] ;;
 	
-sc_nrel_connector_component => nrel_explanation:
+sc_nrel_connector_component => hypermedia_nrel_explanation:
 	[компонент sc-коннектора – это тот sc-элемент, который связывается sc-коннектором с некоторым другим sc-элементом];;

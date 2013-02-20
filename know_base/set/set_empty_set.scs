@@ -11,7 +11,7 @@ set_empty_set => nrel_ru_idtf:
 	
 set_empty_set  => nrel_definition:
 	[Множество является пустым множеством тогда и только тогда, когда ему не принадлежит ни один элемент.];;
-set_empty_set => nrel_explanation:
+set_empty_set => hypermedia_nrel_explanation:
 	"file://images/set_empty_set.png";;
 	
 set_empty_set <-  set_cantor_set  ;;

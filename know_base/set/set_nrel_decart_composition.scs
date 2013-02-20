@@ -8,7 +8,7 @@ set_nrel_decart_composition => nrel_ru_idtf:
 	[декартово произведение*] ;
 	[отношение декартова произведения множества*];;
 
-set_nrel_decart_composition <= nrel_explanation:
+set_nrel_decart_composition <= hypermedia_nrel_explanation:
 	[
 		Множество является декартовым произведением двух множеств тогда и только тогда, когда оно является множеством всех таких и только таких пар, первый компонент которых принадлежит первому множеству, а второй – второму.
 	];;
@@ -23,7 +23,7 @@ set_nrel_decart_composition <= nrel_definition:
 set_nrel_decart_composition <- set_cantor_set ;;
 set_nrel_decart_composition <- set_relation ;;
 
-set_nrel_decart_composition <= nrel_explanation:
+set_nrel_decart_composition <= hypermedia_nrel_explanation:
 	[
 		Декартовым произведением множеств {2} и {1,2,3} будет множество пар {<1_:1, 2_:2>, <1_:3, 2_:2>, <1_:2, 2_:2>}
-	] (* <=> nrel_semantic_equivalence: "file://images/set_nrel_decart_composition1.png"(* <= nrel_comment: [/*в SCg-коде*/];; *);; *);;
+	] (* <=> nrel_semantic_equivalence: "file://images/set_nrel_decart_composition1.png"(* <= hypermedia_nrel_comment: [/*в SCg-коде*/];; *);; *);;

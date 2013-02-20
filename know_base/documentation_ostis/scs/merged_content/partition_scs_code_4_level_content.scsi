@@ -5,7 +5,7 @@ scs_code_4_level => nrel_main_en_idtf:
 		[SCs-code level 4] ;;
 
 		
-scs_code_4_level => nrel_explanation:
+scs_code_4_level => hypermedia_nrel_explanation:
 	[
 		На данном уровне SCs-кода вводятся средства лаконичной записи группы sc.s-предложений уровня 2 или уровня 3, у которых 
 		1) В качестве первого (левого) компонента используется одно и то же имя (т.е. имя одного и того же элемента). 
@@ -20,7 +20,7 @@ scs_sentence_4_level => nrel_main_ru_idtf:
 scs_sentence_4_level => nrel_main_en_idtf: 
 		[sc.s-sentence level 4] ;;
 
-scs_sentence_4_level <= nrel_explanation: 
+scs_sentence_4_level <= hypermedia_nrel_explanation: 
 	[В sc.s-предложениях уровня 4 cокращается число изображений sc-коннекторов путем введения sc.s-разделителя ;. 
 	Более подробно правила использования указанного разделителя рассмотрены в соответствующем разделе. 
 	На данном уровне SCs-кода разрешается использование указанного разделителя только для случаев, описанных в пояснении к SCs-коду уровня 4.
@@ -37,7 +37,7 @@ scs_text_4_level => nrel_main_ru_idtf:
 scs_text_4_level => nrel_main_en_idtf: 
 		[sc.s-text level 4] ;;
 
-scs_text_4_level <= nrel_explanation: 
+scs_text_4_level <= hypermedia_nrel_explanation: 
 	[sc.s-текст уровня 4 - sc.s-текст, содержащий хотя бы одно sc.s-предложение уровня 4 и не содержащий sc.s-предложений уровня 5];;
 scs_text_4_level -> rrel_example:
 	[
@@ -47,6 +47,6 @@ scs_text_4_level -> rrel_example:
 	(*
 		<=> nrel_semantic_equivalence: "file://../images/scs_text_example_2_4.png";;
 		<=> nrel_semantic_equivalence: "file://scs_code_4_level_text1.html";;
-		<= nrel_illustration:
+		<= hypermedia_nrel_illustration:
 			"file://../images/scs_divider/common_illusration.png";;
 	*);;

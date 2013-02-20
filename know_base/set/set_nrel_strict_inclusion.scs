@@ -25,7 +25,7 @@ set_nrel_strict_inclusion=> nrel_definition:
 set_nrel_strict_inclusion  <-  set_cantor_set  ;;
 set_nrel_strict_inclusion <-  set_relation  ;;
 	
-set_nrel_strict_inclusion => nrel_explanation: 
+set_nrel_strict_inclusion => hypermedia_nrel_explanation: 
 	[Множество sj является надмножеством si, а si является подмножеством sj.]
 	(*
 		<=> nrel_semantic_equivalence: "file://images/set_nrel_strict_inclusion.png";;

@@ -8,5 +8,5 @@ formal_theory => nrel_main_en_idtf:
 formal_theory => nrel_ru_idtf: 
 	[компонент предметной области формальных теорий] ;;
 
-formal_theory => nrel_explanation: 
+formal_theory => hypermedia_nrel_explanation: 
 	[Это система высказываний, описывающих свойства и закономерности некоторой заданной предметной области.] ;;

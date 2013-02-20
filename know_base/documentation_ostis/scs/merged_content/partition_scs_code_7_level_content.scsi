@@ -4,7 +4,7 @@ scs_code_7_level => nrel_main_ru_idtf:
 scs_code_7_level => nrel_main_en_idtf: 
 		[SCs-code level 7] ;;
 
-scs_code_7_level => nrel_explanation:
+scs_code_7_level => hypermedia_nrel_explanation:
 	[
 		На данном уровне SCs-кода разрешается перечисление (через разделитель ;) таких компонентов,
 		которые различным образом связаны с описываемым компонентом sc.s-предложения (т.е. разные sc.s-коннекторы и/или их модификаторы).
@@ -16,7 +16,7 @@ scs_sentence_7_level => nrel_main_ru_idtf:
 scs_sentence_7_level => nrel_main_en_idtf: 
 		[sc.s-sentence level 7] ;;
 
-scs_sentence_7_level <= nrel_explanation: 
+scs_sentence_7_level <= hypermedia_nrel_explanation: 
 	[В sc.s-предложениях уровня 7 разрешается использовать sc.s-разделитель ; во всех случаях, для котрых предназначен данный разделитель. Более подробно правила использования указанного разделителя рассмотрены в соответствующем разделе.
 	Правила умолчания (неотображения) разделителей sc.s-кода:
 	1) После разделителя ; одинаковые изображения sc-коннекторов опускаются. Например, вместо X -> r1: r2: Y; -> r3: Z;; отображается X -> r1: r2: Y; r3: Z;;
@@ -53,7 +53,7 @@ scs_text_7_level => nrel_main_ru_idtf:
 scs_text_7_level => nrel_main_en_idtf: 
 		[sc.s-text level 7] ;;
 
-scs_text_7_level <= nrel_explanation: 
+scs_text_7_level <= hypermedia_nrel_explanation: 
 	[sc.s-текст уровня 7 - sc.s-текст, содержащий хотя бы одно sc.s-предложение уровня 7];;
 scs_text_7_level -> rrel_example:
 	[

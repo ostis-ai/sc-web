@@ -12,31 +12,31 @@ set_nrel_intersection => nrel_ru_idtf:
 set_nrel_intersection => nrel_definition:
 	[Множество si является пересечением семейства множеств sj тогда и только тогда, когда каждый элемент x принадлежит множеству si в том и только том случае, когда элемент x принадлежит всем множествам семейства sj.];;
 	
-set_nrel_intersection => nrel_explanation: "file://images/set_nrel_intersection.png";;
+set_nrel_intersection => hypermedia_nrel_explanation: "file://images/set_nrel_intersection.png";;
 
 set_nrel_union <- set_cantor_set;; 
 set_nrel_union <- set_relation;; 
 
-set_nrel_intersection <= nrel_explanation: "file://images/set_nrel_intersection1.png"
+set_nrel_intersection <= hypermedia_nrel_explanation: "file://images/set_nrel_intersection1.png"
 	(* 
-		=> nrel_comment: [/*в SCg-коде*/];; 
-		=> nrel_comment: [Пример изображения отношения пересечения множеств.];; 
+		=> hypermedia_nrel_comment: [/*в SCg-коде*/];; 
+		=> hypermedia_nrel_comment: [Пример изображения отношения пересечения множеств.];; 
 	*);;
 
-set_nrel_intersection => nrel_explanation:
+set_nrel_intersection => hypermedia_nrel_explanation:
 	[<{sj,si}, пересечение_:s> включение* пересечение*]
 	(* 
-		=> nrel_comment: [/*на теоретико-множественном математическом языке*/];;
+		=> hypermedia_nrel_comment: [/*на теоретико-множественном математическом языке*/];;
 	*);;
 
-set_nrel_intersection <= nrel_explanation: "file://images/set_nrel_intersection2.png"
+set_nrel_intersection <= hypermedia_nrel_explanation: "file://images/set_nrel_intersection2.png"
 	(* 
-		=> nrel_comment: [/*в SCg-коде*/];; 
-		=> nrel_comment: [Пересечением связного графа и ациклического графа является дерево.];; 
+		=> hypermedia_nrel_comment: [/*в SCg-коде*/];; 
+		=> hypermedia_nrel_comment: [Пересечением связного графа и ациклического графа является дерево.];; 
 	*);;
 
-set_nrel_intersection <= nrel_explanation: "file://images/set_nrel_intersection3.png"
+set_nrel_intersection <= hypermedia_nrel_explanation: "file://images/set_nrel_intersection3.png"
 	(* 
-		=> nrel_comment: [/*в SCg-коде*/];; 
-		=> nrel_comment: [Пересечение цикла графа и дерева является пустое множество.];; 
+		=> hypermedia_nrel_comment: [/*в SCg-коде*/];; 
+		=> hypermedia_nrel_comment: [Пересечение цикла графа и дерева является пустое множество.];; 
 	*);;	

@@ -7,7 +7,7 @@ idtf_sc_var => nrel_main_en_idtf:
 idtf_sc_var => idtf_nrel_element_identification_rule:
 [При идентификации переменных узлов используется нижнее подчеркивание перед sc-идентификатором];;
 
-idtf_sc_var => nrel_explanation:
+idtf_sc_var => hypermedia_nrel_explanation:
 "file://../images/gwf_var.png";;
 
 idtf_sc_const => nrel_main_ru_idtf:
@@ -19,10 +19,10 @@ idtf_sc_const => nrel_main_en_idtf:
 idtf_sc_const => idtf_nrel_element_identification_rule:
 [При идентификации константных узлов не используется нижнее подчеркивание перед sc-идентификатором];;
 
-idtf_sc_const => nrel_explanation:
+idtf_sc_const => hypermedia_nrel_explanation:
 "file://../images/kvadrat.png";;
 
-idtf_sc_norole => nrel_comment:
+idtf_sc_norole => hypermedia_nrel_comment:
 [Среди sc-элементов существует необходимость особым образом выделять знаки отношений между объектами. Выделяют ролевые отношения (или атрибуты) и неролевые отношения. Для идентификации ролевых отношений в конце имени элемента ставится штрих (‘). Для идентификации неролевого отношения в конце имени элемента ставится знак звездочки (*).];;
 
 idtf_sc_norole => nrel_main_ru_idtf:
@@ -33,7 +33,7 @@ idtf_sc_norole => nrel_main_en_idtf:
 idtf_sc_norole => idtf_nrel_element_identification_rule:
 [При идентификации sc-узла, являющегося знаком отношения, в конце идентификатора ставится звездочкам]
 
-idtf_sc_norole => nrel_comment:
+idtf_sc_norole => hypermedia_nrel_comment:
 "file://../images/vkl.png";;
 
 idtf_sc_role => nrel_main_ru_idtf:
@@ -44,5 +44,5 @@ idtf_sc_role => nrel_main_en_idtf:
 idtf_sc_role => idtf_nrel_element_identification_rule:
 [При идентификации sc-узла, являющегося знаком атрибутивного отношения, в конце идентификатора ставится штрих]
 
-idtf_sc_role => nrel_explanation:
+idtf_sc_role => hypermedia_nrel_explanation:
 "file://../images/aksioma.png";;

@@ -4,7 +4,7 @@ subproject_ostis_project => nrel_main_ru_idtf:
 subproject_ostis_project => nrel_main_en_idtf:
 	[Project OSTIS subproject];;
 
-subproject_ostis_project => nrel_explanation:
+subproject_ostis_project => hypermedia_nrel_explanation:
 	[
 	Это множество элементами которого являются сам Проект OSTIS, все непосредственные (собственные) 
 	подпроекты Проекта OSTIS, все собственные подпроекты всех собственных проектов Проекта OSTIS и т.д.

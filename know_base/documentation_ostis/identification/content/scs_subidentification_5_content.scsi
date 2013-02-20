@@ -3,7 +3,7 @@ idtf_atomic => nrel_main_ru_idtf:
 idtf_atomic => nrel_main_en_idtf:
 [atomic sc-identifier];;
 
-idtf_atomic => nrel_explanation:
+idtf_atomic => hypermedia_nrel_explanation:
 [Это sc-идентификатор, не включающий в свой состав другие sc-идентификаторы];;
 
 idtf_atomic -> rrel_example:
@@ -14,13 +14,13 @@ idtf_non_atomic => nrel_main_ru_idtf:
 idtf_non_atomic => nrel_main_en_idtf:
 [non-atomic sc-identifier];;
 
-idtf_non_atomic => nrel_explanation:
+idtf_non_atomic => hypermedia_nrel_explanation:
 [Это sc-идентификатор, состоящий из других sc-идентификаторов];;
 
 idtf_non_atomic -> rrel_example:
 [Треугк.(Тчк.А; Тчк.B; Тчк.С) ]
 (*
-	=> nrel_comment:
+	=> hypermedia_nrel_comment:
 	[Приведен пример неатомарного идентификатора - идентификатор треугольника АВС. 
 	В своем составе данный идентификатор содержит атомарные идентификаторы трех точек, 
 	задающих этот треугольник: точка А, точка B и точка C.];;

@@ -4,7 +4,7 @@ scn_code_3_level => nrel_main_ru_idtf:
 scn_code_3_level => nrel_main_en_idtf: 
 	[SCn-code level 3];;
 
-scn_code_3_level => nrel_explanation:
+scn_code_3_level => hypermedia_nrel_explanation:
 	[
 		Данный уровень SCn-кода отличается от предыдущих тем, что на данном уровне появляется возможность использовать средства гипермедиа.
 		Вводимые элементы:

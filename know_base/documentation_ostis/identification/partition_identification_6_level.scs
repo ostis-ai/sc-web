@@ -12,7 +12,7 @@ partition_identification_6_level => doc_nrel_next_partition:
 
 partition_identification_6_level <- doc_atomic_partition;;
 
-partition_identification_6_level => nrel_explanation:
+partition_identification_6_level => hypermedia_nrel_explanation:
 	[В sc.s-предложениях уровня 6 разрешается использовать любые виды неатомарных идентификаторов.];;
 
 partition_identification_6_level = [*^"file://content/partition_identification_6_level_content.scsi"*];;

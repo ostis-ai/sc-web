@@ -12,7 +12,7 @@ scs_subidentification_7 <- doc_atomic_partition;;
 scs_subidentification_7 => nrel_ru_idtf:
 [системный идентификатор];;
 
-scs_subidentification_7 => nrel_explanation:
+scs_subidentification_7 => hypermedia_nrel_explanation:
 [Системный идентификатор – это идентификатор, являющийся уникальным в рамках базы знаний.
  Данный идентификатор как правило используется в исходных текстах базы знаний нижнего уровня.
  Для обеспечения интернационализации рекомендуется записывать глобальные идентификаторы на английском языке.
@@ -34,7 +34,7 @@ scs_subidentification_7 => nrel_explanation:
 «tuple» и далее после нижнего подчеркивания записывается имя кортежа.
 ];;
 
-scs_subidentification_7 => nrel_explanation:
+scs_subidentification_7 => hypermedia_nrel_explanation:
 [
 rrel_summand
 /*ролевое отношение «слагаемое’»*/

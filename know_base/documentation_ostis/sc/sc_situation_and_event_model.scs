@@ -4,5 +4,5 @@ sc_situation_and_event_model => nrel_main_ru_idtf:
 sc_situation_and_event_model => nrel_main_en_idtf:
 	[sc-model of situations ans events in unstable subject domain] ;;
 
-sc_situation_and_event_model => nrel_explanation:
+sc_situation_and_event_model => hypermedia_nrel_explanation:
 	[Это sc-граф, описывающий последовательность ситуаций и событий в некоторой нестационарной предметной области. Другими словами, это протокол изменения состояния указанной предметной области];;

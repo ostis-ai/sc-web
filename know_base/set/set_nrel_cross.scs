@@ -12,14 +12,14 @@ set_nrel_cross => nrel_ru_idtf:
 set_nrel_cross  <-  set_cantor_set  ;;
 set_nrel_cross <-  set_relation  ;;
 
-set_nrel_cross => nrel_explanation:
+set_nrel_cross => hypermedia_nrel_explanation:
 	"file://images/set_nrel_cross1.png"
 	(*
-		=> nrel_comment: [Пример изображения пересекающихся множеств.<br>];;
+		=> hypermedia_nrel_comment: [Пример изображения пересекающихся множеств.<br>];;
 	*);;
 
-set_nrel_cross => nrel_explanation:
+set_nrel_cross => hypermedia_nrel_explanation:
 	"file://images/set_nrel_cross2.png"
 	(*
-		=> nrel_comment: [Симметричное отношение пересекается с рефлексивным отношением.<br>];;
+		=> hypermedia_nrel_comment: [Симметричное отношение пересекается с рефлексивным отношением.<br>];;
 	*);;

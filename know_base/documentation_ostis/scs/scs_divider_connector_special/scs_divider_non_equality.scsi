@@ -8,7 +8,7 @@ scs_divider_non_equality <= scs_nrel_representation_scs_editor:
 	[≠];;
 scs_divider_non_equality <= scs_nrel_representation_standart_editor:
 	[|=];;
-scs_divider_non_equality <= nrel_explanation:
+scs_divider_non_equality <= hypermedia_nrel_explanation:
 	[Разделяет имена sc-элементов, не являющихся синонимичными. Это иногда требуется чтобы подчеркнуть наличие семантической разницы между двумя знаками];;
 scs_divider_non_equality <= nrel_using_example:
 	[треугольник ≠ линейный треугольник;;]

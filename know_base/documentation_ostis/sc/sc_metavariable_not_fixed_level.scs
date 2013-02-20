@@ -16,4 +16,4 @@ sc_metavariable_not_fixed_level <=	nrel_subdividing:
 		universal_sc_metavariable;
 		nonuniversal_sc_metavariable_not_fixed_level
 	
-	}(* => nrel_comment: [По признаку универсальности];;  *);;
+	}(* => hypermedia_nrel_comment: [По признаку универсальности];;  *);;

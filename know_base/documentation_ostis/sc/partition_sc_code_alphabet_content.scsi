@@ -135,7 +135,7 @@ sc_link => nrel_ru_idtf:
 sc_link => nrel_ru_idtf: 
 	[знак части sc-системы] ;;
 sc_link <- sc_element_alphabet;;	
-sc_link <= nrel_explanation:
+sc_link <= hypermedia_nrel_explanation:
 	[Особенность синтаксически выделяемых классов sc-элементов заключается в том, что принадлежность sc-элемента соответствующему синтаксически выделяемому классу sc-элементов 
 	задаётся путём придания этому sc-элементу соответствующего синтаксически различимого признака (свойства, характеристики, метки).
 	Каждому синтаксически выделяемому классу sc-элементов, принадлежащему алфавиту SC-кода, взаимно однозначно соответствует свой синтаксически задаваемый признак.
@@ -190,7 +190,7 @@ sc_connector <= nrel_subdividing:
 	sc_arc
 };;
 
-sc_connector <= nrel_explanation:
+sc_connector <= hypermedia_nrel_explanation:
 	[Есть принципиальная разница между понятием синтаксически выделяемого класса
 	sc-элементов и понятием семантически выделяемого класса sc-элементов.
 	];;
@@ -235,7 +235,7 @@ sc_construction_structure => nrel_main_ru_idtf:
 sc_construction_structure => nrel_main_en_idtf: 
 	[sc-construction structure] ;;	
 
-sc_construction_structure <= nrel_explanation:
+sc_construction_structure <= hypermedia_nrel_explanation:
 	[Кроме алфавита sc-элементов (алфавита SC-кода) структура sc-конструкций задаётся 
 	двумя бинарными ориентированными отношениями инцидентности, которые связывают sc-элементы между собой.
 	];;	
@@ -246,7 +246,7 @@ sc_construction_structure <= nrel_subdividing:
 	sc_nrel_arc_second_component
 };;
 
-sc_construction_structure <= nrel_explanation:
+sc_construction_structure <= hypermedia_nrel_explanation:
 	[Отношение быть компонентом sc-коннектора* связывает либо sc-дугу с её первым компонентом (т.е. с sc-элементом, из которого эта sc-дуга выходит),
 либо sc-ребро с его обоими компонентами. Оба компонента sc-ребра считаются одинаковыми (аналогичными) компонентами в том смысле, что они в рамках 
 sc-ребра выполняют одинаковые роли. Компонентом sc-дуги может быть другая sc-дуга, т. е. sc-дуга может выходить из другой sc-дуги. Аналогичным образом

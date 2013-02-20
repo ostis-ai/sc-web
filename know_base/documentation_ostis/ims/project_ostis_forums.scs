@@ -4,7 +4,7 @@ project_ostis_forums => nrel_main_ru_idtf:
 project_ostis_forums => nrel_main_en_idtf:
 	[Project OSTIS forums];;
 
-project_ostis_forums => nrel_explanation:
+project_ostis_forums => hypermedia_nrel_explanation:
 	[
 	Это множество всевозможных форумов, имеющих отношение к Проекту OSTIS. К таким форумам, в частности, относятся:
 		•	форумы, обсуждающие различные проекты, входящие в состав Проекта OSTIS;

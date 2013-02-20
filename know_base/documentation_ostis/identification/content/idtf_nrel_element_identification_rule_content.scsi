@@ -3,7 +3,7 @@ doc_partition => idtf_nrel_element_identification_rule:
 [Идентификатор sc-узла, являющегося знаком структуры, описывающей раздел базы знаний, идентифицируется следующим образом: 
 	используется слово «Раздел», записываемое с заглавной буквы, далее записывается название базы знаний, разделом которой является идентифицируемый раздел, далее ставится точка, после точки с заглавной буквы записывается название раздела: Раздел X. Название раздела];;
 
-doc_partition => nrel_explanation:
+doc_partition => hypermedia_nrel_explanation:
 [
 Раздел OSTIS. SС-идентификаторы
 	<= декомпозиция на разделы*:
@@ -20,7 +20,7 @@ doc_partition => nrel_explanation:
 nrel_semantic_neighbourhood => nrel_ru_idtf:
 [семантическая окрестность*];;
 
-nrel_semantic_neighbourhood => nrel_explanation:
+nrel_semantic_neighbourhood => hypermedia_nrel_explanation:
 [Отношение семантической окрестности – это бинарное ориентированное отношение, связывающее узел, являющийся знаком некоторого объекта, с узлом, являющимся знаком семантической окрестности этого объекта];;
 
 nrel_semantic_neighbourhood => idtf_nrel_element_identification_rule:

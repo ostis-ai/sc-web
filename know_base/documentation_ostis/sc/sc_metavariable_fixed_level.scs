@@ -15,4 +15,4 @@ sc_metavariable_fixed_level <=	nrel_subdividing:
 		sc_metavariable_third_level;
 		sc_metavariable_fourth_level;
 		[и так далее]
-	}(* => nrel_comment: [По логико-семантическому уровню];;  *);;
+	}(* => hypermedia_nrel_comment: [По логико-семантическому уровню];;  *);;

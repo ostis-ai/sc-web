@@ -12,25 +12,25 @@ set_subtraction => nrel_ru_idtf:
 set_subtraction => nrel_ru_idtf: 
 	[разность множеств*] ;;
 
-set_subtraction => nrel_explanation:
+set_subtraction => hypermedia_nrel_explanation:
 	[Множество sk является вычитанием множества si из множества sj тогда и только тогда, когда каждый элемент x принадлежит множеству sk в том и только том случае, когда он принадлежит множеству sj, и не принадлежит множеству si.];;	
 	
-set_subtraction => nrel_explanation:
+set_subtraction => hypermedia_nrel_explanation:
 	"file://images/set_subtraction.png";;
 		
 set_subtraction <- set_cantor_set ;;
 set_subtraction <- set_relation ;;
 	
-set_subtraction => nrel_explanation:
+set_subtraction => hypermedia_nrel_explanation:
 	"file://images/set_subtraction1.png"
 	(*
-		=> nrel_comment:
+		=> hypermedia_nrel_comment:
 			[Пример изображения отношения вычитание множеств];;		
 	*);;
 	
-set_subtraction => nrel_explanation:
+set_subtraction => hypermedia_nrel_explanation:
 	"file://images/set_subtraction2.png"
 	(*
-		=> nrel_comment:
+		=> hypermedia_nrel_comment:
 			[Вычитание множества иррациональных чисел из множества алгебраических чисел будет множество рациональных чисел.];;
 	*);;

@@ -7,7 +7,7 @@ project_ostis_performers => nrel_main_en_idtf:
 project_ostis_performers => nrel_ru_idtf:
 	[Рабочая группа Проекта OSTIS];
 	[исполнитель Проекта OSTIS];;
-project_ostis_performers => nrel_explanation:
+project_ostis_performers => hypermedia_nrel_explanation:
 	[Это множество всех персон, связанных с Проектом OSTIS отношением быть исполнителем*];;
 project_ostis_performers => nrel_accession_procedure:
 	[

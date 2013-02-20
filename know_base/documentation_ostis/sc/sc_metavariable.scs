@@ -16,4 +16,4 @@ sc_metavariable <=	nrel_subdividing:
 		sc_metavariable_fixed_level;
 		sc_metavariable_not_fixed_level
 	
-	}(* => nrel_comment: [По признаку фиксированности логико-семантического уровня sc-метапеременной];;  *);;
+	}(* => hypermedia_nrel_comment: [По признаку фиксированности логико-семантического уровня sc-метапеременной];;  *);;

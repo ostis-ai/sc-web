@@ -6,7 +6,7 @@ scs_divider_semantically_equal_files <= nrel_inclusion:
 	scs_divider_connector_special;;
 scs_divider_semantically_equal_files <= scs_nrel_representation_scs_editor:
 	[≗];;
-scs_divider_semantically_equal_files <= nrel_explanation:
+scs_divider_semantically_equal_files <= hypermedia_nrel_explanation:
 	[Изображение связки отношения семантическая эквивалентность*. Разделяет имена двух файлов, которые являются семантически эквивалентными.];;
 scs_divider_semantically_equal_files <= nrel_using_example:
 	[

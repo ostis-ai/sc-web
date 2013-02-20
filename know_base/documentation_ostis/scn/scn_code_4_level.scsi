@@ -4,7 +4,7 @@ scn_code_4_level => nrel_main_ru_idtf:
 scn_code_4_level => nrel_main_en_idtf: 
 	[SCn-code level 4];;
 
-scn_code_4_level => nrel_explanation:
+scn_code_4_level => hypermedia_nrel_explanation:
 	[
 		На данном уровне SCn-кода улучшается визуальное восприятие текстов за счет введения разделителя перечисления и удаления некоторых частей sc.s-предложений.
 		Таким образом на данном уровне вводится разделитель перечисления •. Данный разделитель используется в следующих случаях:

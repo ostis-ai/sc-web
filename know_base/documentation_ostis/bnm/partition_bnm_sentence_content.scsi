@@ -4,7 +4,7 @@ Backus_naur_metalanguage => nrel_main_ru_idtf:
 Backus_naur_metalanguage => nrel_main_en_idtf:
 	[Backus-Naur metalanguage] ;;
 
-Backus_naur_metalanguage <= nrel_explanation: 
+Backus_naur_metalanguage <= hypermedia_nrel_explanation: 
 	[Данный язык представляет собой вариант расширенной формы Бэкуса-Наура, широко используемой формальной системы описания синтаксиса линейных языков.
 	Может быть использован для описания синтаксических конструкций формальных линейных языков представления знаний, например SCs.];;
 	
@@ -14,7 +14,7 @@ bnm_sentence => nrel_main_ru_idtf:
 bnm_sentence => nrel_main_en_idtf:
 	[Backus-Naur metalanguage sentence] ;;
 
-bnm_sentence <= nrel_explanation: 
+bnm_sentence <= hypermedia_nrel_explanation: 
 [
 	Любой текст расширенного метаязыка Бэкуса-Наура есть последовательность предложений.
 	Предложение расширенного языка Бэкуса-Наура состоит из следующих элементов:

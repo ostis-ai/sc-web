@@ -5,7 +5,7 @@ conference_ostis => nrel_main_en_idtf:
 	[OSTIS conferences];;
 
 conference_ostis -> international_scientific_and_technical_conferences (* => nrel_main_ru_idtf: [Международные научно-технические конференции];; => nrel_main_en_idtf: [International scientific and technical conferences];;*);;
-conference_ostis => nrel_explanation: [Это ежегодные международные научно-технические конференции, которые проводятся в середине февраля в г. Минске на базе БГУИР и направлены на развитие открытых семантических технологий проектирования интеллектуальных систем(Open Semantic Technologies for Intelligent Systems - OSTIS).];;
+conference_ostis => hypermedia_nrel_explanation: [Это ежегодные международные научно-технические конференции, которые проводятся в середине февраля в г. Минске на базе БГУИР и направлены на развитие открытых семантических технологий проектирования интеллектуальных систем(Open Semantic Technologies for Intelligent Systems - OSTIS).];;
 
 conference_ostis => nrel_goal: 
 [
@@ -50,19 +50,23 @@ conference_ostis => nrel_subjects:
 
 conference_ostis => nrel_address: [Республика Беларусь, г. Минск, ул. Платонова, д. 39];;
 conference_ostis => nrel_location: "file://map.googlemaplink";;
-conference_ostis => nrel_logo: "file://logo.png";;
+conference_ostis => hypermedia_nrel_logo: "file://logo.png";;
 
 nrel_subjects => nrel_main_ru_idtf: 
 	[тематика*] ;;
 nrel_subjects => nrel_main_en_idtf: 
 	[subjects*] ;;
+nrel_subjects <- sc_type_node_norole_relation;;
 
 nrel_format => nrel_main_ru_idtf: 
 	[формат проведения*] ;;
 nrel_format => nrel_main_en_idtf: 
 	[hold format*] ;;
 
+nrel_format <- sc_type_node_norole_relation;;
+
 nrel_goal => nrel_main_ru_idtf: 
 	[цель*] ;;
 nrel_goal => nrel_main_en_idtf: 
 	[goal*] ;;
+nrel_goal <- sc_type_node_norole_relation;;

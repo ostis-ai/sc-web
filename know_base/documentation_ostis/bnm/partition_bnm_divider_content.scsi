@@ -37,7 +37,7 @@ bnm_divider_alternative => nrel_main_en_idtf:
 
 bnm_divider_alternative <= nrel_inclusion:
 	bnm_divider;;
-bnm_divider_alternative <= nrel_explanation:
+bnm_divider_alternative <= hypermedia_nrel_explanation:
 	[Данный разделитель разделяет альтернативы, перечисленные в рамках одной пары скобок ограничения альтернатив];;
 bnm_divider_alternative <= nrel_representation_scs_editor:
 	[||];;
@@ -55,7 +55,7 @@ bnm_divider_alternative_bracket => nrel_main_ru_idtf:
 
 bnm_divider_alternative_bracket <= nrel_inclusion:
 	bnm_divider;;
-bnm_divider_alternative_bracket <= nrel_explanation:
+bnm_divider_alternative_bracket <= hypermedia_nrel_explanation:
 	[Выражение, ограниченное этими скобками, обозначает какую-либо одну из перечисленных альтернатив];;
 bnm_divider_alternative_bracket <= nrel_representation_scs_editor:
 {
@@ -76,7 +76,7 @@ bnm_divider_assignment => nrel_main_en_idtf:
 
 bnm_divider_assignment <= nrel_inclusion:
 	bnm_divider;;
-bnm_divider_assignment <= nrel_explanation:
+bnm_divider_assignment <= hypermedia_nrel_explanation:
 	[Данный разделитель задает операцию "присваивания" левой части правила Бэкуса-Наура, конструкции, описанной в правой его части];;
 bnm_divider_assignment <= nrel_representation_scs_editor:
 	[::=];;

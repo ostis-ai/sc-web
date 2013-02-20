@@ -54,7 +54,7 @@ scs_divider_connector_kernel <= nrel_subdividing:
 	scs_divider_accessory_arc;
 	scs_divider_const_pos_stat_accessory_arc
 };;
-scs_divider_connector_kernel <= nrel_explanation:
+scs_divider_connector_kernel <= hypermedia_nrel_explanation:
 	"file://../images/scs_divider/table_kernel.png";;
 
 /!* keyword: scs_divider_connector_extended */
@@ -84,7 +84,7 @@ scs_divider_connector_extended <= nrel_subdividing:
 	scs_divider_const_fuz_nonstat_accessory_arc;
 	scs_divider_var_fuz_nonstat_accessory_arc
 };;
-scs_divider_connector_extended <= nrel_explanation:
+scs_divider_connector_extended <= hypermedia_nrel_explanation:
 	"file://../images/scs_divider/table_extended.png";;
 
 /!* keyword: scs_divider_connector_special */
@@ -110,7 +110,7 @@ scs_divider_connector_special <= nrel_subdividing:
 	scs_divider_equality;
 	scs_divider_non_equality
 };;
-scs_divider_connector_special <= nrel_explanation:
+scs_divider_connector_special <= hypermedia_nrel_explanation:
 	"file://../images/scs_divider/table_special.png";;
 
 /!* keyword: scs_divider_incidence */
@@ -167,7 +167,7 @@ scs_divider_double_semicolon <= scs_nrel_representation_scs_editor:
 	[;;];;
 scs_divider_double_semicolon <= scs_nrel_representation_standart_editor:
 	[;;];;
-scs_divider_double_semicolon <= nrel_explanation:
+scs_divider_double_semicolon <= hypermedia_nrel_explanation:
 	[Разделяет sc.s-предложения в рамках sc.s-текста];;
 	
 /!* keyword: scs_divider_simple_semicolon */
@@ -182,7 +182,7 @@ scs_divider_simple_semicolon <= scs_nrel_representation_scs_editor:
 	[;];;
 scs_divider_simple_semicolon <= scs_nrel_representation_standart_editor:
 	[;];;
-scs_divider_simple_semicolon <= nrel_explanation:
+scs_divider_simple_semicolon <= hypermedia_nrel_explanation:
 	[Является разделителем компонентов сложного sc.s-предложения.
 		Если данный разделитель встречается правее изображения sc.s-коннектора, то 
 		1) sc-коннекторы проводятся к каждому из sc-элементов, имена которых перечислены через ; 
@@ -191,13 +191,13 @@ scs_divider_simple_semicolon <= nrel_explanation:
 		4) если после разделителя ; явно указаны дополнительные уточнения типа коннектора, то уточнения к типу коннектора для sc-элемента, стоящего левее разделителя ; не учитываются. ( A =>k1: x; k2: y;; ) 
 		Если данный разделитель встречается левее изображения sc.s-коннектора, то 
 		1) sc-коннекторы проводятся из каждого из sc-элементов, имена которых перечислены через ; слева от изображения коннектора ];;
-scs_divider_simple_semicolon <= nrel_explanation:
+scs_divider_simple_semicolon <= hypermedia_nrel_explanation:
 	[Использование данного разделителя является способом превращения нескольких sc.s-предложений, отличающихся только одним именем, в одно sc.s-предложение, в котором эти имена перечислены через ;];;
 scs_divider_simple_semicolon <= nrel_using_example:
 	[Четырехугк(ТчкА;ТчкВ;ТчкС;ТчкD) ; Треугк(ТчкВ;ТчкС;ТчкD) => сторона* : включение* : Отр(ТчкВ;ТчкС); Отр(ТчкС;ТчкD);;]
 	(*
 		<=> nrel_semantic_equivalence: "file://../images/scs_divider/common_example.png" ;;
-		<= nrel_illustration:
+		<= hypermedia_nrel_illustration:
 		"file://../images/scs_divider/common_illusration.png" ;;
 	*);;
 
@@ -213,7 +213,7 @@ scs_divider_subsentence <= scs_nrel_representation_scs_editor:
 {
 	[(*...*)]
 };;
-scs_divider_subsentence <= nrel_explanation:
+scs_divider_subsentence <= hypermedia_nrel_explanation:
 	[Указывает границы встроенного sc.s-предложения в рамках sc.s-предложения. Если встроенное sc.s-предложение не содержит разделителей точка с запятой, то при записи границы (*...*) могут быть опущены];;
 scs_divider_subsentence => nrel_using_example:
 	[Треугк(ТчкB;ТчкC;ТчкD) => сторона*: Отр(ТчкC;ТчкD) (* => граничная точка*: ТчкC; ТчкD;; *);;]
