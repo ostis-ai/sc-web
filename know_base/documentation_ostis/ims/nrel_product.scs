@@ -3,7 +3,7 @@ nrel_product => nrel_main_ru_idtf:
 	[продукт*];;
 nrel_product => nrel_main_en_idtf:
 	[product*];;
-
+nrel_product <- sc_node_norole_relation;;
 nrel_product => nrel_ru_idtf:
 	[
 		быть продуктом соответствующей деятельности (в том числе и явно обозначенного, явно заявленного проекта)

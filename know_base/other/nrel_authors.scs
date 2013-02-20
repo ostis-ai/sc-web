@@ -1,5 +1,5 @@
 /!* keyword: nrel_authors */
-
+nrel_authors <- sc_node_norole_relation;;
 nrel_authors => nrel_main_ru_idtf: 
 	[авторы*] ;;
 nrel_authors => nrel_main_en_idtf: 

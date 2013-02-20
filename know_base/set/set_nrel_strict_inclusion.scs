@@ -3,8 +3,8 @@ set_nrel_strict_inclusion => nrel_main_ru_idtf:
 	[cтрогое включение*] ;;	
 set_nrel_strict_inclusion => nrel_main_en_idtf: 
 	[strict inclusion*] ;;	
-
-set_nrel_strict_inclusion=> nrel_ru_idtf: 
+set_nrel_strict_inclusion <- sc_node_norole_relation;;
+set_nrel_strict_inclusion => nrel_ru_idtf: 
 	[строгое подмножество*] ;;
 set_nrel_strict_inclusion => nrel_ru_idtf: 
 	[отношение строгого включения*] ;;

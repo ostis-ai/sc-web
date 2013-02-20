@@ -3,7 +3,7 @@ set_nrel_accessory => nrel_main_ru_idtf:
 	[принадлежность*] ;;
 set_nrel_accessory => nrel_main_en_idtf: 
 	[accessory*] ;;
-
+set_nrel_accessory <- sc_node_norole_relation;;
 set_nrel_accessory => nrel_ru_idtf: 
 	[пара принадлежности*] ;
 	[множество всевозможных пар принадлежности*];

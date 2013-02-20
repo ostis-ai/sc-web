@@ -3,7 +3,7 @@ set_nrel_power => nrel_main_ru_idtf:
 	[мощность*] ;;	
 set_nrel_power => nrel_main_en_idtf: 
 	[power*] ;;	
-
+set_nrel_power <- sc_node_norole_relation;;
 set_nrel_power => nrel_ru_idtf: 
 	[кардинальное число*] ;;
 set_nrel_power => nrel_ru_idtf: 

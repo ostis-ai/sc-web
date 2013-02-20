@@ -3,26 +3,28 @@ belarus => nrel_main_ru_idtf:
 belarus => nrel_main_en_idtf: 
 	[The Republic of Belarus] ;;
 
+nrel_capital <- sc_node_norole_relation;;
 nrel_capital => nrel_main_ru_idtf: 
 	[столица*] ;;
 nrel_capital => nrel_main_en_idtf: 
 	[capital*] ;;
 
+nrel_cities <- sc_node_norole_relation;;
 nrel_cities => nrel_main_ru_idtf: 
 	[города*] ;;
 nrel_cities => nrel_main_en_idtf: 
 	[cities*] ;;
-	
+nrel_population <- sc_node_norole_relation;;
 nrel_population => nrel_main_ru_idtf: 
 	[популяция*] ;;
 nrel_population => nrel_main_en_idtf: 
 	[population*] ;;
-
+nrel_square <- sc_node_norole_relation;;
 nrel_square => nrel_main_ru_idtf: 
 	[площадь*] ;;
 nrel_square => nrel_main_en_idtf: 
 	[square*] ;;
-	
+
 city_minsk => nrel_main_ru_idtf: 
 	[Минск] ;;
 city_minsk => nrel_main_en_idtf: 
@@ -50,24 +52,24 @@ belarus => nrel_population: [9 463 300];;
 belarus => nrel_current_time: "file://time.html";;
 minsk => nrel_location: "file://map.googlemaplink";;
 belarus => nrel_square: [207 600];;
-
+nrel_current_time <- sc_node_norole_relation;;
 nrel_current_time => nrel_main_ru_idtf: 
 	[текущее время*] ;;
 nrel_current_time => nrel_main_en_idtf: 
 	[current time*] ;;
-
+nrel_foundation_date <- sc_node_norole_relation;;
 nrel_foundation_date => nrel_main_ru_idtf: 
 	[дата основания*] ;;
 nrel_foundation_date => nrel_main_en_idtf: 
 	[foundation date*] ;;
-
+nrel_location <- sc_node_norole_relation;;
 nrel_location => nrel_main_ru_idtf: 
 	[местоположение*] ;;
 nrel_location => nrel_main_en_idtf: 
 	[location*] ;;
 	
 minsk => nrel_foundation_date: [1067];;
-
+nrel_address <- sc_node_norole_relation;;
 nrel_address => nrel_main_ru_idtf: 
 	[адрес*] ;;
 nrel_address => nrel_main_en_idtf: 

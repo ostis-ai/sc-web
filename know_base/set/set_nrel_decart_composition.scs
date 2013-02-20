@@ -3,7 +3,7 @@ set_nrel_decart_composition => nrel_main_ru_idtf:
 	[декартово произведение множеств*] ;;
 set_nrel_decart_composition => nrel_main_en_idtf: 
 	[set decart composition*] ;;
-
+set_nrel_decart_composition <- sc_node_norole_relation;;
 set_nrel_decart_composition => nrel_ru_idtf: 
 	[декартово произведение*] ;
 	[отношение декартова произведения множества*];;

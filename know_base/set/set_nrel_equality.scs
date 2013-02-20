@@ -3,7 +3,7 @@ set_nrel_equality => nrel_main_ru_idtf:
 	[равенство множеств*] ;;	
 set_nrel_equality => nrel_main_en_idtf: 
 	[set equality*] ;;	
-
+set_nrel_equality <- sc_node_norole_relation;;
 set_nrel_equality => nrel_ru_idtf: 
 	[равные множества*] ;;
 set_nrel_equality => nrel_ru_idtf: 

@@ -3,7 +3,7 @@ set_nrel_cross => nrel_main_ru_idtf:
 	[пересекающиеся*] ;;	
 set_nrel_cross => nrel_main_en_idtf: 
 	[crossing set*] ;;	
-
+set_nrel_cross <- sc_node_norole_relation;;
 set_nrel_cross => nrel_ru_idtf: 
 	[пересекающиеся множества*] ;;
 set_nrel_cross => nrel_ru_idtf: 

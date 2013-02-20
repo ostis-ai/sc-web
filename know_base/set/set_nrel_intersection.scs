@@ -3,7 +3,7 @@ set_nrel_intersection => nrel_main_ru_idtf:
 	[пересечение*] ;;
 set_nrel_intersection => nrel_main_en_idtf: 
 	[intersection*] ;;
-
+set_nrel_intersection <- sc_node_norole_relation;;
 set_nrel_intersection => nrel_ru_idtf: 
 	[операция пересечения*];
 	[отношение пересечения*];
