@@ -1,6 +1,8 @@
 /!* keyword: nrel_ru_idtf */
 sc_node_norole_relation -> nrel_ru_idtf;;
+
 nrel_ru_idtf => nrel_main_ru_idtf: 
-  [русскоязычный идентификатор*] ;;
+  [русскоязычный идентификатор*];;
+
 nrel_ru_idtf => nrel_main_en_idtf:   
-  [russian identifier*] ;;
+  [russian identifier*];;

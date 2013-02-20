@@ -1,4 +1,5 @@
 /!* keyword: nrel_note */
+nrel_note <- sc_node_norole_relation;;
 nrel_note => nrel_main_ru_idtf: 
 		[примечание*] ;;
 nrel_note => nrel_main_en_idtf: 

@@ -19,13 +19,13 @@ var sc_type_arc_temp        = 0x400
 var sc_type_arc_perm        = 0x800
 
 // struct node types
-var sc_type_node_tuple          = (0x80 | sc_type_node)
-var sc_type_node_struct         = (0x100 | sc_type_node)
-var sc_type_node_role           = (0x200 | sc_type_node)
-var sc_type_node_norole         = (0x400 | sc_type_node)
-var sc_type_node_class          = (0x800 | sc_type_node)
-var sc_type_node_abstract       = (0x1000 | sc_type_node)
-var sc_type_node_material       = (0x2000 | sc_type_node)
+var sc_type_node_tuple          = (0x80)
+var sc_type_node_struct         = (0x100)
+var sc_type_node_role           = (0x200)
+var sc_type_node_norole         = (0x400)
+var sc_type_node_class          = (0x800)
+var sc_type_node_abstract       = (0x1000)
+var sc_type_node_material       = (0x2000)
 
 var sc_type_arc_pos_const_perm  = (sc_type_arc_access | sc_type_const | sc_type_arc_pos | sc_type_arc_perm)
 

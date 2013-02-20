@@ -3,21 +3,25 @@ belarus => nrel_main_ru_idtf:
 belarus => nrel_main_en_idtf: 
 	[The Republic of Belarus] ;;
 
+nrel_capital <- sc_node_norole_relation;;
 nrel_capital => nrel_main_ru_idtf: 
 	[столица*] ;;
 nrel_capital => nrel_main_en_idtf: 
 	[capital*] ;;
 
+nrel_cities <- sc_node_norole_relation;;
 nrel_cities => nrel_main_ru_idtf: 
 	[города*] ;;
 nrel_cities => nrel_main_en_idtf: 
 	[cities*] ;;
 	
+nrel_population <- sc_node_norole_relation;;
 nrel_population => nrel_main_ru_idtf: 
 	[популяция*] ;;
 nrel_population => nrel_main_en_idtf: 
 	[population*] ;;
 
+nrel_square <- sc_node_norole_relation;;
 nrel_square => nrel_main_ru_idtf: 
 	[площадь*] ;;
 nrel_square => nrel_main_en_idtf: 
@@ -29,13 +33,15 @@ city_minsk => nrel_main_en_idtf:
 	[Minsk] ;;
 
 belarus => nrel_capital: minsk;;
+nrel_cities <- quasybinary_relation;;
 belarus <= nrel_cities:
 {
 	brest (* => nrel_main_ru_idtf: [Брест];; => nrel_main_en_idtf: [Brest];; *);
 	vitebsk (* => nrel_main_ru_idtf: [Витебск];; => nrel_main_en_idtf: [Vitebsk];; *);
 	mogilev (* => nrel_main_ru_idtf: [Могилев];; => nrel_main_en_idtf: [Mogilev];; *);
 	grodno (* => nrel_main_ru_idtf: [Гродно];; => nrel_main_en_idtf: [Grodno];; *);
-	gomel (* => nrel_main_ru_idtf: [Гомель];; => nrel_main_en_idtf: [Gomel];; *)
+	gomel (* => nrel_main_ru_idtf: [Гомель];; => nrel_main_en_idtf: [Gomel];; *);
+	minsk (* => nrel_main_ru_idtf: [Минск];; => nrel_main_en_idtf: [Minsk];; *)
 };;
 
 minsk => nrel_population: [1 900 800];;
@@ -51,16 +57,19 @@ belarus => nrel_current_time: "file://time.html";;
 minsk => nrel_location: "file://map.googlemaplink";;
 belarus => nrel_square: [207 600];;
 
+nrel_current_time <- sc_node_norole_relation;;
 nrel_current_time => nrel_main_ru_idtf: 
 	[текущее время*] ;;
 nrel_current_time => nrel_main_en_idtf: 
 	[current time*] ;;
 
+nrel_foundation_date <- sc_node_norole_relation;;
 nrel_foundation_date => nrel_main_ru_idtf: 
 	[дата основания*] ;;
 nrel_foundation_date => nrel_main_en_idtf: 
 	[foundation date*] ;;
 
+nrel_location <- sc_node_norole_relation;;
 nrel_location => nrel_main_ru_idtf: 
 	[местоположение*] ;;
 nrel_location => nrel_main_en_idtf: 
@@ -68,6 +77,7 @@ nrel_location => nrel_main_en_idtf:
 	
 minsk => nrel_foundation_date: [1067];;
 
+nrel_address <- sc_node_norole_relation;;
 nrel_address => nrel_main_ru_idtf: 
 	[адрес*] ;;
 nrel_address => nrel_main_en_idtf: 
