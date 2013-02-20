@@ -111,6 +111,11 @@ Ostis.ui.scn.Viewer = function(config) {
 
 Ostis.ui.scn.HtmlBuilder = function(parentId) {
 
+    var MARKERS = {
+        SYNONIM : "=",
+        SET_ELEMENT : "•"
+    };
+
     var _buildNode = function(node) {
 
         var output = '';
@@ -120,6 +125,7 @@ Ostis.ui.scn.HtmlBuilder = function(parentId) {
         } else {
             output += _buildNodeContent(node);
         }
+        output += _buildSynonims(node);
         output += _buildSentences(node);
         output += _closeWrapper(node);
         return output;
@@ -165,6 +171,17 @@ Ostis.ui.scn.HtmlBuilder = function(parentId) {
         return "</a>";
     };
 
+    var _buildSynonims = function(node) {
+
+        var sentOut = '';
+        if (node.SCSynonims) {
+            for ( var synInd = 0; synInd < node.SCSynonims.length; synInd++) {
+                sentOut += _buildOneSynonim(node.SCSynonims[synInd]);
+            }
+        }
+        return sentOut;
+    };
+
     var _buildSentences = function(node) {
 
         var sentOut = '';
@@ -197,25 +214,46 @@ Ostis.ui.scn.HtmlBuilder = function(parentId) {
         return _buildNode(arc.SCNode);
     };
 
-    var _buildOneSentence = function(arc) {
+    var _buildSentenceBegin = function() {
 
-        var resSen = "<div "
+        return "<div "
                 + Ostis.ui.scn.HtmlAttributeBuilder
                         .buildClassAttr(Ostis.ui.scn.SCnCssClass.SENTENCE)
                 + ">";
+    };
+
+    var _buildSentenceEnd = function() {
+
+        return "</div>";
+    };
+
+    var _buildOneSynonim = function(arc) {
+
+        var resSen = _buildSentenceBegin();
+        arc.marker = MARKERS.SYNONIM;
+        var valueFuncProxy = $.proxy(_buildNodeValue, this);
+        resSen += _buildField(arc, valueFuncProxy, true, false);
+        resSen += _buildSentenceEnd();
+        return resSen;
+    };
+
+    var _buildOneSentence = function(arc) {
+
+        var resSen = _buildSentenceBegin();
         var buildMarker = true;
         var shiftLevel = false;
         if (arc.SCAttributes) {
-            resSen += _buildField(arc, $.proxy(_buildAttrValue, this),
-                    buildMarker, shiftLevel);
+            var attrFuncProxy = $.proxy(_buildAttrValue, this);
+            resSen += _buildField(arc, attrFuncProxy, buildMarker, shiftLevel);
             buildMarker = false;
             shiftLevel = true;
         }
         if (arc.SCNode) {
-            resSen += _buildField(arc, $.proxy(_buildNodeValue, this),
-                    buildMarker, shiftLevel);
+            var nodeValFuncProxy = $.proxy(_buildNodeValue, this);
+            resSen += _buildField(arc, nodeValFuncProxy, buildMarker,
+                    shiftLevel);
         }
-        resSen += "</div>";
+        resSen += _buildSentenceEnd();
         return resSen;
     };
 
@@ -229,7 +267,7 @@ Ostis.ui.scn.HtmlBuilder = function(parentId) {
         fieldRes += Ostis.ui.scn.HtmlAttributeBuilder
                 .buildClassAttr(fieldClass);
         fieldRes += ">";
-        if (buildMarker && arc.type) {
+        if (buildMarker && (arc.type || arc.marker)) {
             fieldRes += _buildMarker(arc);
         }
         fieldRes += _buildValue(arc, valContVisitor);
@@ -243,8 +281,9 @@ Ostis.ui.scn.HtmlBuilder = function(parentId) {
                 + Ostis.ui.scn.HtmlAttributeBuilder
                         .buildClassAttr(Ostis.ui.scn.SCnCssClass.MARKER) + ">";
         markerRes += _startSelectableNode(arc);
-        markerRes += Ostis.ui.scn.TypeResolver.resolveArc(arc.type,
-                arc.backward);
+        var markerView = arc.marker ? arc.marker : Ostis.ui.scn.TypeResolver
+                .resolveArc(arc.type, arc.backward);
+        markerRes += markerView;
         markerRes += _closeSelectableNode();
         markerRes += "</div>";
         return markerRes;
@@ -263,7 +302,9 @@ Ostis.ui.scn.HtmlBuilder = function(parentId) {
     var _buildNodeContent = function(node) {
 
         var nodeCont = '';
-        if (node.type & sc_type_link) {
+        if (node.contour) {
+            nodeCont += _buildContourContent(node);
+        } else if (node.type & sc_type_link) {
             nodeCont = Ostis.ui.scn.HtmlLinkBuilder.buildLink(parentId, node);
         } else if (node.id) {
             nodeCont = _buildAtomicNode(node);
@@ -277,15 +318,20 @@ Ostis.ui.scn.HtmlBuilder = function(parentId) {
         if (node.set) {
             result = "<div "
                     + Ostis.ui.scn.HtmlAttributeBuilder.buildScnIdAttr(node)
+                    + " "
+                    + Ostis.ui.scn.HtmlAttributeBuilder
+                            .buildClassAttr(Ostis.ui.scn.SCnCssClass.SELECTABLE)
                     + ">";
             result += "<div>{</div>";
         } else if (node.contour) {
+
+            var contourClass = Ostis.ui.scn.SCnCssClass.SELECTABLE + " "
+                    + Ostis.ui.scn.SCnCssClass.LOOP;
             result = "<span "
                     + Ostis.ui.scn.HtmlAttributeBuilder.buildScnIdAttr(node)
                     + " "
                     + Ostis.ui.scn.HtmlAttributeBuilder
-                            .buildClassAttr(+Ostis.ui.scn.SCnCssClass.LOOP)
-                    + ">";
+                            .buildClassAttr(contourClass) + ">";
         }
         return result;
     };
@@ -299,6 +345,15 @@ Ostis.ui.scn.HtmlBuilder = function(parentId) {
             result = "</span>";
         }
         return result;
+    };
+
+    var _buildContourContent = function(node) {
+
+        var outCont = '';
+        for ( var keywInd = 0; keywInd < node.SCNodes.length; keywInd++) {
+            outCont += _buildNode(node.SCNodes[keywInd]);
+        }
+        return outCont;
     };
     return {
 
@@ -435,11 +490,16 @@ Ostis.ui.scn.Selection = function(parent) {
     var _elementClick = function(event) {
 
         if (event.ctrlKey) {
+            var scAddr;
             $(event.currentTarget).toggleClass(
                     Ostis.ui.scn.SCnCssClass.SELECTED, true);
-            var scAddr = $(event.currentTarget).attr(
-                    Ostis.ui.scn.HtmlAttributes.ID);
+            scAddr = $(event.currentTarget)
+                    .attr(Ostis.ui.scn.HtmlAttributes.ID);
             SCWeb.core.Arguments.appendArgument(scAddr);
+        } else {
+            scAddr = $(event.currentTarget)
+                    .attr(Ostis.ui.scn.HtmlAttributes.ID);
+            $(parentSelector).trigger('semanticNeighbourhood', scAddr);
         }
     };
 
@@ -464,15 +524,6 @@ Ostis.ui.scn.Selection = function(parent) {
         var elementToHover = _getLastElementInQueue();
         if (elementToHover) {
             $(elementToHover).addClass(Ostis.ui.scn.SCnCssClass.HOVERED);
-        }
-    };
-
-    var _linkClick = function(event) {
-
-        if (!event.ctrlKey) {
-            var scAddr = $(event.currentTarget).attr(
-                    Ostis.ui.scn.HtmlAttributes.ID);
-            $(parentSelector).trigger('semanticNeighbourhood', scAddr);
         }
     };
 
@@ -502,7 +553,6 @@ Ostis.ui.scn.Selection = function(parent) {
                     $.proxy(_elementLeave, this));
             $(parentSelector).delegate(hoveredClassExpr, 'click',
                     $.proxy(_elementClick, this));
-            $(parentSelector).delegate('a', 'click', $.proxy(_linkClick, this));
             SCWeb.core.Arguments.registerListener(this);
         },
 

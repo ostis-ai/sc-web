@@ -1,5 +1,5 @@
 /!* keyword: doc_nrel_subproject */
-doc_nrel_subproject <- sc_type_node_norole_relation;;
+doc_nrel_subproject <- sc_node_norole_relation;;
 
 doc_nrel_subproject => nrel_main_ru_idtf: 
 	[подпроект*] ;;
