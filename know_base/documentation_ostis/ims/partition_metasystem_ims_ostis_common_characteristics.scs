@@ -1,0 +1,28 @@
+/!* keyword: partition_metasystem_ims_ostis_common_characteristics */
+partition_metasystem_ims_ostis_common_characteristics => nrel_main_ru_idtf: 
+	[Раздел. Основные характеристики Метасистемы IMS.OSTIS];;
+partition_metasystem_ims_ostis_common_characteristics => nrel_main_en_idtf: 
+	[Partition. IMS.OSTIS Metasystem main characteristics];;
+
+partition_metasystem_ims_ostis_common_characteristics <= nrel_decomposition:
+	{
+	subsection_type_developed_metasystem_ims_ostis (* => nrel_main_ru_idtf: [Подраздел. Тип разрабатываемой Метасистемы IMS.OSTIS];; *);
+	subsection_composition_amount_meta_knowledge_ims_ostis (* => nrel_main_ru_idtf: [Подраздел. Состав и объем базы знаний Метасистемы IMS.OSTIS];; *);
+	subsection_structuring_and_systematization_knowledge_in_metasystem_ims_ostis (* => nrel_main_ru_idtf: [Подраздел. Структуризация и систематизация знаний в Метасистеме IMS.OSTIS];; *);
+	subsection_structure_and_composition_of_metasystem_knowledge_processing_machines_metasystem_ims_ostis (* => nrel_main_ru_idtf: [Подраздел. Структура и состав машины обработки знаний  Метасистемы IMS.OSTIS];; *);
+	subsection_structure_and_composition_of_ui_metasystem_ims_ostis (* => nrel_main_ru_idtf: [Подраздел. Структура и состав пользовательского интерфейса Метасистемы IMS.OSTIS];; *);
+	subsection_metasystem_ims_ostis_interface_with_other_computer_systems (* => nrel_main_ru_idtf: [Подраздел. Интерфейс Метасистемы IMS.OSTIS с другими компьютерными системами];; *);
+	subsection_help_subsystem_metasystem_ims_ostis_advice_and_training_of_users (* => nrel_main_ru_idtf: [Подраздел.Help-подсистема Метасистемы IMS.OSTIS для консультации и обучения ее пользователей];; *);
+	subsection_metasystem_ims_ostis_subsystem_for_automating_developing (* => nrel_main_ru_idtf: [Подраздел. Подсистема Метасистемы IMS.OSTIS для автоматизации ее проектирования ];; *);
+	subsection_metasystem_ims_ostis_subsystem_for_managing_its_developing (* => nrel_main_ru_idtf: [Подраздел. Подсистема Метасистемы IMS.OSTIS для управления ее проектированием];; *);
+	subsection_metasystem_ims_ostis_subsystem_manage_its_information_security (* => nrel_main_ru_idtf: [Подраздел. Подсистема Метасистемы IMS.OSTIS для управления ее информационной безопасностью];; *);
+	subsection_characteristics_of_technical_implementation_of_metasystem_ims_ostis (* => nrel_main_ru_idtf: [Подраздел. Характеристика технической реализации Метасистемы IMS.OSTIS];; *);
+	subsection_analogs_metasystem_ims_ostis (* => nrel_main_ru_idtf: [Подраздел. Аналоги Метасистемы IMS.OSTIS];; *);
+	subsection_projects_like_metasystem_ims_ostis_and_in_on_time_organizations_and_teams_perform_projects (* => nrel_main_ru_idtf: [Подраздел. Проекты, аналогичные Проекту IMS.OSTIS и выполняемые в настоящее время. Организации и команды, выполняющие эти проекты];; *);
+	subsection_characteristics_used_for_comparative_analysis_metasystem_ims_ostis (* => nrel_main_ru_idtf: [Подраздел. Характеристики, используемые для сравнительного анализа Метасистемы IMS.OSTIS];; *);
+	subsection_comparative_analysis_metasystem_ims_ostis (* => nrel_main_ru_idtf: [Подраздел. Сравнительный анализ Метасистемы IMS.OSTIS];; *);
+	subsection_competitive_advantages_and_benefits_metasystem_ims_ostis (* => nrel_main_ru_idtf: [Подраздел. Конкурентные преимущества и достоинства Метасистемы IMS.OSTIS];; *);
+	subsection_example_dialogue_user_metasystem_ims_ostis_demonstrating_power_and_advantages_metasystem (* => nrel_main_ru_idtf: [Подраздел. Пример диалога пользователя с Метасистемой IMS.OSTIS, демонстрирующий возможности и достоинства этой Метасистемы];; *);
+	subsection_novelty_and_originality_solutions_implemented_in_metasystem_ims_ostis (* => nrel_main_ru_idtf: [Подраздел. Новизна и оригинальность решений, реализуемых в Метасистеме IMS.OSTIS];; *);
+	subsection_novelty_and_efficiency_technologies_used_in_development_metasystem_ims_ostis (* => nrel_main_ru_idtf: [Подраздел. Новизна и эффективность технологий, используемых при разработке Метасистемы IMS.OSTIS];; *)
+	};;

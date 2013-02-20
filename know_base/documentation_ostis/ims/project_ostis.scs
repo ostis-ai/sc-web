@@ -10,10 +10,10 @@ project_ostis => nrel_ru_idtf:
 project_ostis => nrel_note: [Основным продуктом Проекта OSTIS является сам этот проект, т.е. сама соответствующая деятельность];;
 project_ostis => doc_nrel_subproject:
 	project_ims_ostis;
-	project_graphtheory;
-	project_geometry;
+	project_graphtheory (* => nrel_main_ru_idtf: [Проект IS.GraphTheory];; => nrel_main_en_idtf: [Project IS.GraphTheory];; *);
+	project_geometry (* => nrel_main_ru_idtf: [Проект IS.Geometry];; => nrel_main_en_idtf: [Project IS.Geometry];;*);
 	project_conf_ostis;
-	project_iit_bsuir;;
+	project_iit_bsuir (* => nrel_main_ru_idtf: [Проект IIT.BSUIR];; => nrel_main_en_idtf: [Project IIT.BSUIR];;*);;
 
 project_ostis => hypermedia_nrel_logo:
 	"file://images/logo.png";;

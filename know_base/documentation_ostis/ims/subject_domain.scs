@@ -23,6 +23,6 @@ subject_domain <=	nrel_subdividing:
 subject_domain <=	nrel_subdividing: 
 	{
 		stable_subject_domain;
-		nonstable_subject_domain
+		unstable_subject_domain
 	
 	};;

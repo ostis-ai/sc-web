@@ -5,10 +5,10 @@ project_ostis_products => nrel_main_en_idtf:
 	[Project OSTIS products];;
 
 project_ostis_products <= nrel_inclusion:
-	library_reusable_components_ostis_developed;
-	unified_semantic_models_and_components_ostis_developed;
-	intelligent_systems_ostis_developed;
-	languages_internal_representation_knowledge_ostis_developed;
-	languages_external_representation_knowledge_ostis_developed;
-	ostis_technology_tools;
-	ostis_technology_methods;;
+	library_reusable_components_ostis_developed (* => nrel_main_ru_idtf: [Библиотека многократно используемых компонентов интеллектуальных систем, проектируемых по Технологии OSTIS];; *);
+	unified_semantic_models_and_components_ostis_developed (* => nrel_main_ru_idtf: [Унифицированные семантические модели интеллектуальных систем и их компонентов, разработанные по Технологии OSTIS];; *);
+	intelligent_systems_ostis_developed (* => nrel_main_ru_idtf: [Интеллектуальные системы, разработанные по Технологии OSTIS];; *);
+	languages_internal_representation_knowledge_ostis_developed (* => nrel_main_ru_idtf: [Языки внутреннего представления знаний, разрабатываемых по Технологии OSTIS];; *);
+	languages_external_representation_knowledge_ostis_developed (* => nrel_main_ru_idtf: [Языки внешнего представления знаний, разрабатываемых по Технологии OSTIS];; *);
+	ostis_technology_tools (* => nrel_main_ru_idtf: [Инструментальные средства Технологии OSTIS];; *);
+	ostis_technology_methods (* => nrel_main_ru_idtf: [Методы Технологии OSTIS];; *);;

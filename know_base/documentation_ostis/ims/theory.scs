@@ -8,4 +8,4 @@ theory => nrel_ru_idtf: formal_theory ;;
 
 theory => nrel_inclusion: theory_of_stable_subject_domain ;;
 	
-theory => nrel_inclusion: theory_of_nonstable_subject_domain ;;
+theory => nrel_inclusion: theory_of_unstable_subject_domain ;;

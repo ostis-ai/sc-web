@@ -9,16 +9,15 @@ languages_internal_representation_knowledge_ostis_developed => nrel_ru_idtf:
 	[язык представления знаний в виде унифицированных семантических сетей];
 	[язык представления определенного вида знаний с помощью sc-графов];
 	[язык, текстами которого являются sc-графы];
-	[sc-язык]
-	(*
-		<= nrel_inclusion:
-		logical_sc_language;
-		sets_theoretic_sc_language;
-		informational_purposes_and_objectives_sc_language;
-		family_sc_programming_languages(* <= nrel_inclusion: scp_language;; *);
+	[sc-язык];;
+	
+languages_internal_representation_knowledge_ostis_developed <= nrel_inclusion:
+		logical_sc_language (* => nrel_main_ru_idtf: [Логический sc-язык];; *);
+		sets_theoretic_sc_language (* => nrel_main_ru_idtf: [Теоретико-множественный sc-язык];; *);
+		informational_purposes_and_objectives_sc_language (* => nrel_main_ru_idtf: [SC-язык информационных целей и задач];; *);
+		family_sc_programming_languages(* <- scp_language (* => nrel_main_ru_idtf: [Язык SCP];; *);; => nrel_main_ru_idtf: [Семейство sc-языков программирования];;*);
 		sc_code
 		(* <= nrel_ru_idtf:
-			base_sc_graphs_language;
-			base_unified_semantic_networks_language;;
+			[Базовый язык sc-графов];
+			[Базовый язык унифицированных семантических сетей];;
 		*);;
-	*);;

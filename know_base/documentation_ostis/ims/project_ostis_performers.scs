@@ -16,4 +16,4 @@ project_ostis_performers => nrel_accession_procedure:
 		•	направить свои предложения координатору выбранного подпроекта
 	];;
 project_ostis_performers <= nrel_inclusion:
-	project_ostis_main_performers;;
+	project_ostis_main_performers (* => nrel_main_ru_idtf: [Основные исполнители Проекта OSTIS];; => nrel_main_en_idtf: [Project OSTIS main performers];;*);;

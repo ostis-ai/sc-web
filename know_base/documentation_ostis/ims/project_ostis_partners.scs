@@ -7,4 +7,4 @@ project_ostis_partners => nrel_main_en_idtf:
 project_ostis_partners => nrel_ru_idtf:
 	[Коллективные участники Проекта OSTIS];;
 project_ostis_partners <= nrel_inclusion:
-	project_ostis_main_partners;;
+	project_ostis_main_partners (* => nrel_main_ru_idtf: [Основные партнеры Проекта OSTIS];; => nrel_main_en_idtf: [Project OSTIS main partners];;*);;
