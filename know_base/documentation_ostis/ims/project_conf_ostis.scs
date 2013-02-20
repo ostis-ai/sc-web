@@ -18,6 +18,6 @@ project_conf_ostis => doc_nrel_subproject:
 			=> nrel_ru_idtf: "file://files/conf_ostis.html";;
 		*);;
 project_conf_ostis => doc_nrel_subproject: 
-	project_conf_ostis_2013 (* => nrel_product: conference_ostis_2013;; *);;
+	project_conf_ostis_2013 (* => nrel_product: conference_ostis_2013;; => nrel_main_ru_idtf: [Проект конференция OSTIS-2013];; *);;
 
 conference_ostis_2013 <- conference_ostis;;
