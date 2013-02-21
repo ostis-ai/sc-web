@@ -17,7 +17,7 @@ nrel_cities => nrel_main_en_idtf:
 
 nrel_population <- sc_node_norole_relation;;
 nrel_population => nrel_main_ru_idtf:
-[популяция*] ;;
+[население*] ;;
 nrel_population => nrel_main_en_idtf:
 [population*] ;;
 
@@ -27,9 +27,9 @@ nrel_square => nrel_main_ru_idtf:
 nrel_square => nrel_main_en_idtf:
 [square*] ;;
 
-city_minsk => nrel_main_ru_idtf:
+minsk => nrel_main_ru_idtf:
 [Минск] ;;
-city_minsk => nrel_main_en_idtf:
+minsk => nrel_main_en_idtf:
 [Minsk] ;;
 
 belarus => nrel_capital: minsk;;
@@ -82,3 +82,27 @@ nrel_address => nrel_main_ru_idtf:
 [адрес*] ;;
 nrel_address => nrel_main_en_idtf:
 [address*] ;;
+
+nrel_video <- sc_node_norole_relation;;
+nrel_video <- quasybinary_relation;;
+nrel_video => nrel_main_ru_idtf:
+	[видео*];;
+nrel_video => nrel_main_en_idtf:
+	[video*];;
+belarus <= nrel_video: .set_belarus_video;;
+.set_belarus_video -> "file://belarus1.youtubelink";;
+.set_belarus_video -> "file://belarus2.youtubelink";;
+
+
+nrel_photos <- sc_node_norole_relation;;
+nrel_photos <- quasybinary_relation;;
+nrel_photos => nrel_main_ru_idtf:
+	[фотографии*];;
+nrel_photos => nrel_main_en_idtf:
+	[photos*];;
+
+minsk <= nrel_photos: .set_minsk_photos;;
+.set_minsk_photos -> "file://Minsk1.jpg";;
+.set_minsk_photos -> "file://Minsk2.jpg";;
+.set_minsk_photos -> "file://Minsk3.jpg";;
+
