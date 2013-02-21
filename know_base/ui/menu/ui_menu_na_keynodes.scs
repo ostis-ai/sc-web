@@ -9,5 +9,8 @@ ui_menu_na_keynodes <= nrel_decomposition:
 {
 	Partition_SCn_code;
 	Partition_SCs_code;
+	partition_identification;
+	partition_sc_code_alphabet;
+	Partition_SCg_code;
 	belarus
 };;
