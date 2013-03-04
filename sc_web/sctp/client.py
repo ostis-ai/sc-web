@@ -70,7 +70,7 @@ class sctpClient:
 		
 		self.sock.send(alldata)
 		
-		# recieve response
+		# receive response
 		data = self.receiveData(10)
 		cmdCode, cmdId, resCode, resSize = struct.unpack('=BIBI', data)
 		
@@ -96,7 +96,7 @@ class sctpClient:
 		
 		self.sock.send(alldata)
 		
-		# recieve response
+		# receive response
 		data = self.receiveData(10)
 		cmdCode, cmdId, resCode, resSize = struct.unpack('=BIBI', data)
 		
@@ -115,7 +115,7 @@ class sctpClient:
 		
 		self.sock.send(alldata)
 		
-		# recieve response
+		# receive response
 		data = self.receiveData(10)
 		cmdCode, cmdId, resCode, resSize = struct.unpack('=BIBI', data)
 		if resCode != sctpResultCode.SCTP_RESULT_OK:
@@ -139,7 +139,7 @@ class sctpClient:
 		
 		self.sock.send(alldata)
 		
-		# recieve response
+		# receive response
 		data = self.receiveData(10)
 		cmdCode, cmdId, resCode, resSize = struct.unpack('=BIBI', data)
 		if resCode != sctpResultCode.SCTP_RESULT_OK:
@@ -161,7 +161,7 @@ class sctpClient:
 		
 		self.sock.send(alldata)
 		
-		# recieve response
+		# receive response
 		data = self.receiveData(10)
 		cmdCode, cmdId, resCode, resSize = struct.unpack('=BIBI', data)
 		if resCode != sctpResultCode.SCTP_RESULT_OK:
@@ -187,7 +187,7 @@ class sctpClient:
 		
 		self.sock.send(alldata)
 		
-		# recieve response
+		# receive response
 		data = self.receiveData(10)
 		cmdCode, cmdId, resCode, resSize = struct.unpack('=BIBI', data)
 		if resCode != sctpResultCode.SCTP_RESULT_OK:
@@ -211,7 +211,7 @@ class sctpClient:
 		
 		self.sock.send(alldata)
 		
-		# recieve response
+		# receive response
 		data = self.receiveData(10)
 		cmdCode, cmdId, resCode, resSize = struct.unpack('=BIBI', data)
 		if resCode != sctpResultCode.SCTP_RESULT_OK or resSize < 4:
@@ -268,7 +268,7 @@ class sctpClient:
 		
 		self.sock.send(alldata)
 		
-		# recieve response
+		# receive response
 		data = self.receiveData(10)
 		cmdCode, cmdId, resCode, resSize = struct.unpack('=BIBI', data)
 		if resCode != sctpResultCode.SCTP_RESULT_OK or resSize == 0:
@@ -307,7 +307,7 @@ class sctpClient:
 		
 		self.sock.send(alldata)
 		
-		# recieve response
+		# receive response
 		data = self.receiveData(10)
 		cmdCode, cmdId, resCode, resSize = struct.unpack('=BIBI', data)
 		if resCode != sctpResultCode.SCTP_RESULT_OK or resSize < 4:
@@ -318,3 +318,17 @@ class sctpClient:
 		addr.seg, addr.offset = struct.unpack('=HH', data)
 		
 		return addr
+
+	def get_statistics(self, beg_time, end_time):
+		"""Returns statistics from sctp server, for a specified time range. 
+		(http://docs.python.org/2/library/time.html)
+		@param beg_time Time structure, that contains range begin
+		@param end_time Time structure, that contains range end
+		@return: Returns sorted list of statistics info
+		"""
+		# send request
+		params = struct.pack('=QQ' % beg_time.time() * 1000, end_time.time() * 1000)
+		data = struct.pack('=BBII', sctpCommandType.SCTP_CMD_STATISTICS, 0, 0, len(params))
+		alldata = data + params
+		
+		# receive response
