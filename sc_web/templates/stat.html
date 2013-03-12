@@ -1,0 +1,99 @@
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>Statistics</title>
+
+
+	<link rel="stylesheet" type="text/css" href="/media/css/bootstrap/bootstrap-responsive.min.css" />
+	<link rel="stylesheet" type="text/css" href="/media/css/bootstrap/bootstrap.min.css" />
+	<link rel="stylesheet" type="text/css" href="/media/css/bootstrap/bootstrap-multilevel.css" />
+	<link rel="stylesheet" type="text/css" href="/media/css/common.css" />
+    
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        
+        
+        // ----------------------------
+        var memDataTable = new google.visualization.DataTable();
+        memDataTable.addColumn('datetime', 'Time');
+        memDataTable.addColumn('number', 'Node');
+        memDataTable.addColumn('number', 'Arc');
+        memDataTable.addColumn('number', 'Links');
+        memDataTable.addColumn('number', 'Live node');
+        memDataTable.addColumn('number', 'Live arc');
+        memDataTable.addColumn('number', 'Live links');
+        memDataTable.addColumn('number', 'Empty');
+        
+        var serverDataTable = new google.visualization.DataTable();
+        serverDataTable.addColumn('datetime', 'Time');
+        serverDataTable.addColumn('number', 'Connections');
+        serverDataTable.addColumn('number', 'Commands');
+        serverDataTable.addColumn('number', 'Command errors');
+        
+        
+        var data = {{memory_data|safe}};
+        var memRows = new Array();
+        var serverRows = new Array();
+        for (i = 0; i < data.length; i++) {
+            dataItem = data[i];
+            
+            memRows.push([
+                new Date(dataItem[0]),
+                dataItem[1],
+                dataItem[2],
+                dataItem[3],
+                dataItem[4],
+                dataItem[5],
+                dataItem[6],
+                dataItem[7]
+            ]);
+            
+            serverRows.push([
+                new Date(dataItem[0]),
+                dataItem[8],
+                dataItem[9],
+                dataItem[10]
+            ]);
+        }
+        
+        memDataTable.addRows(memRows);
+        serverDataTable.addRows(serverRows);
+        
+        var memOptions = {
+            title: 'sc-memory',
+            isStacked: true,
+            vAxis: {title: "Count"},
+            hAxis: {title: "Date"},
+            pointSize: 3
+        };
+
+        var serverOptions = {
+            title: 'sctp server',
+            isStacked: true,
+            vAxis: {title: "Count"},
+            hAxis: {title: "Date"},
+            pointSize: 3
+        };
+
+        var memChart = new google.visualization.LineChart(document.getElementById('memory_usage'));
+        memChart.draw(memDataTable, memOptions);
+        
+        var serverChart = new google.visualization.LineChart(document.getElementById('server_usage'));
+        serverChart.draw(serverDataTable, serverOptions);
+        
+      }
+    </script>
+
+
+</head>
+
+<body id="stat">
+    <div id="memory_usage" style="width: 900px; height: 500px;"></div>
+    <div id="server_usage" style="width: 900px; height: 500px;"></div>
+</body>
+
+</html>

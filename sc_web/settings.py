@@ -4,7 +4,7 @@
 import os, sys
 sys.path.append(os.getcwd())
 
-#DEBUG = True
+DEBUG = True
 #TEMPLATE_DEBUG = DEBUG
 
 APP_ROOT = os.path.abspath(os.path.dirname(__file__))

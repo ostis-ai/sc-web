@@ -22,8 +22,6 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 """
 
 from django.http import HttpResponse
-from django.template import Context
-from django.template import Context, loader
 from sctp.types import ScAddr, sctpIteratorType, ScElementType
 from sctp.client import sctpClient
 from keynodes import KeynodeSysIdentifiers, Keynodes

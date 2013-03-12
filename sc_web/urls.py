@@ -8,8 +8,8 @@ from django.conf import settings
 urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'nav.viewHome.home', name='home'),
-    url(r'^nav/(?P<name>[A-Za-z0-9._]+)', 'nav.viewKeynode.keynode', ),
     url(r'^scg', 'nav.viewKeynode.scg', ),
+    url(r'^stat', 'nav.viewStat.stat'),
     
     url(r'^api/commands', 'api.api.get_menu_commands'),
     url(r'^api/doCommand', 'api.api.doCommand'),
@@ -27,6 +27,7 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     # url(r'^admin/', include(admin.site.urls)),
+    
     (r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
     (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
 )

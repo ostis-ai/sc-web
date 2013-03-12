@@ -25,7 +25,7 @@ import os, sys
 import socket, struct, time
 
 from types import sctpCommandType, sctpResultCode
-from sctp.types import ScAddr, sctpIteratorType
+from sctp.types import ScAddr, sctpIteratorType, ScStatItem
 
 
 
@@ -327,8 +327,46 @@ class sctpClient:
 		@return: Returns sorted list of statistics info
 		"""
 		# send request
-		params = struct.pack('=QQ' % beg_time.time() * 1000, end_time.time() * 1000)
+		params = struct.pack('=QQ', beg_time * 1000, end_time * 1000)
 		data = struct.pack('=BBII', sctpCommandType.SCTP_CMD_STATISTICS, 0, 0, len(params))
 		alldata = data + params
 		
+		self.sock.send(alldata)
+		
 		# receive response
+		data = self.receiveData(10)
+		cmdCode, cmdId, resCode, resSize = struct.unpack('=BIBI', data)
+		if resCode != sctpResultCode.SCTP_RESULT_OK or resSize < 4:
+			return None
+		
+		# read number of stat items
+		data = self.receiveData(4)
+		items_count = struct.unpack('=I', data)[0]
+		
+		# read items
+		result = []
+		item_struct = '=QQQQQQQQQQQB'
+		item_struct_size = struct.calcsize(item_struct)
+		for idx in xrange(items_count):
+			data = self.receiveData(item_struct_size)
+			 
+			item = ScStatItem()
+			
+			item_tuple = struct.unpack(item_struct, data)
+			
+			item.time = item_tuple[0]
+			item.nodeCount = item_tuple[1]
+			item.arcCount = item_tuple[2]
+			item.linksCount = item_tuple[3]
+			item.liveNodeCount = item_tuple[4]
+			item.liveArcCount = item_tuple[5]
+			item.liveLinkCount = item_tuple[6]
+			item.emptyCount = item_tuple[7]
+			item.connectionsCount = item_tuple[8]
+			item.commandsCount = item_tuple[9]
+			item.commandErrorsCount = item_tuple[10]
+			item.isInitStat = (item_tuple[11] != 0)
+			
+			result.append(item)
+			
+		return result
