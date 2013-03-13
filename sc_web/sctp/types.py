@@ -27,6 +27,7 @@ __all__ = (
     'SctpIteratorType',
     'ScElementType',
     'ScAddr',
+    'ScStatItem',
 )
 
 
@@ -135,3 +136,35 @@ class ScAddr:
             return None
 
         return addr
+
+
+class ScStatItem:
+
+    def __init__(self):
+        self.time = None # unix time
+        self.nodeCount = 0 # amount of all nodes
+        self.arcCount = 0 # amount of all arcs
+        self.linksCount = 0 # amount of all links
+        self.liveNodeCount = 0 # amount of live nodes
+        self.liveArcCount = 0 # amount of live arcs
+        self.liveLinkCount = 0# amount of live links
+        self.emptyCount = 0 # amount of empty sc-elements
+        self.connectionsCount = 0 # amount of collected clients
+        self.commandsCount = 0 # amount of processed commands (it includes commands with errors)
+        self.commandErrorsCount = 0 # amount of command, that was processed with error
+        self.isInitStat = False   # flag on initial stat save
+
+    def toList(self):
+        return [self.time,
+                self.nodeCount,
+                self.arcCount,
+                self.linksCount,
+                self.liveNodeCount,
+                self.liveArcCount,
+                self.liveLinkCount,
+                self.emptyCount,
+                self.connectionsCount,
+                self.commandsCount,
+                self.commandErrorsCount,
+                self.isInitStat
+                ]

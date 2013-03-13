@@ -8,7 +8,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^$', TemplateView.as_view(template_name='home.html'), name='home'),
-    url(r'^nav/(?P<name>[A-Za-z0-9._]+)', 'nav.viewKeynode.keynode', ),
+    url(r'^stat', 'nav.viewStat.stat'),
     url(r'^scg', 'nav.viewKeynode.scg', ),
 
     url(r'^api/', include('api.urls', namespace='api')),
