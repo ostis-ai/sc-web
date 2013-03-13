@@ -22,8 +22,8 @@ EVENT_WAIT_TIMEOUT = 5
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'data.db',
+        'ENGINE': '',
+        'NAME': '',
         'USER': '',
         'PASSWORD': '',
         'HOST': '',
