@@ -38,3 +38,4 @@ nosetests.xml
 *sublime*
 settings_local.py
 .DS_Store
+*db
