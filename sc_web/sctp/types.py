@@ -21,9 +21,16 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 """
 
-# -----------------------------------------
-class sctpCommandType:
-    
+__all__ = (
+    'SctpCommandType',
+    'SctpResultCode',
+    'SctpIteratorType',
+    'ScElementType',
+    'ScAddr',
+)
+
+
+class SctpCommandType:
     SCTP_CMD_UNKNOWN            = 0x00 # unkown command
     SCTP_CMD_CHECK_ELEMENT      = 0x01 # check if specified sc-element exist
     SCTP_CMD_GET_ELEMENT_TYPE   = 0x02 # return sc-element type
@@ -36,19 +43,20 @@ class sctpCommandType:
     SCTP_CMD_GET_LINK_CONTENT   = 0x09 # return content of sc-link
     SCTP_CMD_FIND_LINKS         = 0x0A # return sc-links with specified content
     SCTP_CMD_ITERATE_ELEMENTS   = 0x0B # return base template iteration result
-    
+
     SCTP_CMD_FIND_ELEMENT_BY_SYSITDF = 0xa0 # return sc-element by it system identifier
-    SCTP_CMD_STATISTICS         = 0xa1 # return usage statistics from server 
-    
+    SCTP_CMD_STATISTICS         = 0xa1 # return usage statistics from server
+
     SCTP_CMD_SHUTDOWN           = 0xfe # disconnect client from server
 
-class sctpResultCode:
-    
+
+class SctpResultCode:
     SCTP_RESULT_OK              = 0x00 #
     SCTP_RESULT_FAIL            = 0x01 #
     SCTP_RESULT_ERROR_NO_ELEMENT= 0x02 # sc-element wasn't founded
-    
-class sctpIteratorType:
+
+
+class SctpIteratorType:
     SCTP_ITERATOR_3F_A_A = 0
     SCTP_ITERATOR_3A_A_F = 1
     SCTP_ITERATOR_3F_A_F = 2
@@ -58,6 +66,7 @@ class sctpIteratorType:
     SCTP_ITERATOR_5_F_A_F_A_A = 6
     SCTP_ITERATOR_5_F_A_A_A_A = 7
     SCTP_ITERATOR_5_A_A_F_A_A = 8
+
 
 class ScElementType:
     # sc-element types
@@ -101,20 +110,19 @@ class ScElementType:
 
 
 class ScAddr:
-    
     def __init__(self, _seg, _offset):
         self.seg = _seg
         self.offset = _offset
-        
+
     def __str__(self):
-        return "sc-addr: %d, %d" % (self.seg, self.offset)
-    
+        return 'sc-addr: %d, %d' % (self.seg, self.offset)
+
     def __eq__(self, other):
         return self.seg == other.seg and self.offset == other.offset
-    
+
     def to_id(self):
         return "%d_%d" % (self.seg, self.offset)
-    
+
     @staticmethod
     def parse_from_string(addr_str):
         """Parse sc-addr from string 'seg_offset'
@@ -122,9 +130,8 @@ class ScAddr:
         """
         try:
             seg_str, offset_str = addr_str.split('_')
-            addr = ScAddr(int(seg_str), int(offset_str)) 
+            addr = ScAddr(int(seg_str), int(offset_str))
         except:
             return None
-        
+
         return addr
-        

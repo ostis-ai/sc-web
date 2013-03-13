@@ -1,0 +1,63 @@
+#uilocker {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #CCC url("../images/loading-cog.gif") no-repeat center center;
+    opacity: 0.5;
+    z-index: 1000;
+    display: none;
+}
+
+#uilocker.shown {
+    display: block;
+}
+
+#main_container {
+    padding-top: 50px;
+    padding-bottom: 100px;
+}
+
+#tabs_container button.close {
+    margin-right: 4px;
+    margin-top: -38px;
+}
+
+.hidden {
+    visibility:hidden;
+}
+
+.no_display {
+    display: none;
+}
+
+
+.task_icon.active {
+    background-image: url('../images/task-cog.gif'); 
+}
+
+.task_icon {
+    width: 32px;
+    height: 32px;
+    margin-top: 5px;
+    margin-left: 10px;
+    text-align: center;
+    
+    background-image: url('../images/task-complete.png'); 
+}
+
+.task_text {
+    margin-top: 6px;
+    vertical-align: middle;
+    font-size: 10px;
+    color:  #aaa;
+}
+
+.help_button {
+    margin-top: 3px;
+    vertical-align: middle;
+    cursor: help;
+}
+
+

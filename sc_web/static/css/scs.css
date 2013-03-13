@@ -1,0 +1,12 @@
+.scs_element {
+    float:left;
+}
+
+.scs_sentence {
+    margin: auto;
+}
+
+.scs_connector {
+    margin-left: 10px;
+    margin-right: 10px;
+}

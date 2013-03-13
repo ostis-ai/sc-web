@@ -21,10 +21,12 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 """
 
-from django.http import HttpResponse
-from django.template import Context
-from django.template import Context, loader
+from django.views.generic.base import TemplateView
 
-def home(request):
-	t = loader.get_template("home.html")
-	return HttpResponse(t.render(Context({})))
+__all__ = (
+    'HomeView',
+)
+
+
+class HomeView(TemplateView):
+    template_name = 'home.html'
