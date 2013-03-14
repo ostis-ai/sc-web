@@ -21,10 +21,15 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 """
 
-from django.http import HttpResponse
-from django.template import Context
-from django.template import Context, loader
+from django.conf import settings
+from sctp.client import SctpClient
 
-def home(request):
-	t = loader.get_template("home.html")
-	return HttpResponse(t.render(Context({})))
+__all__ = (
+    'new_sctp_client',
+)
+
+
+def new_sctp_client():
+    sctp_client = SctpClient()
+    sctp_client.initialize(settings.SCTP_HOST, settings.SCTP_PORT)
+    return sctp_client
