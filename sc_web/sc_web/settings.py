@@ -15,7 +15,7 @@ ADMINS = (
 )
 MANAGERS = ADMINS
 
-SCTP_HOST = 'ims.ostis.net'
+SCTP_HOST = 'localhost'
 SCTP_PORT = 55770
 
 EVENT_WAIT_TIMEOUT = 5
