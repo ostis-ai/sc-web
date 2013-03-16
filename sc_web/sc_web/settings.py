@@ -95,6 +95,7 @@ INSTALLED_APPS = (
 
     'sc_web',
 
+    'accounts',
     'api',
     'nav',
 )
