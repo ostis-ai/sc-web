@@ -9,6 +9,11 @@ import os
 def create_file(source_dir, target_file_path):
     lines = []
     os.path.walk(source_dir, add, lines)
+
+    target_dir = '/'.join(target_file_path.split('/')[:-1])
+    if not os.path.isdir(target_dir):
+        os.makedirs(target_dir)
+
     concatenated_file = open(target_file_path, 'w')
     concatenated_file.writelines(lines)
     concatenated_file.close()
