@@ -31,16 +31,15 @@ from sctp.logic import new_sctp_client
 __all__ = (
     'HomeView',
     'StatView',
-    'ScgView',
 )
 
 
 class HomeView(TemplateView):
-    template_name = 'home.html'
+    template_name = 'nav/home.html'
 
 
 class StatView(TemplateView):
-    template_name = 'stat.html'
+    template_name = 'nav/stat.html'
 
     def get_context_data(self, **kwargs):
         context = super(StatView, self).get_context_data(**kwargs)
@@ -71,10 +70,6 @@ class StatView(TemplateView):
         })
 
         return context
-
-
-class ScgView(TemplateView):
-    template_name = 'scg.html'
 
 
 # NOT USED, IF YOWU WANT TO USE IT, YOU SHOUD REFETOR THIS VIEW TO TEMPLATE VIEW AND ADD IT TO URL.PY

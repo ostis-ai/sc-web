@@ -34,7 +34,7 @@
 
 
 .task_icon.active {
-    background-image: url('../images/task-cog.gif'); 
+    background-image: url('../images/task-cog.gif');
 }
 
 .task_icon {
@@ -43,8 +43,8 @@
     margin-top: 5px;
     margin-left: 10px;
     text-align: center;
-    
-    background-image: url('../images/task-complete.png'); 
+
+    background-image: url('../images/task-complete.png');
 }
 
 .task_text {
