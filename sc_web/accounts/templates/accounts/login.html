@@ -7,7 +7,7 @@
         <form method="POST" action="{% url accounts:login %}">
             {% csrf_token %}
             {{ form.as_p }}
-            <input type="hidden" name="next_url" value="/">
+            <input type="hidden" name="next_url" value="{{ request.GET.next|default:'/' }}">
             <input type="submit">
         </form>
     </body>
