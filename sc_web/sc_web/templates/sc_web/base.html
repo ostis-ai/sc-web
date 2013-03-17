@@ -44,18 +44,20 @@
 
 			<div id="menu_container">
 				<!-- there will be placed menu items -->
+			</div>
+            <div id="task_panel" class="task_icon navbar-form pull-right">
+                <div id="task_num" class="task_text">16</div>
+            </div>
+
+            <div class="auth_panel navbar-form pull-right">
                 <ul class="nav">
                     {% if user.is_authenticated %}
                         <li><a href="{% url accounts:logout %}">Logout</a></li>
                     {% else %}
                         <li><a href="#js-accounts-login-modal" data-toggle="modal">Login</a></li>
-                        <li><a href="{% url accounts:registration %}">Register</a></li>
+                        <!-- <li><a href="{% url accounts:registration %}">Register</a></li> -->
                     {% endif %}
                 </ul>
-
-			</div>
-            <div id="task_panel" class="task_icon navbar-form pull-right">
-                <div id="task_num" class="task_text">16</div>
             </div>
 
 			<div class="language_selectors navbar-form pull-right">
@@ -67,6 +69,7 @@
 					<!-- Options will be inserted on start -->
 				</select>
 			</div>
+            
 		</div>
 	</div>
 
