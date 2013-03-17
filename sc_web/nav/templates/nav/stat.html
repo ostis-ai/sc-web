@@ -15,7 +15,7 @@
 
             // ----------------------------
             var memDataTable = new google.visualization.DataTable();
-            memDataTable.addColumn('datetime', 'Time');
+            memDataTable.addColumn('date', 'Time');
             memDataTable.addColumn('number', 'Nodes');
             memDataTable.addColumn('number', 'Arcs');
             memDataTable.addColumn('number', 'Links');
@@ -25,7 +25,7 @@
             memDataTable.addColumn('number', 'Empty');
 
             var serverDataTable = new google.visualization.DataTable();
-            serverDataTable.addColumn('datetime', 'Time');
+            serverDataTable.addColumn('date', 'Time');
             serverDataTable.addColumn('number', 'Connections');
             serverDataTable.addColumn('number', 'Commands');
             serverDataTable.addColumn('number', 'Command errors');
@@ -81,7 +81,7 @@
                 isStacked: true,
                 vAxis: {title: "Count"},
                 hAxis: {title: "Date"},
-                pointSize: 3
+                pointSize: 3,
             };
 
             var serverOptions = {
