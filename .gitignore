@@ -39,3 +39,4 @@ nosetests.xml
 settings_local.py
 .DS_Store
 *db
+sc-web-core.js

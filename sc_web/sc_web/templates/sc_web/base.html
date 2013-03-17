@@ -44,6 +44,15 @@
 
 			<div id="menu_container">
 				<!-- there will be placed menu items -->
+                <ul class="nav">
+                    {% if user.is_authenticated %}
+                        <li><a href="{% url accounts:logout %}">Logout</a></li>
+                    {% else %}
+                        <li><a href="#js-accounts-login-modal" data-toggle="modal">Login</a></li>
+                        <li><a href="{% url accounts:registration %}">Register</a></li>
+                    {% endif %}
+                </ul>
+
 			</div>
             <div id="task_panel" class="task_icon navbar-form pull-right">
                 <div id="task_num" class="task_text">16</div>
@@ -94,6 +103,10 @@
         <div class="modal-body">
         </div>
     </div>
+
+    {% if not user.is_authenticated %}
+        {% include 'accounts/_scripts.html' %}
+    {% endif %}
 
     <script type="text/javascript">
 
