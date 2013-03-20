@@ -1,0 +1,26 @@
+{% extends "repo/base.html" %}
+
+{% block extrascripts %}
+    <script type="text/javascript" src="{{ STATIC_URL }}repo/js/view.js"></script>
+{% endblock extrascripts %}
+
+{% block content %}
+
+    <div class="source-view-wrapper">
+        <ul class="breadcrumb" id="repo-path">
+            <li><a href="#">Home</a> <span class="divider">/</span></li>
+            <li><a href="#">Library</a> <span class="divider">/</span></li>
+            <li class="active">Data</li>
+        </ul>
+
+        <div class="tree-browser-wrapper bubble">
+            <table class="table table-hover" id="files-list-table">
+                
+            </table>
+            
+        </div>
+    </div>
+    
+{% endblock %}
+
+

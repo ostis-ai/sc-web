@@ -105,10 +105,10 @@ INSTALLED_APPS = (
     'django.contrib.admin',
 
     'sc_web',
-
     'accounts',
     'api',
     'nav',
+    'repo'
 )
 
 LOGGING = {

@@ -13,6 +13,8 @@ urlpatterns = patterns('',
     (r'^accounts/', include('accounts.urls', namespace='accounts')),
 
     (r'^admin/', include(admin.site.urls)),
+    
+    (r'^repo/', include('repo.urls', namespace='repo')),
 
     (r'^static/(?P<path>.*)$', 'django.views.static.serve',
         {'document_root': app_settings.STATIC_ROOT})

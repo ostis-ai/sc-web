@@ -1,0 +1,27 @@
+.source-view-wrapper {
+    margin: 0 auto;
+    width: 920px;
+    border-radius: 3px 3px 3px 3px;
+    background: none repeat scroll 0 0 #EEEEEE;
+}
+
+
+.tree-browser-wrapper {
+    margin-bottom: 30px;
+}
+
+.bubble {
+    background: none repeat scroll 0 0 #EEEEEE;
+    border-radius: 3px 3px 3px 3px;
+    padding: 3px;
+}
+
+.files-item-file {
+    background:url(../images/icon_file.png) left center no-repeat;
+    padding-left: 20px;
+}
+
+.files-item-dir {
+    background:url(../images/icon_dir.png) left center no-repeat;
+    padding-left: 20px;
+}
