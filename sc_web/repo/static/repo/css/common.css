@@ -19,9 +19,13 @@
 .files-item-file {
     background:url(../images/icon_file.png) left center no-repeat;
     padding-left: 20px;
+    text-decoration: underline;
+    cursor: pointer;
 }
 
 .files-item-dir {
     background:url(../images/icon_dir.png) left center no-repeat;
     padding-left: 20px;
+    text-decoration: underline;
+    cursor: pointer;
 }

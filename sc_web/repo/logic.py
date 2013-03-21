@@ -23,7 +23,7 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 
 from git import *
 from django.conf import settings
-
+    
 
 class Repository:
     
@@ -32,10 +32,24 @@ class Repository:
         self.repo = Repo(settings.REPO_PATH)
     
     
-    def tree(self, rev = None):
+    def tree(self, path, rev = None):
         """Returns repository tree
+        @param path Path to tree in main tree
         @param rev Specified revision. If it None, then return last revision
         """
-        return self.repo.tree(rev)
+        if len(path) == 0 or path == u'/':
+            return self.repo.tree(rev)
+        
+        return self.repo.tree(rev)[path]
+    
+    def commits(self, path, max_count = 1, rev = None):
+        """Returns commits object for specified path in repository
+        @param path Path to get commits
+        @param max_count Maximum number of retrieved commits
+        @param rev Specified revision
+        """
+        res = []
+        res.extend(self.repo.iter_commits(rev, path, max_count=max_count))
+        return res
     
     

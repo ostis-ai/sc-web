@@ -26,7 +26,7 @@ from django.views.generic.base import TemplateView
 from django.utils.decorators import method_decorator
 from django.conf import settings
 from logic import Repository
-import json
+import json, os
 
 __all__ = (
     'RepoView',
@@ -52,22 +52,30 @@ def list_files(request):
         path = request.GET.get(u'path', '/')
 
         repo = Repository()
-        tree = repo.tree()
-        
+        tree = repo.tree(path)
+                
         result = []
         for directory in tree.trees:
             attrs = {}
-            attrs['path'] = directory.path
+            attrs['path'] = directory.path#.split('/')[-1]
             attrs['is_dir'] = True
+            attrs['name'] = directory.name
             
             result.append(attrs)
             
         for blob in tree.blobs:
             attrs = {}
-            attrs['path'] = blob.path
+            attrs['path'] = blob.path#.split('/')[-1]
             attrs['is_dir'] = False
+            attrs['name'] = blob.name
             
             result.append(attrs)
+            
+        for attrs in result:
+            commits = repo.commits(attrs['path'])
+            attrs['date'] = commits[0].authored_date
+            attrs['author'] = commits[0].author.name
+            attrs['summary'] = commits[0].summary
         
         result = json.dumps(result)
 
