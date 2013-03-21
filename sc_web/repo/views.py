@@ -42,8 +42,12 @@ class RepoView(TemplateView):
         context = super(RepoView, self).get_context_data(**kwargs)
         return context
 
-
-
+class FileEdit(TemplateView):
+    template_name = 'repo/edit.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super(FileEdit, self).get_context_data(**kwargs)
+        return context
 
 # ----- Ajax -----
 def list_files(request):
@@ -79,4 +83,5 @@ def list_files(request):
         
         result = json.dumps(result)
 
-    return HttpResponse(result, 'application/json') 
+    return HttpResponse(result, 'application/json')
+

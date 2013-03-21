@@ -29,3 +29,16 @@
     text-decoration: underline;
     cursor: pointer;
 }
+
+/* --- Edit --- */
+.source-edit-wrapper {
+    margin: 0 auto;
+    width: 920px;
+    border-radius: 3px 3px 3px 3px;
+}
+
+.source-edit-textarea {
+    width: 920px;
+    max-height: 900px;
+    resize: none;
+}
