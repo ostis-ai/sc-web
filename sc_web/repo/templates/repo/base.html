@@ -20,6 +20,7 @@
     <script type="text/javascript" charset="utf-8" src="{{ STATIC_URL }}plugins/jquery/jquery.namespace.js"></script>
     {% block extrapluginscripts %}{% endblock extrapluginscripts %}
 
+    <script type="text/javascript" src="{{ STATIC_URL }}repo/js/locker.js"></script>
     {% block extrascripts %}{% endblock extrascripts %}
 
 	{% block head %}{% endblock %}
@@ -49,6 +50,7 @@
         </div>
     </div>
 
+    <div id="uilocker" class="hidden"></div>
 
     {% if not user.is_authenticated %}
         {% include 'accounts/_scripts.html' %}

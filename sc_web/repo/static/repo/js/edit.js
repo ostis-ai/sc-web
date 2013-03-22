@@ -13,6 +13,8 @@ Repo.edit.Form = {
     updateFileContent: function() {
         var self = this;
         
+        Repo.locker.Lock.show();
+        
         $.ajax({
             type: 'GET',
             url: '/repo/api/content',
@@ -21,6 +23,7 @@ Repo.edit.Form = {
                 self.sourceEditArea.val(data);
             },
             complete: function(data) { 
+                Repo.locker.Lock.hide();
             }
         });
     }

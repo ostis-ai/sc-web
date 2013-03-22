@@ -12,11 +12,16 @@ Repo.view.Tree = {
      * @param {path} Path in repository
      */
     updateToRepoPath: function(path) {
+        
+        Repo.locker.Lock.show();
+        
         this.updateRepoPath(path);
         this.updatePathFilesList(path);
         this.updateLastCommit();
         
         this.repoPath = path;
+        
+        Repo.locker.Lock.hide();
     },
     
     /** Function to update current path in repository
@@ -56,6 +61,7 @@ Repo.view.Tree = {
             type: 'GET',
             url: '/repo/api/files',
             data: {'path': path},
+            async: false,
             success: function(data) { 
                 filesTableTag = $("#files-list-table");
                 
@@ -105,6 +111,7 @@ Repo.view.Tree = {
             type: 'GET',
             url: '/repo/api/commit',
             data: {},
+            async: false,
             success: function(data) {
                 lastCommitTag.append(data.summary);
             },
