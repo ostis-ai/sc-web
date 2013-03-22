@@ -42,3 +42,8 @@
     max-height: 900px;
     resize: none;
 }
+
+.tree-browser-last-commit {
+    color: #777;
+    padding: 10px 10px 10px 10px;
+}

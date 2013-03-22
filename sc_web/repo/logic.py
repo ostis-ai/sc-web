@@ -52,6 +52,12 @@ class Repository:
         res.extend(self.repo.iter_commits(rev, path, max_count=max_count))
         return res
     
+    def commit(self, rev = None):
+        """Return commit with specified revision
+        @param rev Revision to get commit. If it has None value, then return HEAD commit.
+        """
+        return self.repo.commit(rev)
+    
     def get_file_content(self, path, rev = None):
         """Returns content of file with specified \p path in revision \p rev
         @param path Path to file which content need to be returned

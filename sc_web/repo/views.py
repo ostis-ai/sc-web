@@ -110,3 +110,19 @@ def file_content(request):
 
     return HttpResponse(result, 'text/plain')
 
+def commit_info(request):
+    result = None
+    if request.is_ajax():
+        rev = request.GET.get(u'rev', None)
+
+        repo = Repository()
+        commit = repo.commit(rev)
+        
+        result = {
+                  'author': commit.author.name,
+                  'date': commit.authored_date,
+                  'summary': commit.summary
+                  }
+        result = json.dumps(result)
+
+    return HttpResponse(result, 'application/json')

@@ -14,6 +14,7 @@ Repo.view.Tree = {
     updateToRepoPath: function(path) {
         this.updateRepoPath(path);
         this.updatePathFilesList(path);
+        this.updateLastCommit();
         
         this.repoPath = path;
     },
@@ -22,6 +23,7 @@ Repo.view.Tree = {
      * @param {path} Path in repository
      */
     updateRepoPath: function(path) {
+        
         repoPathTag = $('#repo-path')
         
         // split path to subdirectories
@@ -91,7 +93,25 @@ Repo.view.Tree = {
                 
             }
         });
-     }
+    },
+     
+    /** Updates last commit information
+     */
+    updateLastCommit: function() {
+        lastCommitTag = $('#last-commit');
+        
+        lastCommitTag.empty();
+        $.ajax({
+            type: 'GET',
+            url: '/repo/api/commit',
+            data: {},
+            success: function(data) {
+                lastCommitTag.append(data.summary);
+            },
+            complete: function(data) { 
+            }
+        });
+    }
 }
 
 $(document).ready(function() {
