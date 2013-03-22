@@ -52,4 +52,11 @@ class Repository:
         res.extend(self.repo.iter_commits(rev, path, max_count=max_count))
         return res
     
+    def get_file_content(self, path, rev = None):
+        """Returns content of file with specified \p path in revision \p rev
+        @param path Path to file which content need to be returned
+        @param rev Revision to get content
+        """
+        return self.repo.tree(rev)[path].data_stream.read()
+    
     

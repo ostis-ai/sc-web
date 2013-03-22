@@ -52,7 +52,7 @@ Repo.view.Tree = {
         var self = this;
         $.ajax({
             type: 'GET',
-            url: 'files',
+            url: '/repo/api/files',
             data: {'path': path},
             success: function(data) { 
                 filesTableTag = $("#files-list-table");
@@ -61,13 +61,13 @@ Repo.view.Tree = {
                 
                 for (var i = 0; i < data.length; i++) {
                     var item = data[i];
-                    var itemClass = "files-item-file";
-                    
-                    if (item.is_dir)
-                        itemClass = "files-item-dir dir-path";
-                    
+
                     resHtml += '<tr>';
-                    resHtml += '<td><div class="' + itemClass + '" repo_path="' + item.path + '">' + item.name + '</div></td>';
+                    if (item.is_dir) {
+                        resHtml += '<td><a class="files-item-dir dir-path" repo_path="' + item.path + '">' + item.name + '</a></td>';
+                    } else {
+                        resHtml += '<td><a href="/repo/edit/' + item.path + '" class="files-item-file" repo_path="' + item.path + '">' + item.name + '</a></td>';
+                    }
                     resHtml += '<td><i class="icon-user"></i>' + item.author + '</td>';
                     var date = new Date(item.date * 1000);
                     resHtml += '<td>' + date.toLocaleDateString() + '</td>';
@@ -83,7 +83,9 @@ Repo.view.Tree = {
                 $('.dir-path').click(function() {
                     var path = $(this).attr('repo_path');
                     self.updateToRepoPath(path);
+                    return true;
                 });
+                
             },
             complete: function(data) { 
                 

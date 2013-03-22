@@ -2,17 +2,23 @@
 
 {% block extrascripts %}
     <script type="text/javascript" src="{{ STATIC_URL }}repo/js/edit.js"></script>
+    
+    <script type="text/javascript">
+        $(document).ready(function() {
+            Repo.edit.Form.init("{{ file_path }}");
+        });
+    </script>
 {% endblock extrascripts %}
 
 {% block content %}
 
     <div class="source-edit-wrapper">
         <h3>{{ file_path }}</h3>
-        <textarea class="source-edit-textarea" rows="25"></textarea>
+        <textarea class="source-edit-textarea" rows="20"></textarea>
         <button class="btn" type="button">Save</button>
         <button class="btn" type="button">Cancel</button>
     </div>
     
-    
-    
 {% endblock %}
+
+

@@ -23,6 +23,7 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 
 from django.http import HttpResponse
 from django.views.generic.base import TemplateView
+from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.conf import settings
 from logic import Repository
@@ -38,15 +39,29 @@ __all__ = (
 class RepoView(TemplateView):
     template_name = 'repo/view.html'
     
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(RepoView, self).dispatch(request, *args, **kwargs)
+    
     def get_context_data(self, **kwargs):
         context = super(RepoView, self).get_context_data(**kwargs)
         return context
 
+def repo_edit(request):
+    
+    pass
+
 class FileEdit(TemplateView):
     template_name = 'repo/edit.html'
     
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        self.path = kwargs['path']
+        return super(FileEdit, self).dispatch(request, *args, **kwargs)
+    
     def get_context_data(self, **kwargs):
         context = super(FileEdit, self).get_context_data(**kwargs)
+        context['file_path'] = self.path
         return context
 
 # ----- Ajax -----
@@ -84,4 +99,14 @@ def list_files(request):
         result = json.dumps(result)
 
     return HttpResponse(result, 'application/json')
+
+def file_content(request):
+    result = None
+    if request.is_ajax():
+        path = request.GET.get(u'path', '/')
+
+        repo = Repository()
+        result = repo.get_file_content(path)
+
+    return HttpResponse(result, 'text/plain')
 
