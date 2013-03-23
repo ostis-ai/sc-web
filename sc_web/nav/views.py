@@ -22,7 +22,6 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 """
 
 import json
-import time
 
 from django.contrib.auth.decorators import login_required
 from django.views.generic.base import TemplateView
@@ -30,6 +29,7 @@ from django.utils.decorators import method_decorator
 from django.conf import settings
 
 from sctp.logic import new_sctp_client
+from django.http import HttpResponse
 
 __all__ = (
     'HomeView',
@@ -60,9 +60,24 @@ class StatView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(StatView, self).get_context_data(**kwargs)
+        return context
 
+
+def get_statistics(request):
+    """Returns list of statistics data
+    """
+
+    result = '[]'
+    if request.is_ajax():
+        # parse arguments
+        try:
+            fromArg = int(request.GET.get('from', None))
+            toArg = int(request.GET.get('to', None))
+        except ValueError:
+            return serialize_error(404, 'Invalid arguments')
+        
         sctp_client = new_sctp_client()
-        stat_data = sctp_client.get_statistics(0, time.time())
+        stat_data = sctp_client.get_statistics(fromArg, toArg)
 
         data = []  # ['Nodes', 'Arcs', 'Links', 'Live nodes', 'Live arcs', 'Live links', 'Empty', 'Connections', 'Commands', 'Command errors']
         for item in stat_data:
@@ -80,13 +95,13 @@ class StatView(TemplateView):
                 item.commandErrorsCount,
             ])
 
-        memory_data_str = json.dumps(data)
+        result = json.dumps(data)
 
-        context.update({
-            'memory_data': memory_data_str,
-        })
+    return HttpResponse(result, 'application/json')
 
-        return context
+
+def serialize_error(status, message):
+    return HttpResponse(json.dumps({'status': status, 'message': message}), status=status)
 
 
 # NOT USED, IF YOWU WANT TO USE IT, YOU SHOUD REFETOR THIS VIEW TO TEMPLATE VIEW AND ADD IT TO URL.PY
