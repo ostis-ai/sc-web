@@ -6,10 +6,10 @@ TEMPLATE_DEBUG = DEBUG
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'data.db',
-        'USER': '',
-        'PASSWORD': '',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'sc_web',
+        'USER': 'root',
+        'PASSWORD': 'root',
         'HOST': '',
         'PORT': '',
     }
@@ -20,3 +20,11 @@ SITE_URL = 'http://localhost:8000'
 # GOOGLE_ANALYTICS_ID = ''
 
 # REPO_PATH = ''
+
+if TESTS_RUNNING:
+    SOUTH_TESTS_MIGRATE = False
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+        }
+    }

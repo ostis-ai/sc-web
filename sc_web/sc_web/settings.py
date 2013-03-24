@@ -22,8 +22,8 @@ EVENT_WAIT_TIMEOUT = 5
 
 DATABASES = {
     'default': {
-        'ENGINE': '',
-        'NAME': '',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'sc_web',
         'USER': '',
         'PASSWORD': '',
         'HOST': '',
@@ -108,7 +108,9 @@ INSTALLED_APPS = (
     'accounts',
     'api',
     'nav',
-    'repo'
+    'repo',
+
+    'south',
 )
 
 LOGGING = {
