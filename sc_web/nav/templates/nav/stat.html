@@ -2,116 +2,42 @@
 
 {% block title %}Statistics{% endblock %}
 
+{% block extrastyles %}
+	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}nav/css/datepicker.css" />
+{% endblock extrastyles %}
+
 {% block extrapluginscripts %}
-    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript" charset="utf-8" src="{{ STATIC_URL }}nav/js/bootstrap-datepicker.js"></script>
+	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 {% endblock extrapluginscripts %}
 
 {% block extrascripts %}
-    <script type="text/javascript">
-        google.load("visualization", "1", {packages:["corechart"]});
-        google.setOnLoadCallback(drawChart);
-        function drawChart() {
-
-
-            // ----------------------------
-            var memDataTable = new google.visualization.DataTable();
-            memDataTable.addColumn('date', 'Time');
-            memDataTable.addColumn('number', 'Nodes');
-            memDataTable.addColumn('number', 'Arcs');
-            memDataTable.addColumn('number', 'Links');
-            memDataTable.addColumn('number', 'Deleted nodes');
-            memDataTable.addColumn('number', 'Deleted arcs');
-            memDataTable.addColumn('number', 'Deleted links');
-            memDataTable.addColumn('number', 'Empty');
-
-            var serverDataTable = new google.visualization.DataTable();
-            serverDataTable.addColumn('date', 'Time');
-            serverDataTable.addColumn('number', 'Connections');
-            serverDataTable.addColumn('number', 'Commands');
-            serverDataTable.addColumn('number', 'Command errors');
-
-
-
-            var data = {{memory_data|safe}};
-            var memRows = new Array();
-            var serverRows = new Array();
-            var elRows = new Array();
-            for (i = 0; i < data.length; i++) {
-                dataItem = data[i];
-
-                memRows.push([
-                    new Date(dataItem[0]),
-                    dataItem[4],
-                    dataItem[5],
-                    dataItem[6],
-                    dataItem[1] - dataItem[4],
-                    dataItem[2] - dataItem[5],
-                    dataItem[3] - dataItem[6],
-                    dataItem[7]
-                ]);
-
-                serverRows.push([
-                    new Date(dataItem[0]),
-                    dataItem[8],
-                    dataItem[9],
-                    dataItem[10]
-                ]);
-            }
-
-            elRows.push(["sc-element type", "Count"]);
-            if (data.length > 0)
-            {
-                dataItem = data[data.length - 1];
-                elRows.push(["Nodes", dataItem[1]]);
-                elRows.push(["Arcs", dataItem[2]]);
-                elRows.push(["Links", dataItem[3]]);
-            }
-
-            var elDataTable = new google.visualization.arrayToDataTable(elRows);
-            /*elDataTable.addColumn('number', 'Nodes');
-            elDataTable.addColumn('number', 'Arcs');
-            elDataTable.addColumn('number', 'Links');*/
-
-            memDataTable.addRows(memRows);
-            serverDataTable.addRows(serverRows);
-            /*elDataTable.addRows(elRows);*/
-
-            var memOptions = {
-                title: 'sc-memory',
-                isStacked: true,
-                vAxis: {title: "Count"},
-                hAxis: {title: "Date"},
-                pointSize: 3,
-            };
-
-            var serverOptions = {
-                title: 'sctp server',
-                isStacked: true,
-                vAxis: {title: "Count"},
-                hAxis: {title: "Date"},
-                pointSize: 3
-            };
-
-            var elOptions = {
-                title: 'sc-elements statistics',
-                isStacked: true
-            };
-
-            var memChart = new google.visualization.LineChart(document.getElementById('memory_usage'));
-            memChart.draw(memDataTable, memOptions);
-
-            var serverChart = new google.visualization.LineChart(document.getElementById('server_usage'));
-            serverChart.draw(serverDataTable, serverOptions);
-
-            var elChart = new google.visualization.PieChart(document.getElementById('elements_pie'));
-            elChart.draw(elDataTable, elOptions);
-
-        }
-    </script>
+    <script type="text/javascript" charset="utf-8" src="{{ STATIC_URL }}nav/js/statistics.js"></script>
 {% endblock extrascripts %}
 
 {% block body %}
     <body id="stat">
+
+		<div class="well" style="overflow: auto;">
+		    <div class="pull-left">
+		        From:
+		        <input type="text" class="span2" style="margin: auto;" id="from" />
+		        to:
+		        <input type="text" class="span2" style="margin: auto;" id="to" />
+		        <button type="button" class="btn " data-loading-text="Loading..." id="button_select_range">Load data</button>
+		    </div>
+		    <div class="pull-right">
+		        Time scale:
+		        <div class="btn-group" data-toggle="buttons-radio">
+		            <button type="button" class="btn" id="hour">Hour</button>
+		            <button type="button" class="btn" id="day">Day</button>
+		            <button type="button" class="btn" id="week">Week</button>
+		            <button type="button" class="btn" id="month">Month</button>
+		            <button type="button" class="btn" id="year">Year</button>
+		        </div>
+		    </div>
+		</div>
+		
         <div id="memory_usage" style="width: 900px; height: 500px;"></div>
         <div id="elements_pie" style="width: 900px; height: 500px;"></div>
         <div id="server_usage" style="width: 900px; height: 500px;"></div>
