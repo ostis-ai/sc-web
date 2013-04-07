@@ -23,12 +23,12 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 
 from git import *
 from django.conf import settings
+import stat, os
     
 
 class Repository:
     
     def __init__(self):
-        
         self.repo = Repo(settings.REPO_PATH)
     
     
@@ -37,10 +37,40 @@ class Repository:
         @param path Path to tree in main tree
         @param rev Specified revision. If it None, then return last revision
         """
-        if len(path) == 0 or path == u'/':
-            return self.repo.tree(rev)
         
-        return self.repo.tree(rev)[path]
+        tree = None
+        if len(path) == 0 or path == u'/':
+            tree = self.repo.tree(rev)
+        else:
+            tree = self.repo.tree(rev)[path]
+            
+        result = []
+        
+        for directory in tree.trees:
+            attrs = {}
+            attrs['path'] = directory.path#.split('/')[-1]
+            attrs['is_dir'] = True
+            attrs['name'] = directory.name
+            
+            result.append(attrs)
+            
+        for blob in tree.blobs:
+            attrs = {}
+            attrs['path'] = blob.path#.split('/')[-1]
+            attrs['is_dir'] = False
+            attrs['name'] = blob.name
+            
+            result.append(attrs)
+            
+        for attrs in result:
+            commits = self.commits(attrs['path'], max_count = 1, rev = rev)
+            
+            attrs['date'] = commits[0].authored_date
+            attrs['author'] = commits[0].author.name
+            attrs['summary'] = commits[0].summary
+            
+        return result
+            
     
     def commits(self, path, max_count = 1, rev = None):
         """Returns commits object for specified path in repository
@@ -56,7 +86,16 @@ class Repository:
         """Return commit with specified revision
         @param rev Revision to get commit. If it has None value, then return HEAD commit.
         """
-        return self.repo.commit(rev)
+        
+        commit = self.repo.commit(rev)
+        
+        result = {
+                  'author': commit.author.name,
+                  'date': commit.authored_date,
+                  'summary': commit.summary
+                  }
+        
+        return result
     
     def get_file_content(self, path, rev = None):
         """Returns content of file with specified \p path in revision \p rev
