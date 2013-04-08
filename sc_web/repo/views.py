@@ -20,7 +20,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 """
-
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from django.views.generic.base import TemplateView
 from django.contrib.auth.decorators import login_required
@@ -31,15 +32,20 @@ import json, os
 
 __all__ = (
     'RepoView',
+    'FileEdit',
     
-    'get_files',
+    'list_files',
+    'file_content',
+    'commit_info',
+    'save_content',
+    
 )
 
 
 class RepoView(TemplateView):
     template_name = 'repo/view.html'
     
-    @method_decorator(login_required)
+    #@method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         return super(RepoView, self).dispatch(request, *args, **kwargs)
     
@@ -54,7 +60,7 @@ def repo_edit(request):
 class FileEdit(TemplateView):
     template_name = 'repo/edit.html'
     
-    @method_decorator(login_required)
+    #@method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         self.path = kwargs['path']
         return super(FileEdit, self).dispatch(request, *args, **kwargs)
@@ -72,31 +78,8 @@ def list_files(request):
 
         repo = Repository()
         tree = repo.tree(path)
-                
-        result = []
-        for directory in tree.trees:
-            attrs = {}
-            attrs['path'] = directory.path#.split('/')[-1]
-            attrs['is_dir'] = True
-            attrs['name'] = directory.name
-            
-            result.append(attrs)
-            
-        for blob in tree.blobs:
-            attrs = {}
-            attrs['path'] = blob.path#.split('/')[-1]
-            attrs['is_dir'] = False
-            attrs['name'] = blob.name
-            
-            result.append(attrs)
-            
-        for attrs in result:
-            commits = repo.commits(attrs['path'])
-            attrs['date'] = commits[0].authored_date
-            attrs['author'] = commits[0].author.name
-            attrs['summary'] = commits[0].summary
         
-        result = json.dumps(result)
+        result = json.dumps(tree)
 
     return HttpResponse(result, 'application/json')
 
@@ -116,13 +99,27 @@ def commit_info(request):
         rev = request.GET.get(u'rev', None)
 
         repo = Repository()
-        commit = repo.commit(rev)
+        commit = repo.get_commit(rev)
         
-        result = {
-                  'author': commit.author.name,
-                  'date': commit.authored_date,
-                  'summary': commit.summary
-                  }
-        result = json.dumps(result)
+        result = json.dumps(commit)
 
     return HttpResponse(result, 'application/json')
+
+@csrf_exempt                                                                                  
+def save_content(request):
+    
+    result = False
+    if request.is_ajax():
+        
+        path = request.POST.get(u'path', None)
+        summary = request.POST.get(u'summary', None)
+        data = request.POST.get(u'data', None)
+        
+        repo = Repository()
+        if repo.set_file_content(path, data):
+            repo.commit(request.user.username, request.user.email, summary)
+            result = True
+        else:
+            result = False
+        
+    return HttpResponse(json.dumps({ 'success': result }), 'application/json')

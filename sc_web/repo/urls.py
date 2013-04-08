@@ -11,4 +11,5 @@ urlpatterns = patterns('repo.views',
     url(r'^api/files$', 'list_files', name='list_files'),
     url(r'^api/content$', 'file_content', name='file_content'),
     url(r'^api/commit$', 'commit_info', name='commit_info'),
+    url(r'^api/save$', 'save_content', name='save_content'),
 )

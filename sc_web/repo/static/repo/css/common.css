@@ -31,17 +31,36 @@
 }
 
 /* --- Edit --- */
+
 .source-edit-wrapper {
     margin: 0 auto;
     width: 920px;
-    border-radius: 3px 3px 3px 3px;
 }
 
-.source-edit-textarea {
-    width: 920px;
+.CodeMirror {
+    margin: 5px auto;
+    background-color: #FAFAFA;
+    background-image: linear-gradient(to bottom, #FFFFFF, #F2F2F2);
+    background-repeat: repeat-x;
+    border: 1px solid #D4D4D4;
+    border-radius: 4px 4px 4px 4px;
+    min-height: 40px;
+    padding-left: 20px;
+    padding-right: 20px;
     max-height: 900px;
-    resize: none;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.067);
 }
+
+.source-edit-wrapper .navbar-inner button {
+    margin:10px auto;
+}
+
+.CodeMirror-selected { background: rgba(59, 59, 59, 0.15) !important; }
+
+.source-edit-wrapper label {
+    cursor:auto;
+}
+
 
 .tree-browser-last-commit {
     color: #777;
