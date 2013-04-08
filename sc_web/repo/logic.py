@@ -63,7 +63,7 @@ class Repository:
             result.append(attrs)
             
         for attrs in result:
-            commits = self.commits(attrs['path'], max_count = 1, rev = rev)
+            commits = self.get_commits(attrs['path'], max_count = 1, rev = rev)
             
             attrs['date'] = commits[0].authored_date
             attrs['author'] = commits[0].author.name
@@ -72,7 +72,7 @@ class Repository:
         return result
             
     
-    def commits(self, path, max_count = 1, rev = None):
+    def get_commits(self, path, max_count = 1, rev = None):
         """Returns commits object for specified path in repository
         @param path Path to get commits
         @param max_count Maximum number of retrieved commits
@@ -82,7 +82,7 @@ class Repository:
         res.extend(self.repo.iter_commits(rev, path, max_count=max_count))
         return res
     
-    def commit(self, rev = None):
+    def get_commit(self, rev = None):
         """Return commit with specified revision
         @param rev Revision to get commit. If it has None value, then return HEAD commit.
         """
@@ -104,4 +104,32 @@ class Repository:
         """
         return self.repo.tree(rev)[path].data_stream.read()
     
+    def set_file_content(self, path, content):
+        """Change file content in tree, and append it for commit
+        @param path: File path to change content
+        @param content: New file content
+        
+        @return: If file content changed, then return true; otherwise return false  
+        """
+        try:
+            blob = self.repo.tree("HEAD")[path]
+            f = open(blob.abspath, "w")
+            f.write(content)
+            f.close()
+            
+            self.repo.git.add(path)
+            #self.repo.index.write_tree()
+        except:
+            return False
+        
+        return True
+    
+    def commit(self, authorName, authorEmail, message):
+        """Commit all added changes
+        """
+        self.repo.git.commit(author='%s <%s>' % (authorName, authorEmail), message=message)
+        #commit = self.repo.index.commit(message) 
+        #commit.author.name = authorName
+        #commit.author.email = authorEmail
+        #self.repo.index.write_tree()
     

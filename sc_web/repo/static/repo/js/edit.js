@@ -11,7 +11,7 @@ Repo.edit.Form = {
         
         var self = this;
 
-        $('#save').click(self.saveFile);
+        $('#save').click($.proxy(self.saveFile, self));
 
         $('#cancel').click(function () {
             //TODO
@@ -50,14 +50,17 @@ Repo.edit.Form = {
                 type: 'POST',
                 url: '/repo/api/save',
                 data: { 
-                        'path': self.sourcePath,
+                        'path': Repo.edit.Form.sourcePath,
                         'data': Repo.edit.Editor.getValue(),
                         'summary': $('#summary').val()
                         },
                 success: function(data) {
-
+                    self.onSaved();
                 },
                 complete: function(data) {
+                },
+                error: function(data) {
+                    self.onError();
                 }
             });
         
@@ -69,6 +72,18 @@ Repo.edit.Form = {
     onFileChanged: function() {
         $('#info-panel-errors').addClass('hidden');
         $('#info-panel-not-saved').removeClass('hidden');
+        $('#info-panel-saved').addClass('hidden');
+    },
+    
+    onSaved: function() {
+        $('#info-panel-saved').removeClass('hidden');
+        $('#info-panel-not-saved').addClass('hidden');
+    },
+    
+    onError: function() {
+        $('#info-panel-errors').removeClass('hidden');
+        $('#info-panel-saved').addClass('hidden');
+        $('#info-panel-not-saved').addClass('hidden');
     }
 }
 

@@ -99,7 +99,7 @@ def commit_info(request):
         rev = request.GET.get(u'rev', None)
 
         repo = Repository()
-        commit = repo.commit(rev)
+        commit = repo.get_commit(rev)
         
         result = json.dumps(commit)
 
@@ -108,13 +108,18 @@ def commit_info(request):
 @csrf_exempt                                                                                  
 def save_content(request):
     
-    result = { 'success': False }
+    result = False
     if request.is_ajax():
         
         path = request.POST.get(u'path', None)
         summary = request.POST.get(u'summary', None)
         data = request.POST.get(u'data', None)
         
-        result = { 'success': True }
-    
-    return HttpResponse(json.dumps(result), 'application/json')
+        repo = Repository()
+        if repo.set_file_content(path, data):
+            repo.commit(request.user.username, request.user.email, summary)
+            result = True
+        else:
+            result = False
+        
+    return HttpResponse(json.dumps({ 'success': result }), 'application/json')
