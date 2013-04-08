@@ -2,10 +2,11 @@
 
 Nav.stat.Main = {
 
-	fromDate: null,
-	toDate: null,
+	fmt: 'dd-mm-yyyy',
+	fromDatePicker: null,
+	toDatePicker: null,
 	    
-    timeScale: 'hour',
+    timeScale: 'day',
 
     data: [],
 
@@ -24,7 +25,17 @@ Nav.stat.Main = {
     init: function() {
     	this.build();
         this._registerMenuHandler();
+		this.initialStatistics();
     },
+	
+	initialStatistics: function() {
+		// show current month statistics by day scale on start
+		var today = new Date();
+		var firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+		this.fromDatePicker.setValue(firstDayOfMonth);
+        this.toDatePicker.setValue(today);
+		this.getStatistics(firstDayOfMonth, today);
+	},
 
     build: function() {
         var self = Nav.stat.Main;
@@ -100,34 +111,17 @@ Nav.stat.Main = {
 
     _registerDateRangeHandler: function() {
         this._registerDatePickers();
-        this._registerLoadHanler();
+        this._registerGetDataHandler();
     },
 
-    _registerLoadHanler: function() {
+    _registerGetDataHandler: function() {
         var self = this;
         $('#button_select_range').click(function () {
             if ($('#from').val() && $('#to').val()) {
-                var fromValue = Math.floor(
-                		self.fromDate.getTime() / 1000),
-                	toValue = Math.ceil(
-                		self.toDate.getNextDay().getTime() / 1000);
-
-                $('#button_select_range').button('loading');
-                
-                self.getStatistics(fromValue, toValue,
-		              function(data) {
-		                  // success
-		                  $('#button_select_range').button('reset');
-		                  
-		                  self.data = data;
-		                  self.drawCharts();
-		                  
-		              }, function() {
-		                  // error
-		                  $('#button_select_range').button('reset');
-		                  alert("Can't load data!");
-	              });
-                
+                self.getStatistics(
+					self.getFromDate(),
+					self.getToDate()
+				);
             } else {
                 alert("Range is empty!");
             }
@@ -135,16 +129,13 @@ Nav.stat.Main = {
     },
 
     _registerDatePickers: function() {
-    	var self = this;
-        var fmt = 'dd-mm-yyyy';
-        
+        self = this;
         var fromPicker = $('#from').datepicker({
-            format: fmt,
+            format: self.fmt,
             onRender:function (date) {
                 return date.valueOf() > new Date().valueOf() ? 'disabled' : '';
             }
         }).on('changeDate', function (ev) {
-    		self.setFromDate(ev.date);
             if (ev.date.valueOf() > toPicker.date.valueOf()) {
             	toPicker.setValue(new Date(ev.date));
             }
@@ -154,14 +145,16 @@ Nav.stat.Main = {
         }).data('datepicker');
 
         var toPicker = $('#to').datepicker({
-            format: fmt,
+            format: self.fmt,
             onRender:function (date) {
                 return date.valueOf() < fromPicker.date.valueOf() ? 'disabled' : ''
             }
         }).on('changeDate',function (ev) {
-    		self.setToDate(ev.date);
     		toPicker.hide();
         }).data('datepicker');
+		
+		this.fromDatePicker = fromPicker;
+		this.toDatePicker = toPicker;		
 
         // forbids input
         $('#from').keypress(function() {
@@ -175,7 +168,7 @@ Nav.stat.Main = {
 
     _registerScaleHandler: function() {
         var self = this;
-        $('#hour').button('toggle');
+        $('#' + this.timeScale).button('toggle');
         $('div.btn-group button').click(function () {
             var scale = $(this).attr('id');
             self.setTimeScale(scale);
@@ -189,12 +182,12 @@ Nav.stat.Main = {
         this.timeScale = scale;
     },
     
-    setFromDate: function(date) {
-        this.fromDate = date;
+    getFromDate: function() {
+        return this.fromDatePicker.date;
     },
     
-    setToDate: function(date) {
-        this.toDate = date;
+    getToDate: function() {
+        return this.toDatePicker.date;
     },
     
 	/**
@@ -204,7 +197,7 @@ Nav.stat.Main = {
 	 * @param {Function} success Callback function, that recieves data.
 	 * @param {Function} error Callback function, that calls on error
 	 */
-    getStatistics: function(fromValue, toValue, success, error) {
+    _getStatisticsData: function(fromValue, toValue, success, error) {
         $.ajax({
             type: 'GET',
             url: '/stat/data',
@@ -216,7 +209,45 @@ Nav.stat.Main = {
             error: error,
         });
     },
-
+	
+	setHeader: function(date1, date2) {
+		$("#stat_header").html(
+            "Statistics ("
+                + date1.toDateString()
+                + " - "
+                + date2.toDateString()
+                + ")"
+		);
+    },
+	
+	getStatistics: function(fromDate, toDate) {
+		this.setHeader(fromDate, toDate);
+		// convert dates to seconds
+		var fromValue = Math.floor(
+				fromDate.getTime() / 1000),
+            toValue = Math.ceil(
+				toDate.getNextDay().getTime() / 1000);	
+				
+		var self = this;
+		$('#button_select_range').button('loading');
+		SCWeb.core.ui.Locker.show();
+		
+		self._getStatisticsData(fromValue, toValue,
+			  function(data) {
+				  // success
+				  $('#button_select_range').button('reset');
+				  SCWeb.core.ui.Locker.hide();
+				  
+				  self.data = data;
+				  self.drawCharts();
+				  
+			  }, function() {
+				  // error
+				  $('#button_select_range').button('reset');
+				  SCWeb.core.ui.Locker.hide();
+				  alert("Can't get data!");
+		  });
+	},
 
     drawCharts: function() {
         this.clearDataTables();
@@ -246,9 +277,9 @@ Nav.stat.Main = {
 
             memRows.push([
                 new Date(dataItem[0]),
-                dataItem[1],
-                dataItem[2],
-                dataItem[3],
+                dataItem[4],
+                dataItem[5],
+                dataItem[6],
                 dataItem[1] - dataItem[4],
                 dataItem[2] - dataItem[5],
                 dataItem[3] - dataItem[6],
@@ -263,17 +294,12 @@ Nav.stat.Main = {
             ]);
         }
 
-        var size = this.data.length;
+        var size = scaledData.length;
         if (size > 0) {
-            var nodes = 0, arcs = 0, links = 0;
-            for (var i = 0; i < size; i++) {
-                nodes += this.data[i][1];
-                arcs += this.data[i][2];
-                links += this.data[i][3];
-            }
-            elRows.push(["Nodes", Math.ceil(nodes / size)]);
-            elRows.push(["Arcs", Math.ceil(arcs / size)]);
-            elRows.push(["Links", Math.ceil(links / size)]);
+			dataItem = scaledData[size - 1];
+			elRows.push(["Nodes", dataItem[1]]);
+            elRows.push(["Arcs", dataItem[2]]);
+            elRows.push(["Links", dataItem[3]]); 
         }
 
         this.memDataTable.addRows(memRows);
@@ -282,6 +308,10 @@ Nav.stat.Main = {
     },
 
     scaleData: function (data, scale) {
+		if (data.length == 1) {
+			return data;
+		}
+		
         var result = [];
         var cmd = '';
         switch (scale) {
