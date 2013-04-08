@@ -8,7 +8,6 @@
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}repo/css/SCs.css" />
     <script type="text/javascript">
         $(document).ready(function() {
-            Repo.edit.Editor.init();
             Repo.edit.Form.init("{{ file_path }}");
         });
     </script>
@@ -16,8 +15,6 @@
 
 {% block content %}
 
-    
-        
     <div class="source-edit-wrapper">
         <h3>{{ file_path }}</h3>
         <div class="navbar-inner">
@@ -31,15 +28,25 @@
             </div>
         </div>
         <textarea id="code"></textarea>
+        {# alerts #}
+        <div id="info-panel-not-saved" class="alert alert-info hidden">
+                Changes not saved
+        </div>
+        <div id="info-panel-errors" class="alert alert-error hidden">
+                File save error
+        </div>
+        <div id="info-panel-saved" class="alert alert-success hidden">
+                File saved
+        </div>
         <div class="navbar-inner">
-	        <label>Commit summary:</label>
-	        <input class="input-xxlarge" type="text" placeholder="Update {{ file_path }}">
-	        <label>Extended description: (optional)</label>
-	        <textarea rows="3" class="input-xxlarge"></textarea>
-	        <div>
-		        <button id="save" class="btn">Save</button>
-		        <button id="cancel" class="btn btn-danger">Cancel</button>
-	        </div>
+            <label>Commit summary:</label>
+            <!--<input class="input-xxlarge" type="text" placeholder="Update {{ file_path }}">
+            <label>Extended description: (optional)</label>-->
+            <textarea id="summary" rows="3" class="input-xxlarge"></textarea>
+            <div>
+                <button id="save" class="btn btn-info">Save</button>
+                <button id="cancel" class="btn btn-danger">Cancel</button>
+            </div>
         </div>
     </div>
     

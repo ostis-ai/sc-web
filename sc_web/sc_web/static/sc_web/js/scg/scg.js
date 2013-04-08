@@ -25,18 +25,18 @@ scgLayout.prototype = {
         DEF_START_BOX_HEIGHT    : 101,
         MAX_ITERATIONS_CYCLE    : 21,
 
-        REPULSIVE_PARAMETER     : 120000,
+        REPULSIVE_PARAMETER     : 12,
         ATTRACTIVE_PARAMETER    : 2,
 
         TIME_VELOCITY           : 1,
 
-        SCREEN_CENTER_X         : 200,
-        SCREEN_CENTER_Y         : 250,
+        SCREEN_CENTER_X         : 200,                        //not used
+        SCREEN_CENTER_Y         : 250,                        //not used
 
-        MAX_FORCE               : 15.0,
+        MAX_FORCE               : 1.0,
 
         NUM_STEP_ITERATION      : 5,
-        MIN_MOVEMENT            : 1
+        MIN_MOVEMENT            : 2
     },
 
     setGraph        : function(graph){
@@ -70,7 +70,150 @@ scgLayout.prototype = {
         clearTimeout(this._timeoutCode);
     },
 
+    _layoutStep        : function(iterationNum){
 
+        for(var i = 0; i < iterationNum; i++){
+            //for each node
+
+            //1. Clean all active forces
+            for (var tt in this._graph.nodes) {
+                this.setNodeForce(this._graph.nodes[tt], 0, 0);
+            }
+
+            //1.a use shaking
+            /*for (var tt in this._graph.nodes) {
+                posX = this._graph.nodes[tt].getPosition().x + Math.round(4*(Math.random()-0.5));
+                posY = this._graph.nodes[tt].getPosition().y + Math.round(4*(Math.random()-0.5));
+                this._graph.nodes[tt].setPosition( posX, posY);
+            }*/
+
+
+            for (var tt in this._graph.nodes) {
+                //2. find spring force for every incident arc
+
+                //for each arc in node (between nodes)
+                for (var ttt in this._graph.nodes[tt]._incidentArcs) {
+
+                    var tmpNode = this._graph.nodes[tt]._incidentArcs[ttt]._endNode;
+
+                    if (tmpNode == this._graph.nodes[tt]) {
+                        tmpNode = this._graph.nodes[tt]._incidentArcs[ttt]._beginNode;
+                    }
+
+                    if (tmpNode == this._graph.nodes[tt]) // twice! => error
+                    {
+                        continue;
+                    }
+
+                    var relation = this.getRelation(this._graph.nodes[tt], tmpNode);
+
+                    if (relation.sqDistance <= 0){
+                        //nodes are merged. force should be set
+                        //will rely on shaking for now
+                        continue;
+                    }  //(1.1)
+
+                    //else
+
+                    //2.a add force to nodes if end is an arc, but 1/2 - n/i
+                    //2.b add force if it's a node
+                    this.addNodeForce(this._graph.nodes[tt], relation.deltaX, relation.deltaY,
+                        relation.sqDistance, this.getAttractiveForce(relation.sqDistance));
+
+
+                }
+
+                //3. find electric force for every node
+                //for each pair
+                for (var ttt in this._graph.nodes) {
+                    if (ttt == tt) continue; //or uncomment (1.1)
+
+                    var relation = this.getRelation(this._graph.nodes[tt], this._graph.nodes[ttt]);
+
+                    //skip if the distance is too big
+                    if (relation.sqDistance > this.config.MAX_REPULSIVE_SQUARED){
+                        continue;
+                    }
+                    if (relation.sqDistance <= 0) {
+                        //nodes are merged. force should be set
+                        //will rely on shaking for now
+                        continue;
+                    }  //(1.1)
+
+                    this.addNodeForce(this._graph.nodes[tt], relation.deltaX, relation.deltaY,
+                        relation.sqDistance, this.getRepulsiveForce(relation.sqDistance));
+                }
+            }
+            //4. find equal force    - done by adding forces
+            //4.a norm it - n/s
+
+            //5. relocate
+
+            //set maximum movement to make algorithm stop
+            var nodesMaxMovement = {
+                x   : 0,
+                y   : 0
+            };
+
+            //5.a set maximum shift as k*m_s/f(iteration)
+            //set current maximum force
+            var f = Math.sqrt(i);//Math.sqrt(i));
+            var currentForceLimit = this.config.MAX_FORCE/f;
+
+            for (var tt in this._graph.nodes) {
+                posX = this._graph.nodes[tt].getPosition().x;
+                posY = this._graph.nodes[tt].getPosition().y;
+
+                //add max force limit
+                var forceX_ = this.getNodeForce(this._graph.nodes[tt]).x;
+                var forceY_ = this.getNodeForce(this._graph.nodes[tt]).y;
+
+                if (forceX_ > currentForceLimit) forceX_ = currentForceLimit;
+                if (forceX_ < -currentForceLimit) forceX_ = -currentForceLimit;
+                if (forceY_ > currentForceLimit) forceY_ = currentForceLimit;
+                if (forceY_ < -currentForceLimit) forceY_ = -currentForceLimit;
+
+                var dx = forceX_ * this.config.TIME_VELOCITY;
+                var dy = forceY_ * this.config.TIME_VELOCITY;
+
+                //save maximum shift
+                nodesMaxMovement.x = Math.max(nodesMaxMovement.x, Math.abs(dx) );
+                nodesMaxMovement.y = Math.max(nodesMaxMovement.y, Math.abs(dy) );
+
+                this._graph.nodes[tt].setPosition(posX + dx, posY + dy);
+
+            }
+            //6. center it
+
+            //find upper left corner
+            var nodesUpperLeft = {
+                x   : 0,
+                y   : 0
+            };
+            //6.a find min.x and min.y
+            for (var tt in this._graph.nodes) {
+                nodesUpperLeft.x = Math.min(nodesUpperLeft.x, this._graph.nodes[tt].getPosition().x );
+                nodesUpperLeft.y = Math.min(nodesUpperLeft.y, this._graph.nodes[tt].getPosition().y );
+            }
+
+            //6.b move all nodes to 50 + pos.x-min.x
+            for (var tt in this._graph.nodes) {
+                posX = this._graph.nodes[tt].getPosition().x - nodesUpperLeft.x + 50;
+                posY = this._graph.nodes[tt].getPosition().y - nodesUpperLeft.y + 50;
+
+                this._graph.nodes[tt].setPosition(posX, posY);
+            }
+
+
+            //restore index normalization back and check return status
+            if((nodesMaxMovement.x * f) < this.config.MIN_MOVEMENT && (nodesMaxMovement.y * f) < this.config.MIN_MOVEMENT){
+                return false;
+            }
+
+        }
+
+    },
+    /*
     _layoutStep        : function(iterationNum){
 
         for(var i = 0; i < iterationNum; i++){
@@ -165,7 +308,7 @@ scgLayout.prototype = {
 
         return true;
 
-    },
+    }, */ //TODO: remove old
 
     getRelation : function (nodeA, nodeB) {
         var deltaX = nodeB.getPosition().x - nodeA.getPosition().x;

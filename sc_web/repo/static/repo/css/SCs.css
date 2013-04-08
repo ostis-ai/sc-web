@@ -1,22 +1,22 @@
-.cm-comment {color: gray !important;}
+.cm-comment {color: #867C65 !important;}
 
 .cm-elemType {color: #10cf47;}
 
-.cm-connector {color: #d9ab37;}
+.cm-connector {color: #1437ad;}
 
-.cm-name {color: #b31aa2;}
+.cm-name {color: #422F27;}
 
-.cm-url {color: #6282b6;}
+.cm-url {color: #9BB768;}
 
-.cm-separator {color: black;}
+.cm-separator {color: #1437ad;}
 
 .cm-aliasNoName {color: #cdd2a3;}
 
-.cm-parenthes {color: #0804f7;}
+.cm-parenthes {color: #1437ad;}
 
-.cm-content {color: #23f7b1;}
+.cm-content {color: #91939F;}
 
-.cm-attribute {color: #488915 !important;}
+.cm-attribute {color: #345563 !important;}
 
 .cm-error {
     color: red !important;
