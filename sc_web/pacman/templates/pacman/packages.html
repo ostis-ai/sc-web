@@ -1,0 +1,31 @@
+{% load pacman_extras %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <script type="text/javascript" charset="utf-8" src="{{ STATIC_URL }}plugins/jquery/jquery-1.8.3.min.js"></script>
+    </head>
+    <body>
+        <h1>Packages PyObj:</h1>
+        {% pacman_accepted_packages_names_pyobj as names %}
+        <ul>
+            {% for name in names %}
+                <li><a href="{% url pacman:package name %}">{{ name }}</a></li>
+            {% endfor %}
+        </ul>
+
+        <h1>Packages JSON:</h1>
+        <ul class="js-packages-json">
+        </ul>
+        <script type="text/javascript">
+            debugger;
+            var names = {% pacman_accepted_packages_names_json %};
+                packagesBlock = $('.js-packages-json');
+
+            names.forEach(function(name) {
+                packagesBlock.append('<li>' + name + '</li>');
+            });
+        </script>
+    </body>
+    <footer></footer>
+</thml>

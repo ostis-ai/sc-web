@@ -40,3 +40,4 @@ settings_local.py
 .DS_Store
 *db
 sc-web-core.js
+sc_web/media/
