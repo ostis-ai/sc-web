@@ -38,6 +38,7 @@ __all__ = (
     'file_content',
     'commit_info',
     'save_content',
+    'create'
     
 )
 
@@ -117,6 +118,33 @@ def save_content(request):
         
         repo = Repository()
         if repo.set_file_content(path, data):
+            repo.commit(request.user.username, request.user.email, summary)
+            result = True
+        else:
+            result = False
+        
+    return HttpResponse(json.dumps({ 'success': result }), 'application/json')
+
+@csrf_exempt
+def create(request):
+    result = False
+    if request.is_ajax():
+        
+        path = request.POST.get(u'path', None)
+        is_dir = request.POST.get(u'is_dir', False)
+        
+        if is_dir == u'true':
+            is_dir = True
+        else:
+            is_dir = False
+        
+        repo = Repository()
+        if repo.create(path, is_dir):
+            summary = ''
+            if is_dir:
+                summary = 'Create directory: ' + path
+            else:
+                summary = 'Create file: ' + path
             repo.commit(request.user.username, request.user.email, summary)
             result = True
         else:

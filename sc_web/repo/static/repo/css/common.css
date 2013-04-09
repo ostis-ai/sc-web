@@ -66,3 +66,34 @@
     color: #777;
     padding: 10px 10px 10px 10px;
 }
+
+.tree-browser-filename-input {
+    width: 300px !important;
+}
+
+.tree-browser-filename-input-invalid {
+    background: #fdd !important;
+}
+
+.tree-browser-tools {
+    margin-bottom: 10px;
+}
+
+.commit-autho-icon {
+    padding-right: 5px;
+}
+
+.commit-author {
+    color: #555;
+    font-size: 14px;
+}
+
+.commit-date {
+    color: #888;
+    font-size: 14px;
+}
+
+.commit-summary {
+    color: #888;
+    font-size: 14px;
+}

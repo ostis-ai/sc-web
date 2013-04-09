@@ -124,6 +124,33 @@ class Repository:
         
         return True
     
+    def create(self, path, is_dir):
+        """Create directory or file in repository
+        @param path Path of file or directory
+        @param is_dir Directory creation flag. If it value is True, then directory 
+        will be created; otherwise file will be created
+        @return: If function finished successfully, then return True; otherwise return False
+        """
+        abspath = os.path.join(settings.REPO_PATH, path)
+        
+        try:
+            if is_dir:
+                os.mkdir(abspath)
+                abspath = os.path.join(abspath, 'readme')
+                f = open(abspath, "w")
+                f.write("Write directory description there")
+                f.close()
+            else:
+                f = open(abspath, "w")
+                f.write('\n')
+                f.close()
+                
+            self.repo.git.add(abspath)
+        except:
+            return False        
+        
+        return True
+    
     def commit(self, authorName, authorEmail, message):
         """Commit all added changes
         """
