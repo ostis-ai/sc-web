@@ -41,8 +41,8 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-MEDIA_ROOT = ''  # os.path.join(os.path.abspath(os.path.dirname(__file__)), 'media')
-MEDIA_URL = ''
+MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'media')
+MEDIA_URL = '/media/'
 
 STATIC_ROOT = ''
 STATIC_URL = '/static/'
@@ -108,6 +108,7 @@ INSTALLED_APPS = (
     'accounts',
     'api',
     'nav',
+    'pacman',
     'repo',
 
     'south',
