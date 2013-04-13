@@ -27,8 +27,10 @@ from django.views.generic.base import TemplateView
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.conf import settings
+
 from logic import Repository
 import json, os
+from django.utils.datetime_safe import datetime
 
 __all__ = (
     'RepoView',
@@ -38,8 +40,8 @@ __all__ = (
     'file_content',
     'commit_info',
     'save_content',
-    'create'
-    
+    'create',
+    'lock',    
 )
 
 
@@ -84,7 +86,7 @@ def list_files(request):
 
     return HttpResponse(result, 'application/json')
 
-def file_content(request):
+def content(request):
     result = None
     if request.is_ajax():
         path = request.GET.get(u'path', '/')
@@ -108,7 +110,6 @@ def commit_info(request):
 
 @csrf_exempt                                                                                  
 def save_content(request):
-    
     result = False
     if request.is_ajax():
         
@@ -117,11 +118,7 @@ def save_content(request):
         data = request.POST.get(u'data', None)
         
         repo = Repository()
-        if repo.set_file_content(path, data):
-            repo.commit(request.user.username, request.user.email, summary)
-            result = True
-        else:
-            result = False
+        result = repo.set_file_content(path, data, request.user.username, request.user.email, summary)
         
     return HttpResponse(json.dumps({ 'success': result }), 'application/json')
 
@@ -139,15 +136,67 @@ def create(request):
             is_dir = False
         
         repo = Repository()
-        if repo.create(path, is_dir):
-            summary = ''
-            if is_dir:
-                summary = 'Create directory: ' + path
-            else:
-                summary = 'Create file: ' + path
-            repo.commit(request.user.username, request.user.email, summary)
-            result = True
-        else:
-            result = False
+        result = repo.create(path, is_dir, request.user.username, request.user.email)
         
     return HttpResponse(json.dumps({ 'success': result }), 'application/json')
+
+def lock(request):
+    result = False
+    if request.is_ajax():
+        
+        path = request.GET.get(u'path', None)
+        
+        repo = Repository()
+        result = repo.lock(path, request.user.username)
+        
+    return HttpResponse(json.dumps( result ), 'application/json')
+
+def update(request):
+    result = False
+    if request.is_ajax():
+        
+        path = request.GET.get(u'path', None)
+        
+        repo = Repository()
+        result = repo.update(path, request.user.username)
+        
+    return HttpResponse(json.dumps( result ), 'application/json')
+
+def unlock(request):
+    result = False
+    if request.is_ajax():
+        
+        path = request.GET.get(u'path', None)
+        
+        repo = Repository()
+        result = repo.unlock(path, request.user.username)
+        
+    return HttpResponse(json.dumps( result ), 'application/json')
+
+@csrf_exempt
+def tree_list(request):
+    result = False
+    if request.is_ajax():
+        
+        path = request.POST.get(u'path', None)
+        is_dir = request.POST.get(u'is_dir', False)
+        
+    # @todo implement me
+        
+    return HttpResponse(json.dumps({ 'success': result }), 'application/json')
+
+@csrf_exempt
+def edit_sync(request):
+    """Sync edit state with client.
+    It receive state information from client, and return resource answer about 
+    resource locking
+    """
+    result = {}
+    if request.is_ajax():
+        path = request.POST.get(u'path', None)
+        username = request.user.username
+        
+        
+        
+        
+    return HttpResponce(json.dumps(result))

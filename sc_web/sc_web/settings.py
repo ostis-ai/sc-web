@@ -20,6 +20,7 @@ SCTP_PORT = 55770
 
 EVENT_WAIT_TIMEOUT = 5
 
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -46,6 +47,8 @@ MEDIA_URL = '/media/'
 
 STATIC_ROOT = ''
 STATIC_URL = '/static/'
+
+REPO_EDIT_TIMEOUT = 60 # seconds
 
 ADMIN_MEDIA_PREFIX = '/static/admin/'
 

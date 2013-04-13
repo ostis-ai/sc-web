@@ -17,8 +17,9 @@
 
     <div class="source-edit-wrapper">
         <h3>{{ file_path }}</h3>
+        
         <div class="navbar-inner">
-            <div class="btn-group" data-toggle="buttons-radio">
+            <div class="btn-group pull-left" data-toggle="buttons-radio">
                 <button type="button" class="btn active">Code</button>
                 <button type="button" class="btn">Preview</button>
             </div>
@@ -27,10 +28,23 @@
                 <button type="button" class="btn active" name="lineNumbers">Line numbers</button>
             </div>
         </div>
+        
         <textarea id="code"></textarea>
+        <div class="navbar-inner">
+            <div class="btn-group pull-left">
+                <button id="edit-lock-button" type="button" class="btn btn-inverse" data-locked-text="locked..."><i class="icon-lock icon-white" style="margin-right: 5px;"></i>Lock</button>
+                <button id="edit-save-button" class="btn btn-info"><i class="icon-hdd icon-white" style="margin-right: 5px;"></i>Save</button>
+                <button id="edit-reset-button" class="btn btn-danger"><i class="icon-refresh icon-white" style="margin-right: 5px;"></i>Reset</button>
+            </div>
+        </div>
+        
         {# alerts #}
+        <br/>
+        <div id="info-panel-locked" class="alert alert-block hidden">
+            
+        </div>
         <div id="info-panel-not-saved" class="alert alert-info hidden">
-                Changes not saved
+            Changes not saved
         </div>
         <div id="info-panel-errors" class="alert alert-error hidden">
                 File save error
@@ -38,15 +52,21 @@
         <div id="info-panel-saved" class="alert alert-success hidden">
                 File saved
         </div>
-        <div class="navbar-inner">
+    </div>
+    
+    {# Save changes modal dialog #}
+    <div id="edit-save-changes-modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="edit-save-modal-label" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="edit-save-modal-label">Save changes</h3>
+        </div>
+        <div class="modal-body">
             <label>Commit summary:</label>
-            <!--<input class="input-xxlarge" type="text" placeholder="Update {{ file_path }}">
-            <label>Extended description: (optional)</label>-->
             <textarea id="summary" rows="3" class="input-xxlarge"></textarea>
-            <div>
-                <button id="save" class="btn btn-info">Save</button>
-                <button id="cancel" class="btn btn-danger">Cancel</button>
-            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+            <button id="edit-modal-save-button" class="btn btn-primary">Save changes</button>
         </div>
     </div>
     

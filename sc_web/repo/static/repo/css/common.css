@@ -61,6 +61,16 @@
     cursor:auto;
 }
 
+.source-edit-lock-info {
+    margin-top: 15px;
+    padding-left: 25px;
+    position: relative;
+}
+
+#source-edit-lock-info-text {
+    padding-left: 5px;
+}
+
 
 .tree-browser-last-commit {
     color: #777;

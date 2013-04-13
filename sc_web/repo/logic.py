@@ -24,13 +24,28 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 from git import *
 from django.conf import settings
 import stat, os
+import thread
+import time
+from models import SourceLock
     
+def _singleton(cls):
+    """ Singleton instance.
+    """
+    instances = {}
 
+    def getinstance():
+        if cls not in instances:
+            instances[cls] = cls()
+        return instances[cls]
+
+    return getinstance
+
+@_singleton
 class Repository:
     
     def __init__(self):
         self.repo = Repo(settings.REPO_PATH)
-    
+        self.mutex = thread.allocate_lock()
     
     def tree(self, path, rev = None):
         """Returns repository tree
@@ -97,20 +112,123 @@ class Repository:
         
         return result
     
-    def get_file_content(self, path, rev = None):
-        """Returns content of file with specified \p path in revision \p rev
-        @param path Path to file which content need to be returned
-        @param rev Revision to get content
+    def get_file_content(self, path):
+        """Returns content of specified file
+        @param path: Path of file to return content
+        @return: Returns content of specified file
         """
-        return self.repo.tree(rev)[path].data_stream.read()
+        return self.repo.tree()[path].data_stream.read()
     
-    def set_file_content(self, path, content):
-        """Change file content in tree, and append it for commit
+    def lock(self, path, author):
+        """Lock file for edit
+        @param path: Path of file to lock
+        @param author: Name of author, that locks file
+        @return: Returns map that contains lock result  
+        """
+        self.mutex.acquire()
+        
+        res = {}
+        try:
+            srcLock = None
+            try:
+                srcLock = SourceLock.objects.get(sourcePath = path)
+            except:
+                pass
+            _time = time.time()
+            if srcLock is not None:
+                delta = int(_time - srcLock.lockUpdateTime)
+                if delta >= settings.REPO_EDIT_TIMEOUT:
+                    srcLock.author = author
+                    srcLock.lockTime = _time
+                    srcLock.lockUpdateTime = _time
+                    srcLock.save()
+            else:
+                srcLock = SourceLock(sourcePath = path, author = author, lockTime = _time, lockUpdateTime = _time)
+                srcLock.save()
+                
+            res['success'] = srcLock.author == author
+            res['lockAuthor'] = srcLock.author
+            res['lockTime'] = srcLock.lockTime
+        except:
+            pass
+        finally:
+            self.mutex.release()
+            
+        return res
+    
+    def update(self, path, author):
+        """Process updating. Update lock time and answer to client about lock state
+        @param path: Path to processing file
+        @param author: Name of author which edit file
+        @return: Returns map of lock info
+        """
+        res = {}
+        
+        self.mutex.acquire()
+        try:
+            srcLock = None
+            try:
+                srcLock = SourceLock.objects.get(sourcePath = path)
+            except:
+                pass
+            
+            lockLive = True
+            
+            _time = time.time()
+            if srcLock is not None:
+                delta = int(_time - srcLock.lockUpdateTime)
+                if delta >= settings.REPO_EDIT_TIMEOUT:
+                    res['lockLive'] = False
+                else:
+                    res['lockAuthor'] = srcLock.author
+                    res['lockTime'] = srcLock.lockTime
+                    if srcLock.author == author:
+                        srcLock.lockUpdateTime = _time
+                        srcLock.save()
+                        res['lockLive'] = True
+                    else:
+                        res['lockLive'] = False
+        except:
+            pass
+        finally:
+            self.mutex.release()
+            
+        return res
+    
+    def unlock(self, path, author):
+        """Unlocks locked file
+        @param path: File path to unlock
+        @param author: Author name that tries to unlock file
+        @return: If file unlocked without errors, then return True; otherwise return False
+        """
+        res = False
+        self.mutex.acquire()
+        
+        srcLock = None
+        try:
+            srcLock = SourceLock.objects.get(sourcePath = path)
+        except:
+            pass
+        
+        if srcLock.author == author:
+            srcLock.remove()
+            res = True
+        
+        self.mutex.release()
+        
+        return res
+    
+    def save_file(self, path, content, authorName, authorEmail, message):
+        """Change file content in tree, and commit it
         @param path: File path to change content
         @param content: New file content
+        @param authorName: Author name
+        @param authorEmail: Author email
+        @param message: Commit message
         
         @return: If file content changed, then return true; otherwise return false  
         """
+        self.mutex.acquire()
         try:
             blob = self.repo.tree("HEAD")[path]
             f = open(blob.abspath, "w")
@@ -118,45 +236,53 @@ class Repository:
             f.close()
             
             self.repo.git.add(path)
-            #self.repo.index.write_tree()
+            self._commit(authorName, authorEmail, message)
         except:
             return False
+        finally:
+            self.mutex.release()
         
         return True
     
-    def create(self, path, is_dir):
+    def create(self, path, is_dir, authorName, authorEmail):
         """Create directory or file in repository
         @param path Path of file or directory
         @param is_dir Directory creation flag. If it value is True, then directory 
         will be created; otherwise file will be created
+        @param authorName: Author name
+        @param authorEmail: Author email
         @return: If function finished successfully, then return True; otherwise return False
         """
         abspath = os.path.join(settings.REPO_PATH, path)
         
+        self.mutex.acquire()
+        
         try:
+            message = ''
             if is_dir:
                 os.mkdir(abspath)
                 abspath = os.path.join(abspath, 'readme')
                 f = open(abspath, "w")
                 f.write("Write directory description there")
                 f.close()
+                message = 'Create directory: ' + path
             else:
                 f = open(abspath, "w")
                 f.write('\n')
                 f.close()
+                message = 'Create file: ' + path
                 
             self.repo.git.add(abspath)
+            self._commit(authorName, authorEmail, message)
         except:
-            return False        
+            return False
+        finally:
+            self.mutex.release() 
         
         return True
     
-    def commit(self, authorName, authorEmail, message):
-        """Commit all added changes
+    def _commit(self, authorName, authorEmail, message):
+        """Commit all added changes. Only for internal usage
         """
         self.repo.git.commit(author='%s <%s>' % (authorName, authorEmail), message=message)
-        #commit = self.repo.index.commit(message) 
-        #commit.author.name = authorName
-        #commit.author.email = authorEmail
-        #self.repo.index.write_tree()
-    
+        

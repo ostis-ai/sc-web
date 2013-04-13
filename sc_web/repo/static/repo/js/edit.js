@@ -8,15 +8,35 @@ Repo.edit.Form = {
         
         this.sourcePath = sourcePath;
         this.updateFileContent();
+        this.updateInterval = setInterval($.proxy(this.update, this), 10 * 1000); // 10 seconds
+        
+        this.saveModal = $('#edit-save-changes-modal');
+        this.modalSaveButton = $('#edit-modal-save-button');
+
+        this.editLockButton = $('#edit-lock-button');
+        this.editSaveButton = $('#edit-save-button');
+        this.editResetButton = $('#edit-reset-button');
+
         
         var self = this;
+        
+        this.lockedForEdit = false;
+        this.lockAuthor = null;
+        this.lockTime = null;
 
-        $('#save').click($.proxy(self.saveFile, self));
+        this.modalSaveButton.click($.proxy(self.saveFile, self));
+        this.editLockButton.click($.proxy(self.lockFile, self));
+        this.editSaveButton.click(function() {
+            self.saveModal.modal('show');
+        });
+        this.editResetButton.click($.proxy(self.updateFileContent, self));
 
         $('#cancel').click(function () {
             //TODO
         });
         
+        // initial state update
+        this.update();
     },
     
     /** Updates file content from server
@@ -33,6 +53,7 @@ Repo.edit.Form = {
             success: function(data) {
                 Repo.edit.Editor.setValue(data);
                 Repo.edit.Editor.setChangedCallback(self.onFileChanged);
+                self.onResetContent();
             },
             complete: function(data) { 
                 Repo.locker.Lock.hide();
@@ -45,6 +66,8 @@ Repo.edit.Form = {
     saveFile: function() {
         
         var self = this;
+        
+        self.saveModal.modal('hide');
         
         $.ajax({
                 type: 'POST',
@@ -63,7 +86,6 @@ Repo.edit.Form = {
                     self.onError();
                 }
             });
-        
         
     },
     
@@ -84,7 +106,98 @@ Repo.edit.Form = {
         $('#info-panel-errors').removeClass('hidden');
         $('#info-panel-saved').addClass('hidden');
         $('#info-panel-not-saved').addClass('hidden');
-    }
+    },
+    
+    onResetContent: function() {
+        
+        $('#info-panel-errors').addClass('hidden');
+        $('#info-panel-saved').addClass('hidden');
+        $('#info-panel-not-saved').addClass('hidden');
+    },
+    
+    /** Process lock changes
+     */
+    onLockChanged: function() {
+        
+        var lockPanel = $('#info-panel-locked');
+        
+        if (this.lockedForEdit) {
+            this.editLockButton.button('locked');
+            lockPanel.addClass('hidden');
+            this.updateFileContent();
+        } else {
+            this.editLockButton.button('reset');
+
+            // if file is locked, then author isn't null
+            if (this.lockAuthor != null) {
+                var lockTime = new Date(this.lockTime * 1000);
+                lockPanel.html('Locked by <b>' + this.lockAuthor + '</b> on ' + lockTime.toUTCString());
+                
+                lockPanel.removeClass('hidden');
+            } else {
+                lockPanel.addClass('hidden');
+            }
+        }
+        
+        
+        
+    },
+    
+    /** Locks file for edit
+     */
+    lockFile: function() {
+        var self = this;
+        
+        Repo.locker.Lock.show();
+        
+        $.ajax({
+                type: 'GET',
+                url: '/repo/api/lock',
+                data: { 
+                        'path': self.sourcePath
+                        },
+                success: function(data) {
+                    self.lockedForEdit = data.success;
+                    self.lockAuthor = data.lockAuthor;
+                    self.lockTime = data.lockTime;
+                    self.onLockChanged();
+                },
+                complete: function(data) {
+                     Repo.locker.Lock.hide();
+                },
+                error: function(data) {
+                }
+            });
+    },
+    
+    /** Function to sync edit state with server
+     */
+    update: function() {
+        
+        var self = this;
+        
+        $.ajax({
+                type: 'GET',
+                url: '/repo/api/update',
+                data: { 
+                        'path': self.sourcePath
+                        },
+                success: function(data) {
+                    
+                    self.lockedForEdit = data.lockLive;
+                    self.lockAuthor = data.lockAuthor;
+                    self.lockTime = data.lockTime;
+                    
+                    self.onLockChanged();
+                },
+                complete: function(data) {
+                },
+                error: function(data) {
+                }
+            });
+        
+    },
+    
 }
 
 
@@ -101,9 +214,6 @@ Repo.edit.Editor = {
                 
             });
             
-        
-        
-        
         $('.editorSettings button').click(function(){
             var state = !$(this).attr("class").match("active");
             var name = $(this).attr("name");
@@ -135,7 +245,8 @@ Repo.edit.Editor = {
     
     setChangedCallback: function(callback) {
         this.editor.on("change", callback);
-    }
+    },
+    
 }
 
 
