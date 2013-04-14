@@ -41,7 +41,9 @@ __all__ = (
     'commit_info',
     'save_content',
     'create',
-    'lock',    
+    'lock',
+    'update',
+    'unlock'
 )
 
 
@@ -109,7 +111,7 @@ def commit_info(request):
     return HttpResponse(result, 'application/json')
 
 @csrf_exempt                                                                                  
-def save_content(request):
+def save(request):
     result = False
     if request.is_ajax():
         
@@ -118,7 +120,7 @@ def save_content(request):
         data = request.POST.get(u'data', None)
         
         repo = Repository()
-        result = repo.set_file_content(path, data, request.user.username, request.user.email, summary)
+        result = repo.save(path, data, request.user.username, request.user.email, summary)
         
     return HttpResponse(json.dumps({ 'success': result }), 'application/json')
 
@@ -171,7 +173,7 @@ def unlock(request):
         repo = Repository()
         result = repo.unlock(path, request.user.username)
         
-    return HttpResponse(json.dumps( result ), 'application/json')
+    return HttpResponse(json.dumps( { 'success': result } ), 'application/json')
 
 @csrf_exempt
 def tree_list(request):

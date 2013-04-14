@@ -8,7 +8,8 @@ Repo.edit.Form = {
         
         this.sourcePath = sourcePath;
         this.updateFileContent();
-        this.updateInterval = setInterval($.proxy(this.update, this), 10 * 1000); // 10 seconds
+        this.updateInterval = null;
+        this.startUpdateInterval();
         
         this.saveModal = $('#edit-save-changes-modal');
         this.modalSaveButton = $('#edit-modal-save-button');
@@ -52,8 +53,8 @@ Repo.edit.Form = {
             data: { 'path': self.sourcePath },
             success: function(data) {
                 Repo.edit.Editor.setValue(data);
-                Repo.edit.Editor.setChangedCallback(self.onFileChanged);
-                self.onResetContent();
+                Repo.edit.Editor.setChangedCallback(self.updatePanelsFileChanged);
+                self.updateResetContent();
             },
             complete: function(data) { 
                 Repo.locker.Lock.hide();
@@ -61,55 +62,26 @@ Repo.edit.Form = {
         });
     },
     
-    /** Save file changes
-     */
-    saveFile: function() {
-        
-        var self = this;
-        
-        self.saveModal.modal('hide');
-        
-        $.ajax({
-                type: 'POST',
-                url: '/repo/api/save',
-                data: { 
-                        'path': Repo.edit.Form.sourcePath,
-                        'data': Repo.edit.Editor.getValue(),
-                        'summary': $('#summary').val()
-                        },
-                success: function(data) {
-                    self.onSaved();
-                },
-                complete: function(data) {
-                },
-                error: function(data) {
-                    self.onError();
-                }
-            });
-        
-    },
-    
     /** Callback for file change callback
      */
-    onFileChanged: function() {
+    updatePanelsFileChanged: function() {
         $('#info-panel-errors').addClass('hidden');
         $('#info-panel-not-saved').removeClass('hidden');
         $('#info-panel-saved').addClass('hidden');
     },
     
-    onSaved: function() {
+    updateFileSaved: function() {
         $('#info-panel-saved').removeClass('hidden');
         $('#info-panel-not-saved').addClass('hidden');
     },
     
-    onError: function() {
+    updateFileSaveError: function() {
         $('#info-panel-errors').removeClass('hidden');
         $('#info-panel-saved').addClass('hidden');
         $('#info-panel-not-saved').addClass('hidden');
     },
     
-    onResetContent: function() {
-        
+    updateResetContent: function() {
         $('#info-panel-errors').addClass('hidden');
         $('#info-panel-saved').addClass('hidden');
         $('#info-panel-not-saved').addClass('hidden');
@@ -124,7 +96,6 @@ Repo.edit.Form = {
         if (this.lockedForEdit) {
             this.editLockButton.button('locked');
             lockPanel.addClass('hidden');
-            this.updateFileContent();
         } else {
             this.editLockButton.button('reset');
 
@@ -160,12 +131,73 @@ Repo.edit.Form = {
                     self.lockedForEdit = data.success;
                     self.lockAuthor = data.lockAuthor;
                     self.lockTime = data.lockTime;
+                    
+                    self.updateFileContent();
                     self.onLockChanged();
                 },
                 complete: function(data) {
                      Repo.locker.Lock.hide();
                 },
                 error: function(data) {
+                }
+            });
+    },
+    
+    /** Save file changes
+     */
+    saveFile: function() {
+        
+        var self = this;
+        
+        self.stopUpdateInterval();
+        self.saveModal.modal('hide');
+        
+        $.ajax({
+                type: 'POST',
+                url: '/repo/api/save',
+                data: { 
+                        'path': Repo.edit.Form.sourcePath,
+                        'data': Repo.edit.Editor.getValue(),
+                        'summary': $('#summary').val()
+                        },
+                success: function(data) {
+                    self.updateFileSaved();
+                    self.unlockFile();
+                },
+                complete: function(data) {
+                    self.startUpdateInterval();
+                },
+                error: function(data) {
+                    self.updateFileSaveError();
+                }
+            });
+        
+    },
+    
+    /** Unlock file
+     */
+    unlockFile: function() {
+        var self = this;
+        
+        $.ajax({
+                type: 'GET',
+                url: '/repo/api/unlock',
+                data: { 
+                        'path': Repo.edit.Form.sourcePath,
+                        },
+                success: function(data) {
+                    
+                    self.lockedForEdit = !data.success;
+                    self.lockAuthor = null;
+                    self.lockTime = null;
+                    
+                    self.onLockChanged();
+                },
+                complete: function(data) {
+                    self.startUpdateInterval();
+                },
+                error: function(data) {
+                    self.updateFileSaveError();
                 }
             });
     },
@@ -197,6 +229,19 @@ Repo.edit.Form = {
             });
         
     },
+    
+    /** Starts update interval
+     */
+    startUpdateInterval: function() {
+        this.updateInterval = setInterval($.proxy(this.update, this), 10 * 1000); // 10 seconds
+    },
+    
+    /** Stops interval updates
+     */
+    stopUpdateInterval: function() {
+        clearInterval(this.updateInterval);
+        this.updateInterval = null;
+    }
     
 }
 

@@ -26,7 +26,7 @@ from django.conf import settings
 import stat, os
 import thread
 import time
-from models import SourceLock
+from repo.models import SourceLock
     
 def _singleton(cls):
     """ Singleton instance.
@@ -210,15 +210,15 @@ class Repository:
         except:
             pass
         
-        if srcLock.author == author:
-            srcLock.remove()
+        if srcLock is not None and srcLock.author == author:
+            srcLock.delete()
             res = True
         
         self.mutex.release()
         
         return res
     
-    def save_file(self, path, content, authorName, authorEmail, message):
+    def save(self, path, content, authorName, authorEmail, message):
         """Change file content in tree, and commit it
         @param path: File path to change content
         @param content: New file content
@@ -265,12 +265,12 @@ class Repository:
                 f = open(abspath, "w")
                 f.write("Write directory description there")
                 f.close()
-                message = 'Create directory: ' + path
+                message = 'Create directory: %s' % path
             else:
                 f = open(abspath, "w")
                 f.write('\n')
                 f.close()
-                message = 'Create file: ' + path
+                message = 'Create file: %s' % path
                 
             self.repo.git.add(abspath)
             self._commit(authorName, authorEmail, message)
