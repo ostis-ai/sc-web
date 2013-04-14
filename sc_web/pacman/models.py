@@ -39,8 +39,6 @@ class Package(models.Model):
 #     package = models.ForeignKey(Package, null=False, related_name='package')
 #     dependency = models.ForeignKey(Package, null=False, related_name='package_dependency')
 
-#     unique_together = (('package', 'dependency'),)
-
 #     def __unicode__(self):
 #         return '%s depends on %s' % (self.package.name, self.dependency.name)
 
@@ -49,8 +47,6 @@ class ExternalLink(models.Model):
     package = models.ForeignKey(Package, null=False)
     link = models.URLField(max_length=1023)
 
-    unique_together = (('package', 'link'),)
-
     def __unicode__(self):
         return '%s (%s)' % (self.package.name, self.link)
 
@@ -58,8 +54,6 @@ class ExternalLink(models.Model):
 class InternalFile(models.Model):
     package = models.ForeignKey(Package, null=False)
     file = models.FileField(upload_to='pacman')
-
-    unique_together = (('package', 'file'),)
 
     def __unicode__(self):
         return '%s (%s)' % (self.package.name, self.file)
