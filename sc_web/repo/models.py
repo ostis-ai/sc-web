@@ -7,7 +7,7 @@ __all__ = (
 
 class SourceLock(models.Model):
     
-    sourcePath = models.CharField(max_length = 1024, primary_key = True)
+    sourcePath = models.CharField(max_length = 1024)
     lockTime = models.FloatField()
     lockUpdateTime = models.FloatField()
     author = models.CharField(max_length = 32)
