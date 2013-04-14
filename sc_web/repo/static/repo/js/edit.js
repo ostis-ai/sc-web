@@ -17,6 +17,8 @@ Repo.edit.Form = {
         this.editLockButton = $('#edit-lock-button');
         this.editSaveButton = $('#edit-save-button');
         this.editResetButton = $('#edit-reset-button');
+        
+        this.lockPanel = $('#info-panel-locked');
 
         
         var self = this;
@@ -28,7 +30,10 @@ Repo.edit.Form = {
         this.modalSaveButton.click($.proxy(self.saveFile, self));
         this.editLockButton.click($.proxy(self.lockFile, self));
         this.editSaveButton.click(function() {
-            self.saveModal.modal('show');
+            
+            if (self.lockedForEdit) {
+                self.saveModal.modal('show');
+            }
         });
         this.editResetButton.click($.proxy(self.updateFileContent, self));
 
@@ -91,22 +96,26 @@ Repo.edit.Form = {
      */
     onLockChanged: function() {
         
-        var lockPanel = $('#info-panel-locked');
         
         if (this.lockedForEdit) {
             this.editLockButton.button('locked');
-            lockPanel.addClass('hidden');
+            this.lockPanel.addClass('hidden');
+            
+            this.editSaveButton.removeClass('disabled');
+            this.editLockButton.addClass('disabled');
+            
         } else {
             this.editLockButton.button('reset');
+            this.editSaveButton.addClass('disabled');
+            this.editLockButton.removeClass('disabled');
 
             // if file is locked, then author isn't null
             if (this.lockAuthor != null) {
                 var lockTime = new Date(this.lockTime * 1000);
-                lockPanel.html('Locked by <b>' + this.lockAuthor + '</b> on ' + lockTime.toUTCString());
-                
-                lockPanel.removeClass('hidden');
+                this.lockPanel.html('Locked by <b>' + this.lockAuthor + '</b> on ' + lockTime.toLocaleString());
+                this.lockPanel.removeClass('hidden');
             } else {
-                lockPanel.addClass('hidden');
+                this.lockPanel.addClass('hidden');
             }
         }
         
@@ -118,6 +127,9 @@ Repo.edit.Form = {
      */
     lockFile: function() {
         var self = this;
+        
+        if (this.lockedForEdit)
+            return; // do nothing, if file already locked
         
         Repo.locker.Lock.show();
         
