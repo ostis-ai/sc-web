@@ -4,7 +4,7 @@ $.namespace('Repo.edit');
 Repo.edit.Form = {
     
     init: function(sourcePath) {
-        Repo.edit.Editor.init();
+        Repo.edit.Editor.init('#edit-container');
         
         this.sourcePath = sourcePath;
         this.updateFileContent();
@@ -56,40 +56,45 @@ Repo.edit.Form = {
             type: 'GET',
             url: '/repo/api/content',
             data: { 'path': self.sourcePath },
+            async: false,
             success: function(data) {
                 Repo.edit.Editor.setValue(data);
-                Repo.edit.Editor.setChangedCallback(self.updatePanelsFileChanged);
-                self.updateResetContent();
+                Repo.edit.Editor.setChangedCallback(self.processPanelsFileChanged);
+                
+                self.processResetContent();
             },
             complete: function(data) { 
                 Repo.locker.Lock.hide();
+                
+                Repo.edit.Editor.setReadOnly(!self.lockedForEdit);
             }
         });
     },
     
     /** Callback for file change callback
      */
-    updatePanelsFileChanged: function() {
+    processPanelsFileChanged: function() {
         $('#info-panel-errors').addClass('hidden');
         $('#info-panel-not-saved').removeClass('hidden');
         $('#info-panel-saved').addClass('hidden');
     },
     
-    updateFileSaved: function() {
+    processFileSaved: function() {
         $('#info-panel-saved').removeClass('hidden');
         $('#info-panel-not-saved').addClass('hidden');
     },
     
-    updateFileSaveError: function() {
+    processFileSaveError: function() {
         $('#info-panel-errors').removeClass('hidden');
         $('#info-panel-saved').addClass('hidden');
         $('#info-panel-not-saved').addClass('hidden');
     },
     
-    updateResetContent: function() {
+    processResetContent: function() {
         $('#info-panel-errors').addClass('hidden');
         $('#info-panel-saved').addClass('hidden');
         $('#info-panel-not-saved').addClass('hidden');
+        
     },
     
     /** Process lock changes
@@ -119,8 +124,6 @@ Repo.edit.Form = {
             }
         }
         
-        
-        
     },
     
     /** Locks file for edit
@@ -146,6 +149,8 @@ Repo.edit.Form = {
                     
                     self.updateFileContent();
                     self.onLockChanged();
+                    
+                    Repo.edit.Editor.setReadOnly(false);
                 },
                 complete: function(data) {
                      Repo.locker.Lock.hide();
@@ -173,14 +178,19 @@ Repo.edit.Form = {
                         'summary': $('#summary').val()
                         },
                 success: function(data) {
-                    self.updateFileSaved();
+                    if (data.success) {
+                        self.processFileSaved();
+                    } else {
+                        self.processFileSaveError();
+                    }
+                    
                     self.unlockFile();
                 },
                 complete: function(data) {
                     self.startUpdateInterval();
                 },
                 error: function(data) {
-                    self.updateFileSaveError();
+                    self.processFileSaveError();
                 }
             });
         
@@ -199,17 +209,22 @@ Repo.edit.Form = {
                         },
                 success: function(data) {
                     
+                    
+                },
+                complete: function(data) {
+                    
                     self.lockedForEdit = !data.success;
                     self.lockAuthor = null;
                     self.lockTime = null;
                     
                     self.onLockChanged();
-                },
-                complete: function(data) {
+                    
+                    Repo.edit.Editor.setReadOnly(true);
+                    
                     self.startUpdateInterval();
                 },
                 error: function(data) {
-                    self.updateFileSaveError();
+                    self.processFileSaveError();
                 }
             });
     },
@@ -227,6 +242,9 @@ Repo.edit.Form = {
                         'path': self.sourcePath
                         },
                 success: function(data) {
+                    
+                    if (self.lockedForEdit != data.lockLive)
+                        Repo.edit.Editor.setReadOnly(!data.lockLive);
                     
                     self.lockedForEdit = data.lockLive;
                     self.lockAuthor = data.lockAuthor;
@@ -259,18 +277,20 @@ Repo.edit.Form = {
 
 
 Repo.edit.Editor = {
+    
+    editor: null,
 
-    init: function() {
+    init: function(container) {
         var self = this;
-        var codeArea = document.getElementById("code");
-        this.editor = CodeMirror.fromTextArea(codeArea,
-            {
-                lineNumbers:true,
-                mode:"scs",
-                lineWrapping: false,
-                
-            });
-            
+        
+        this.onChangeCallback = $.proxy(this.onChange, this);
+        this.container = $(container);
+        this.readOnly = true;
+        this.value = '';
+        this.onChange = null;
+        
+        this.createEditor();
+        
         $('.editorSettings button').click(function(){
             var state = !$(this).attr("class").match("active");
             var name = $(this).attr("name");
@@ -291,18 +311,62 @@ Repo.edit.Editor = {
             }
         });
     },
+    
+    /** Create new instance of editor and revome older
+     */
+    createEditor: function() {
+        
+        if (this.editor)
+        {
+            this.editor.off("change", this.onChangeCallback);
+            delete this.editor;
+            this.editor = null;
+        }
+        
+        this.container.empty();
+        this.container.html('<textarea id="code"></textarea>');
+        
+        this.editor = CodeMirror.fromTextArea(
+            document.getElementById("code"),
+            {
+                lineNumbers: true, 
+                mode: "scs",
+                lineWrapping: false
+            //    value: this.value,
+             //   readOnly: this.readOnly
+            });
+            
+            
+        this.editor.on("change", this.onChangeCallback);
+    },
 
     setValue: function(data) {
         this.editor.setValue(data);
+        this.value = data;
     },
 
     getValue: function() {
-        return this.editor.getValue();
+        return this.value;
     },
     
     setChangedCallback: function(callback) {
-        this.editor.on("change", callback);
+        this.onChange = callback;
     },
+    
+    setReadOnly: function(readOnly) {
+        /*this.readOnly = readOnly;
+        this.createEditor();*/
+        this.editor.setOption('readOnly', readOnly);
+    },
+    
+    onChange: function() {
+        
+        this.value = this.editor.getValue();
+        
+        if (this.onChange) {
+            this.onChange();
+        }
+    }
     
 }
 

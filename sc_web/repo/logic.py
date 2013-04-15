@@ -216,10 +216,13 @@ class Repository:
             srcLock = SourceLock.objects.get(sourcePath = path)
         except:
             pass
-        
+
         if srcLock is not None and srcLock.author == author:
-            srcLock.delete()
-            res = True
+            _time = time.time()
+            delta = int(_time - srcLock.lockUpdateTime)
+            if delta < settings.REPO_EDIT_TIMEOUT:
+                srcLock.delete()
+                res = True
         
         self.mutex.release()
         
@@ -235,22 +238,35 @@ class Repository:
         
         @return: If file content changed, then return true; otherwise return false  
         """
+        res = False
         self.mutex.acquire()
         try:
-            blob = self.repo.tree("HEAD")[path]
-            with codecs.open(blob.abspath, "w", encoding="utf-8") as fileobj:
-                #f = open(blob.abspath, "w")
-                fileobj.write(content)
-                fileobj.close()
             
-            self.repo.git.add(path)
-            self._commit(authorName, authorEmail, message)
+            srcLock = None
+            try:
+                srcLock = SourceLock.objects.get(sourcePath = path)
+            except:
+                pass
+            
+            _time = time.time()
+            if srcLock is not None:
+                delta = int(_time - srcLock.lockUpdateTime)
+                if delta < settings.REPO_EDIT_TIMEOUT:
+                    blob = self.repo.tree("HEAD")[path]
+                    with codecs.open(blob.abspath, "w", encoding="utf-8") as fileobj:
+                        #f = open(blob.abspath, "w")
+                        fileobj.write(content)
+                        fileobj.close()
+                    
+                    self.repo.git.add(path)
+                    self._commit(authorName, authorEmail, message)
+                    res = True
         except:
-            return False
+            pass
         finally:
             self.mutex.release()
         
-        return True
+        return res
     
     def create(self, path, is_dir, authorName, authorEmail):
         """Create directory or file in repository

@@ -18,7 +18,7 @@ MANAGERS = ADMINS
 SCTP_HOST = 'localhost'
 SCTP_PORT = 55770
 
-EVENT_WAIT_TIMEOUT = 5
+REPO_EDIT_TIMEOUT = 60 # seconds
 
 
 DATABASES = {
@@ -48,7 +48,7 @@ MEDIA_URL = '/media/'
 STATIC_ROOT = ''
 STATIC_URL = '/static/'
 
-REPO_EDIT_TIMEOUT = 60 # seconds
+
 
 ADMIN_MEDIA_PREFIX = '/static/admin/'
 
