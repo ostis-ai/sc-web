@@ -3,3 +3,5 @@ MySQL-python
 South
 requests
 GitPython
+django-celery
+django-kombu

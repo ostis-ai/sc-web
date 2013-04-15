@@ -115,7 +115,16 @@ INSTALLED_APPS = (
     'repo',
 
     'south',
+    'djcelery',
+    'djkombu',
 )
+
+# Celery settings
+import djcelery
+djcelery.setup_loader()
+CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
+BROKER_BACKEND = 'djkombu.transport.DatabaseTransport'
+BROKER_URL = 'django://'
 
 LOGGING = {
     'version': 1,
