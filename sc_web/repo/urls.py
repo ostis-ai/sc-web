@@ -18,6 +18,5 @@ urlpatterns = patterns('repo.views',
     url(r'^api/content$', 'content', name='content'),
     
     url(r'^api/tree$', 'tree_list', name='tree_list'),
-    url(r'^api/edit_sync$', 'edit_sync', name='edit_sync'),
     
 )

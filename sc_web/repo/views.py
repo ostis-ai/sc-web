@@ -50,7 +50,7 @@ __all__ = (
 class RepoView(TemplateView):
     template_name = 'repo/view.html'
     
-    #@method_decorator(login_required)
+    @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         return super(RepoView, self).dispatch(request, *args, **kwargs)
     
@@ -65,7 +65,7 @@ def repo_edit(request):
 class FileEdit(TemplateView):
     template_name = 'repo/edit.html'
     
-    #@method_decorator(login_required)
+    @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         self.path = kwargs['path']
         return super(FileEdit, self).dispatch(request, *args, **kwargs)
@@ -76,6 +76,7 @@ class FileEdit(TemplateView):
         return context
 
 # ----- Ajax -----
+@login_required
 def list_files(request):
     result = None
     if request.is_ajax():
@@ -88,6 +89,7 @@ def list_files(request):
 
     return HttpResponse(result, 'application/json')
 
+@login_required
 def content(request):
     result = None
     if request.is_ajax():
@@ -98,6 +100,7 @@ def content(request):
 
     return HttpResponse(result, 'text/plain')
 
+@login_required
 def commit_info(request):
     result = None
     if request.is_ajax():
@@ -110,6 +113,7 @@ def commit_info(request):
 
     return HttpResponse(result, 'application/json')
 
+@login_required
 @csrf_exempt                                                                                  
 def save(request):
     result = False
@@ -124,6 +128,7 @@ def save(request):
         
     return HttpResponse(json.dumps({ 'success': result }), 'application/json')
 
+@login_required
 @csrf_exempt
 def create(request):
     result = False
@@ -142,6 +147,7 @@ def create(request):
         
     return HttpResponse(json.dumps({ 'success': result }), 'application/json')
 
+@login_required
 def lock(request):
     result = False
     if request.is_ajax():
@@ -153,6 +159,7 @@ def lock(request):
         
     return HttpResponse(json.dumps( result ), 'application/json')
 
+@login_required
 def update(request):
     result = False
     if request.is_ajax():
@@ -164,6 +171,7 @@ def update(request):
         
     return HttpResponse(json.dumps( result ), 'application/json')
 
+@login_required
 def unlock(request):
     result = False
     if request.is_ajax():
@@ -175,6 +183,7 @@ def unlock(request):
         
     return HttpResponse(json.dumps( { 'success': result } ), 'application/json')
 
+@login_required
 @csrf_exempt
 def tree_list(request):
     result = False
@@ -187,18 +196,3 @@ def tree_list(request):
         
     return HttpResponse(json.dumps({ 'success': result }), 'application/json')
 
-@csrf_exempt
-def edit_sync(request):
-    """Sync edit state with client.
-    It receive state information from client, and return resource answer about 
-    resource locking
-    """
-    result = {}
-    if request.is_ajax():
-        path = request.POST.get(u'path', None)
-        username = request.user.username
-        
-        
-        
-        
-    return HttpResponce(json.dumps(result))
