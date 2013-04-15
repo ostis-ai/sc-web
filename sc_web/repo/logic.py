@@ -26,7 +26,9 @@ from django.conf import settings
 import stat, os
 import thread
 import time, sys
+import codecs
 from repo.models import SourceLock
+
 from django.db.backends.dummy.base import DatabaseError
     
 def _singleton(cls):
@@ -236,9 +238,10 @@ class Repository:
         self.mutex.acquire()
         try:
             blob = self.repo.tree("HEAD")[path]
-            f = open(blob.abspath, "w")
-            f.write(content)
-            f.close()
+            with codecs.open(blob.abspath, "w", encoding="utf-8") as fileobj:
+                #f = open(blob.abspath, "w")
+                fileobj.write(content)
+                fileobj.close()
             
             self.repo.git.add(path)
             self._commit(authorName, authorEmail, message)
