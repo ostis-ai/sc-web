@@ -25,8 +25,9 @@ from git import *
 from django.conf import settings
 import stat, os
 import thread
-import time
+import time, sys
 from repo.models import SourceLock
+from django.db.backends.dummy.base import DatabaseError
     
 def _singleton(cls):
     """ Singleton instance.
@@ -127,7 +128,7 @@ class Repository:
         """
         self.mutex.acquire()
         
-        res = {}
+        res = {'success': False}
         try:
             srcLock = None
             try:
@@ -149,6 +150,10 @@ class Repository:
             res['success'] = srcLock.author == author
             res['lockAuthor'] = srcLock.author
             res['lockTime'] = srcLock.lockTime
+        except DatabaseError as error:
+            print 'Database error: ', error
+        except KeyError as error:
+            print 'Key error: ', error
         except:
             pass
         finally:
