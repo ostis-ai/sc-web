@@ -2,7 +2,7 @@
 {% load pacman_extras %}
 
 {% pacman_package_model_verbose_name as package_verbose_name %}
-{% if cl.opts.verbose_name == package_verbose_name %}
+{% if cl.opts.verbose_name == package_verbose_name and request.user.is_superuser %}
     {% pacman_packages_status as packages_status %}
     <div class="inline-group">
         <div class="tabular inline-related last-related">

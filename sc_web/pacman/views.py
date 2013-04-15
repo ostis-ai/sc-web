@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponseRedirect
 from django.views.generic.base import TemplateView, View
@@ -25,6 +25,7 @@ class BaseTaskView(View):
     task = None
 
     @method_decorator(login_required(login_url=reverse_lazy('admin:index')))
+    @method_decorator(user_passes_test(lambda u: u.is_superuser))
     def dispatch(self, request, *args, **kwargs):
         return super(BaseTaskView, self).dispatch(request, *args, **kwargs)
 
