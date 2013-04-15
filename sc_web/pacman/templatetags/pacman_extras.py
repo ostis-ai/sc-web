@@ -7,6 +7,8 @@ from django import template
 from pacman.models import Package, InternalFile
 
 __all__ = (
+    'pacman_package_model_verbose_name',
+    'pacman_packages_status',
     'pacman_accepted_packages_names_pyobj',
     'pacman_accepted_packages_names_json',
     'pacman_accepted_package_files_pyobj',
@@ -15,6 +17,21 @@ __all__ = (
 
 
 register = template.Library()
+
+
+@register.assignment_tag
+def pacman_package_model_verbose_name():
+    return Package._meta.verbose_name
+
+
+@register.assignment_tag
+def pacman_packages_status():
+    return {
+        'accepted': Package.objects.filter(state=Package.STATE.ACCEPTED).count(),
+        'updated': Package.objects.filter(state=Package.STATE.UPDATED).count(),
+        'waiting_for_delete': Package.objects.filter(state=Package.STATE.WAITING_FOR_DELETE).count(),
+        'waiting_for_download': Package.objects.filter(state=Package.STATE.WAITING_FOR_DOWNLOAD).count(),
+    }
 
 
 @register.assignment_tag
