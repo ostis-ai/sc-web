@@ -24,7 +24,7 @@
             {% csrf_token %}
             {{ form.as_p }}
             <input type="hidden" name="next_url" value="{{ request.GET.next|default:'/' }}">
-            <input type="submit">
+            <input type="submit" value="Login">
         </form>
     </div>
 </body>
