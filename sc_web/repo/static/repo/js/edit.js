@@ -19,7 +19,7 @@ Repo.edit.Form = {
         this.editResetButton = $('#edit-reset-button');
         
         this.lockPanel = $('#info-panel-locked');
-
+        this.modalSummary = $('#summary');
         
         var self = this;
         
@@ -37,12 +37,13 @@ Repo.edit.Form = {
         });
         this.editResetButton.click($.proxy(self.updateFileContent, self));
 
-        $('#cancel').click(function () {
-            //TODO
-        });
+        this.summaryApproved = false;
+        this.modalSummary.bind('input', $.proxy(this.onSummaryChanged, this));
+        this.onSummaryChanged();
         
         // initial state update
         this.update();
+        
     },
     
     /** Updates file content from server
@@ -97,10 +98,26 @@ Repo.edit.Form = {
         
     },
     
+    /** Process summary changes
+     */
+    onSummaryChanged: function() {
+        var value = this.modalSummary.val();
+        
+        if (value.length < 10) {
+            this.modalSummary.addClass('edit-summary-input-invalid');
+            this.summaryApproved = false;
+            this.modalSaveButton.addClass('disabled');
+        } else {
+            this.modalSummary.removeClass('edit-summary-input-invalid');
+            this.summaryApproved = true;
+            this.modalSaveButton.removeClass('disabled');
+        }
+        
+    },
+    
     /** Process lock changes
      */
     onLockChanged: function() {
-        
         
         if (this.lockedForEdit) {
             this.editLockButton.button('locked');
@@ -164,7 +181,11 @@ Repo.edit.Form = {
      */
     saveFile: function() {
         
+        if (!this.summaryApproved)
+            return; // do nothing
+        
         var self = this;
+        var summary = this.modalSummary.val();
         
         self.stopUpdateInterval();
         self.saveModal.modal('hide');
@@ -175,7 +196,7 @@ Repo.edit.Form = {
                 data: { 
                         'path': Repo.edit.Form.sourcePath,
                         'data': Repo.edit.Editor.getValue(),
-                        'summary': $('#summary').val()
+                        'summary': summary
                         },
                 success: function(data) {
                     if (data.success) {

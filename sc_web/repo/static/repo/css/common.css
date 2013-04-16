@@ -107,3 +107,9 @@
     color: #888;
     font-size: 14px;
 }
+
+
+/* ------------- edit -------------- */
+.edit-summary-input-invalid {
+    background: #fee !important;
+}
