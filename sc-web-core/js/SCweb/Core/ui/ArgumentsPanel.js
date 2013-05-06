@@ -1,7 +1,7 @@
 SCWeb.core.ui.ArgumentsPanel = {
     _container : '#arguments_buttons',
 
-    init : function(callback) {
+    init : function() {
 
         SCWeb.core.Translation.registerListener(this);
 
@@ -18,10 +18,6 @@ SCWeb.core.ui.ArgumentsPanel = {
             var idx = $(this).attr('arg_idx');
             SCWeb.core.Arguments.removeArgumentByIndex(parseInt(idx));
         });
-
-        if (callback) {
-            callback();
-        }
     },
 
     // ------- Arguments listener interface -----------

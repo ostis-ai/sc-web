@@ -50,17 +50,18 @@ SCWeb.core.Server = {
     // ----------------------
     
     /**
-     * Gets command menu structure.
+     * Get initial data from server
      *
-     * @param {Function} callback
+     * @param {Function} callback Calls on request finished successfully. This function
+     * get recieved data from server as a parameter
      */
-    getCommands: function(callback) {
+    init: function(callback) {
         
         SCWeb.core.Server._fireTaskStarted();
         
         $.ajax({
             type: 'GET',
-            url: 'api/commands',
+            url: 'api/init',
             data: null,
             success: callback,
             complete: function(data) { 
@@ -93,40 +94,6 @@ SCWeb.core.Server = {
             type: 'GET',
             url: 'api/idtf',
             data: data,
-            success: callback,
-            complete: function(data) { 
-                SCWeb.core.Server._fireTaskFinished();
-            }
-        });
-    },
-
-    /**
-     *
-     * @param {Function} callback
-     */
-    getOutputLanguages: function(callback) {
-        SCWeb.core.Server._fireTaskStarted();
-        $.ajax({
-            type: 'GET',
-            url: 'api/outputLangs',
-            data: null,
-            success: callback,
-            complete: function(data) { 
-                SCWeb.core.Server._fireTaskFinished();
-            }
-        });
-    },
-
-    /**
-     *
-     * @param {Function} callback
-     */
-    getIdentifierLanguages: function(callback) {
-        SCWeb.core.Server._fireTaskStarted();
-        $.ajax({
-            type: 'GET',
-            url: 'api/idtfLangs',
-            data: null,
             success: callback,
             complete: function(data) { 
                 SCWeb.core.Server._fireTaskFinished();

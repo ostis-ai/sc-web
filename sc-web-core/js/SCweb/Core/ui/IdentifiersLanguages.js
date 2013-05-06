@@ -4,17 +4,11 @@ SCWeb.core.ui.IdentifiersLanguages = {
 
     init: function(callback) {
         SCWeb.core.Translation.registerListener(this);
-        this.update(callback);
+        this.update();
     },
 
-    update: function(callback) {
-        var me = this;
-        SCWeb.core.Server.getIdentifierLanguages(function(languages) {
-            me._updateLanguages(languages);
-            if(callback) {
-                callback();
-            }
-        });
+    update: function() {
+        this._updateLanguages(SCWeb.core.Main.identifierLanguages);
     },
 
     getLanguage: function() {

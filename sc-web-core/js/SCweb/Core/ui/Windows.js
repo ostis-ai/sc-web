@@ -21,9 +21,6 @@ SCWeb.core.ui.Windows = {
             // to prevent handling 'click' event on a '.sc_window' tab
             event.stopPropagation();
         });
-        
-        if (callback)
-            callback();
     },
     
     /**

@@ -3,21 +3,15 @@ SCWeb.core.ui.OutputLanguages = {
     _languages: [],
     _transl_languages: [], // list of output languages that has translation support
 
-    init: function(callback) {
+    init: function() {
         SCWeb.core.Translation.registerListener(this);
         SCWeb.core.ComponentManager.setListener(this);
         
-        this.update(callback);
+        this.update();
     },
 
-    update: function(callback) {
-        var self = this;
-        SCWeb.core.Server.getOutputLanguages(function(languages) {
-            self._updateLanguages(languages);
-            if(callback) {
-                callback();
-            }
-        });
+    update: function() {
+        this._updateLanguages(SCWeb.core.Main.outputLanguages);
     },
 
     getLanguage: function() {

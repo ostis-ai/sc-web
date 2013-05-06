@@ -52,7 +52,59 @@ __all__ = (
 def serialize_error(status, message):
     return HttpResponse(json.dumps({'status': status, 'message': message}), status=status)
 
+def init(request):
+    result = '{}'
+    if request.is_ajax():
 
+        sctp_client = new_sctp_client()
+        keys = Keynodes(sctp_client)
+        keynode_ui_main_menu = keys[KeynodeSysIdentifiers.ui_main_menu]
+        keynode_ui_output_languages = keys[KeynodeSysIdentifiers.ui_output_languages]
+        keynode_ui_idtf_languages = keys[KeynodeSysIdentifiers.ui_idtf_languages]
+
+        # try to find main menu node
+        cmds = parse_menu_command(keynode_ui_main_menu, sctp_client, keys)
+        if cmds is None:
+            print 'There are no main menu in knowledge base'
+            cmds = {}
+            
+        # try to find available output languages
+        resLangs = sctp_client.iterate_elements(
+            SctpIteratorType.SCTP_ITERATOR_3F_A_A,
+            keynode_ui_output_languages,
+            ScElementType.sc_type_arc_pos_const_perm,
+            ScElementType.sc_type_node | ScElementType.sc_type_const
+        )
+        
+        outLangs = []
+        if (resLangs is not None):
+            for items in resLangs:
+                outLangs.append(items[2].to_id())
+        
+        # try to find available output languages
+        resIdtf = sctp_client.iterate_elements(
+            SctpIteratorType.SCTP_ITERATOR_3F_A_A,
+            keynode_ui_idtf_languages,
+            ScElementType.sc_type_arc_pos_const_perm,
+            ScElementType.sc_type_node | ScElementType.sc_type_const
+        )
+        idtfLangs = []
+        if (resIdtf is not None):
+            for items in resIdtf:
+                idtfLangs.append(items[2].to_id())
+        
+        
+        result = {'commands': cmds,
+                  'idtfLangs': idtfLangs,
+                  'outLangs': outLangs}
+        
+        result = json.dumps(result)
+
+    return HttpResponse(result, 'application/json')
+
+
+
+# -----------------------------------------
 def get_identifier(request):
     result = None
     if request.is_ajax():
@@ -120,27 +172,6 @@ def get_identifier(request):
                 result[addr_str] = idtf_value
 
         result = json.dumps(result)
-
-    return HttpResponse(result, 'application/json')
-
-
-def get_menu_commands(request):
-    result = '[]'
-    if request.is_ajax():
-
-        sctp_client = new_sctp_client()
-
-        keys = Keynodes(sctp_client)
-
-        keynode_ui_main_menu = keys[KeynodeSysIdentifiers.ui_main_menu]
-
-        # try to find main menu node
-        result = parse_menu_command(keynode_ui_main_menu, sctp_client, keys)
-        if result is None:
-            print 'There are no main menu in knowledge base'
-            result = '[]'
-        else:
-            result = json.dumps(result)
 
     return HttpResponse(result, 'application/json')
 
@@ -328,58 +359,6 @@ def do_command(request):
 
             # mark answer as displayed
             sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_displayed_answer, answer_addr)
-
-    return HttpResponse(result, 'application/json')
-
-
-def available_output_langs(request):
-    """Returns list of available output languages
-    """
-    result = '[]'
-    if request.is_ajax():
-        sctp_client = new_sctp_client()
-
-        keys = Keynodes(sctp_client)
-
-        keynode_ui_output_languages = keys[KeynodeSysIdentifiers.ui_output_languages]
-        res = sctp_client.iterate_elements(
-            SctpIteratorType.SCTP_ITERATOR_3F_A_A,
-            keynode_ui_output_languages,
-            ScElementType.sc_type_arc_pos_const_perm,
-            ScElementType.sc_type_node | ScElementType.sc_type_const
-        )
-        if (res is not None):
-            result = []
-            for items in res:
-                result.append(items[2].to_id())
-
-            result = json.dumps(result)
-
-    return HttpResponse(result, 'application/json')
-
-
-def available_idtf_langs(request):
-    """Returns list of available identifier languages
-    """
-    result = '[]'
-    if request.is_ajax():
-        sctp_client = new_sctp_client()
-
-        keys = Keynodes(sctp_client)
-
-        keynode_ui_idtf_languages = keys[KeynodeSysIdentifiers.ui_idtf_languages]
-        res = sctp_client.iterate_elements(
-            SctpIteratorType.SCTP_ITERATOR_3F_A_A,
-            keynode_ui_idtf_languages,
-            ScElementType.sc_type_arc_pos_const_perm,
-            ScElementType.sc_type_node | ScElementType.sc_type_const
-        )
-        if (res is not None):
-            result = []
-            for items in res:
-                result.append(items[2].to_id())
-
-            result = json.dumps(result)
 
     return HttpResponse(result, 'application/json')
 

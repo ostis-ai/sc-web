@@ -2,18 +2,13 @@ SCWeb.core.ui.Menu = {
     _menuContainerId: 'menu_container',
     _items: null,
 
-    init: function(callback) {
-        var me = this;
+    init: function() {
+        var self = this;
         
         // register for translation updates
         SCWeb.core.Translation.registerListener(this);
         
-        SCWeb.core.Server.getCommands(function(menuData) {
-            me._build(menuData);
-            if(callback) {
-                callback();
-            }
-        });
+        this._build(SCWeb.core.Main.userCommands);
     },
 
     _build: function(menuData) {
