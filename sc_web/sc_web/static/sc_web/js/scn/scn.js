@@ -116,9 +116,20 @@ Ostis.ui.scn.HtmlBuilder = function(parentId) {
         SET_ELEMENT : "•"
     };
 
+    var doViewerNodeModifications = function(node) {
+
+        if (node.set) {
+            for ( var setArcInd = 0; setArcInd < node.SCArcs.length; setArcInd++) {
+                var setArc = node.SCArcs[setArcInd];
+                setArc.marker = MARKERS.SET_ELEMENT;
+            }
+        }
+    };
+
     var _buildNode = function(node) {
 
         var output = '';
+        doViewerNodeModifications(node);
         output += _startWrapper(node);
         if (node.keyword) {
             output += _buildKeywordNode(node);
@@ -327,7 +338,7 @@ Ostis.ui.scn.HtmlBuilder = function(parentId) {
             nodeCont += _buildContourContent(node);
         } else if (node.type & sc_type_link) {
             nodeCont = Ostis.ui.scn.HtmlLinkBuilder.buildLink(parentId, node);
-        } else if (node.id) {
+        } else if (node.id && !node.set) {
             nodeCont = _buildAtomicNode(node);
         }
         return nodeCont;
