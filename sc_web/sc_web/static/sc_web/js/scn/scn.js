@@ -21,11 +21,12 @@ Ostis.ui.scn.Viewer = function(config) {
     var viewerId = config['container'];
     var viewerSelector = '#' + viewerId;
     var htmlBuilder = Ostis.ui.scn.HtmlBuilder(viewerId);
-    var core = config['core'];
-    var selectionHandler = Ostis.ui.scn.Selection(viewerId, core);
+    var selectionHandler = Ostis.ui.scn.Selection(viewerId);
     selectionHandler.init();
     var nodeLabels = [];
     var toTranslate = [];
+    var currentLanguage = null;
+
     var _initNodes = function() {
 
         var translXPath = viewerSelector + " ["
@@ -42,34 +43,33 @@ Ostis.ui.scn.Viewer = function(config) {
 
         var linksXPath = viewerSelector + " ["
                 + Ostis.ui.scn.HtmlAttributes.LINK + "]";
-        $(linksXPath)
-                .each(
-                        function(index, element) {
+        $(linksXPath).each(
+                function(index, element) {
 
-                            var scAddr = $(element).attr(
-                                    Ostis.ui.scn.HtmlAttributes.LINK);
-                            var containerId = $(element).attr(
-                                    Ostis.ui.scn.HtmlAttributes.HTML_ID);
-                            var eData = {};
-                            eData.nodesAddr = [ scAddr ];
-                            eData.container = containerId;
-                            core.fire(
-                                    SCWeb.sandbox.events.Component.GET_VIEWER,
-                                    eData);
-                        });
+                    var scAddr = $(element).attr(
+                            Ostis.ui.scn.HtmlAttributes.LINK);
+                    var containerId = $(element).attr(
+                            Ostis.ui.scn.HtmlAttributes.HTML_ID);
+                    SCWeb.core.ui.Windows.createViewersForScLinks([ scAddr ],
+                            containerId, function() { // success
+
+                            }, function() { // error
+
+                            });
+                });
 
     };
 
     return {
 
-        init : function() {
+        /**
+         * to support component interface
+         */
+        destroy : function() {
 
-            core.register(SCWeb.sandbox.events.Translation.UPDATE, $.proxy(
-                    this.updateTranslation, this));
-            core.register(SCWeb.sandbox.events.Data.NEW, $.proxy(
-                    this.receiveData, this));
         },
 
+        // -----
         receiveData : function(data) {
 
             var outputData = htmlBuilder.buildTree(data);
@@ -79,10 +79,14 @@ Ostis.ui.scn.Viewer = function(config) {
             selectionHandler.preselectArguments();
             _initNodes();
             _loadLinksData();
-            var eventData = {};
-            eventData.translValues = toTranslate;
-            eventData.callback = $.proxy(this.updateTranslation, this);
-            core.fire(SCWeb.sandbox.events.Translation.TRANSLATE, eventData);
+        },
+
+        translateIdentifiers : function(language) {
+
+            currentLanguage = language;
+            var proxyUpdateTrans = $.proxy(this.updateTranslation, this);
+            SCWeb.core.Translation.translate(toTranslate, language,
+                    proxyUpdateTrans);
         },
 
         updateTranslation : function(namesMap) {
@@ -95,6 +99,11 @@ Ostis.ui.scn.Viewer = function(config) {
                     $(nodeEl).text(label);
                 }
             }
+        },
+
+        getIdentifiersLanguage : function() {
+
+            return currentLanguage;
         }
     };
 };
@@ -472,9 +481,7 @@ Ostis.ui.scn.SCnComponent = {
     formats : [],
     factory : function(config) {
 
-        var viewer = new Ostis.ui.scn.Viewer(config);
-        viewer.init();
-        return viewer;
+        return new Ostis.ui.scn.Viewer(config);
     }
 };
 
@@ -482,7 +489,6 @@ SCWeb.core.ComponentManager.appendComponentInitialize(function() {
 
     SCWeb.core.ComponentManager.registerComponent(Ostis.ui.scn.SCnComponent);
 });
-
 
 Ostis.ui.scn.HtmlAttributes = {
     ID : 'scn_addr',
@@ -507,10 +513,11 @@ Ostis.ui.scn.SCnCssClass = {
 };
 
 
-Ostis.ui.scn.Selection = function(parent, core) {
+Ostis.ui.scn.Selection = function(parent) {
 
     var elementQueue = [];
     var parentSelector = '#' + parent;
+
     var _elementClick = function(event) {
 
         if (event.ctrlKey) {
@@ -519,7 +526,7 @@ Ostis.ui.scn.Selection = function(parent, core) {
                     Ostis.ui.scn.SCnCssClass.SELECTED, true);
             scAddr = $(event.currentTarget)
                     .attr(Ostis.ui.scn.HtmlAttributes.ID);
-            core.fire(SCWeb.sandbox.events.Argument.APPEND, scAddr);
+            SCWeb.core.Arguments.appendArgument(scAddr);
         } else {
             scAddr = $(event.currentTarget)
                     .attr(Ostis.ui.scn.HtmlAttributes.ID);
@@ -566,30 +573,6 @@ Ostis.ui.scn.Selection = function(parent, core) {
         });
     };
 
-    var _onArgumentAppended = function(argument, idx) {
-
-        _selectElement(argument);
-    };
-
-    var _onArgumentRemoved = function(argument, idx) {
-
-        var expr = parentSelector + " ." + Ostis.ui.scn.SCnCssClass.SELECTED
-                + "[" + Ostis.ui.scn.HtmlAttributes.ID + "=" + argument + "]";
-        $(expr).each(function(index, element) {
-
-            $(element).toggleClass(Ostis.ui.scn.SCnCssClass.SELECTED, false);
-        });
-    };
-
-    var _onArgumentsCleared = function() {
-
-        var expr = parentSelector + " ." + Ostis.ui.scn.SCnCssClass.SELECTED;
-        $(expr).each(function(index, element) {
-
-            $(element).toggleClass(Ostis.ui.scn.SCnCssClass.SELECTED, false);
-        });
-    };
-
     return {
         init : function() {
 
@@ -601,20 +584,45 @@ Ostis.ui.scn.Selection = function(parent, core) {
                     $.proxy(_elementLeave, this));
             $(parentSelector).delegate(hoveredClassExpr, 'click',
                     $.proxy(_elementClick, this));
-            core.register(SCWeb.sandbox.events.Argument.APPENDED, $.proxy(
-                    _onArgumentAppended, this));
-            core.register(SCWeb.sandbox.events.Argument.REMOVED, $.proxy(
-                    _onArgumentRemoved, this));
-            core.register(SCWeb.sandbox.events.Argument.CLEARED, $.proxy(
-                    _onArgumentsCleared, this));
+            SCWeb.core.Arguments.registerListener(this);
         },
 
         preselectArguments : function() {
 
-            var toSelect = core.fire(SCWeb.sandbox.events.Argument.GET_ALL);
+            var toSelect = SCWeb.core.Arguments.getArguments();
             for ( var toSelInd = 0; toSelInd < toSelect.length; toSelInd++) {
                 _selectElement(toSelect[toSelInd]);
             }
+        },
+
+        argumentAppended : function(argument, idx) {
+
+            _selectElement(argument);
+        },
+
+        argumentRemoved : function(argument, idx) {
+
+            var expr = parentSelector + " ."
+                    + Ostis.ui.scn.SCnCssClass.SELECTED + "["
+                    + Ostis.ui.scn.HtmlAttributes.ID + "=" + argument + "]";
+            $(expr).each(
+                    function(index, element) {
+
+                        $(element).toggleClass(
+                                Ostis.ui.scn.SCnCssClass.SELECTED, false);
+                    });
+        },
+
+        argumentsCleared : function() {
+
+            var expr = parentSelector + " ."
+                    + Ostis.ui.scn.SCnCssClass.SELECTED;
+            $(expr).each(
+                    function(index, element) {
+
+                        $(element).toggleClass(
+                                Ostis.ui.scn.SCnCssClass.SELECTED, false);
+                    });
         }
     };
 };

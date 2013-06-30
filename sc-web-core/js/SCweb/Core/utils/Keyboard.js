@@ -1,67 +1,47 @@
-SCWeb.core.utils.Keyboard = (function() {
-
-    var ctrl = false;
-    var shift = false;
-    var alt = false;
+SCWeb.core.utils.Keyboard = {
+    
+    ctrl: false,
+    shift: false,
+    alt: false,
+    
+    init: function(callback) {
+        
+        /*$(document).keydown(function(e) {
+            console.log(e.which);
+        });*/
+        
+        var self = this;
+        $(document).keydown($.proxy(this.keyDown, this));
+        $(document).keyup($.proxy(this.keyUp, this));
+        
+        callback();
+    },
+    
     /**
-     * @param {}
-     *            keyCode Code of key that need to be updated
-     * @param {boolean}
-     *            value New value of key state
+     * @param {} keyEvent Key event from jquery
      */
-    var _updateKeyState = function(keyCode, value) {
+    keyDown: function(keyEvent) {
+        this._updateKeyState(keyEvent.which, true);
+    },
+    
+    /**
+     * @param {} keyEvent Key event from jquery
+     */
+    keyUp: function(keyEvent) {
+        this._updateKeyState(keyEvent.which, false);
+    },
+    
+    /**
+     * @param {} keyCode Code of key that need to be updated
+     * @param {boolean} value New value of key state
+     */
+    _updateKeyState: function(keyCode, value) {
+        
+        if (keyCode == 17) this.ctrl = value;
+        if (keyCode == 16) this.shift = value;
+        if (keyCode == 18) this.alt = value;
+    }
 
-        if (keyCode == 17) {
-            ctrl = value;
-        }
-        if (keyCode == 16) {
-            shift = value;
-        }
-        if (keyCode == 18) {
-            alt = value;
-        }
-    };
-    return {
-        init : function() {
+};
 
-            /*
-             * $(document).keydown(function(e) { console.log(e.which); });
-             */
-            $(document).keydown($.proxy(this.keyDown, this));
-            $(document).keyup($.proxy(this.keyUp, this));
-        },
 
-        /**
-         * @param {}
-         *            keyEvent Key event from jquery
-         */
-        keyDown : function(keyEvent) {
-
-            _updateKeyState(keyEvent.which, true);
-        },
-
-        /**
-         * @param {}
-         *            keyEvent Key event from jquery
-         */
-        keyUp : function(keyEvent) {
-
-            _updateKeyState(keyEvent.which, false);
-        },
-
-        isCtrlPressed : function() {
-
-            return ctrl;
-        },
-
-        isShiftPressed : function() {
-
-            return shift;
-        },
-
-        isAltPressed : function() {
-
-            return alt;
-        }
-    };
-})();

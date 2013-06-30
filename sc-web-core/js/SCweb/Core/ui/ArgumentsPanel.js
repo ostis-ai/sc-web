@@ -1,106 +1,96 @@
-SCWeb.core.ui.ArgumentsPanel = (function() {
+SCWeb.core.ui.ArgumentsPanel = {
+    _container : '#arguments_buttons',
 
-    var _container = '#arguments_buttons';
-    return {
-        init : function() {
+    init : function() {
 
-            SCWeb.core.Environment.on(SCWeb.core.events.Translation.UPDATE, $
-                    .proxy(this.updateTranslation, this));
-            SCWeb.core.Environment.on(
-                    SCWeb.core.events.Translation.COLLECT_ADDRS, $.proxy(
-                            this.getObjectsToTranslate, this));
-            SCWeb.core.Environment.on(SCWeb.core.events.Argument.APPENDED, $
-                    .proxy(this.argumentAppended, this));
-            SCWeb.core.Environment.on(SCWeb.core.events.Argument.REMOVED, $
-                    .proxy(this.argumentRemoved, this));
-            SCWeb.core.Environment.on(SCWeb.core.events.Argument.CLEARED, $
-                    .proxy(this.argumentsCleared, this));
-            $('#arguments_clear_button').click(function() {
+        SCWeb.core.Translation.registerListener(this);
 
-                SCWeb.core.Environment.fire(SCWeb.core.events.Argument.CLEAR);
-            });
+        SCWeb.core.Arguments.registerListener(this);
+        SCWeb.core.Translation.registerListener(this);
 
-            $(document).on(
-                    "click",
-                    ".arguments_item",
-                    function(event) {
+        $('#arguments_clear_button').click(function() {
 
-                        var idx = $(this).attr('arg_idx');
-                        var intInd = parseInt(idx);
-                        SCWeb.core.Environment.fire(
-                                SCWeb.core.events.Argument.REMOVE_IND, intInd);
-                    });
-        },
+            SCWeb.core.Arguments.clear();
+        });
 
-        // ------- Arguments listener interface -----------
-        argumentAppended : function(event) {
+        $(document).on("click", ".arguments_item", function(event) {
 
-            var idx_str = event.argIndex.toString();
-            var argument = event.argValue;
-            var eventData = {};
-            eventData.language = null;
-            eventData.translValues = [ argument ];
-            eventData.callback = $.proxy(function(namesMap) {
+            var idx = $(this).attr('arg_idx');
+            SCWeb.core.Arguments.removeArgumentByIndex(parseInt(idx));
+        });
+    },
 
-                var value = argument;
-                if (namesMap[argument]) {
-                    value = namesMap[argument];
-                }
+    // ------- Arguments listener interface -----------
+    argumentAppended : function(argument, idx) {
 
-                var new_button = '<button class="btn arguments_item" sc_addr="'
-                        + argument + '" arg_idx="' + idx_str
-                        + '" id="argument_' + idx_str + '">' + value
-                        + '</button>';
-                $(_container).append(new_button);
-            }, this);
-            SCWeb.core.Environment.fire(
-                    SCWeb.core.events.Translation.TRANSLATE, eventData);
-        },
+        var idx_str = idx.toString();
+        var self = this;
 
-        argumentRemoved : function(event) {
+        // translate added command
+        SCWeb.core.Translation
+                .translate(
+                        [ argument ],
+                        null,
+                        function(namesMap) {
 
-            var idx = event.argIndex;
-            $('#argument_' + idx.toString()).remove();
-            // update indicies
-            $(_container + ' [arg_idx]').each(function(index, element) {
+                            var value = argument;
+                            if (namesMap[argument]) {
+                                value = namesMap[argument];
+                            }
 
-                var v = parseInt($(this).attr('arg_idx'));
+                            var new_button = '<button class="btn arguments_item" sc_addr="'
+                                    + argument
+                                    + '" arg_idx="'
+                                    + idx_str
+                                    + '" id="argument_'
+                                    + idx_str
+                                    + '">'
+                                    + value + '</button>';
+                            $(self._container).append(new_button);
+                        });
 
-                if (v > idx) {
-                    v = v - 1;
-                    $(this).attr('arg_idx', v.toString());
-                    $(this).attr('id', 'argument_' + v.toString());
-                }
-            });
-        },
+    },
 
-        argumentsCleared : function() {
+    argumentRemoved : function(argument, idx) {
 
-            $(_container).empty();
-        },
+        $('#argument_' + idx.toString()).remove();
+        // update indicies
+        $(this._container + ' [arg_idx]').each(function(index, element) {
 
-        // ------- Translation listener interface ---------
-        updateTranslation : function(namesMap) {
+            var v = parseInt($(this).attr('arg_idx'));
 
-            // apply translation
-            $('#arguments_buttons [sc_addr]').each(function(index, element) {
+            if (v > idx) {
+                v = v - 1;
+                $(this).attr('arg_idx', v.toString());
+                $(this).attr('id', 'argument_' + v.toString());
+            }
+        });
+    },
 
-                var addr = $(element).attr('sc_addr');
-                if (namesMap[addr]) {
-                    $(element).text(namesMap[addr]);
-                }
-            });
-        },
+    argumentsCleared : function() {
 
-        /**
-         * @return Returns list obj sc-elements that need to be translated
-         */
-        getObjectsToTranslate : function(toTranslate) {
+        $(this._container).empty();
+    },
 
-            var arguments = SCWeb.core.Environment
-                    .getResource(SCWeb.core.Resources.ARGUMENTS);
-            toTranslate.append(arguments);
-        }
+    // ------- Translation listener interface ---------
+    updateTranslation : function(namesMap) {
 
-    };
-})();
+        // apply translation
+        $('#arguments_buttons [sc_addr]').each(function(index, element) {
+
+            var addr = $(element).attr('sc_addr');
+            if (namesMap[addr]) {
+                $(element).text(namesMap[addr]);
+            }
+        });
+    },
+
+    /**
+     * @return Returns list obj sc-elements that need to be translated
+     */
+    getObjectsToTranslate : function() {
+
+        return SCWeb.core.Arguments._arguments;
+    }
+
+};

@@ -1,1 +1,0 @@
-$.namespace('SCWeb.sandbox.events');

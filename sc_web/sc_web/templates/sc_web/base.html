@@ -121,10 +121,7 @@
                     var cmdAddr = addrs['ui_menu_view_full_semantic_neighborhood'];
                     var window = SCWeb.core.ui.Windows.createWindow(outputAddr);
                     SCWeb.core.Server.doCommand(cmdAddr, outputAddr, [argumentAddr], function(data){
-                        var eventData = {};
-                        eventData.container = window;
-                        eventData.newData = data;
-                        SCWeb.core.Environment.fire(SCWeb.core.events.Data.NEW, eventData);
+                        SCWeb.core.ui.Windows.sendDataToWindow(window, data);
                         SCWeb.core.ui.Locker.hide();
                     });
                 });

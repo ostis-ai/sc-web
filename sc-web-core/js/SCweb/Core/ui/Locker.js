@@ -1,18 +1,14 @@
-SCWeb.core.ui.Locker = (function() {
+SCWeb.core.ui.Locker = {
+    _locker: null,
 
-    var _locker = null;
-    return {
-        show : function() {
-
-            if (!_locker) {
-                _locker = $('<div id="uilocker"></div>').appendTo('body');
-            }
-            _locker.addClass('shown');
-        },
-
-        hide : function() {
-
-            _locker.removeClass('shown');
+    show: function() {
+        if(!this._locker) {
+            this._locker = $('<div id="uilocker"></div>').appendTo('body');
         }
-    };
-})();
+        this._locker.addClass('shown');
+    },
+
+    hide: function() {
+        this._locker.removeClass('shown');
+    }
+};
