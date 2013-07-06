@@ -61,7 +61,7 @@ SCWeb.core.Server = {
         
         $.ajax({
             type: 'GET',
-            url: 'api/init/',
+            url: 'api/init',
             data: null,
             success: callback,
             complete: function(data) { 
@@ -91,7 +91,7 @@ SCWeb.core.Server = {
         SCWeb.core.Server._fireTaskStarted();
         //TODO: change to POST because the data may reach the limit of GET parameters string
         $.ajax({
-            type: 'GET',
+            type: 'POST',
             url: 'api/idtf',
             data: data,
             success: callback,
@@ -163,7 +163,7 @@ SCWeb.core.Server = {
         
         SCWeb.core.Server._fireTaskStarted();
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: "api/scAddrs",
             data: arguments,
             success: callback,
@@ -189,7 +189,7 @@ SCWeb.core.Server = {
         
         SCWeb.core.Server._fireTaskStarted();
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: "api/linkFormat",
             data: arguments,
             success: success,

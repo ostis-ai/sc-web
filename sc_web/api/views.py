@@ -24,8 +24,11 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 import json
 import time
 
+
 from django.conf import settings
 from django.http import HttpResponse
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
 
 from keynodes import KeynodeSysIdentifiers, Keynodes
 
@@ -67,7 +70,7 @@ def init(request):
         if cmds is None:
             print 'There are no main menu in knowledge base'
             cmds = {}
-            
+
         # try to find available output languages
         resLangs = sctp_client.iterate_elements(
             SctpIteratorType.SCTP_ITERATOR_3F_A_A,
@@ -75,12 +78,12 @@ def init(request):
             ScElementType.sc_type_arc_pos_const_perm,
             ScElementType.sc_type_node | ScElementType.sc_type_const
         )
-        
+
         outLangs = []
         if (resLangs is not None):
             for items in resLangs:
                 outLangs.append(items[2].to_id())
-        
+
         # try to find available output languages
         resIdtf = sctp_client.iterate_elements(
             SctpIteratorType.SCTP_ITERATOR_3F_A_A,
@@ -92,12 +95,12 @@ def init(request):
         if (resIdtf is not None):
             for items in resIdtf:
                 idtfLangs.append(items[2].to_id())
-        
-        
+
+
         result = {'commands': cmds,
                   'idtfLangs': idtfLangs,
                   'outLangs': outLangs}
-        
+
         result = json.dumps(result)
 
     return HttpResponse(result, 'application/json')
@@ -105,10 +108,11 @@ def init(request):
 
 
 # -----------------------------------------
+@csrf_exempt
 def get_identifier(request):
     result = None
     if request.is_ajax():
-        lang_code = ScAddr.parse_from_string(request.GET.get(u'language', None))
+        lang_code = ScAddr.parse_from_string(request.POST.get(u'language', None))
 
         if lang_code is None:
             print 'Invalid sc-addr of language'
@@ -119,7 +123,7 @@ def get_identifier(request):
         arguments = []
         arg = ''
         while arg is not None:
-            arg = request.GET.get(u'%d_' % idx, None)
+            arg = request.POST.get(u'%d_' % idx, None)
             if arg is not None:
                 arguments.append(arg)
             idx += 1
@@ -362,7 +366,7 @@ def do_command(request):
 
     return HttpResponse(result, 'application/json')
 
-
+@csrf_exempt
 def sc_addrs(request):
     result = '[]'
     if request.is_ajax():
@@ -375,7 +379,7 @@ def sc_addrs(request):
         idx = 0
         while first or (arg is not None):
             arg_str = u'%d_' % idx
-            arg = request.GET.get(arg_str, None)
+            arg = request.POST.get(arg_str, None)
             if arg is not None:
                 arguments.append(arg)
             first = False
@@ -391,7 +395,7 @@ def sc_addrs(request):
 
     return HttpResponse(result, 'application/json')
 
-
+@csrf_exempt
 def link_format(request):
     result = '{}'
     if request.is_ajax():
@@ -404,7 +408,7 @@ def link_format(request):
         idx = 0
         while first or (arg is not None):
             arg_str = u'%d_' % idx
-            arg = ScAddr.parse_from_string(request.GET.get(arg_str, None))
+            arg = ScAddr.parse_from_string(request.POST.get(arg_str, None))
             if arg is not None:
                 arguments.append(arg)
             first = False
