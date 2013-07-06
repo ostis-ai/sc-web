@@ -43,6 +43,8 @@ Ostis.ui.scn.Viewer = function(config) {
 
         var linksXPath = viewerSelector + " ["
                 + Ostis.ui.scn.HtmlAttributes.LINK + "]";
+        var containers = {};
+        
         $(linksXPath).each(
                 function(index, element) {
 
@@ -50,13 +52,15 @@ Ostis.ui.scn.Viewer = function(config) {
                             Ostis.ui.scn.HtmlAttributes.LINK);
                     var containerId = $(element).attr(
                             Ostis.ui.scn.HtmlAttributes.HTML_ID);
-                    SCWeb.core.ui.Windows.createViewersForScLinks([ scAddr ],
-                            containerId, function() { // success
+					containers[scAddr] = containerId;
+                });
+                
+         SCWeb.core.ui.Windows.createViewersForScLinks(containers, 
+							function() { // success
 
                             }, function() { // error
 
                             });
-                });
 
     };
 

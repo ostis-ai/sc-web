@@ -191,19 +191,22 @@ SCWeb.core.ui.Windows = {
     
     /**
      * Create viewers for specified sc-links
-     * @param {Array} linkAddrs List of sc-link addrs
-     * @param {Object} containers Map of viewer containers (key: sc-link addr, value: container)
+     * @param {Object} Map of viewer containers (key: sc-link addr, value: container)
      * @param {Function} success Function that calls on success result
      * @param {Function} error Function that calls on error result
      */
-    createViewersForScLinks: function(linkAddrs, container, success, error) {
+    createViewersForScLinks: function(containers, success, error) {
+		var linkAddrs = [];
+		for (var addr in containers)
+			linkAddrs.push(addr);
+		
         SCWeb.core.Server.getLinksFormat(linkAddrs, 
             function(formats) {
                 
                 for (var i = 0; i < linkAddrs.length; i++) {
                     var fmt = formats[linkAddrs[i]];
                     if (fmt) {
-                        var config = {"dataAddr": linkAddrs[i], "container": container};
+                        var config = {"dataAddr": linkAddrs[i], "container": containers[linkAddrs[i]]};
                         SCWeb.core.ComponentManager.createComponentInstanceByFormat(config, 
                                 SCWeb.core.ComponentType.viewer, fmt);
                     }

@@ -61,7 +61,7 @@ SCWeb.core.Server = {
         
         $.ajax({
             type: 'GET',
-            url: 'api/init',
+            url: 'api/init/',
             data: null,
             success: callback,
             complete: function(data) { 

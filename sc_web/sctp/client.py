@@ -51,7 +51,11 @@ class SctpClient:
         @param port: connection listening port (int)
         """
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.connect((host, port))
+        try:
+            self.sock.connect((host, port))
+        except Exception, e:
+            print "can't connect to %s:%d. Exception type is %s" % (host, port, `e`)
+                
 
     def shutdown(self):
         """Close network session

@@ -78,16 +78,20 @@ SCsViewer.prototype = {
         $(this._container).append(outputHtml);
         
         var self = this;
+        var containers = {};
         // now get sc-links data, and show them
         $.each(this._sc_links, function(addr, obj) {
             var containerId = "scs_window_" + self._id.toString() + '_' + addr;
-            SCWeb.core.ui.Windows.createViewersForScLinks([addr], containerId, 
+            containers[addr] = containerId;
+            
+        });
+        
+        SCWeb.core.ui.Windows.createViewersForScLinks(containers, 
                 function() { // success
                     //$(self._container + ' #' + containerId).text('value');
                 },
                 function() { // error
                 });
-        });
     },
     
     translateIdentifiers: function(language) {

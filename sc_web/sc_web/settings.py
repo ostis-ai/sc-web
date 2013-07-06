@@ -19,6 +19,7 @@ SCTP_HOST = 'localhost'
 SCTP_PORT = 55770
 
 REPO_EDIT_TIMEOUT = 60 # seconds
+EVENT_WAIT_TIMEOUT = 10 # seconds
 
 
 DATABASES = {
