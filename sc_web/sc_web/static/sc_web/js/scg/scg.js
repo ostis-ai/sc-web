@@ -425,8 +425,8 @@ SCg.Render.prototype = {
 									
 		this.d3_container.append('svg:rect')
 						.attr("class", "SCgContainer")
-						.attr('width', parseInt(this.d3_drawer.style("width")))
-						.attr('height', parseInt(this.d3_drawer.style("height")));
+						.attr('width', "100%")
+						.attr('height', "100%");
 						
 						
 		this.d3_drag_line = this.d3_container.append('svg:path')
