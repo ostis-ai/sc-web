@@ -47,7 +47,7 @@ SCWeb.core.ui.Windows = {
         var window_data_container = 'window_data_' + this.window_counter;
         
         // fist of all we need to append tab
-        $('#tabs_container').append('<li id="' + window_id + '" class="sc_window" window_num="' + window_num_str + '"><a href="#">Window ' + window_num_str + '</a><button class="close" window_num="' + window_num_str + '"><i class="icon-remove-sign"></i></button></li>');
+        $('#tabs_container').append('<li id="' + window_id + '" class="sc_window" window_num="' + window_num_str + '"><a href="#">Window ' + window_num_str + '</a><button class="close" window_num="' + window_num_str + '" aria-hidden="true">&times;</button></li>');
         $('#tabs_data_container').append('<div id="' + window_data_container + '" class="sc_window_data" window_num="' + window_num_str + '"></div>');
         var config = {'container': window_data_container};
         var window = SCWeb.core.ComponentManager.createComponentInstanceByOutputLanguage(config, SCWeb.core.ComponentType.viewer, outputLang);

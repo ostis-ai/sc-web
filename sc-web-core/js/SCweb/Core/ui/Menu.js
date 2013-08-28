@@ -15,7 +15,7 @@ SCWeb.core.ui.Menu = {
 
         this._items = [];
 
-        var menuHtml = '<ul class="nav">';
+        var menuHtml = '<ul class="nav navbar-nav">';
 
         //TODO: change to children, remove intermediate 'childs'
         if(menuData.hasOwnProperty('childs')) {
@@ -39,14 +39,13 @@ SCWeb.core.ui.Menu = {
 
         this._items.push(item.id);
 
-        var item_class = 'dropdown';
         var itemHtml = '';
-        if(item.cmd_type == 'atom') {
-            itemHtml = '<li class="' + item_class + '"><a id="' + item.id + '"sc_addr="' + item.id + '" class="menu_item ' + item.cmd_type + '" >' + item.id + '</a>';
+        if(item.cmd_type == 'cmd_noatom') {
+            itemHtml = '<li class="dropdown"><a id="' + item.id + '" class="menu_item ' + item.cmd_type + ' dropdown-toggle" data-toggle="dropdown" href="#" ><span sc_addr="' + item.id + '">'  + item.id + '</span><b class="caret"></b></a>';
+            
         } else {
-            itemHtml = '<li class="' + item_class + '"><a id="' + item.id + '"sc_addr="' + item.id + '" class="menu_item ' + item.cmd_type + ' dropdown-toggle" data-toggle="dropdown" href="#" >' + item.id + '</a>';
+            itemHtml = '<li><a id="' + item.id + '"sc_addr="' + item.id + '" class="menu_item ' + item.cmd_type + '" >' + item.id + '</a>';
         }
-
 
         if(item.hasOwnProperty('childs')) {
             itemHtml += '<ul class="dropdown-menu">';

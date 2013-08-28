@@ -15,7 +15,7 @@
 }
 
 #main_container {
-    padding-top: 50px;
+    padding-top: 70px;
     padding-bottom: 100px;
 }
 
@@ -40,7 +40,7 @@
 .task_icon {
     width: 32px;
     height: 32px;
-    margin-top: 5px;
+    margin-top: 12px;
     margin-left: 10px;
     text-align: center;
 
@@ -58,6 +58,14 @@
     margin-top: 3px;
     vertical-align: middle;
     cursor: help;
+}
+
+.argument-container {
+	min-height: 38px;
+}
+
+.argument-buttons {
+	margin-top: 2px;
 }
 
 

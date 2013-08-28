@@ -2,95 +2,103 @@
 <html lang="{{ LANGUAGE_CODE }}">
 <head>
     <meta charset="utf-8" />
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="keywords" content="" />
     <meta name="description" content="" />
     {% block extrameta %}{% endblock extrameta %}
-	<title>{% block title %}OSTIS{% endblock %}</title>
+    <title>{% block title %}OSTIS{% endblock %}</title>
 
-	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}plugins/bootstrap/css/bootstrap-responsive.min.css" />
-	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}plugins/bootstrap/css/bootstrap.min.css" />
-	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}plugins/bootstrap/css/bootstrap-multilevel.css" />
-	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}sc_web/css/common.css" />
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}plugins/bootstrap/css/bootstrap-responsive.min.css" />
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}plugins/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}plugins/bootstrap/css/bootstrap-multilevel.css" />
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}sc_web/css/common.css" />
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}sc_web/css/scg.css" />
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}sc_web/css/scs.css" />
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}sc_web/css/scn.css" />
     {% block extrastyles %}{% endblock extrastyles %}
 
-	{% include 'sc_web/base_pluginscripts.html' %}
+    {% include 'sc_web/base_pluginscripts.html' %}
     {% block extrapluginscripts %}{% endblock extrapluginscripts %}
 
     {% include 'sc_web/base_scripts.html' %}
     {% block extrascripts %}{% endblock extrascripts %}
 
-	{% block head %}{% endblock %}
+    {% block head %}{% endblock %}
 </head>
 
 {% block body %}
 <body id="home">
 
-	<!-- header -->
-	<!--<div class="page-header">
-		<h1>IMS<small>OSTIS</small></h1>
+    <!-- header -->
+    <!--<div class="page-header">
+        <h1>IMS<small>OSTIS</small></h1>
     </div>-->
-	<div class="navbar navbar-inverse navbar-fixed-top">
-		<div class="navbar-inner">
-			<a class="brand" href="#">OSTIS</a>
-            <!-- Help button -->
-            <div id="help_button" class="help_button navbar-form pull-left">
-                <img src="{{ STATIC_URL }}sc_web/images/help-red.png" class="help_button_hovered"/>
+    <div class="navbar navbar-inverse navbar-fixed-top" role="banner">
+        <div><!-- class="container">-->
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">OSTIS</a>
+                <!-- Help button -->
+                <div id="help_button" class="help_button navbar-form pull-left">
+                    <a data-toggle="modal" href="{{ STATIC_URL }}sc_web/html/help.html" data-target="#helpModal"><img src="{{ STATIC_URL }}sc_web/images/help-red.png" class="help_button"/></a>
+                </div>
             </div>
+            <nav class="collapse navbar-collapse bs-navbar-collape" role="navigation">
+                <div class="navbar-inner">
 
-			<div id="menu_container">
-				<!-- there will be placed menu items -->
-			</div>
-            <div id="task_panel" class="task_icon navbar-form pull-right">
-                <div id="task_num" class="task_text">16</div>
-            </div>
+                    <div id="menu_container">
+                        <!-- there will be placed menu items -->
+                    </div>
+                    <div id="task_panel" class="task_icon navbar-form pull-right">
+                        <div id="task_num" class="task_text">16</div>
+                    </div>
 
-            <div class="auth_panel navbar-form pull-right">
-                <ul class="nav">
-                    {% if user.is_authenticated %}
-                        <li><a href="{% url accounts:logout %}">Logout</a></li>
-                    {% else %}
-                        <li><a href="#js-accounts-login-modal" data-toggle="modal">Login</a></li>
-                        <!-- <li><a href="{% url accounts:registration %}">Register</a></li> -->
-                    {% endif %}
-                </ul>
-            </div>
+                    <div class="auth_panel navbar-form pull-right">
+                        <ul class="nav">
+                            {% if user.is_authenticated %}
+                                <li><a href="{% url accounts:logout %}">Logout</a></li>
+                            {% else %}
+                                <li><a href="#js-accounts-login-modal" data-toggle="modal">Login</a></li>
+                                <!-- <li><a href="{% url accounts:registration %}">Register</a></li> -->
+                            {% endif %}
+                        </ul>
+                    </div>
 
-			<div class="language_selectors navbar-form pull-right">
-                <button id="btn_add_new_window" class="btn btn-inverse"><i class="icon-plus-sign icon-white"></i></button>
-				<select class="combobox" id="select_output_language">
-					<!-- Options will be inserted on start -->
-				</select>
-				<select class="combobox" id="select_idtf_language">
-					<!-- Options will be inserted on start -->
-				</select>
-			</div>
+                    <div class="language_selectors navbar-form pull-right">
+                        <button id="btn_add_new_window" class="btn btn-success navbar-btn btn-xs"><span class="glyphicon glyphicon-plus"></span></button>
+                        <select class="combobox" id="select_output_language">
+                            <!-- Options will be inserted on start -->
+                        </select>
+                        <select class="combobox" id="select_idtf_language">
+                            <!-- Options will be inserted on start -->
+                        </select>
+                    </div>
 
-		</div>
-	</div>
+                </div>
+            </nav>
+        </div>
+    </div>
 
     <!-- main content -->
-	<div id="main_container">
-		<ul id="tabs_container" class="nav nav-tabs">
+    <div id="main_container">
+        <ul id="tabs_container" class="nav nav-tabs">
             <!-- Tabs will be added later -->
-		</ul>
-        <div id="tabs_data_container" class="well well-small">
+        </ul>
+        <div id="tabs_data_container" class="panel panel-default">
             <!-- Containers will be added automaticaly -->
         </div>
-		{% block content %}{% endblock %}
+        {% block content %}{% endblock %}
     </div>
 
     <div id="footer" class="navbar navbar-inverse navbar-fixed-bottom">
         <div class="navbar-inner">
-            <div id="arguments_container" class="well well-small">
-                <div id="arguments_buttons" class="btn-group">
+            <div id="arguments_container" class="argument-container">
+                <button id="arguments_clear_button" class="btn btn-danger">Clear</button>
+                
+                <div id="arguments_buttons" class="btn-group argument-buttons">
                     <!-- Buttons will be inserted on arguments append -->
                 </div>
 
-                <button id="arguments_clear_button" class="close">Clear</button>
+                
             </div>
             Copyright © 2012 <a href="#">OSTIS</a>
         </div>
@@ -98,12 +106,13 @@
 
 
     <!-- Modal -->
-    <div id="helpModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="Help" aria-hidden="true">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        </div>
-        <div class="modal-body">
-        </div>
+    <div id="helpModal" class="modal" tabindex="-1" role="dialog" aria-labelledby="Help" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body" id="helpModalBody">
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
     </div>
 
     {% if not user.is_authenticated %}
@@ -129,7 +138,7 @@
         });
 
         $('#help_button').click(function() {
-            $('#helpModal').modal({"keyboard": true, "remote": "{{ STATIC_URL }}sc_web/html/help.html"});
+            $('#helpModal').modal({"keyboard": true});
         });
     </script>
 

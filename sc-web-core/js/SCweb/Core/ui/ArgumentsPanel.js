@@ -38,7 +38,7 @@ SCWeb.core.ui.ArgumentsPanel = {
                                 value = namesMap[argument];
                             }
 
-                            var new_button = '<button class="btn arguments_item" sc_addr="'
+                            var new_button = '<button class="btn btn-primary arguments_item" sc_addr="'
                                     + argument
                                     + '" arg_idx="'
                                     + idx_str
