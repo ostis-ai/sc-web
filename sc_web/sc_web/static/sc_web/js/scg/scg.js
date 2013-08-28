@@ -4,40 +4,52 @@ var scgLayout = function(config){
 };
 
 scgLayout.prototype = {
-
-
+     /*
+    _defaultConfig  : {
+        _step_max : 0.1,
+        _step_min : 0.0125,
+        _max_rep_length : 24.0,
+        _max_force : 0.7,
+        _repulsion : 27.7,
+        _rigidity : 1.1,
+        _length : 5.5,
+        _gravity : 0.01,
+        NUM_STEP_ITERATION      : 5,
+        MIN_MOVEMENT            : 5
+    },
+       */
     _initScgLayout  : function(config){
         this.config = config;
 
         this.config = this._defaultConfig;
-
+        //this.forces = this._defaultForces;
+        /*
         this._graph = null;
         this._renderer = null;
         this.nodeForce = {};
         this._timeoutCode = 0;
         this.isActive = false;
+
+        this.step_max = this._defaultConfig._step_max;
+        this.step = this.step_max;
+        this.step_min = this._defaultConfig._step_min;
+        this.max_rep_length = this._defaultConfig._max_rep_length;
+        this.max_force = this._defaultConfig._max_force;
+
+        this.repulsion = this._defaultConfig._repulsion;
+        this.rigidity = this._defaultConfig._rigidity;
+        this._length = this._defaultConfig._length;
+        this.gravity = this._defaultConfig._gravity;
+
+        this.radius = 1;
+        this.angle = 0.0;
+        this.viewMode = 1;
+          */
+        this.needModeUpdate = true;
     },
 
-    _defaultConfig  : {
-        MAX_REPULSIVE_LENGTH    : 350,
-        MAX_REPULSIVE_SQUARED   : 350 * 350,
-        AVG_ATTRACTIVE_LENGTH   : 100,
-        DEF_START_BOX_HEIGHT    : 101,
-        MAX_ITERATIONS_CYCLE    : 21,
 
-        REPULSIVE_PARAMETER     : 12,
-        ATTRACTIVE_PARAMETER    : 2,
 
-        TIME_VELOCITY           : 1,
-
-        SCREEN_CENTER_X         : 200,                        //not used
-        SCREEN_CENTER_Y         : 250,                        //not used
-
-        MAX_FORCE               : 1.0,
-
-        NUM_STEP_ITERATION      : 5,
-        MIN_MOVEMENT            : 2
-    },
 
     setGraph        : function(graph){
         this._graph = graph;
@@ -46,7 +58,7 @@ scgLayout.prototype = {
     setRenderer     : function(renderer){
         this._renderer = renderer;
     },
-
+           /*
     layout        : function(){
 
         this.isActive = true;
@@ -70,23 +82,254 @@ scgLayout.prototype = {
         clearTimeout(this._timeoutCode);
     },
 
+    //Applies force directed layout to group
     _layoutStep        : function(iterationNum){
+      //TODO: implement
+        var self = this;
+        var ln = this._graph.nodes.length;
+        if (ln == 0) return;
 
-        for(var i = 0; i < iterationNum; i++){
+        if (self.lengthOld != ln){
+            self.step = self.step_max / self._graph.nodes.length;
+            self.prevMaxF = 0.0;
+            self.prevStep = self.step;
+            self.lengthOld = ln;
+        }
+
+
+        var n_obj = self._graph.nodes;
+        var n = n_obj.length;
+
+       // var forces = [ogre.Vector3(0, 0, 0)] * n
+
+        // updating on mode
+        if (self.needModeUpdate){
+            angle = 0.0
+            radius = 1.0
+
+            for obj in n_obj:
+            pos = obj.getPosition()
+            //if (render_engine.viewMode is render_engine.Mode_Isometric){
+            if (self.viewMode == 1){
+                    o_pos.append(ogre.Vector3(pos.x, pos.y, 0.0));
+            }
+            else{
+                o_pos.append(ogre.Vector3(pos.x, pos.y, math.cos(angle) * radius))
+                angle += 0.25;
+                radius += 0.1;
+            }
+
+
+            self.needModeUpdate = false;
+
+        } else {}
+
+
+#        _iters = min([len(self.nodes) + len(self.sheets), self.iterations])
+        for it in xrange(self.iterations):
+
+            # calculating repulsion forces
+        for idx in xrange(n):
+        p1 = o_pos[idx]
+        l = p1.length()
+
+        f = 0.0
+
+        for jdx in xrange(idx + 1, n):
+        p2 = o_pos[jdx]
+        p = (p1 - p2)
+        l = p.length()
+
+        if l > self.max_rep_length: continue    # don't calculate repulsion if distance between objects is to
+
+        if l < 0.005: l += 0.005
+        f = p * self.repulsion / l / l / l
+
+                    # append forces to nodes
+        forces[idx] = forces[idx] + f# * inv_mass1
+        forces[jdx] = forces[jdx] - f# * inv_mass2
+
+            # calculating springs
+        for line in self.lines:
+
+        ob = line.getBegin()
+        oe = line.getEnd()
+        if ob is None or oe is None:    continue
+#                if not obj_f.has_key(ob) or not obj_f.has_key(oe): continue
+
+        p1 = ob.getPosition()
+        p2 = oe.getPosition()
+
+        p = (p2 - p1)
+        l = p.length()
+
+        if l > 0:
+        l = l - self.length
+        f = p * self.rigidity * math.log(l) #l
+        else:
+        f = ogre.Vector3(1, 1, 0)
+
+        if obj_f.has_key(ob):
+        idx = obj_f[ob]
+        forces[idx] = forces[idx] + f
+        if obj_f.has_key(oe):
+        idx = obj_f[oe]
+        forces[idx] = forces[idx] - f
+
+            # apply forces to objects
+        maxf = 0.0
+        for idx in xrange(n):
+        f = forces[idx]
+                # getting maximum force
+        maxf = max([maxf, f.length()])
+
+            #_step = (maxf * self.alpha + 1.0) * self.dr / (maxf * maxf * self.alpha + self.dr)#self.dr / (maxf + 0.01)
+        _step = self.dr / (maxf + 0.01)
+        if (maxf - self.prevMaxF) > self.df:
+        self.step = _step
+        else:
+        self.step = min([self.kstep * self.prevStep, _step])
+
+        self.maxf = maxf * self.step
+        self.prevMaxF = maxf
+
+        for idx in xrange(n):
+        f = forces[idx]
+        offset = f * self.step
+        self.maxf = max([self.maxf, offset.length()])
+        pos = o_pos[idx] + offset
+        forces[idx] = ogre.Vector3(0, 0, 0)
+        o_pos[idx] = pos
+
+        self.need_layout = not (self.dr > (maxf * self.beta))
+
+        if not self.need_layout:
+        break
+
+            # calculate geometry center
+        left = 0
+        top = 0
+        right = 0
+        bottom = 0
+        for idx in xrange(n):
+        pos = o_pos[idx]
+
+        if pos.x < left:
+        left = pos.x
+        if pos.y < top:
+        top = pos.y
+        if pos.x > right:
+        right = pos.x
+        if pos.y > bottom:
+        bottom = pos.y
+
+        offset = ogre.Vector3(-(right + left) / 2.0, -(top + bottom) / 2.0, 0.0)
+
+            # apply positions
+        for idx in xrange(n):
+        n_obj[idx].setPosition(o_pos[idx] + offset)
+    },
+
+    /*          OLD №12  */
+    _defaultConfig  : {
+        MAX_REPULSIVE_LENGTH    : 450,
+        MAX_REPULSIVE_SQUARED   : 450*450,
+        AVG_ATTRACTIVE_LENGTH   : 140,
+        DEF_START_BOX_HEIGHT    : 101,
+        MAX_ITERATIONS_CYCLE    : 21,
+
+        REPULSIVE_PARAMETER     : 570000,
+        ATTRACTIVE_PARAMETER    : 9,
+
+        TIME_VELOCITY           : 1,
+
+        SCREEN_CENTER_X         : 200,                        //not used
+        SCREEN_CENTER_Y         : 250,                        //not used
+
+        MAX_FORCE               : 6.0,
+
+        NUM_STEP_ITERATION      : 500,
+        MIN_MOVEMENT            : 2
+    },
+
+    setGraph        : function(graph){
+        this._graph = graph;
+    },
+
+    setRenderer     : function(renderer){
+        this._renderer = renderer;
+    },
+
+    layout        : function(){
+
+        this.isActive = true;
+        var self = this;
+        useOldPlacing = false;
+
+        this._timeoutCode = setTimeout(function(){
+            var isNeedLayout = self._layoutStep(self.config.NUM_STEP_ITERATION);
+            self._renderer.reDraw();
+            self._renderer._layerNodes.draw();
+            if(isNeedLayout){
+                self.layout();
+            } else {
+                self.stop();
+            }
+        }, 100);
+
+    },
+
+    stop    : function(){
+        this.isActive = false;
+        clearTimeout(this._timeoutCode);
+    },
+
+    _layoutStep        : function(iterationNum){
+		
+		if (useOldPlacing == false){
+
+            var angle = 0;
+            var radius = 70;
+			var centerX = 200;//self.config.SCREEN_CENTER_X;
+			var centerY = 250;//self.config.SCREEN_CENTER_Y;
+			
+			//	console.log(nodesAmount);
+			
+            //for(var i = 0; i < nodesAmount; i++){
+			for (var tt in this._graph.nodes) {
+                posX = Math.sin(angle)*radius;
+                posY = Math.cos(angle)*radius;
+                this._graph.nodes[tt].setPosition(centerX + posX, centerY + posY);
+                radius = radius + 4;
+                angle = angle + 0.5;
+            }
+            
+            useOldPlacing = true;
+            //return;
+        }
+		
+		//var nodesAmount = 0;// = this._graph.nodes.size;
+		//for (var tt in this._graph.nodes) {nodesAmount++};
+
+        for(var i = 1; i <= iterationNum; i++)
+		{
             //for each node
+			//if (i%5 == 0) alert("here!");
 
             //1. Clean all active forces
             for (var tt in this._graph.nodes) {
                 this.setNodeForce(this._graph.nodes[tt], 0, 0);
             }
-
+             
             //1.a use shaking
-            /*for (var tt in this._graph.nodes) {
+            for (var tt in this._graph.nodes) {
                 posX = this._graph.nodes[tt].getPosition().x + Math.round(4*(Math.random()-0.5));
                 posY = this._graph.nodes[tt].getPosition().y + Math.round(4*(Math.random()-0.5));
                 this._graph.nodes[tt].setPosition( posX, posY);
-            }*/
-
+				//if (this._graph.nodes[tt].contour) alert("here!");
+				console.log(this._graph.nodes[tt].type);
+            }
+              
 
             for (var tt in this._graph.nodes) {
                 //2. find spring force for every incident arc
@@ -114,9 +357,21 @@ scgLayout.prototype = {
                     }  //(1.1)
 
                     //else
+					
+					//2.c check if node is struct
+					if ((this._graph.nodes[tt].type & sc_type_node_struct_mask) || (tmpNode.type & sc_type_node_struct_mask))
+					{
+						//console.log(this._graph.nodes[tt].type);
+						//console.log(tmpNode.type);
+						relation.deltaX = relation.deltaX/2;
+						relation.deltaY = relation.deltaY/2;
+						relation.sqDistance = relation.sqDistance/4;
+						
+					}
 
                     //2.a add force to nodes if end is an arc, but 1/2 - n/i
                     //2.b add force if it's a node
+					//2.c check if node 
                     this.addNodeForce(this._graph.nodes[tt], relation.deltaX, relation.deltaY,
                         relation.sqDistance, this.getAttractiveForce(relation.sqDistance));
 
@@ -157,8 +412,8 @@ scgLayout.prototype = {
 
             //5.a set maximum shift as k*m_s/f(iteration)
             //set current maximum force
-            var f = Math.sqrt(i);//Math.sqrt(i));
-            var currentForceLimit = this.config.MAX_FORCE/f;
+            //var f = Math.sqrt(i) % 1;//Math.sqrt(i));
+            var currentForceLimit = this.config.MAX_FORCE;//f;
 
             for (var tt in this._graph.nodes) {
                 posX = this._graph.nodes[tt].getPosition().x;
@@ -167,6 +422,8 @@ scgLayout.prototype = {
                 //add max force limit
                 var forceX_ = this.getNodeForce(this._graph.nodes[tt]).x;
                 var forceY_ = this.getNodeForce(this._graph.nodes[tt]).y;
+				
+				//var force xy = Math.abs(forceX_/forceY_) * (Math.abs(forceX_)/forceX_;
 
                 if (forceX_ > currentForceLimit) forceX_ = currentForceLimit;
                 if (forceX_ < -currentForceLimit) forceX_ = -currentForceLimit;
@@ -180,6 +437,7 @@ scgLayout.prototype = {
                 nodesMaxMovement.x = Math.max(nodesMaxMovement.x, Math.abs(dx) );
                 nodesMaxMovement.y = Math.max(nodesMaxMovement.y, Math.abs(dy) );
 
+				//console.log("posX: ", posX,"; dx: ", dx, "; posY: ", posY, "; dy: ", dy, "; forceX_: ", forceX_, "; forceY_: ", forceY_, "; CFL: ", currentForceLimit);
                 this._graph.nodes[tt].setPosition(posX + dx, posY + dy);
 
             }
@@ -187,8 +445,8 @@ scgLayout.prototype = {
 
             //find upper left corner
             var nodesUpperLeft = {
-                x   : 0,
-                y   : 0
+                x   : 10000,
+                y   : 10000
             };
             //6.a find min.x and min.y
             for (var tt in this._graph.nodes) {
@@ -196,24 +454,24 @@ scgLayout.prototype = {
                 nodesUpperLeft.y = Math.min(nodesUpperLeft.y, this._graph.nodes[tt].getPosition().y );
             }
 
-            //6.b move all nodes to 50 + pos.x-min.x
+            //6.b move all nodes to 100 + pos.x-min.x
             for (var tt in this._graph.nodes) {
-                posX = this._graph.nodes[tt].getPosition().x - nodesUpperLeft.x + 50;
-                posY = this._graph.nodes[tt].getPosition().y - nodesUpperLeft.y + 50;
+                posX = this._graph.nodes[tt].getPosition().x - nodesUpperLeft.x + 100;
+                posY = this._graph.nodes[tt].getPosition().y - nodesUpperLeft.y + 100;
 
                 this._graph.nodes[tt].setPosition(posX, posY);
             }
 
 
             //restore index normalization back and check return status
-            if((nodesMaxMovement.x * f) < this.config.MIN_MOVEMENT && (nodesMaxMovement.y * f) < this.config.MIN_MOVEMENT){
+            if((nodesMaxMovement.x ) < this.config.MIN_MOVEMENT && (nodesMaxMovement.y ) < this.config.MIN_MOVEMENT){
                 return false;
             }
 
         }
 
-    },
-    /*
+    },     /*   */
+    /*    OLD №7
     _layoutStep        : function(iterationNum){
 
         for(var i = 0; i < iterationNum; i++){
@@ -309,7 +567,26 @@ scgLayout.prototype = {
         return true;
 
     }, */ //TODO: remove old
-
+    setSpiralPosition : function () {
+		//var nodesAmount = 0;// = this._graph.nodes.size;
+		//for (var tt in this._graph.nodes) {nodesAmount++};
+            var angle = 0;
+            var radius = 70;
+			var centerX = 200;//self.config.SCREEN_CENTER_X;
+			var centerY = 250;//self.config.SCREEN_CENTER_Y;
+			
+		//	console.log(nodesAmount);
+			
+            //for(var i = 0; i < nodesAmount; i++){
+			for (var tt in this._graph.nodes) {
+                posX = Math.sin(angle)*radius;
+                posY = Math.cos(angle)*radius;
+                this._graph.nodes[tt].setPosition(centerX + posX, centerY + posY);
+                radius = radius + 4;
+                angle = angle + 0.5;
+            }
+    },
+	
     getRelation : function (nodeA, nodeB) {
         var deltaX = nodeB.getPosition().x - nodeA.getPosition().x;
         var deltaY = nodeB.getPosition().y - nodeA.getPosition().y;
@@ -348,30 +625,36 @@ scgLayout.prototype = {
     },
 
 
-    setNodeForce : function(node, x, y) {
-        this.nodeForce[node.id] = {
-            x : x,
-            y : y
-        };
+    setNodeForce : function(node, x_, y_) {
+        var nodeForce = this._graph.nodes[node.id].nodeForce;
+		if(!nodeForce){
+            this._graph.nodes[node.id].nodeForce = {
+                x : 0,
+                y : 0
+            }
+            nodeForce = this._graph.nodes[node.id].nodeForce;
+        }
+        this._graph.nodes[node.id].nodeForce.x = x_;
+        this._graph.nodes[node.id].nodeForce.y = y_;
     },
 
     addNodeForce : function(node, x, y, distance, value) {
         var vector_scale = value * value / distance;
 
-        var nodeForce = this.nodeForce[node.id];
-        if(!nodeForce){
-            this.nodeForce[node.id] = {
+        var nodeForce = this._graph.nodes[node.id].nodeForce;
+		if(!nodeForce){
+            this._graph.nodes[node.id].nodeForce = {
                 x : 0,
                 y : 0
             }
-            nodeForce = this.nodeForce[node.id];
+            nodeForce = this._graph.nodes[node.id].nodeForce;
         }
         nodeForce.x += x * vector_scale * (value % 1);
         nodeForce.y += y * vector_scale * (value % 1);
     },
 
     getNodeForce    : function(node){
-        return this.nodeForce[node.id];
+        return this._graph.nodes[node.id].nodeForce;
     }
 };
 
@@ -1149,7 +1432,7 @@ var Kinetic = {}; (function() {
             else if(arg.data) {
                 var canvas = document.createElement('canvas');
                 canvas.width = arg.width;
-                canvas.height = arg.height;
+                canvas.height = 1000;
                 var context = canvas.getContext('2d');
                 context.putImageData(arg, 0, 0);
                 var dataUrl = canvas.toDataURL();
