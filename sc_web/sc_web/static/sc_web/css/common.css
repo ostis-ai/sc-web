@@ -84,3 +84,6 @@ html, body {
 	height: 100%;
 }
 
+.menu_item {
+	cursor: pointer;
+}
