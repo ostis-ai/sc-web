@@ -8,7 +8,6 @@
     {% block extrameta %}{% endblock extrameta %}
     <title>{% block title %}OSTIS{% endblock %}</title>
 
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}plugins/bootstrap/css/bootstrap-responsive.min.css" />
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}plugins/bootstrap/css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}plugins/bootstrap/css/bootstrap-multilevel.css" />
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}sc_web/css/common.css" />
@@ -79,11 +78,11 @@
     </div>
 
     <!-- main content -->
-    <div id="main_container">
+    <div id="main_container" class="main-container">
         <ul id="tabs_container" class="nav nav-tabs">
             <!-- Tabs will be added later -->
         </ul>
-        <div id="tabs_data_container" class="panel panel-default">
+        <div id="tabs_data_container" class="panel panel-default tabs-data-container">
             <!-- Containers will be added automaticaly -->
         </div>
         {% block content %}{% endblock %}
