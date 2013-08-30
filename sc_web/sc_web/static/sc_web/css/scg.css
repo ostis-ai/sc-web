@@ -8,12 +8,20 @@
   user-select: none;
 }
 
+.SCgContainer {
+	fill: #fff;
+}
+
 .SCgText {
 	fill: #009;
 	font-family: "Arial";
 	font-style: italic;
 	font-size": 12;
 	pointer-events: none;
+	stroke: none;
+}
+
+.SCgNodeEmpty {
 }
 
 .SCgNode {

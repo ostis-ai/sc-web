@@ -41,7 +41,7 @@ SCWeb.core.ui.Menu = {
 
         var itemHtml = '';
         if(item.cmd_type == 'cmd_noatom') {
-            itemHtml = '<li class="dropdown"><a id="' + item.id + '" class="menu_item ' + item.cmd_type + ' dropdown-toggle" data-toggle="dropdown" href="#" ><span sc_addr="' + item.id + '">'  + item.id + '</span><b class="caret"></b></a>';
+            itemHtml = '<li class="dropdown"><a sc_addr="' + item.id + '" id="' + item.id + '" class="menu_item ' + item.cmd_type + ' dropdown-toggle" data-toggle="dropdown" href="#" ><span clas="text">'  + item.id + '</span><b class="caret"></b></a>';
             
         } else {
             itemHtml = '<li><a id="' + item.id + '"sc_addr="' + item.id + '" class="menu_item ' + item.cmd_type + '" >' + item.id + '</a>';
