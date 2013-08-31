@@ -29,7 +29,18 @@ SCg.Vector2 = function(x, y) {
 };
 
 SCg.Vector2.prototype = {
-	constructor: SCg.Vector2
+	constructor: SCg.Vector2,
+	
+	copyFrom: function(other) {
+		this.x = ohter.x;
+		this.y = other.y;
+		
+		return this;
+	},
+	
+	clone: function() {
+		return new SCg.Vector2(this.x, this.y);
+	}
 };
 
 
@@ -51,6 +62,10 @@ SCg.Vector3.prototype = {
 		return this;
 	},
 	
+	clone: function() {
+		return new SCg.Vector3(this.x, this.y, this.z);
+	},
+	
 	sub: function(other) {
 		this.x -= other.x;
 		this.y -= other.y;
@@ -63,6 +78,22 @@ SCg.Vector3.prototype = {
 		this.x += other.x;
 		this.y += other.y;
 		this.z += other.z;
+		
+		return this;
+	},
+	
+	mul: function(other) {
+		this.x *= other.x;
+		this.y *= other.y;
+		this.z *= other.z;
+		
+		return this;
+	},
+	
+	div: function(other) {
+		this.x /= other.x;
+		this.y /= other.y;
+		this.z /= other.z;
 		
 		return this;
 	},
@@ -407,50 +438,33 @@ var SCgAlphabet = {
         
         this.initTypesMapping();
         
+        // edge markers
         defs.append('svg:marker')
-            .attr('id', 'end-arrow')
-            .attr('viewBox', '0 -5 10 10')
-            .attr('refX', 8)
-            .attr('markerWidth', 7)
-            .attr('markerHeight', 10)
-            .attr('orient', 'auto')
+            .attr('id', 'end-arrow-access').attr('viewBox', '0 -5 10 10').attr('refX', 0)
+            .attr('markerWidth', 5).attr('markerHeight', 10).attr('orient', 'auto')
           .append('svg:path')
-            .attr('d', 'M0,-4L10,0L0,4')
-            .attr('fill', '#000');
+            .attr('d', 'M0,-4L10,0L0,4').attr('fill', '#000');
+            
+        defs.append('svg:marker')
+            .attr('id', 'end-arrow-common').attr('viewBox', '0 -5 10 10').attr('refX', 0)
+            .attr('markerWidth', 1.5).attr('markerHeight', 6).attr('orient', 'auto')
+          .append('svg:path')
+            .attr('d', 'M0,-4L10,0L0,4').attr('fill', '#000');
             
         // nodes
-        //<circle id="scg.node.const.outer" cx="0" cy="0" r="10"/>
-        defs.append('svg:circle')
-            .attr('id', 'scg.node.const.outer')
-            .attr('cx', '0')
-            .attr('cy', '0')
-            .attr('r', '10');
+        defs.append('svg:circle').attr('id', 'scg.node.const.outer').attr('cx', '0').attr('cy', '0').attr('r', '10');
+        defs.append('svg:rect').attr('id', 'scg.node.var.outer').attr('x', '-10').attr('y', '-10').attr('width', '20').attr('height', '20');
             
-        //<rect id="scg.node.var.outer" width="20" height="20" x="-10" y="-10"/>
-        defs.append('svg:rect')
-            .attr('id', 'scg.node.var.outer')
-            .attr('x', '-10')
-            .attr('y', '-10')
-            .attr('width', '20')
-            .attr('height', '20');
-            
-        /*<clip-path id="scg.node.const.clip">
-            <use xlink:href="scg.node.const.outer" />
-        </clip-path>*/
-        
         defs.append('svg:clip-path')
             .attr('id', 'scg.node.const.clip')
             .append('svg:use')
                 .attr('xlink:href', '#scg.node.const.clip');
         
-        /*<clip-path id="scg.node.var.clip">
-            <use xlink:href="#scg.node.var.outer" />
-        </clip-path>*/
-        
         defs.append('svg:clip-path')
             .attr('id', 'scg.node.var.clip')
             .append('svg:use')
                 .attr('xlink:href', '#scg.node.var.clip');
+                
                 
         //  ----- define constant nodes -----      
         var g = defs.append('svg:g').attr('id', 'scg.node');
@@ -570,28 +584,28 @@ var SCgAlphabet = {
     /**
      * Append sc.g-text to definition
      */
-     appendText: function(def, x, y) {
-        def.append('svg:text')
-            .attr('x', '17')
-            .attr('y', '21')
-            .attr('class', 'SCgText')
-     },
+    appendText: function(def, x, y) {
+       def.append('svg:text')
+           .attr('x', '17')
+           .attr('y', '21')
+           .attr('class', 'SCgText')
+    },
      
-     /**
-      * Return definition name by sc-type
-      */
-     getDefId: function(sc_type) {
-         if (this.scType2Str.hasOwnProperty(sc_type)) {
-             return this.scType2Str[sc_type];
-         }
-         
-         return 'scg.node';
-     },
+    /**
+     * Return definition name by sc-type
+     */
+    getDefId: function(sc_type) {
+        if (this.scType2Str.hasOwnProperty(sc_type)) {
+            return this.scType2Str[sc_type];
+        }
+        
+        return 'scg.node';
+    },
      
-     /**
-      * Initialize sc-types mapping
-      */
-      initTypesMapping: function() {
+    /**
+     * Initialize sc-types mapping
+     */
+    initTypesMapping: function() {
         this.scType2Str[sc_type_node] = 'scg.node';
         this.scType2Str[sc_type_node | sc_type_const] = 'scg.node.const';
         this.scType2Str[sc_type_node | sc_type_const | sc_type_node_material] = 'scg.node.const.material';
@@ -610,7 +624,113 @@ var SCgAlphabet = {
         this.scType2Str[sc_type_node | sc_type_var | sc_type_node_norole] = 'scg.node.var.norole';
         this.scType2Str[sc_type_node | sc_type_var | sc_type_node_role] = 'scg.node.var.role';
         this.scType2Str[sc_type_node | sc_type_var | sc_type_node_tuple] = 'scg.node.var.tuple';
-      }
+      },
+      
+    /**
+     * All sc.g-edges represented by group of paths, so we need to update whole group.
+     * This function do that work
+     * @param egde {SCg.ModelEdge} Object that represent sc.g-edge
+     * @param d3_group {} Object that represents svg group
+     */
+    updateEdge: function(edge, d3_group) {
+        
+        // first of all we need to determine if edge has an end marker
+        var has_marker = edge.hasArrow();
+        
+        // now calculate target and source positions
+        var pos_src = edge.source_pos.clone();
+        var pos_trg = edge.target_pos.clone();
+        
+        // if we have an arrow, then need to fix end position
+        if (has_marker) {
+            var dv = pos_trg.clone().sub(pos_src);
+            var len = dv.length();
+            dv.normalize();
+            pos_trg = pos_src.clone().add(dv.multiplyScalar(len - 10));
+        }
+        
+        // make position path
+        var position_path = 'M' + pos_src.x + ',' + pos_src.y + 'L' + pos_trg.x + ',' + pos_trg.y;
+        
+        var sc_type_str = edge.sc_type.toString();
+        if (d3_group['sc_type'] != sc_type_str) {
+            d3_group.attr('sc_type', sc_type_str);
+            
+            // remove old
+            d3_group.selectAll('path').remove();
+                        
+            // if it accessory, then append main line
+            if (edge.sc_type & sc_type_arc_access) {
+                
+                
+                
+                var main_style = 'SCgEdgeAccessPerm';
+                if (edge.sc_type & sc_type_arc_temp) {
+                    main_style = edge.sc_type & sc_type_var ? 'SCgEdgeAccessTempVar' : 'SCgEdgeAccessTemp';
+                }
+                
+                var p = d3_group.append('svg:path')
+                    .classed(main_style, true)
+                    .classed('SCgEdgeEndArrowAccess', true)
+                    .attr('d', position_path);
+                    
+                if (edge.sc_type & sc_type_constancy_mask) {
+                    p.classed('SCgEdgeVarDashAccessPerm', (edge.sc_type & sc_type_var) && (edge.sc_type & sc_type_arc_perm));
+                } else {
+                    d3_group.append('svg:path')
+                        .classed('SCgEdgeAccessComonDash', true)
+                        .attr('d', position_path);
+                }
+
+                if (edge.sc_type & sc_type_arc_neg) {
+                    d3_group.append('svg:path')
+                        .classed('SCgEdgePermNegDash', true)
+                        .attr('d', position_path);
+                }
+            } else if (edge.sc_type & (sc_type_arc_common | sc_type_edge_common)) {
+                
+                var p = d3_group.append('svg:path')
+                    .classed('SCgEdgeCommonBack', true)
+                    .classed('SCgEdgeEndArrowCommon', edge.sc_type & sc_type_arc_common)
+                    .attr('d', position_path);
+                
+                d3_group.append('svg:path')
+                    .classed('SCgEdgeCommonForeground', true)
+                    .attr('d', position_path)
+                    
+                if (edge.sc_type & sc_type_constancy_mask) {
+                    if (edge.sc_type & sc_type_var) {
+                        d3_group.append('svg:path')
+                            .classed('SCgEdgeCommonForegroundVar', true)
+                            .classed('SCgEdgeVarDashCommon', true)
+                            .attr('d', position_path);
+                    }
+                } else {
+                    d3_group.append('svg:path')
+                        .classed('SCgEdgeAccessPerm', true)
+                        .classed('SCgEdgeVarDashCommon', true)
+                        .attr('d', position_path);
+                }
+                
+            } else {
+                // unknown
+                d3_group.append('svg:path')
+                    .classed('SCgEdgeUnknown', true)
+                    .attr('d', position_path);
+            }
+            
+        } else { 
+            // update existing
+            d3_group.selectAll('path')
+                .attr('d', position_path);
+        }
+        
+        // now we need to draw fuz markers (for now it not supported)
+        if (edge.sc_type & sc_type_arc_fuz) {
+            d3_group.selectAll('path').attr('stroke', '#f00');
+        }
+        
+    }
 };
 
 
@@ -714,7 +834,7 @@ SCg.Render.prototype = {
             })
             .on('mouseover', function(d) {
                 // enlarge target node
-                d3.select(this).classed('SCgHighlighted', true);
+                d3.select(this).classed('SCgStateHighlighted', true);
                 self.object_under_mouse = d;
             })
             .on('mouseout', function(d) {
@@ -723,7 +843,7 @@ SCg.Render.prototype = {
                     .attr('transform', function(d) {
                         return 'translate(' + d.position.x + ', ' + d.position.y + ')';
                     })
-                    .classed('SCgHighlighted', false);
+                    .classed('SCgStateHighlighted', false);
                 self.object_under_mouse = null;
             })
             .on('mousedown', function(d) {
@@ -778,19 +898,16 @@ SCg.Render.prototype = {
         this.d3_edges = this.d3_edges.data(this.scene.edges, function(d) { return d.id; });
         
         // add edges that haven't visual
-        g = this.d3_edges.enter().append('svg:g');
-        
-        g.append('svg:path')
-            .attr('class', 'SCgEdge')
-            .attr('d', function(d) {
-                return 'M' + d.source_pos.x + ',' + d.source_pos.y + 'L' + d.target_pos.x + ',' + d.target_pos.y;
-            })
-            .style('marker-end', function(d) { return d.hasArrow() ? 'url(#end-arrow)' : ''; })
+        this.d3_edges.enter().append('svg:g')
+            .classed('SCgStateNormal', true)
             .on('mouseover', function(d) {
-                d3.select(this).classed('SCgHighlighted', true);
+                d3.select(this).classed('SCgStateHighlighted', true);
             })
             .on('mouseout', function(d) {
-                d3.select(this).classed('SCgHighlighted', false);
+                d3.select(this).classed('SCgStateHighlighted', false);
+            })
+            .each(function(d) {
+                SCgAlphabet.updateEdge(d, d3.select(this));
             });
             
             
@@ -808,9 +925,9 @@ SCg.Render.prototype = {
         this.d3_nodes.attr("transform", function(d) { 
             return 'translate(' + d.position.x + ', ' + d.position.y + ')'
         });
-        this.d3_edges.select('path').attr('d', function(d) {
+        this.d3_edges.each(function(d) {
             d.update();
-            return 'M' + d.source_pos.x + ',' + d.source_pos.y + 'L' + d.target_pos.x + ',' + d.target_pos.y;
+            SCgAlphabet.updateEdge(d, d3.select(this));
         });
                 
         this.d3_contours.attr('d', function(d) { 

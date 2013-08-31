@@ -16,7 +16,8 @@
 	fill: #009;
 	font-family: "Arial";
 	font-style: italic;
-	font-size": 12;
+	font-weight: bold;
+	font-size: 14;
 	pointer-events: none;
 	stroke: none;
 }
@@ -27,16 +28,83 @@
 .SCgNode {
 	fill: #eee;
 	stroke: #000;
-	stroke-width: 5;
+	stroke-width: 5px;
 	cursor: pointer;
 }
 
+/* --- Edges --- */
 .SCgEdge {
 	stroke: #000;
-	stroke-width: 2.5px;
 	cursor: pointer;
 }
 
+.SCgEdgeUnknown {
+	stroke: #a00;
+	stroke-width: 3px;
+}
+
+.SCgEdgeCommonBack {
+	stroke-width: 8px;
+}
+
+.SCgEdgeCommonForeground {
+	stroke-width: 5px;
+	stroke: #fff;
+}
+
+.SCgEdgeCommonForegroundVar {
+	stroke-width: 5px;
+}
+
+.SCgEdgeAccessComonDash {
+	stroke-width: 4px;
+	stroke-dasharray: 4, 4;
+}
+
+.SCgEdgeAccessPerm {
+	stroke-width: 2px;
+}
+
+.SCgEdgeAccessTemp {
+	stroke-width: 2px;
+	stroke-dasharray: 2, 2;
+}
+
+.SCgEdgeAccessTempVar {
+	stroke-width: 2px;
+	stroke-dasharray: 2, 2, 2, 2, 2, 2, 2, 14;
+}
+
+.SCgEdgeEndArrowAccess {
+	marker-end: url(#end-arrow-access);
+}
+
+.SCgEdgeEndArrowCommon {
+	marker-end: url(#end-arrow-common);
+}
+
+.SCgEdgeVarDashAccessPerm {
+	stroke-dasharray: 14, 14;
+}
+
+.SCgEdgeVarDashCommon {
+	stroke-dasharray: 14, 14;
+}
+
+.SCgEdgePermNegDash {
+	stroke-dasharray: 0, 20, 2, 6;
+	stroke-width: 10px;
+}
+
+/* --------- */
+
+.SCgEdgePermDash {
+	stroke-dasharray: 4, 10;
+}
+
+
+
+/* --- contours --- */
 .SCgContour {
 	fill: #ddddff;
 	stroke: black;
@@ -55,6 +123,12 @@ path.SCgEdge.hidden {
 	stroke-width: 0;
 }
 
-.SCgHighlighted {
+
+/* ----- States ----- */
+.SCgStateNormal {
+	stroke: #000;
+}
+
+.SCgStateHighlighted {
 	stroke: #5EB700;
 }
