@@ -504,7 +504,7 @@ var SCgAlphabet = {
         g.append('svg:line').attr('x1', '-10').attr('x2', '10').attr('y1', '0').attr('y2', '0').attr('stroke-width', '3');
         this.appendText(g);
         
-        g = defs.append('svg:g').attr('id', 'scg.node.const.abstract').attr('clip-path', 'url(#scg.node.const.clip)');
+        g = defs.append('svg:g').attr('id', 'scg.node.const.abstract');//.attr('clip-path', 'url(#scg.node.const.clip)');
         g.append('svg:use').attr('xlink:href', '#scg.node.const.outer');
         var g2 = g.append('svg:g').attr('stroke-width', '1');
         g2.append('svg:line').attr('x1', '-10').attr('x2', '10').attr('y1', '-6').attr('y2', '-6');
@@ -514,7 +514,7 @@ var SCgAlphabet = {
         g2.append('svg:line').attr('x1', '-10').attr('x2', '10').attr('y1', '6').attr('y2', '6');
         this.appendText(g);
         
-        g = defs.append('svg:g').attr('id', 'scg.node.const.material').attr('clip-path', 'url(#scg.node.const.clip)');
+        g = defs.append('svg:g').attr('id', 'scg.node.const.material');//.attr('clip-path', 'url(#scg.node.const.clip)');
         g.append('svg:use').attr('xlink:href', '#scg.node.const.outer');
         var g2 = g.append('svg:g').attr('stroke-width', '1').attr('transform', 'rotate(-45, 0, 0)');
         g2.append('svg:line').attr('x1', '-10').attr('x2', '10').attr('y1', '-6').attr('y2', '-6');
@@ -559,7 +559,7 @@ var SCgAlphabet = {
         g.append('svg:line').attr('x1', '-10').attr('x2', '10').attr('y1', '0').attr('y2', '0').attr('stroke-width', '3');
         this.appendText(g);
         
-        g = defs.append('svg:g').attr('id', 'scg.node.var.abstract').attr('clip-path', 'url(#scg.node.var.clip)');
+        g = defs.append('svg:g').attr('id', 'scg.node.var.abstract');//.attr('clip-path', 'url(#scg.node.var.clip)');
         g.append('svg:use').attr('xlink:href', '#scg.node.var.outer');
         var g2 = g.append('svg:g').attr('stroke-width', '1');
         g2.append('svg:line').attr('x1', '-10').attr('x2', '10').attr('y1', '-6').attr('y2', '-6');
@@ -569,7 +569,7 @@ var SCgAlphabet = {
         g2.append('svg:line').attr('x1', '-10').attr('x2', '10').attr('y1', '6').attr('y2', '6');
         this.appendText(g);
 
-        g = defs.append('svg:g').attr('id', 'scg.node.var.material').attr('clip-path', 'url(#scg.node.var.clip)');
+        g = defs.append('svg:g').attr('id', 'scg.node.var.material');//.attr('clip-path', 'url(#scg.node.var.clip)');
         g.append('svg:use').attr('xlink:href', '#scg.node.var.outer');
         var g2 = g.append('svg:g').attr('stroke-width', '1').attr('transform', 'rotate(-45, 0, 0)');
         g2.append('svg:line').attr('x1', '-10').attr('x2', '10').attr('y1', '-6').attr('y2', '-6');
