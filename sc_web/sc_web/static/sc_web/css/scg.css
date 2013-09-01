@@ -13,7 +13,7 @@
 }
 
 .SCgText {
-	fill: #009;
+	fill: #00a;
 	font-family: "Arial";
 	font-style: italic;
 	font-weight: bold;
@@ -29,13 +29,11 @@
 	fill: #eee;
 	stroke: #000;
 	stroke-width: 5px;
-	cursor: pointer;
 }
 
 /* --- Edges --- */
 .SCgEdge {
 	stroke: #000;
-	cursor: pointer;
 }
 
 .SCgEdgeUnknown {
@@ -113,8 +111,8 @@
 	opacity: 0.9;
 }
 
-path.SCgEdge.dragline {
-	pointer-events: none;
+path.dragline {
+	stroke: #535A69;
 	stroke-dasharray: 2,2;
 	stroke-width: 2px;
 }
@@ -127,8 +125,27 @@ path.SCgEdge.hidden {
 /* ----- States ----- */
 .SCgStateNormal {
 	stroke: #000;
+	cursor: pointer;
 }
 
 .SCgStateHighlighted {
 	stroke: #5EB700;
+	cursor: pointer;
+}
+
+.SCgStateSelected {
+	stroke: #C73E00;
+}
+
+.SCgStateSelected.SCgStateHighlighted {
+	stroke: #FD8E00;
+}
+
+
+
+
+/* ------------- User interface -------------- */
+.scg-tools-panel {
+	position: absolute;
+	
 }

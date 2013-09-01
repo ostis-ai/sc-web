@@ -1,26 +1,78 @@
 /* --- scg.js --- */
 var SCg = SCg || { version: "0.1.0" };
 
-SCg.Viewer = function() {
+SCg.Editor = function() {
 
-	this.render = null;
-	this.scene = null;
+    this.render = null;
+    this.scene = null;
 };
 
-SCg.Viewer.prototype = {
+SCg.Editor.prototype = {
 
 
-	init: function(params)
-	{
-		this.render = new SCg.Render();
-		this.scene = new SCg.Scene( {render: this.render } );
-		this.scene.init();
-		
-		this.render.scene = this.scene;
-		this.render.init(params);
-	}
-	
+    init: function(params)
+    {
+        this.render = new SCg.Render();
+        this.scene = new SCg.Scene( {render: this.render } );
+        this.scene.init();
+        
+        this.render.scene = this.scene;
+        this.render.init(params);
+        
+        this.containerId = params.containerId;
+        this.initUI();
+    },
+    
+    /**
+     * Initialize user interface
+     */
+    initUI: function() {
+        var self = this;
+        
+        var container = '#' + this.containerId;
+        $(container).prepend('<div id="tools-' + this.containerId + '"></div>');
+        var tools_container = '#tools-' + this.containerId;
+        $(tools_container).load('static/sc_web/html/scg-tools-panel.html', function() {
+            
+            var cont = $(container);
+            
+            cont.find('#scg-tool-select').button('toggle');
+            
+            // handle clicks on mode change
+            cont.find('#scg-tool-select').click(function() {
+                self.scene.setEditMode(SCgEditMode.SCgModeSelect);
+            });
+            cont.find('#scg-tool-edge').click(function() {
+                self.scene.setEditMode(SCgEditMode.SCgModeEdge);
+            });
+            cont.find('#scg-tool-bus').click(function() {
+                self.scene.setEditMode(SCgEditMode.SCgModeBus);
+            });
+            cont.find('#scg-tool-contour').click(function() {
+                self.scene.setEditMode(SCgEditMode.SCgModeContour);
+            });
+        });
+        
+        
+        
+    },
+    
 };
+
+
+/* --- scg-debug.js --- */
+var SCgDebug = {
+    
+    enabled: false,
+    
+    error: function(message) {
+        if (!this.enabled) return; // do nothing
+        
+        alert(message);
+    }
+    
+}
+
 
 /* --- scg-math.js --- */
 SCg.Vector2 = function(x, y) {
@@ -125,9 +177,9 @@ SCg.Vector3.prototype = {
 /* --- scg-model-objects.js --- */
 var SCgObjectState = {
     Normal: 0,
-    Deleted: 1,
-    Merged: 2,
-    NewInMemory: 3
+    MergedWithMemory: 1,
+    NewInMemory: 2,
+    FromMemory: 3
 };
 
 var ObjectId = 0;
@@ -181,6 +233,8 @@ SCg.ModelObject = function(options) {
 
     this.edges = [];    // list of connected edges
     this.need_update = true;    // update flag
+    this.state = SCgObjectState.Normal;
+    this.is_selected = false;
 };
 
 SCg.ModelObject.prototype = {
@@ -222,6 +276,7 @@ SCg.ModelObject.prototype.notifyEdgesUpdate = function() {
 
     for (var i = 0; i < this.edges.length; i++) {
        this.edges[i].need_update = true;
+       this.edges[i].need_observer_sync = true;
     }
 
 };
@@ -261,6 +316,21 @@ SCg.ModelObject.prototype.getConnectionPos = function(from, dotPos) {
     return new SCg.Vector3(this.position.x, this.position.y, this.position.z);
 };
 
+/*! Setup new state of object
+ * @param {SCgObjectState} state New object state
+ */
+SCg.ModelObject.prototype.setObjectState = function(state) {
+    this.state = state;
+    this.need_observer_sync = true;
+};
+
+/*!
+ * Change value of selection flag
+ */
+SCg.ModelObject.prototype._setSelected = function(value) {
+    this.is_selected = value;
+    this.need_observer_sync = true;
+};
 
 // -------------- node ---------
 
@@ -308,9 +378,9 @@ SCg.ModelEdge = function(options) {
     this.target = null;
 
     if (options.source)
-        this.source = options.source;
+        this.setSource(options.source);
     if (options.target)
-        this.target = options.target;
+        this.setTarget(options.target);
 
     this.source_pos = new SCg.Vector3(0, 0, 0); // the begin position of egde in world coordinates
     this.target_pos = new SCg.Vector3(0, 0, 0); // the end position of edge in world coordinates
@@ -322,25 +392,36 @@ SCg.ModelEdge = function(options) {
 SCg.ModelEdge.prototype = Object.create( SCg.ModelObject.prototype );
 
 /** 
- * Setup new begin object for sc.g-edge
+ * Setup new source object for sc.g-edge
  * @param {Object} scg_obj
- *      sc.g-object, that will be the begin of edge
+ *      sc.g-object, that will be the source of edge
  */
-SCg.ModelEdge.prototype.setBegin = function(scg_obj) {
+SCg.ModelEdge.prototype.setSource = function(scg_obj) {
+    
+    if (this.source == scg_obj) return; // do nothing
+    
+    if (this.source)
+        this.source.edges.remove(this);
     
     this.source = scg_obj;
-
+    this.source.edges.push(this);
     this.need_observer_sync = true;
 };
 
 /**
- * Setup new end object for sc.g-edge
+ * Setup new target object for sc.g-edge
  * @param {Object} scg_obj
- *      sc.g-object, that will be the end of edge
+ *      sc.g-object, that will be the target of edge
  */
- SCg.ModelEdge.prototype.setEnd = function(scg_obj) {
+ SCg.ModelEdge.prototype.setTarget = function(scg_obj) {
+     
+    if (this.target == scg_obj) return; // do nothing
+    
+    if (this.target)
+        this.target.edges.remove(this);
+    
     this.target = scg_obj;
-
+    this.target.edges.push(this);
     this.need_observer_sync = true;
  };
 
@@ -736,6 +817,7 @@ var SCgAlphabet = {
 
 /* --- scg-render.js --- */
 
+
 SCg.Render = function() {
     this.scene = null;
 };
@@ -746,6 +828,7 @@ SCg.Render.prototype = {
         this.containerId = params.containerId;
         this.d3_drawer = d3.select('#' + this.containerId).append("svg:svg").attr("pointer-events", "all").attr("width", '100%').attr("height", '100%');
         
+        d3.select('#' + this.containerId).attr('style', 'disbplay: block');
         
         var self = this;
         this.d3_container = this.d3_drawer.append('svg:g')
@@ -762,6 +845,15 @@ SCg.Render.prototype = {
                                 .on('dblclick', function() {
                                     self.onMouseDoubleClick(this, self);
                                     });
+        
+        // need to check if container is visible
+        d3.select('body')
+                .on('keydown', function() {
+                    self.onKeyDown(d3.event.keyCode);
+                })
+                .on('keyup', function() {
+                    self.onKeyUp(d3.event.keyCode);
+                });
         this.initDefs();
                                     
         this.d3_container.append('svg:rect')
@@ -771,7 +863,7 @@ SCg.Render.prototype = {
                         
                         
         this.d3_drag_line = this.d3_container.append('svg:path')
-                .attr('class', 'SCgEdge dragline hidden')
+                .attr('class', 'dragline hidden')
                 .attr('d', 'M0,0L0,0');
                 
         this.d3_contour_line = d3.svg.line().interpolate("cardinal-closed");
@@ -779,14 +871,7 @@ SCg.Render.prototype = {
         this.d3_contours = this.d3_container.append('svg:g').selectAll('path');
         this.d3_edges = this.d3_container.append('svg:g').selectAll('path');
         this.d3_nodes = this.d3_container.append('svg:g').selectAll('g');
-                                
-        this.mouse_down_node = null;
-        this.object_under_mouse = null;
-        this.selected_node = null;
-        
-        
-        // ----------- test -----------
-        var self = this;
+
     },
     
     // -------------- Definitions --------------------
@@ -823,11 +908,7 @@ SCg.Render.prototype = {
         // add nodes that haven't visual
         var g = this.d3_nodes.enter().append('svg:g')
             .attr('class', function(d) {
-                if (!(d.sc_type & sc_type_constancy_mask)) {
-                    return 'SCgNodeEmpty';
-                }
-                
-                return 'SCgNode';
+                return (d.sc_type & sc_type_constancy_mask) ? 'SCgNode' : 'SCgNodeEmpty';
             })
             .attr("transform", function(d) {
                 return 'translate(' + d.position.x + ', ' + d.position.y + ')';
@@ -835,55 +916,19 @@ SCg.Render.prototype = {
             .on('mouseover', function(d) {
                 // enlarge target node
                 d3.select(this).classed('SCgStateHighlighted', true);
-                self.object_under_mouse = d;
+                self.scene.onMouseOverObject(d);
             })
             .on('mouseout', function(d) {
-                // unenlarge target node
-                d3.select(this)
-                    .attr('transform', function(d) {
-                        return 'translate(' + d.position.x + ', ' + d.position.y + ')';
-                    })
-                    .classed('SCgStateHighlighted', false);
-                self.object_under_mouse = null;
+                d3.select(this).classed('SCgStateHighlighted', false)
+                self.scene.onMouseOutObject(d);
             })
             .on('mousedown', function(d) {
-                if(d3.event.ctrlKey) return;
-
-                // select node
-                self.mouse_down_node = d;
-                if (self.mouse_down_node === self.selected_node) 
-                    self.selected_node = null;
-                else 
-                    self.selected_node = self.mouse_down_node;
-
-                // reposition drag line
-                self.d3_drag_line
-                    .classed('hidden', false)
-                    .attr('d', 'M' + self.mouse_down_node.position.x + ',' + self.mouse_down_node.position.y + 'L' + self.mouse_down_node.position.x + ',' + self.mouse_down_node.position.y);
-
-                self.update();
+                self.scene.onMouseDownObject(d);
             })
             .on('mouseup', function(d) {
-                
-                if (!self.mouse_down_node) return;
-
-                // needed by FF
-                self.d3_drag_line
-                    .classed('hidden', true);
-
-                // check for drag-to-self
-                mouse_up_node = d;
-                if (mouse_up_node === self.mouse_down_node) { 
-                    self.mouse_down_node = null;
-                    return; 
-                }
-
-                // add edge to graph
-                self.scene.createEdge(self.mouse_down_node, mouse_up_node, null);
-                self.relayout();
-            
-                self.update();
+                self.scene.onMouseUpObject(d);
             });
+                        
         g.append('svg:use')
             .attr('xlink:href', function(d) {
                 return '#' + SCgAlphabet.getDefId(d.sc_type); 
@@ -902,9 +947,17 @@ SCg.Render.prototype = {
             .classed('SCgStateNormal', true)
             .on('mouseover', function(d) {
                 d3.select(this).classed('SCgStateHighlighted', true);
+                self.scene.onMouseOverObject(d);
             })
             .on('mouseout', function(d) {
                 d3.select(this).classed('SCgStateHighlighted', false);
+                self.scene.onMouseOutObject(d);
+            })
+            .on('mousedown', function(d) {
+                self.scene.onMouseDownObject(d);
+            })
+            .on('mouseup', function(d) {
+                self.scene.onMouseUpObject(d);
             })
             .each(function(d) {
                 SCgAlphabet.updateEdge(d, d3.select(this));
@@ -918,26 +971,74 @@ SCg.Render.prototype = {
                                     .attr('d', d3.svg.line().interpolate('cardinal-closed'))
                                     .attr('class', 'SCgContour');
         
-        this.updatePositions();
+        this.updateObjects();
     },
 
-    updatePositions: function() {
-        this.d3_nodes.attr("transform", function(d) { 
-            return 'translate(' + d.position.x + ', ' + d.position.y + ')'
+    updateObjects: function() {
+        this.d3_nodes.each(function (d) {
+            
+            if (!d.need_observer_sync) return; // do nothing
+            
+            d.need_observer_sync = false;
+            
+            d3.select(this).attr("transform", 'translate(' + d.position.x + ', ' + d.position.y + ')')
+                    .classed('SCgStateSelected', function(d) {
+                        return d.is_selected;
+                    });
         });
+        
         this.d3_edges.each(function(d) {
-            d.update();
+            
+            if (!d.need_observer_sync) return; // do nothing
+            d.need_observer_sync = false;
+            
+            if (d.need_update)
+                d.update();
             SCgAlphabet.updateEdge(d, d3.select(this));
         });
                 
-        this.d3_contours.attr('d', function(d) { 
-            d.update();
-            return self.d3_contour_line(d.verticies) + 'Z'; 
+        this.d3_contours.each(function(d) {
+            d3.select(this).attr('d', function(d) { 
+                
+                if (!d.need_observer_sync) return; // do nothing
+                
+                if (d.need_update)
+                    d.update();
+                return self.d3_contour_line(d.verticies) + 'Z'; 
+            });
         });
+
     },
     
     updateTexts: function() {
         this.d3_nodes.select('text').text(function(d) { return d.text; });
+    },
+    
+    updateDragLine: function() {
+        
+        if (this.scene.drag_line_points.length < 1) {
+            this.d3_drag_line.classed('hidden', true);
+            return;
+        }
+        
+        this.d3_drag_line.classed('hidden', false);
+        
+        var d_str = '';
+        // create path description
+        for (idx in this.scene.drag_line_points) {
+            var pt = this.scene.drag_line_points[idx];
+            
+            if (idx == 0) 
+                d_str += 'M';
+            else
+                d_str += 'L';
+            d_str += pt[0] + ',' + pt[1];
+        }
+    
+        d_str += 'L' + this.scene.mouse_pos.x + ',' + this.scene.mouse_pos.y;
+        
+        // update drag line
+        this.d3_drag_line.attr('d', d_str);
     },
             
     // -------------- Objects --------------------
@@ -963,23 +1064,23 @@ SCg.Render.prototype = {
     onMouseMove: function(window, render) {
         var point = d3.mouse(window);
         render.scene.onMouseMove(point[0], point[1]);
-        
-        if (!this.mouse_down_node) return;
-
-        // update drag line
-        this.d3_drag_line.attr('d', 'M' + this.mouse_down_node.position.x + ',' + this.mouse_down_node.position.y + 'L' + point[0] + ',' + point[1]);
     },
     
     onMouseDoubleClick: function(window, render) {
         var point = d3.mouse(window);
-        
-        if (!render.object_under_mouse) {
-            render.scene.createNode(sc_type_node, new SCg.Vector3(point[0], point[1], 0), null);
-            render.update();
-//      render.relayout();
-        }   
+        this.scene.onMouseDoubleClick(point[0], point[1]);
     },
     
+    onKeyDown: function(key_code) {
+        this.scene.onKeyDown(key_code);
+    },
+    
+    onKeyUp: function(key_code) {
+        this.scene.onKeyUp(key_code);
+    },
+    
+    
+    // ------- help functions -----------
     getContainerSize: function() {
         var el = document.getElementById(this.containerId);
         return [el.clientWidth, el.clientHeight];
@@ -990,6 +1091,24 @@ SCg.Render.prototype = {
 
 
 /* --- scg-scene.js --- */
+var SCgEditMode = {
+    SCgModeSelect: 0,
+    SCgModeEdge: 1,
+    SCgModeBus: 2,
+    SCgModeContour: 3,
+    
+    /**
+     * Check if specified mode is valid
+     */
+    isValid: function(mode) {
+        return (mode >= this.SCgModeSelect) && (mode <= this.SCgModeContour);
+    }
+};
+
+var KeyCode = {
+    Escape: 27
+};
+
 SCg.Scene = function(options) {
 
     this.render = options.render;
@@ -998,12 +1117,29 @@ SCg.Scene = function(options) {
     this.contours = [];
     
     this.objects = {};
+    this.edit_mode = SCgEditMode.SCgModeSelect;
+    
+    // object, that placed under mouse
+    this.pointed_object = null;
+    // object, that was mouse pressed
+    this.focused_object = null;
+    
+    // list of selected objects
+    this.selected_objects = [];
+    
+    // drag line points
+    this.drag_line_points = [];
+    
+    // mouse position
+    this.mouse_pos = new SCg.Vector3(0, 0, 0);
+    
+    // edge source and target
+    this.edge_data = {source: null, target: null};
 };
 
 SCg.Scene.prototype = {
 
     constructor: SCg.Scene,
-
 
     init: function() {
         this.layout_manager = new SCg.LayoutManager();
@@ -1063,50 +1199,49 @@ SCg.Scene.prototype = {
     
     /**
      * Create edge between two specified objects
-     * @param {SCg.ModelObject} begin Begin object of edge
-     * @param {SCg.ModelObject} end End object of edge
+     * @param {SCg.ModelObject} source Edge source object
+     * @param {SCg.ModelObject} target Edge target object
      * @param {Integer} sc_type SC-type of edge
      *
      * @return Returns created edge
      */
-    createEdge: function(begin, end, sc_type) {
+    createEdge: function(source, target, sc_type) {
         var edge = new SCg.ModelEdge({
-                                        begin: begin,
-                                        end: end,
+                                        source: source,
+                                        target: target,
                                         sc_type: sc_type ? sc_type : sc_type_edge_common
                                     });
         this.appendEdge(edge);
         
         return edge;
     },
-
-    // --------- mouse events ------------
-
-     onMouseDown: function(x, y) {
-
-     },
-
-     onMouseMove: function(x, y) {
-
-     },
-
-     onMouseUp: function(x, y) {
-
-     },
-
-     // --------- layout --------
-     layout: function() {
-        this.layout_manager.doLayout();
+    
+    /**
+     * Updates render
+     */
+    updateRender: function() {
         this.render.update();
-     },
+    },
+    
+    /**
+     * Updates render objects state
+     */
+    updateObjectsVisual: function() {
+        this.render.updateObjects();
+    },
+
+    // --------- layout --------
+    layout: function() {
+       this.layout_manager.doLayout();
+       this.render.update();
+    },
      
-     onLayoutTick: function() {
+    onLayoutTick: function() {
+    },
      
-     },
-     
-     /**
-      * Returns size of container, where graph drawing
-      */
+    /**
+     * Returns size of container, where graph drawing
+     */
     getContainerSize: function() {
         return this.render.getContainerSize();
     },
@@ -1132,177 +1267,171 @@ SCg.Scene.prototype = {
             return this.objects[addr];
             
         return null;
-    }
-};
-
-
-/* --- scg-component.js --- */
-SCgComponent = {
-    type: 0,
-    outputLang: 'hypermedia_format_scg_json',
-    formats: [],
-    factory: function(config) {
-        return new scgViewerWindow(config);
-    }
-};
-
-/**
- * scgViewerWindow
- * @param config
- * @constructor
- */
-var scgViewerWindow = function(config){
-    this._initWindow(config);
-};
-
-scgViewerWindow.prototype = {
-
-    /**
-     * scgViewer Window init
-     * @param config
-     * @private
-     */
-    _initWindow : function(config){
-
-        /**
-         * Container for render graph
-         * @type {String}
-         */
-        this.domContainer = config.container;
-
-        this.viewer = new SCg.Viewer();
-        this.viewer.init({containerId: config.container});
     },
-
+    
     /**
-     * Set new data in viewer
-     * @param {Object} data
+     * Append selection to object
      */
-    receiveData : function(data){
-        
-        this._buildGraph(data);
-    },
-
-    /**
-     * Build scGraph from JSON
-     * @param {Object} data
-     * @return {scGraph}
-     * @private
-     */
-    _buildGraph : function(data){
-        
-        var elements = {};
-        var edges = new Array();
-        for (var i = 0; i < data.length; i++) {
-            var el = data[i];
-            
-            if (elements.hasOwnProperty(el.id))
-                continue;
-            
-            if (el.el_type & sc_type_node || el.el_type & sc_type_link) {
-                var model_node = new SCg.ModelNode({ 
-                        position: new SCg.Vector3(10 * Math.random(), 10 * Math.random(), 0), //1000 * Math.random() - 500), 
-                        sc_type: el.el_type,
-                        text: "",
-                        sc_addr: el.id
-                    });
-                this.viewer.scene.appendNode(model_node);
-                
-                elements[el.id] = model_node;
-            } else if (el.el_type & sc_type_arc_mask) {
-                edges.push(el);
-            }
+    appendSelection: function(obj) {
+        if (obj.is_selected) {
+            SCgDebug.error('Object trying to be selecting twice');
+            return;
         }
         
-        // create edges
-        var founded = true;
-        while (edges.length > 0 && founded) {
-            founded = false;
-            for (idx in edges) {
-                var obj = edges[idx];
-                var beginId = obj.begin;
-                var endId = obj.end;
-                // try to get begin and end object for arc
-                if (elements.hasOwnProperty(beginId) && elements.hasOwnProperty(endId)) {
-                    var beginNode = elements[beginId];
-                    var endNode = elements[endId];
-                    
-                    founded = true;
-                    edges.splice(idx, 1);
-                    
-                    var model_edge = new SCg.ModelEdge({
-                        source: beginNode,
-                        target: endNode,
-                        sc_type: obj.el_type,
-                        sc_addr: obj.id
-                    });
-
-                    this.viewer.scene.appendEdge(model_edge);
-                    
-                    elements[obj.id] = model_edge;
-                } 
-            }
+        this.selected_objects.push(obj);
+        obj._setSelected(true);
+    },
+    
+    /**
+     * Remove selection from object
+     */
+    removeSelection: function(obj) {
+        
+        var idx = this.selected_objects.indexOf(obj);
+        
+        if (idx == -1 || !obj.is_selected) {
+            SCgDebug.error('Trying to remove selection from unselected object');
+            return;
         }
         
-        if (edges.length > 0)
-            alert("error");
-        
-        this.viewer.render.update();
-        this.viewer.scene.layout();
+        this.selected_objects.splice(idx, 1);
+        obj._setSelected(false);
     },
-
+    
     /**
-     * Destroy window
-     * @return {Boolean}
+     * Clear selection list
      */
-    destroy : function(){
-        delete this.viewer;
-        return true;
+    clearSelection: function() {
+        
+        for (idx in this.selected_objects) {
+            this.selected_objects[idx]._setSelected(false);
+        }
+        
+        this.selected_objects.slice(0, this.selected_objects.length);
     },
-
-
-    /**
-     * Emit translate identifiers
-     */
-    translateIdentifiers    : function(language){
+    
+    // -------- input processing -----------
+    onMouseMove: function(x, y) {
         
-        var self = this;
+        this.mouse_pos.x = x;
+        this.mouse_pos.y = y;
         
-        SCWeb.core.Translation.translate(this.viewer.scene.getScAddrs(), language, function(namesMap) {
-            for (addr in namesMap) {
-                var obj = self.viewer.scene.getObjectByScAddr(addr);
-                if (obj) {
-                    obj.text = namesMap[addr];
+        if ((this.edit_mode == SCgEditMode.SCgModeSelect) && this.focused_object && (this.focused_object.sc_type & sc_type_node)) {
+            this.focused_object.setPosition(new SCg.Vector3(x, y, 0));
+            this.updateObjectsVisual();
+        }
+        
+        if (this.edit_mode == SCgEditMode.SCgModeEdge) {
+            this.render.updateDragLine();
+        }
+    },
+    
+    onMouseDown: function(x, y) {
+    },
+    
+    onMouseUp: function(x, y) {
+    },
+    
+    onMouseDoubleClick: function(x, y) {
+        
+        if (this.edit_mode == SCgEditMode.SCgModeSelect) {
+            if (this.pointed_object)
+                return; // do nothing
+            
+            this.createNode(sc_type_node | sc_type_const, new SCg.Vector3(x, y, 0), '');
+            this.updateRender();
+        }
+        
+    },
+    
+    
+    onMouseOverObject: function(obj) {
+        this.pointed_object = obj;
+    },
+    
+    onMouseOutObject: function(obj) {
+        this.pointed_object = null;
+    },
+    
+    onMouseDownObject: function(obj) {
+        
+        if (this.edit_mode == SCgEditMode.SCgModeSelect)
+            this.focused_object = obj;
+            
+        if (this.edit_mode == SCgEditMode.SCgModeEdge) {
+            
+            // start new edge
+            if (!this.edge_data.source) {
+                this.edge_data.source = obj;
+                this.drag_line_points.push([this.mouse_pos.x, this.mouse_pos.y]);
+            } else {
+                // source and target must be not equal
+                if (this.edge_data.source != obj) {
+                    this.createEdge(this.edge_data.source, obj, sc_type_arc_pos_const_perm);
+                    this.edge_data.source = this.edge_data.target = null;
+                    
+                    this.drag_line_points.splice(0, this.drag_line_points.length);
+                    
+                    this.updateRender();
+                    this.render.updateDragLine();
                 }
             }
+        }
             
-            self.viewer.render.updateTexts();
-        });
-
     },
-
+    
+    onMouseUpObject: function(obj) {
+        
+        if (this.edit_mode == SCgEditMode.SCgModeSelect) {
+            if (obj == this.focused_object) {
+                this.clearSelection();
+                this.appendSelection(obj);
+                this.updateObjectsVisual();
+            }
+        
+            this.focused_object = null;
+        }
+    },
+    
+    onKeyDown: function(key_code) {
+        
+        // revert changes on escape key
+        if (key_code == KeyCode.Escape) {
+            if (this.edit_mode == SCgEditMode.SCgModeEdge)
+                this.resetEdgeMode();
+        }
+    },
+    
+    onKeyUp: function(key_code) {
+    },
+    
+    // -------- edit --------------
     /**
-     * Get current language in viewer
-     * @return String
+     * Setup new edit mode for scene. Calls from user interface
+     * @param {SCgEditMode} mode New edit mode
      */
-    getIdentifiersLanguage  : function(){
-        return this._currentLanguage;
+    setEditMode: function(mode) {
+        
+        if (this.edit_mode == mode) return; // do nothing
+        
+        this.edit_mode = mode;
+        
+        this.focused_object = null;
+        this.edge_data.source = null; this.edge_data.target = null;
+        
+        this.resetEdgeMode();
     },
-
-    _getObjectsForTranslate : function(){      
-        return [];
-    },
-
-    _translateObjects       : function(namesMap){
-
+    
+    /**
+     * Reset edge creation mode state
+     */
+    resetEdgeMode: function() {
+        this.drag_line_points.splice(0, this.drag_line_points.length);
+        this.render.updateDragLine();
+        
+        this.edge_data.source = this.edge_data.target = null;
     }
-
 };
-
-
-SCWeb.core.ComponentManager.appendComponentInitialize(function() {
-    SCWeb.core.ComponentManager.registerComponent(SCgComponent);
-});
 
 
 /* --- scg-layout.js --- */
@@ -1383,8 +1512,7 @@ SCg.LayoutAlgorithmForceBased.prototype.onLayoutTick = function() {
         var node_layout = this.nodes[idx];
         
         if (node_layout.type == SCgLayoutObjectType.Node) {
-            node_layout.object.position.x = node_layout.x;
-            node_layout.object.position.y = node_layout.y;
+            node_layout.object.setPosition(new SCg.Vector3(node_layout.x, node_layout.y, 0));
         } else
         {
             if (node_layout.type == SCgLayoutObjectType.DotPoint) {
@@ -1505,7 +1633,176 @@ SCg.LayoutManager.prototype.doLayout = function() {
 };
 
 SCg.LayoutManager.prototype.onTickUpdate = function() { 
-    this.scene.render.update();
+    this.scene.updateObjectsVisual();
 };
+
+
+/* --- scg-component.js --- */
+SCgComponent = {
+    type: 0,
+    outputLang: 'hypermedia_format_scg_json',
+    formats: [],
+    factory: function(config) {
+        return new scgViewerWindow(config);
+    }
+};
+
+/**
+ * scgViewerWindow
+ * @param config
+ * @constructor
+ */
+var scgViewerWindow = function(config){
+    this._initWindow(config);
+};
+
+scgViewerWindow.prototype = {
+
+    /**
+     * scgViewer Window init
+     * @param config
+     * @private
+     */
+    _initWindow : function(config){
+
+        /**
+         * Container for render graph
+         * @type {String}
+         */
+        this.domContainer = config.container;
+
+        this.editor = new SCg.Editor();
+        this.editor.init({containerId: config.container});
+    },
+
+    /**
+     * Set new data in viewer
+     * @param {Object} data
+     */
+    receiveData : function(data){
+        
+        this._buildGraph(data);
+    },
+
+    /**
+     * Build scGraph from JSON
+     * @param {Object} data
+     * @return {scGraph}
+     * @private
+     */
+    _buildGraph : function(data){
+        
+        var elements = {};
+        var edges = new Array();
+        for (var i = 0; i < data.length; i++) {
+            var el = data[i];
+            
+            if (elements.hasOwnProperty(el.id))
+                continue;
+            
+            if (el.el_type & sc_type_node || el.el_type & sc_type_link) {
+                var model_node = new SCg.ModelNode({ 
+                        position: new SCg.Vector3(10 * Math.random(), 10 * Math.random(), 0), //1000 * Math.random() - 500), 
+                        sc_type: el.el_type,
+                        text: "",
+                        sc_addr: el.id
+                    });
+                this.editor.scene.appendNode(model_node);
+                
+                elements[el.id] = model_node;
+            } else if (el.el_type & sc_type_arc_mask) {
+                edges.push(el);
+            }
+        }
+        
+        // create edges
+        var founded = true;
+        while (edges.length > 0 && founded) {
+            founded = false;
+            for (idx in edges) {
+                var obj = edges[idx];
+                var beginId = obj.begin;
+                var endId = obj.end;
+                // try to get begin and end object for arc
+                if (elements.hasOwnProperty(beginId) && elements.hasOwnProperty(endId)) {
+                    var beginNode = elements[beginId];
+                    var endNode = elements[endId];
+                    
+                    founded = true;
+                    edges.splice(idx, 1);
+                    
+                    var model_edge = new SCg.ModelEdge({
+                        source: beginNode,
+                        target: endNode,
+                        sc_type: obj.el_type,
+                        sc_addr: obj.id
+                    });
+
+                    this.editor.scene.appendEdge(model_edge);
+                    
+                    elements[obj.id] = model_edge;
+                } 
+            }
+        }
+        
+        if (edges.length > 0)
+            alert("error");
+        
+        this.editor.render.update();
+        this.editor.scene.layout();
+    },
+
+    /**
+     * Destroy window
+     * @return {Boolean}
+     */
+    destroy : function(){
+        delete this.editor;
+        return true;
+    },
+
+
+    /**
+     * Emit translate identifiers
+     */
+    translateIdentifiers    : function(language){
+        
+        var self = this;
+        
+        SCWeb.core.Translation.translate(this.editor.scene.getScAddrs(), language, function(namesMap) {
+            for (addr in namesMap) {
+                var obj = self.editor.scene.getObjectByScAddr(addr);
+                if (obj) {
+                    obj.text = namesMap[addr];
+                }
+            }
+            
+            self.editor.render.updateTexts();
+        });
+
+    },
+
+    /**
+     * Get current language in viewer
+     * @return String
+     */
+    getIdentifiersLanguage  : function(){
+        return this._currentLanguage;
+    },
+
+    _getObjectsForTranslate : function(){      
+        return [];
+    },
+
+    _translateObjects       : function(namesMap){
+
+    }
+
+};
+
+
+SCWeb.core.ComponentManager.appendComponentInitialize(function() {
+    SCWeb.core.ComponentManager.registerComponent(SCgComponent);
+});
 
 
