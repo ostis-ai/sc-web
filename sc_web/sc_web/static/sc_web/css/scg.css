@@ -111,10 +111,22 @@
 	opacity: 0.9;
 }
 
+.SCgDragLinePoint {
+	stroke: #FBF4F2;
+	stroke-width: 3px;
+	fill: #D60011;
+}
+
+.SCgDragLinePointHighlighted {
+	fill: #FF3300;
+	stroke: #FFBE52;
+}
+
 path.dragline {
 	stroke: #535A69;
 	stroke-dasharray: 2,2;
 	stroke-width: 2px;
+	fill: 	none;
 }
 
 path.SCgEdge.hidden {
