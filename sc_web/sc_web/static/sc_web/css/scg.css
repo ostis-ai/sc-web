@@ -32,6 +32,12 @@
 }
 
 /* --- Edges --- */
+.SCgEdgeSelectBounds {
+	stroke: none;
+	stroke-width: 10px;
+	fill: none;
+}
+
 .SCgEdge {
 	stroke: #000;
 	fill: none;
@@ -129,6 +135,18 @@
 .SCgDragLinePointHighlighted {
 	fill: #FF3300;
 	stroke: #FFBE52;
+}
+
+.SCgLinePoint {
+	stroke: #FBF4F2;
+	stroke-width: 4px;
+	fill: #D60011;
+}
+
+.SCgLinePointHighlighted {
+	fill: #FF3300;
+	stroke: #FFBE52;
+	cursor: move;
 }
 
 path.dragline {
