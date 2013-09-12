@@ -39,7 +39,6 @@
 }
 
 .SCgEdge {
-	stroke: #000;
 	fill: none;
 }
 
@@ -90,10 +89,12 @@
 
 .SCgEdgeEndArrowAccess {
 	marker-end: url(#end-arrow-access);
+	fill: none;
 }
 
 .SCgEdgeEndArrowCommon {
 	marker-end: url(#end-arrow-common);
+	fill: none;
 }
 
 .SCgEdgeVarDashAccessPerm {
@@ -185,6 +186,10 @@ path.SCgEdge.hidden {
 
 /* ------------- User interface -------------- */
 .scg-tools-panel {
-	position: absolute;
-	
+	position: absolute;	
+}
+
+.scg-type-list {
+	max-height: 400px;
+	overflow-y: scroll;
 }
