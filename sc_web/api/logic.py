@@ -21,8 +21,11 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 """
 
-from keynodes import KeynodeSysIdentifiers
+from keynodes import KeynodeSysIdentifiers, Keynodes
 from sctp.types import SctpIteratorType, ScElementType
+
+from django.db.backends.dummy.base import DatabaseError
+from accounts.models import UserScAddr, SessionScAddr
 
 __all__ = (
     'parse_menu_command',
@@ -138,3 +141,16 @@ def append_to_system_elements(sctp_client, keynode_system_element, el):
         keynode_system_element,
         el
     )
+
+# -------------- work with session -------------------------
+def session_new_sc_addr(session_key):
+    return SessionScAddr.add_session(session_key)
+    
+def user_new(username):
+    return UserScAddr.add_user(username)
+
+def user_get_sc_addr(username):
+    return UserScAddr.get_user_addr(username)
+    
+def session_get_sc_addr(session_key):
+    return SessionScAddr.get_session_addr(session_key)

@@ -8,10 +8,10 @@ SCWeb.core.Translation = {
      */
     _cacheMap: {},
     
-    /** 
+    /**
      * @param {Object} listener Listener object that will be notified on translation.
      * It must has two functions:
-     * - getObjectsToTranslate() - funciton returns array of sc-addrs, that need to be 
+     * - getObjectsToTranslate() - funciton returns array of sc-addrs, that need to be
      * translated
      * - updateTranslation(identifiers) - fucntion, that calls when translation finished,
      * and notify, that view must be updated
@@ -33,14 +33,14 @@ SCWeb.core.Translation = {
     },
     
     /**
-     * @param {String} sc-addr of new identifiers language 
+     * @param {String} sc-addr of new identifiers language
      */
     languageChanged: function(language) {
         this.current_language = language;
          
         // collect objects, that need to be translated
         var objects = [];
-        for (var i = 0; i < this.listeners.length; i++) {
+        for (i in this.listeners) {
             objects = objects.concat(this.listeners[i].getObjectsToTranslate());
         }
         
@@ -49,7 +49,7 @@ SCWeb.core.Translation = {
         var self = this;
         this.translate(objects, language, function(namesMap) {
             // notify listeners for new translations
-            for (var i = 0; i < self.listeners.length; i++) {
+            for (i in self.listeners) {
                 self.listeners[i].updateTranslation(namesMap);
             }
         });
@@ -86,10 +86,8 @@ SCWeb.core.Translation = {
             // nothing is cached for this language yet
             return addresses;
         } else {
-            var uncachedAddressed = [];
-            var scAddress;
-            var i;
-            for(i=0; i < addresses.length; i++) {
+            var uncachedAddressed = [], scAddress;
+            for(i in addresses) {
                 scAddress = addresses[i];
                 // if not in cache for the specified language
                 if(!this._cacheMap[language][scAddress]) {
@@ -117,10 +115,8 @@ SCWeb.core.Translation = {
     },
 
     _getRequiredNamesMap: function(language, addresses) {
-        var names = {};
-        var scAddress;
-        var i;
-        for(i=0; i < addresses.length; i++) {
+        var names = {}, scAddress;
+        for(i in addresses) {
             scAddress = addresses[i];
             names[scAddress] = this._cacheMap[language][scAddress];
         }

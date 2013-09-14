@@ -31,7 +31,6 @@ from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 
 from keynodes import KeynodeSysIdentifiers, Keynodes
-
 from sctp.logic import new_sctp_client
 from sctp.types import ScAddr, SctpIteratorType, ScElementType
 
@@ -39,6 +38,7 @@ from api.logic import (
     parse_menu_command, find_answer, find_translation,
     check_command_finished, append_to_system_elements,
 )
+import api.logic as logic
 
 __all__ = (
     'get_identifier',
@@ -95,11 +95,24 @@ def init(request):
         if (resIdtf is not None):
             for items in resIdtf:
                 idtfLangs.append(items[2].to_id())
+                
+        
+        # get user sc-addr
+        user_addr = None
+        if request.user.is_authenticated():
+            user_addr = logic.user_get_sc_addr(request.user.username)
+        else:
+            user_addr = logic.session_new_sc_addr(request.session.session_key)
+        
 
-
-        result = {'commands': cmds,
-                  'idtfLangs': idtfLangs,
-                  'outLangs': outLangs}
+        result = {'menu_commands': cmds,
+                  'idtf_modes': idtfLangs,
+                  'window_types': outLangs,
+                  'user': {
+                            'sc_addr': user_addr.to_id(),
+                            'is_authenticated': request.user.is_authenticated()
+                           }
+        }
 
         result = json.dumps(result)
 

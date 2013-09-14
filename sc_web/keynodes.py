@@ -55,6 +55,7 @@ class KeynodeSysIdentifiers:
     question_search_all_output_arcs = 'question_search_all_output_arcs'
     
     ui_user = 'ui_user'
+    ui_user_registered = 'ui_user_registered'
     ui_nrel_user_answer_formats = 'ui_nrel_user_answer_formats'
     ui_main_menu = 'ui_main_menu'
     ui_user_command_atom = 'ui_user_command_atom'

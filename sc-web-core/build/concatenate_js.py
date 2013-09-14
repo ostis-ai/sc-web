@@ -24,6 +24,7 @@ def add(lines, dir, names):
     names.sort(key=lambda file: 0 if file == 'namespace.js' else 1)
     for name in names:
         path = os.path.join(dir, name)
+        print path
         if os.path.isfile(path):
             extension = os.path.splitext(path)[1]
             if extension == '.js':

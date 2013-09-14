@@ -1,14 +1,23 @@
-SCWeb.core.ui.Menu = {
-    _menuContainerId: 'menu_container',
+SCWeb.ui.Menu = {
     _items: null,
 
-    init: function() {
+    /*!
+     * Initialize menu in user interface
+     * @param {Object} params Parameters for menu initialization.
+     * There are required parameters:
+     * - menu_container_id - id of dom element that will contains menu items
+     * - menu_commands - object, that represent menu command hierachy (in format returned from server)
+     */
+    init: function(params, callback) {
         var self = this;
+        
+        this.menu_container_id = '#' + params.menu_container_id;
         
         // register for translation updates
         SCWeb.core.Translation.registerListener(this);
         
-        this._build(SCWeb.core.Main.userCommands);
+        this._build(params.menu_commands);
+        callback();
     },
 
     _build: function(menuData) {
@@ -19,10 +28,8 @@ SCWeb.core.ui.Menu = {
 
         //TODO: change to children, remove intermediate 'childs'
         if(menuData.hasOwnProperty('childs')) {
-            var id;
-            var subMenu;
-            var i;
-            for(i = 0; i < menuData.childs.length; i++) {
+            var id, subMenu;
+            for(i in menuData.childs) {
                 subMenu = menuData.childs[i];
                 menuHtml += this._parseMenuItem(subMenu);
             }
@@ -30,7 +37,7 @@ SCWeb.core.ui.Menu = {
 
         menuHtml += '</ul>';
 
-        $('#' + this._menuContainerId).append(menuHtml);
+        $(this.menu_container_id).append(menuHtml);
 
         this._registerMenuHandler();
     },
@@ -41,7 +48,7 @@ SCWeb.core.ui.Menu = {
 
         var itemHtml = '';
         if(item.cmd_type == 'cmd_noatom') {
-            itemHtml = '<li class="dropdown"><a sc_addr="' + item.id + '" id="' + item.id + '" class="menu_item ' + item.cmd_type + ' dropdown-toggle" data-toggle="dropdown" href="#" ><span clas="text">'  + item.id + '</span><b class="caret"></b></a>';
+            itemHtml = '<li class="dropdown"><a sc_addr="' + item.id + '" id="' + item.id + '" class="menu_item ' + item.cmd_type + ' dropdown-toggle" data-toggle="dropdown" href="#" ><span clas="text">' + item.id + '</span><b class="caret"></b></a>';
             
         } else {
             itemHtml = '<li><a id="' + item.id + '"sc_addr="' + item.id + '" class="menu_item ' + item.cmd_type + '" >' + item.id + '</a>';
@@ -66,7 +73,7 @@ SCWeb.core.ui.Menu = {
             
             var sc_addr = $(this).attr('sc_addr');
             // append as argument
-            if (SCWeb.core.utils.Keyboard.ctrl) {
+            /*if (SCWeb.core.utils.Keyboard.ctrl) {
                 SCWeb.core.Arguments.appendArgument(sc_addr);
             }else{
             
@@ -89,14 +96,14 @@ SCWeb.core.ui.Menu = {
                         }
                     }
                 }
-            }
+            }*/
         });
     },
     
     // ---------- Translation listener interface ------------
     updateTranslation: function(namesMap) {
         // apply translation
-        $('#menu_container [sc_addr]').each(function(index, element) {
+        $(this.menu_container_id + ' [sc_addr]').each(function(index, element) {
             var addr = $(element).attr('sc_addr');
             if(namesMap[addr]) {
                 $(element).text(namesMap[addr]);

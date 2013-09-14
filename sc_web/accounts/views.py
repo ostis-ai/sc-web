@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.views.generic import FormView
 from django.shortcuts import redirect, render_to_response
+from models import UserScAddr
 
 from accounts.forms import RegistrationForm
 
@@ -28,5 +29,7 @@ class RegistrationView(FormView):
             email=form.cleaned_data['email'],
             password=form.cleaned_data['password1']
         )
+        
+        UserScAddr.add_user(form.cleaned_data['username'])
 
         return render_to_response('accounts/registration_done.html')

@@ -1,4 +1,4 @@
-SCWeb.core.ui.TaskPanel = {
+SCWeb.ui.TaskPanel = {
     _container: '#task_panel',
     _text_container: '#task_num',
     _task_num: 0,

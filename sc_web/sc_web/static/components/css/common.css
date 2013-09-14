@@ -1,8 +1,23 @@
 html, body {
-	height: 100%;
+    height: 100%;
 }
 
-#uilocker {
+#sc-ui-locker {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -50px;
+    margin-left: -50px;
+    width: 100px;
+    height: 100px;
+    display: none;
+​}
+
+#sc-ui-locker.shown {
+    display: block;
+}
+
+#sc-ui-locker-icon {
     position: fixed;
     top: 0;
     left: 0;
@@ -11,12 +26,16 @@ html, body {
     background: #CCC url("../images/loading-cog.gif") no-repeat center center;
     opacity: 0.5;
     z-index: 1000;
-    display: none;
 }
 
-#uilocker.shown {
-    display: block;
+#sc-ui-locker-text {
+    font-size: 14px;
+    color: #000;
+    position:fixed;
+    margin-top: 90px;
+    margin-left: 23px;
 }
+
 
 #main_container {
     padding-top: 70px;
@@ -52,7 +71,8 @@ html, body {
 }
 
 .task_text {
-    margin-top: 6px;
+    margin-top: 10px;
+    margin-left: -4px;
     vertical-align: middle;
     font-size: 10px;
     color:  #aaa;
@@ -65,25 +85,53 @@ html, body {
 }
 
 .argument-container {
-	min-height: 38px;
+    min-height: 38px;
 }
 
 .argument-buttons {
-	margin-top: 2px;
+    margin-top: 2px;
 }
 
 .main-container {
-	height: 100%;
+    height: 100%;
 }
 
 .tabs-data-container{
-	height: 100%;
+    height: 100%;
 }
 
 .sc_window_data {
-	height: 100%;
+    height: 100%;
 }
 
 .menu_item {
-	cursor: pointer;
+    cursor: pointer;
 }
+
+/* ---- auth ---- */
+.auth-user-container {
+
+}
+
+.auth-user-image {
+        border-width: 1px;
+        border-style: solid;
+        border-color: #222;
+        background-color: #333;
+
+        width: 32px;
+        height: 32px;
+
+        margin-top: -5px;
+        margin-right: 5px;
+}
+
+.auth-user-image:hover {
+        border-color: #444;
+        background-color: #444;
+}
+
+.auth-user-login {
+        margin-left: 5px;
+}
+

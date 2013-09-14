@@ -1,1 +1,0 @@
-$.namespace('SCWeb.core');
