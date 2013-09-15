@@ -135,12 +135,8 @@ SCWeb.core.Server = {
      * @param {Function} callback
      */
     resolveIdentifiers: function(identifiers, language, callback) {
-        var data = 'language=' + language;
-
-        var id;
-        var index;
-        var i;
-        for(i = 0; i < identifiers.length; i++) {
+        var data = '', id, index;
+        for(i in identifiers) {
             id = identifiers[i];
             index = (i + 1) + '_';
             data += '&' + index + '=' + id;

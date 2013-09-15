@@ -61,6 +61,24 @@ class SctpClient:
         """Close network session
         """
         pass
+    
+    def erase_element(self, el_addr):
+        """Erase element with specified sc-addr
+        @param el_addr sc-addr of sc-element to remove
+        @return If sc-element erased, then return True; otherwise return False
+        """
+        # send request
+        params = struct.pack('=HH', el_addr.seg, el_addr.offset)
+        data = struct.pack('=BBII', SctpCommandType.SCTP_CMD_ERASE_ELEMENT, 0, 0, len(params))
+        alldata = data + params
+
+        self.sock.send(alldata)
+
+        # receive response
+        data = self.receiveData(10)
+        cmdCode, cmdId, resCode, resSize = struct.unpack('=BIBI', data)
+
+        return resCode == SctpResultCode.SCTP_RESULT_OK
 
     def get_link_content(self, link_addr):
         """Get content of sc-link with specified sc-addr

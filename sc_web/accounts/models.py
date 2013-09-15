@@ -86,4 +86,4 @@ class UserScAddr(models.Model):
         if obj:
             return ScAddr.parse_from_string(obj.sc_addr)
         
-        return None
+        return UserScAddr.add_user(username)

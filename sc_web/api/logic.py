@@ -143,14 +143,78 @@ def append_to_system_elements(sctp_client, keynode_system_element, el):
     )
 
 # -------------- work with session -------------------------
-def session_new_sc_addr(session_key):
-    return SessionScAddr.add_session(session_key)
+class ScSession:
     
-def user_new(username):
-    return UserScAddr.add_user(username)
+    def __init__(self, user, sctp_client, keynodes):
+        """Initialize session class with requets.user object
+        """
+        self.user = user
+        self.sctp_client = sctp_client
+        self.keynodes = keynodes
+        self.sc_addr = None
+        
+    def get_sc_addr(self):
+        """Resolve sc-addr of session
+        """
+        if not self.sc_addr:
+            if self.user.is_authenticated():
+                self.sc_addr = self._user_get_sc_addr()
+            else:
+                self.sc_addr = self._session_get_sc_addr()
+                if not self.sc_addr:
+                    self.sc_addr = self._session_new_sc_addr()
+                
+        return self.sc_addr
+    
+    def get_lang_mode(self):
+        """Returns sc-addr of currently used language mode
+        """
+        results = self.sctp_client.iterate_elements(
+                                               SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
+                                               self.sc_addr,
+                                               ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
+                                               ScElementType.sc_type_link,
+                                               ScElementType.sc_type_arc_pos_const_perm,
+                                               self.keynodes[KeynodeSysIdentifiers.ui_lang_mode]
+                                            )
+        
+        if results:
+            return results[2]
+        
+        # setup russian mode by default
+        mode_sc_addr = self.keynodes[KeynodeSysIdentifiers.ui_lang_mode_ru]
+        self.set_current_lang_mode(mode_sc_addr)
+        
+        return mode_sc_addr
+    
+    def set_current_lang_mode(self, mode_addr):
+        """Setup new language mode as current for this session
+        """
+        # try to find currently used mode and remove it
+        results = self.sctp_client.iterate_elements(
+                                               SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
+                                               self.sc_addr,
+                                               ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
+                                               ScElementType.sc_type_link,
+                                               ScElementType.sc_type_arc_pos_const_perm,
+                                               self.keynodes[KeynodeSysIdentifiers.ui_lang_mode]
+                                            )
+        
+        if results:
+            self.sctp_client.erase_element(results[1])
+                
+        
+        arc = self.sctp_client.create_arc(ScElementType.sc_type_arc_common | ScElementType.sc_type_const, self.get_sc_addr(), mode_addr)
+        self.sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, self.keynodes[KeynodeSysIdentifiers.ui_nrel_current_lang_mode], arc)
 
-def user_get_sc_addr(username):
-    return UserScAddr.get_user_addr(username)
-    
-def session_get_sc_addr(session_key):
-    return SessionScAddr.get_session_addr(session_key)
+    def _session_new_sc_addr(self): 
+        return SessionScAddr.add_session(self.user.session.session_key)
+
+    def _user_new(self):
+        return UserScAddr.add_user(self.user.username)
+
+    def _user_get_sc_addr(self):
+        return UserScAddr.get_user_addr(self.user.username)
+
+    def _session_get_sc_addr(self):
+        return SessionScAddr.get_session_addr(self.user.session.session_key)

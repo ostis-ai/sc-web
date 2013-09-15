@@ -13,9 +13,11 @@ SCWeb.ui.UserPanel = {
         
         this.is_authenticated = params.is_authenticated;
         this.user_sc_addr = params.sc_addr;
+        this.lang_mode_sc_addr = params.current_lang_mode;
         
         if (this.is_authenticated) {
             $('#auth-user-name').attr('sc_addr', this.user_sc_addr).text(this.user_sc_addr);
+            $('#auth-user-lang-mode').attr('sc_addr', this.lang_mode_sc_addr).text(this.lang_mode_sc_addr);
         }
         
         callback();

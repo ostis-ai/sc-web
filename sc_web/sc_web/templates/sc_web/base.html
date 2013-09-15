@@ -29,65 +29,51 @@
     <!--<div class="page-header">
         <h1>IMS<small>OSTIS</small></h1>
     </div>-->
-    <div class="navbar navbar-inverse navbar-fixed-top" role="banner">
-        <div><!-- class="container">-->
-            <div class="navbar-header">
-                <a class="navbar-brand" href="#">OSTIS</a>
-                <!-- Help button -->
-                <div id="help_button" class="help_button navbar-form pull-left">
-                    <a data-toggle="modal" href="{{ STATIC_URL }}components/html/help.html" data-target="#helpModal"><img src="{{ STATIC_URL }}components/images/help-red.png" class="help_button"/></a>
-                </div>
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="banner">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">OSTIS</a>
+            <!-- Help button -->
+            <div id="help_button" class="help_button navbar-form pull-left">
+                <a data-toggle="modal" href="{{ STATIC_URL }}components/html/help.html" data-target="#helpModal"><img src="{{ STATIC_URL }}components/images/help-red.png" class="help_button"/></a>
             </div>
-            <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
-                <div class="navbar-inner">
-
-                    <div id="menu_container">
-                        <!-- there will be placed menu items -->
-                    </div>
-                    <div id="task_panel" class="task_icon navbar-form pull-right">
-                        <div id="task_num" class="task_text">0</div>
-                    </div>
-
-                    <div class="navbar-form pull-right">
-                        {% if user.is_authenticated %}
-                        <div id="auth-user-registered">
-                            <ul class="nav navbar-nav navbar-right">
-                                <li class="dropdown">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                        <div class="auth-user-image pull-left" ></div>
-                                        <div id="auth-user-name" class="pull-left">teststss{# name will be placed later #}</div>
-                                        <b class="caret"></b>
-                                    </a>
-                                    <ul class="dropdown-menu">
-                                        <li class="divider"></li>
-                                        <li><a href="{% url accounts:logout %}">Logout</a></li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </div>
-                        {% else %}
-                        <ul class="nav navbar-nav">
-                            <li><a href="#js-accounts-login-modal" data-toggle="modal">Login</a></li>
-                            <li><a href="{% url accounts:registration %}">Register</a></li>
-                        </ul>
-                        {% endif %}
-                        </ul>
-                    </div>
-
-                    <div class="language_selectors navbar-form pull-right">
-                        <!--<button id="btn_add_new_window" class="btn btn-success navbar-btn btn-xs"><span class="glyphicon glyphicon-plus"></span></button>-->
-                        <select class="combobox" id="select_output_language">
-                            <!-- Options will be inserted on start -->
-                        </select>
-                        <select class="combobox" id="select_idtf_language">
-                            <!-- Options will be inserted on start -->
-                        </select>
-                    </div>
-
-                </div>
-            </nav>
         </div>
-    </div>
+
+        <div id="menu_container">
+            <!-- there will be placed menu items -->
+        </div>
+        <div id="task_panel" class="task_icon navbar-form pull-right">
+            <div id="task_num" class="task_text">0</div>
+        </div>
+
+        <div class="pull-right">
+            {% if user.is_authenticated %}
+            <div id="auth-user-registered">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <div class="auth-user-image pull-left" ></div>
+                            <div id="auth-user-name" class="pull-left">teststss{# name will be placed later #}</div>
+                            <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li class="dropwodn">
+                                <a id="auth-user-lang-mode"></a>
+                            </li>
+                            <li class="divider"></li>
+                            <li><a href="{% url accounts:logout %}">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            {% else %}
+            <ul class="nav navbar-nav">
+                <li><a href="#js-accounts-login-modal" data-toggle="modal">Login</a></li>
+                <li><a href="{% url accounts:registration %}">Register</a></li>
+            </ul>
+            {% endif %}
+            </ul>
+        </div>
+    </nav>
 
     <!-- main content -->
     <div id="main_container" class="main-container">

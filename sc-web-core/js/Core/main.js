@@ -17,7 +17,7 @@ SCWeb.core.Main = {
         
             SCWeb.core.Server.init(function(data) {
                 self.window_types = data.window_types;
-                self.idtf_modes = data.idtf_modes;
+                self.lang_modes = data.lang_modes;
                 self.menu_commands = data.menu_commands;
                 
                 var menu_params = {

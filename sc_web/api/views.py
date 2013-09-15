@@ -64,6 +64,7 @@ def init(request):
         keynode_ui_main_menu = keys[KeynodeSysIdentifiers.ui_main_menu]
         keynode_ui_output_languages = keys[KeynodeSysIdentifiers.ui_output_languages]
         keynode_ui_idtf_languages = keys[KeynodeSysIdentifiers.ui_idtf_languages]
+        keynode_ui_lang_mode = keys[KeynodeSysIdentifiers.ui_lang_mode]
 
         # try to find main menu node
         cmds = parse_menu_command(keynode_ui_main_menu, sctp_client, keys)
@@ -87,30 +88,25 @@ def init(request):
         # try to find available output languages
         resIdtf = sctp_client.iterate_elements(
             SctpIteratorType.SCTP_ITERATOR_3F_A_A,
-            keynode_ui_idtf_languages,
+            keynode_ui_lang_mode,
             ScElementType.sc_type_arc_pos_const_perm,
             ScElementType.sc_type_node | ScElementType.sc_type_const
         )
-        idtfLangs = []
+        langModes = []
         if (resIdtf is not None):
             for items in resIdtf:
-                idtfLangs.append(items[2].to_id())
-                
+                langModes.append(items[2].to_id())
         
         # get user sc-addr
-        user_addr = None
-        if request.user.is_authenticated():
-            user_addr = logic.user_get_sc_addr(request.user.username)
-        else:
-            user_addr = logic.session_new_sc_addr(request.session.session_key)
-        
-
+        sc_session = logic.ScSession(request.user, sctp_client, keys)
+        user_addr = sc_session.get_sc_addr()
         result = {'menu_commands': cmds,
-                  'idtf_modes': idtfLangs,
+                  'lang_modes': langModes,
                   'window_types': outLangs,
                   'user': {
                             'sc_addr': user_addr.to_id(),
-                            'is_authenticated': request.user.is_authenticated()
+                            'is_authenticated': request.user.is_authenticated(),
+                            'current_lang_mode': sc_session.get_lang_mode().to_id()
                            }
         }
 
@@ -125,12 +121,6 @@ def init(request):
 def get_identifier(request):
     result = None
     if request.is_ajax():
-        lang_code = ScAddr.parse_from_string(request.POST.get(u'language', None))
-
-        if lang_code is None:
-            print 'Invalid sc-addr of language'
-            return HttpResponse(None)
-
         # get arguments
         idx = 1
         arguments = []
@@ -277,6 +267,7 @@ def do_command(request):
 
             wait_time = 0
             wait_dt = 0.1
+            
             # initialize command
             arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_command_initiated, inst_cmd_addr)
             append_to_system_elements(sctp_client, keynode_system_element, arc)
@@ -315,15 +306,16 @@ def do_command(request):
                 cmd_result
             )
             if question is None:
-                return serialize_error(404, 'Can\'t find question node')
+                return serialize_error(404, "Can't find question node")
 
             question = question[0][2]
 
             append_to_system_elements(sctp_client, keynode_system_element, question)
 
             # create author
-            user_node = sctp_client.create_node(ScElementType.sc_type_node | ScElementType.sc_type_const)
-            append_to_system_elements(sctp_client, keynode_system_element, user_node)
+            user_node = logic.get_sc_addr_of_request_user(request.user)
+            if not user_node:
+                return serialize_error(404, "Can't resolve user node")
             arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_user, user_node)
             append_to_system_elements(sctp_client, keynode_system_element, arc)
 
