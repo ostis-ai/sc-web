@@ -63,8 +63,7 @@ def init(request):
         keys = Keynodes(sctp_client)
         keynode_ui_main_menu = keys[KeynodeSysIdentifiers.ui_main_menu]
         keynode_ui_output_languages = keys[KeynodeSysIdentifiers.ui_output_languages]
-        keynode_ui_idtf_languages = keys[KeynodeSysIdentifiers.ui_idtf_languages]
-        keynode_ui_lang_mode = keys[KeynodeSysIdentifiers.ui_lang_mode]
+        keynode_languages = keys[KeynodeSysIdentifiers.languages]
 
         # try to find main menu node
         cmds = parse_menu_command(keynode_ui_main_menu, sctp_client, keys)
@@ -73,40 +72,40 @@ def init(request):
             cmds = {}
 
         # try to find available output languages
-        resLangs = sctp_client.iterate_elements(
+        res_out_langs = sctp_client.iterate_elements(
             SctpIteratorType.SCTP_ITERATOR_3F_A_A,
             keynode_ui_output_languages,
             ScElementType.sc_type_arc_pos_const_perm,
             ScElementType.sc_type_node | ScElementType.sc_type_const
         )
 
-        outLangs = []
-        if (resLangs is not None):
-            for items in resLangs:
-                outLangs.append(items[2].to_id())
+        out_langs = []
+        if (res_out_langs is not None):
+            for items in res_out_langs:
+                out_langs.append(items[2].to_id())
 
-        # try to find available output languages
-        resIdtf = sctp_client.iterate_elements(
+        # try to find available output natural languages
+        res_langs = sctp_client.iterate_elements(
             SctpIteratorType.SCTP_ITERATOR_3F_A_A,
-            keynode_ui_lang_mode,
+            keynode_languages,
             ScElementType.sc_type_arc_pos_const_perm,
             ScElementType.sc_type_node | ScElementType.sc_type_const
         )
-        langModes = []
-        if (resIdtf is not None):
-            for items in resIdtf:
-                langModes.append(items[2].to_id())
+        langs = []
+        if (res_langs is not None):
+            for items in res_langs:
+                langs.append(items[2].to_id())
         
         # get user sc-addr
-        sc_session = logic.ScSession(request.user, sctp_client, keys)
+        sc_session = logic.ScSession(request.user, request.session, sctp_client, keys)
         user_addr = sc_session.get_sc_addr()
         result = {'menu_commands': cmds,
-                  'lang_modes': langModes,
-                  'window_types': outLangs,
+                  'languages': langs,
+                  'window_types': out_langs,
                   'user': {
                             'sc_addr': user_addr.to_id(),
                             'is_authenticated': request.user.is_authenticated(),
-                            'current_lang_mode': sc_session.get_lang_mode().to_id()
+                            'current_lang': sc_session.get_used_language().to_id()
                            }
         }
 

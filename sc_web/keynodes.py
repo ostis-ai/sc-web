@@ -61,20 +61,23 @@ class KeynodeSysIdentifiers:
     ui_user_command_noatom = 'ui_user_command_noatom'
     ui_user_command_question = 'ui_user_command_question'
     ui_output_languages = 'ui_output_languages'
-    ui_idtf_languages = 'ui_idtf_languages'
     ui_rrel_command_arguments = 'ui_rrel_command_arguments'
     ui_rrel_commnad = 'ui_rrel_command'
     ui_nrel_command_result = 'ui_nrel_command_result'
-    ui_nrel_current_lang_mode = 'ui_nrel_current_lang_mode'
     ui_nrel_user_answer_formats = 'ui_nrel_user_answer_formats'
     ui_command_generate_instance = 'ui_command_generate_instance'
     ui_command_initiated = 'ui_command_initiated'
     ui_command_finished = 'ui_command_finished'
     ui_displayed_answer = 'ui_displayed_answer'
     
-    ui_lang_mode = 'ui_lang_mode'
-    ui_lang_mode_ru = 'ui_lang_mode_ru'    
+    ui_nrel_user_used_language = 'ui_nrel_user_used_language'
     
+    # languages
+    languages = 'languages'
+    lang_ru = 'lang_ru'
+    lang_en = 'lang_en'
+    
+    # formats
     format_scs = 'hypermedia_format_scs'
     format_scg_json = 'hypermedia_format_scg_json'
     format_scn_json = 'hypermedia_format_scn_json'

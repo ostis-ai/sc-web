@@ -5,6 +5,7 @@ from sctp.logic import new_sctp_client
 from sctp.types import ScAddr, SctpIteratorType, ScElementType
 
 from django.db.backends.dummy.base import DatabaseError
+from django.core.exceptions import ObjectDoesNotExist
 
 # Create your models here.
 __all__ = (
@@ -27,8 +28,16 @@ class SessionScAddr(models.Model):
         user_node = sctp_client.create_node(ScElementType.sc_type_node | ScElementType.sc_type_const)
         sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_user, user_node)
        
-        item = SessionScAddr(session_key = session_key, sc_addr = user_node.to_id())
-        item.save()
+        obj = None
+        try:
+            obj = SessionScAddr.objects.get(session_key = session_key)
+            if obj:
+                obj.sc_addr = user_node.to_id()
+                obj.save()
+        except:
+            item = SessionScAddr(session_key = session_key, sc_addr = user_node.to_id())
+            item.save()
+            
         
         return user_node
     
@@ -42,8 +51,8 @@ class SessionScAddr(models.Model):
             print 'Database error: ', error
         except KeyError as error:
             print 'Key error: ', error
-        except:
-            print 'Unknown error'
+        except ObjectDoesNotExist as error:
+            print 'Does not exist: ', error
         
         if obj:
             return ScAddr.parse_from_string(obj.sc_addr)
@@ -80,8 +89,6 @@ class UserScAddr(models.Model):
             print 'Database error: ', error
         except KeyError as error:
             print 'Key error: ', error
-        except:
-            print 'Unknown error'
         
         if obj:
             return ScAddr.parse_from_string(obj.sc_addr)

@@ -122,7 +122,7 @@ SCWeb.core.Server = {
     init: function(callback) {
         this._push_task({
                 type: 'GET',
-                url: 'api/init',
+                url: 'api/init/',
                 data: null,
                 success: callback
             });
