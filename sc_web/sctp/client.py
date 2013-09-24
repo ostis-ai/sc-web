@@ -251,6 +251,27 @@ class SctpClient:
             res.append(addr)
 
         return res
+    
+    def set_link_content(self, addr, data):
+        """Find sc-links with specified content
+        @param addr: sc-addr of sc-link
+        @param data: Content data 
+        @return: If link content changed, then return True; otherwise return False
+        """
+        # send request
+        params = struct.pack('=HHI%ds' % len(data), addr.seg, addr.offset, len(data), data)
+        data = struct.pack('=BBII', SctpCommandType.SCTP_CMD_SET_LINK_CONTENT, 0, 0, len(params))
+        alldata = data + params
+
+        self.sock.send(alldata)
+
+        # receive response
+        data = self.receiveData(10)
+        cmdCode, cmdId, resCode, resSize = struct.unpack('=BIBI', data)
+        if resCode == SctpResultCode.SCTP_RESULT_OK:
+            return True
+
+        return False
 
     def iterate_elements(self, iterator_type, *args):
         """Iterate element by specified template and return results
@@ -342,6 +363,23 @@ class SctpClient:
         addr.seg, addr.offset = struct.unpack('=HH', data)
 
         return addr
+    
+    def set_system_identifier(self, addr, idtf_data):
+        """Set new system identifier for sc-element
+        @param idtf_data: Identifier data 
+        @return: If identifier changed, then return True; otherwise return False
+        """
+        # send request
+        params = struct.pack('=HHI%ds' % len(idtf_data), addr.seg, addr.offset, len(idtf_data), idtf_data)
+        data = struct.pack('=BBII', SctpCommandType.SCTP_CMD_SET_SYSIDTF, 0, 0, len(params))
+        alldata = data + params
+
+        self.sock.send(alldata)
+
+        # receive response
+        data = self.receiveData(10)
+        cmdCode, cmdId, resCode, resSize = struct.unpack('=BIBI', data)
+        return resCode == SctpResultCode.SCTP_RESULT_OK
 
     def get_statistics(self, beg_time, end_time):
         """Returns statistics from sctp server, for a specified time range.

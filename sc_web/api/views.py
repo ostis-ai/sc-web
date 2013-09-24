@@ -131,52 +131,67 @@ def get_identifier(request):
             idx += 1
 
         sctp_client = new_sctp_client()
-
-        keys = Keynodes(sctp_client)
-        keynode_ui_nrel_idtf_language_relation = keys[KeynodeSysIdentifiers.ui_nrel_idtf_language_relation]
-
-        # first of all we need to resolve language relation
-        lang_relation_keynode = sctp_client.iterate_elements(
-            SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
-            lang_code,
-            ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
-            ScElementType.sc_type_node | ScElementType.sc_type_const,
-            ScElementType.sc_type_arc_pos_const_perm,
-            keynode_ui_nrel_idtf_language_relation
-        )
-        if lang_relation_keynode is None:
-            print 'Can\'t resolve keynode for language "%s"' % str(lang_code)
-            return HttpResponse(None)
-
-        lang_relation_keynode = lang_relation_keynode[0][2]
+        keys = Keynodes(sctp_client)    
+        keynode_nrel_main_idtf = keys[KeynodeSysIdentifiers.nrel_main_idtf]
+        keynode_nrel_system_identifier = keys[KeynodeSysIdentifiers.nrel_system_identifier]
+        
+        sc_session = logic.ScSession(request.user, request.session, sctp_client, keys)
+        used_lang = sc_session.get_used_language()
+        
+        
 
         result = {}
         # get requested identifiers for arguments
         for addr_str in arguments:
-            addr = ScAddr.parse_from_string(addr_str)
+            addr = ScAddr.parse_from_string(addr_str)   
             if addr is None:
                 print 'Can\'t parse sc-addr from argument: %s' % addr_str
                 return serialize_error(404, 'Can\'t parse sc-addr from argument: %s' % addr_str)
-
+            found = False
 
             identifier = sctp_client.iterate_elements(
-                SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
-                addr,
-                ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
-                ScElementType.sc_type_link,
-                ScElementType.sc_type_arc_pos_const_perm,
-                lang_relation_keynode
-            )
+                                                      SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
+                                                      addr,
+                                                      ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
+                                                      ScElementType.sc_type_link,
+                                                      ScElementType.sc_type_arc_pos_const_perm,
+                                                      keynode_nrel_main_idtf
+                                                      )
             idtf_value = None
             if identifier is not None:
-                idtf_addr = identifier[0][2]
+                for res in identifier:
+                    idtf_addr = res[2]
+                    
+                    # check if founded main identifier is for used language
+                    langs = sctp_client.iterate_elements(
+                                                         SctpIteratorType.SCTP_ITERATOR_3F_A_F,
+                                                         used_lang,
+                                                         ScElementType.sc_type_arc_pos_const_perm,
+                                                         idtf_addr
+                                                         )
+                    if langs is not None:
+                        # get identifier value
+                        idtf_value = sctp_client.get_link_content(idtf_addr)
+                        idtf_value = idtf_value.decode('utf-8')
+                        found = True
+                        result[addr_str] = idtf_value
 
-                # get identifier value
-                idtf_value = sctp_client.get_link_content(idtf_addr)
-                idtf_value = idtf_value.decode('utf-8')
-
-                result[addr_str] = idtf_value
-
+            # if identifier not found, then get system identifier
+            if not found:
+                identifier = sctp_client.iterate_elements(
+                                                          SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
+                                                          addr,
+                                                          ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
+                                                          ScElementType.sc_type_link,
+                                                          ScElementType.sc_type_arc_pos_const_perm,
+                                                          keynode_nrel_system_identifier
+                                                          )
+                if identifier is not None:
+                    idtf_value = sctp_client.get_link_content(identifier[0][2])
+                    idtf_value = idtf_value.decode('utf-8')
+            
+                    result[addr_str] = idtf_value
+            
         result = json.dumps(result)
 
     return HttpResponse(result, 'application/json')

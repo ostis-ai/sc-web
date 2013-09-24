@@ -43,6 +43,7 @@ class Keynodes:
 class KeynodeSysIdentifiers:
     
     nrel_system_identifier = 'hypermedia_nrel_system_identifier'
+    nrel_main_idtf = 'nrel_main_idtf'
     nrel_translation = 'hypermedia_nrel_translation'
     nrel_decomposition = 'nrel_decomposition'
     nrel_authors = 'hypermedia_nrel_authors'

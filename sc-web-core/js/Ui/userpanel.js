@@ -10,7 +10,6 @@ SCWeb.ui.UserPanel = {
      */
     init: function(params, callback) {
         
-        SCWeb.core.Server.appendListener(this);
         
         this.is_authenticated = params.is_authenticated;
         this.user_sc_addr = params.sc_addr;
@@ -21,7 +20,32 @@ SCWeb.ui.UserPanel = {
             $('#auth-user-lang').attr('sc_addr', this.lang_mode_sc_addr).text(this.lang_mode_sc_addr);
         }
         
+        SCWeb.core.Translation.registerListener(this);
+        
         callback();
     },
+    
+    // ---------- Translation listener interface ------------
+    updateTranslation: function(namesMap) {
+        // apply translation
+        $('#auth-user-panel [sc_addr]').each(function(index, element) {
+            var addr = $(element).attr('sc_addr');
+            if(namesMap[addr]) {
+                $(element).text(namesMap[addr].replace('user::', '').replace('session::', ''));
+            }
+        });
+        
+    },
+    
+    /**
+     * @return Returns list obj sc-elements that need to be translated
+     */
+    getObjectsToTranslate: function() {
+        var items = [];
+        $('#auth-user-panel [sc_addr]').each(function(index, element) {
+            items.push($(element).attr('sc_addr'));
+        });
+        return items;
+    }
 
 };

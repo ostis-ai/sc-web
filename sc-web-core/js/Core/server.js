@@ -78,6 +78,7 @@ SCWeb.core.Server = {
                         $.ajax({
                             url: task.url,
                             data: task.data,
+                            type: task.type,
                             success: task.success,
                             error: task.error,
                             complete: function() {
@@ -130,16 +131,16 @@ SCWeb.core.Server = {
 
     /*!
      *
-     * @param {Array} identifiers
-     * @param {String} language
+     * @param {Array} objects List of sc-addrs to resolve identifiers
      * @param {Function} callback
      */
-    resolveIdentifiers: function(identifiers, language, callback) {
+    resolveIdentifiers: function(objects, callback) {
         var data = '', id, index;
-        for(i in identifiers) {
-            id = identifiers[i];
-            index = (i + 1) + '_';
-            data += '&' + index + '=' + id;
+        for(var i = 1; i <= objects.length; i++) {
+            id = objects[i - 1];
+            index = i + '_';
+            if (i != 1) data += '&';
+            data += index + '=' + id;
         }
 
         //TODO: change to POST because the data may reach the limit of GET parameters string

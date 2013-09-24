@@ -28,8 +28,10 @@ SCWeb.core.Main = {
                 
                     SCWeb.ui.UserPanel.init(data.user, function() {
                         
-                        SCWeb.ui.Locker.hide();
-                        callback();
+                        SCWeb.core.Translation.update(function() {
+                            SCWeb.ui.Locker.hide();
+                            callback();
+                        });
                     });
                 });
             });

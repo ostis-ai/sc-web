@@ -25,7 +25,6 @@ from keynodes import KeynodeSysIdentifiers, Keynodes
 from sctp.types import SctpIteratorType, ScElementType
 
 from django.db.backends.dummy.base import DatabaseError
-from accounts.models import UserScAddr, SessionScAddr
 
 __all__ = (
     'parse_menu_command',
@@ -160,8 +159,11 @@ class ScSession:
         if not self.sc_addr:
             if self.user.is_authenticated():
                 self.sc_addr = self._user_get_sc_addr()
+                if not self.sc_addr:
+                    self.sc_addr = self._user_new()
             else:
-                self.session.save()
+                if not self.session.session_key:
+                    self.session.save()
                 self.sc_addr = self._session_get_sc_addr()
                 if not self.sc_addr:
                     self.sc_addr = self._session_new_sc_addr()
@@ -179,7 +181,7 @@ class ScSession:
         """
         results = self.sctp_client.iterate_elements(
                                                SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
-                                               self.sc_addr,
+                                               self.get_sc_addr(),
                                                ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
                                                ScElementType.sc_type_link,
                                                ScElementType.sc_type_arc_pos_const_perm,
@@ -215,14 +217,31 @@ class ScSession:
         arc = self.sctp_client.create_arc(ScElementType.sc_type_arc_common | ScElementType.sc_type_const, self.get_sc_addr(), mode_addr)
         self.sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, self.keynodes[KeynodeSysIdentifiers.ui_nrel_user_used_language], arc)
 
+    def _find_user_by_system_idtf(self, idtf):
+        value = self.sctp_client.find_element_by_system_identifier(str(idtf.encode('utf-8')))
+        return value
+    
+    def _create_user_with_system_idtf(self, idtf):
+        keynode_ui_user = self.keynodes[KeynodeSysIdentifiers.ui_user]
+        
+        # create user node
+        user_node = self.sctp_client.create_node(ScElementType.sc_type_node | ScElementType.sc_type_const)
+        self.sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_user, user_node)
+        
+        res = self.sctp_client.set_system_identifier(user_node, str(idtf.encode('utf-8')))
+        
+        return user_node
+
     def _session_new_sc_addr(self):
-        return SessionScAddr.add_session(self.session.session_key)
+        return self._create_user_with_system_idtf("session::" + str(self.session.session_key))
+    
+    def _session_get_sc_addr(self):
+        return self._find_user_by_system_idtf("session::" + str(self.session.session_key))
 
     def _user_new(self):
-        return UserScAddr.add_user(self.user.username)
+        return self._create_user_with_system_idtf("user::" + str(self.user.username))
 
     def _user_get_sc_addr(self):
-        addr = UserScAddr.get_user_addr(self.user.username)
+        return self._find_user_by_system_idtf("user::" + str(self.user.username))
 
-    def _session_get_sc_addr(self):
-        return SessionScAddr.get_session_addr(self.session.session_key)
+
