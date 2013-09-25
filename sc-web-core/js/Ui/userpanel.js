@@ -22,6 +22,8 @@ SCWeb.ui.UserPanel = {
         
         SCWeb.core.Translation.registerListener(this);
         
+        SCWeb.ui.Utils.bindArgumentsSelector("#auth-user-panel [sc_addr]");
+        
         callback();
     },
     

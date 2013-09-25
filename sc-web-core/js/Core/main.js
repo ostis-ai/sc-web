@@ -26,11 +26,14 @@ SCWeb.core.Main = {
                             };
                 SCWeb.ui.Menu.init(menu_params, function() {
                 
-                    SCWeb.ui.UserPanel.init(data.user, function() {
-                        
-                        SCWeb.core.Translation.update(function() {
-                            SCWeb.ui.Locker.hide();
-                            callback();
+                    SCWeb.ui.ArgumentsPanel.init(function() {
+                
+                        SCWeb.ui.UserPanel.init(data.user, function() {
+                            
+                            SCWeb.core.Translation.update(function() {
+                                SCWeb.ui.Locker.hide();
+                                callback();
+                            });
                         });
                     });
                 });

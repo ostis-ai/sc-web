@@ -69,6 +69,9 @@ SCWeb.ui.Menu = {
     },
 
     _registerMenuHandler: function() {
+        
+        SCWeb.ui.Utils.bindArgumentsSelector("#menu_container [sc_addr]");
+        
         $('.menu_item').click(function() {
             
             var sc_addr = $(this).attr('sc_addr');

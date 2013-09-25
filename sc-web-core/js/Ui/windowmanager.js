@@ -1,0 +1,3 @@
+SCWeb.ui.WindowManager = {
+    
+};
