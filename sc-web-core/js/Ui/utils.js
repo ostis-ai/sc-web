@@ -1,8 +1,12 @@
 SCWeb.ui.Utils = {
-    
-    bindArgumentsSelector: function(selector) {
+    /**
+     * Bind default handler for arguments selection to specified elements
+     * @param {String} container_id Id of elements container
+     * @param {String} selector jQuery selector for elements
+     */
+    bindArgumentsSelector: function(container_id, selector) {
 
-        $(selector).on("mousedown", function(e) {
+        $("#" + container_id).on("mousedown", selector, function(e) {
             var self = this;
             clearTimeout(this.downTimer);
             
@@ -12,7 +16,7 @@ SCWeb.ui.Utils = {
                 clearTimeout(this.downTimer);
             }, 1000);
             
-        }).on("mouseup mouseleave", function(e) {
+        }).on("mouseup mouseleave", selector, function(e) {
             clearTimeout(this.downTimer);
             if (this.done) {
                 delete this.done;

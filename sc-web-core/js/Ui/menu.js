@@ -70,7 +70,7 @@ SCWeb.ui.Menu = {
 
     _registerMenuHandler: function() {
         
-        SCWeb.ui.Utils.bindArgumentsSelector("#menu_container [sc_addr]");
+        SCWeb.ui.Utils.bindArgumentsSelector("menu_container", "[sc_addr]");
         
         $('.menu_item').click(function() {
             
