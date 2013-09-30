@@ -12,6 +12,7 @@ SCWeb.core.Main = {
      */
     init: function(params, callback) {
         var self = this;
+        SCWeb.ui.Locker.show();
         
         SCWeb.ui.TaskPanel.init(function() {
         
@@ -30,9 +31,12 @@ SCWeb.core.Main = {
                 
                         SCWeb.ui.UserPanel.init(data.user, function() {
                             
-                            SCWeb.core.Translation.update(function() {
-                                SCWeb.ui.Locker.hide();
-                                callback();
+                            SCWeb.core.ComponentManager.init(function() {
+                            
+                                SCWeb.core.Translation.update(function() {
+                                    SCWeb.ui.Locker.hide();
+                                    callback();
+                                });
                             });
                         });
                     });

@@ -14,10 +14,12 @@ SCWeb.ui.UserPanel = {
         this.is_authenticated = params.is_authenticated;
         this.user_sc_addr = params.sc_addr;
         this.lang_mode_sc_addr = params.current_lang;
+        this.default_ext_lang_sc_addr = params.default_ext_lang
         
         if (this.is_authenticated) {
             $('#auth-user-name').attr('sc_addr', this.user_sc_addr).text(this.user_sc_addr);
             $('#auth-user-lang').attr('sc_addr', this.lang_mode_sc_addr).text(this.lang_mode_sc_addr);
+            $('#auth-user-ext-lang').attr('sc_addr', this.default_ext_lang_sc_addr).text(this.default_ext_lang_sc_addr);
         }
         
         SCWeb.core.Translation.registerListener(this);

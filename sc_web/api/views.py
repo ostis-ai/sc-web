@@ -62,7 +62,7 @@ def init(request):
         sctp_client = new_sctp_client()
         keys = Keynodes(sctp_client)
         keynode_ui_main_menu = keys[KeynodeSysIdentifiers.ui_main_menu]
-        keynode_ui_output_languages = keys[KeynodeSysIdentifiers.ui_output_languages]
+        keynode_ui_external_languages = keys[KeynodeSysIdentifiers.ui_external_languages]
         keynode_languages = keys[KeynodeSysIdentifiers.languages]
 
         # try to find main menu node
@@ -74,7 +74,7 @@ def init(request):
         # try to find available output languages
         res_out_langs = sctp_client.iterate_elements(
             SctpIteratorType.SCTP_ITERATOR_3F_A_A,
-            keynode_ui_output_languages,
+            keynode_ui_external_languages,
             ScElementType.sc_type_arc_pos_const_perm,
             ScElementType.sc_type_node | ScElementType.sc_type_const
         )
@@ -101,11 +101,12 @@ def init(request):
         user_addr = sc_session.get_sc_addr()
         result = {'menu_commands': cmds,
                   'languages': langs,
-                  'window_types': out_langs,
+                  'external_languages': out_langs,
                   'user': {
                             'sc_addr': user_addr.to_id(),
                             'is_authenticated': request.user.is_authenticated(),
-                            'current_lang': sc_session.get_used_language().to_id()
+                            'current_lang': sc_session.get_used_language().to_id(),
+                            'default_ext_lang': sc_session.get_default_ext_lang().to_id()
                            }
         }
 

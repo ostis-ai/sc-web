@@ -183,19 +183,40 @@ class ScSession:
                                                SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
                                                self.get_sc_addr(),
                                                ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
-                                               ScElementType.sc_type_link,
+                                               ScElementType.sc_type_node,
                                                ScElementType.sc_type_arc_pos_const_perm,
-                                               self.keynodes[KeynodeSysIdentifiers.languages]
+                                               self.keynodes[KeynodeSysIdentifiers.ui_nrel_user_used_language]
                                             )
         
         if results:
-            return results[2]
+            return results[0][2]
         
         # setup russian mode by default
-        mode_sc_addr = self.keynodes[KeynodeSysIdentifiers.lang_ru]
-        self.set_current_lang_mode(mode_sc_addr)
+        _lang = self.keynodes[KeynodeSysIdentifiers.lang_ru]
+        self.set_current_lang_mode(_lang)
         
-        return mode_sc_addr
+        return _lang
+    
+    def get_default_ext_lang(self):
+        """Returns sc-addr of default external language
+        """
+        results = self.sctp_client.iterate_elements(
+                                               SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
+                                               self.get_sc_addr(),
+                                               ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
+                                               ScElementType.sc_type_node,
+                                               ScElementType.sc_type_arc_pos_const_perm,
+                                               self.keynodes[KeynodeSysIdentifiers.ui_nrel_user_default_ext_language]
+                                            )
+        
+        if results:
+            return results[0][2]
+        
+        # setup russian mode by default
+        _lang = self.keynodes[KeynodeSysIdentifiers.scg_code]
+        self.set_default_ext_lang(_lang)
+        
+        return _lang
     
     def set_current_lang_mode(self, mode_addr):
         """Setup new language mode as current for this session
@@ -216,6 +237,25 @@ class ScSession:
         
         arc = self.sctp_client.create_arc(ScElementType.sc_type_arc_common | ScElementType.sc_type_const, self.get_sc_addr(), mode_addr)
         self.sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, self.keynodes[KeynodeSysIdentifiers.ui_nrel_user_used_language], arc)
+        
+    def set_default_ext_lang(self, lang_addr):
+        """Setup new default external language
+        """
+        # try to find default external language and remove it
+        results = self.sctp_client.iterate_elements(
+                                               SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
+                                               self.sc_addr,
+                                               ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
+                                               ScElementType.sc_type_node | ScElementType.sc_type_const,
+                                               ScElementType.sc_type_arc_pos_const_perm,
+                                               self.keynodes[KeynodeSysIdentifiers.ui_nrel_user_default_ext_language]
+                                            )
+        
+        if results:
+            self.sctp_client.erase_element(results[0][1])
+        
+        arc = self.sctp_client.create_arc(ScElementType.sc_type_arc_common | ScElementType.sc_type_const, self.get_sc_addr(), lang_addr)
+        self.sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, self.keynodes[KeynodeSysIdentifiers.ui_nrel_user_default_ext_language], arc)
 
     def _find_user_by_system_idtf(self, idtf):
         value = self.sctp_client.find_element_by_system_identifier(str(idtf.encode('utf-8')))

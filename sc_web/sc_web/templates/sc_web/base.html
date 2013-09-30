@@ -45,6 +45,8 @@
             <div id="task_num" class="task_text">0</div>
         </div>
 
+        
+
         <div id="auth-user-panel" class="pull-right">
             {% if user.is_authenticated %}
             <div id="auth-user-registered">
@@ -56,8 +58,9 @@
                             <b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu">
-                            <li class="dropwodn">
+                            <li class="dropdown">
                                 <a id="auth-user-lang"></a>
+                                <a id="auth-user-ext-lang"></a>
                             </li>
                             <li class="divider"></li>
                             <li><a href="{% url accounts:logout %}">Logout</a></li>
@@ -124,16 +127,6 @@
                         menu_container_id: 'menu_container'
                     };
             SCWeb.core.Main.init(params, function() {
-                /*SCWeb.core.Server.resolveScAddr(['project_ostis', 'hypermedia_format_scn_json', 'ui_menu_view_full_semantic_neighborhood'], function(addrs) {
-                    var outputAddr = addrs['hypermedia_format_scn_json'];
-                    var argumentAddr = addrs['project_ostis'];
-                    var cmdAddr = addrs['ui_menu_view_full_semantic_neighborhood'];
-                    var window = SCWeb.core.ui.Windows.createWindow(outputAddr);
-                    SCWeb.core.Server.doCommand(cmdAddr, outputAddr, [argumentAddr], function(data){
-                        SCWeb.core.ui.Windows.sendDataToWindow(window, data);
-                        SCWeb.core.ui.Locker.hide();
-                    });
-                });*/
             });
         });
 

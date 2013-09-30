@@ -61,7 +61,7 @@ class KeynodeSysIdentifiers:
     ui_user_command_atom = 'ui_user_command_atom'
     ui_user_command_noatom = 'ui_user_command_noatom'
     ui_user_command_question = 'ui_user_command_question'
-    ui_output_languages = 'ui_output_languages'
+    ui_external_languages = 'ui_external_languages'
     ui_rrel_command_arguments = 'ui_rrel_command_arguments'
     ui_rrel_commnad = 'ui_rrel_command'
     ui_nrel_command_result = 'ui_nrel_command_result'
@@ -72,11 +72,17 @@ class KeynodeSysIdentifiers:
     ui_displayed_answer = 'ui_displayed_answer'
     
     ui_nrel_user_used_language = 'ui_nrel_user_used_language'
+    ui_nrel_user_default_ext_language = 'ui_nrel_user_default_ext_language'
     
     # languages
     languages = 'languages'
     lang_ru = 'lang_ru'
     lang_en = 'lang_en'
+    
+    # external languages
+    scg_code = 'scg_code'
+    scs_code = 'scs_code'
+    scn_code = 'scn_code'
     
     # formats
     format_scs = 'hypermedia_format_scs'

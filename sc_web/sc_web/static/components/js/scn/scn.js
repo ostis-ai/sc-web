@@ -480,19 +480,13 @@ Ostis.ui.scn.HtmlLinkBuilder = (function() {
 })();
 
 Ostis.ui.scn.SCnComponent = {
-    type : SCWeb.core.ComponentType.viewer,
-    outputLang : 'hypermedia_format_scn_json',
-    formats : [],
-    factory : function(config) {
-
-        return new Ostis.ui.scn.Viewer(config);
+    formats : ['hypermedia_format_scn_json'],
+    factory : function(sandbox) {
+        return new Ostis.ui.scn.Viewer({container: sanbox.container});
     }
 };
 
-SCWeb.core.ComponentManager.appendComponentInitialize(function() {
-
-    SCWeb.core.ComponentManager.registerComponent(Ostis.ui.scn.SCnComponent);
-});
+SCWeb.core.ComponentManager.appendComponentInitialize(Ostis.ui.scn.SCnComponent);
 
 Ostis.ui.scn.HtmlAttributes = {
     ID : 'scn_addr',

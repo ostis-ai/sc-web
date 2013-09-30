@@ -1,9 +1,7 @@
 SCsComponent = {
-    type: 0,
-    outputLang: 'hypermedia_format_scs_json',
-    formats: [],
-    factory: function(config) {
-        return new SCsViewer(config);
+    formats: ['hypermedia_format_scs_json'],
+    factory: function(sandbox) {
+        return new SCsViewer({container: sandbox.container});
     }
 };
 
@@ -118,6 +116,4 @@ SCsViewer.prototype = {
     }
 };
 
-SCWeb.core.ComponentManager.appendComponentInitialize(function() {
-    SCWeb.core.ComponentManager.registerComponent(SCsComponent);
-});
+SCWeb.core.ComponentManager.appendComponentInitialize(SCsComponent);

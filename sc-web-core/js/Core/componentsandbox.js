@@ -11,6 +11,7 @@ SCWeb.core.ComponentSandbox = function(container) {
     this.eventWindowActiveChanged = null;
     
     SCWeb.core.Translation.registerListener(this);
+    SCWeb.core.Arguments.registerListener(this);
 };
 
 SCWeb.core.ComponentSandbox.prototype = {
@@ -23,6 +24,7 @@ SCWeb.core.ComponentSandbox.prototype = {
  */
 SCWeb.core.ComponentSandbox.prototype.destroy = function() {
     SCWeb.core.Translation.unregisterListener(this);
+    SCWeb.core.Arguments.unregisterListener(this);
 };
 
 
