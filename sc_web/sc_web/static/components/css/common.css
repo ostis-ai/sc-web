@@ -37,14 +37,9 @@ html, body {
 }
 
 
-#main_container {
+.main-container {
     padding-top: 70px;
     padding-bottom: 100px;
-}
-
-#tabs_container button.close {
-    margin-right: 4px;
-    margin-top: -38px;
 }
 
 .hidden {

@@ -31,11 +31,15 @@ SCWeb.core.Main = {
                 
                         SCWeb.ui.UserPanel.init(data.user, function() {
                             
-                            SCWeb.core.ComponentManager.init(function() {
+                            SCWeb.ui.WindowManager.init(function() {
+                                
                             
-                                SCWeb.core.Translation.update(function() {
-                                    SCWeb.ui.Locker.hide();
-                                    callback();
+                                SCWeb.core.ComponentManager.init(function() {
+                                
+                                    SCWeb.core.Translation.update(function() {
+                                        SCWeb.ui.Locker.hide();
+                                        callback();
+                                    });
                                 });
                             });
                         });
