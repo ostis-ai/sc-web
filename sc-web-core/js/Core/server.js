@@ -146,7 +146,7 @@ SCWeb.core.Server = {
         //TODO: change to POST because the data may reach the limit of GET parameters string
         this._push_task({
             type: 'POST',
-            url: 'api/idtf',
+            url: 'api/idtf/resolve/',
             data: data,
             success: callback
         });
@@ -158,20 +158,34 @@ SCWeb.core.Server = {
      * @param {arguments_list} List that contains sc-addrs of command arguments
      * @param {callback} Function, that will be called with recieved data
      */
-    doCommand: function(cmd_addr, output_addr, arguments_list, callback){
-
-        var arguments = '';
+    doCommand: function(cmd_addr, arguments_list, callback){
+    
+        var arguments = {};
         for (var i = 0; i < arguments_list.length; i++){
             var arg = arguments_list[i];
-            arguments += i.toString() + '_=' + arg + '&';
+            arguments[i.toString() + '_'] = arg;
         }
-        arguments += 'cmd=' + cmd_addr + '&';
-        arguments += 'output=' + output_addr;
+        arguments['cmd'] = cmd_addr;
 
         this._push_task({
-            type: "GET",
-            url: "api/doCommand",
+            type: "POST",
+            url: "api/cmd/do/",
             data: arguments,
+            success: callback
+        });
+    },
+    
+    /*! Function to get answer translated into specified format
+     * @param {question_addr} sc-addr of question to get answer translated
+     * @param {format_addr} sc-addr of format to translate answer
+     * @param {callback} Function, that will be called with received data in specified format
+     */
+    getAnswerTranslated: function(question_addr, format_addr, callback)
+    {
+        this._push_task({
+            type: "POST",
+            url: "api/question/answer/translate/",
+            data: { "question": question_addr, "format": format_addr },
             success: callback
         });
     },

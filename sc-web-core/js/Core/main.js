@@ -37,8 +37,8 @@ SCWeb.core.Main = {
                                 SCWeb.core.ComponentManager.init(function() {
                                 
                                     SCWeb.core.Translation.update(function() {
-                                        SCWeb.ui.Locker.hide();
                                         callback();
+                                        SCWeb.ui.Locker.hide();
                                     });
                                 });
                             });

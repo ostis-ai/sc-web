@@ -123,6 +123,27 @@ def find_translation(construction_addr, keynode_nrel_translation, sctp_client):
         ScElementType.sc_type_arc_pos_const_perm,
         keynode_nrel_translation
     )
+    
+def find_translation_with_format(construction_addr, format_addr, keynode_nrel_format, keynode_nrel_translation, sctp_client):
+    
+    translations = find_translation(construction_addr, keynode_nrel_translation, sctp_client)
+    
+    if translations is None:
+        return None
+    
+    for trans in translations:
+        link_addr = trans[2]
+        # check format
+        fmt = sctp_client.iterate_elements(
+                                           SctpIteratorType.SCTP_ITERATOR_3F_A_F,
+                                           link_addr,
+                                           ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
+                                           format_addr
+                                           )
+        if fmt is not None:
+            return fmt[0][2]
+
+    return None
 
 
 def check_command_finished(command_addr, keynode_command_finished, sctp_client):
@@ -140,6 +161,34 @@ def append_to_system_elements(sctp_client, keynode_system_element, el):
         keynode_system_element,
         el
     )
+    
+def get_link_mime(link_addr, keynode_nrel_format, keynode_nrel_mimetype, sctp_client):
+    mimetype_str = u'text/plain'
+    # determine format and mimetype
+    format = sctp_client.iterate_elements(
+        SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
+        link_addr,
+        ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
+        ScElementType.sc_type_node | ScElementType.sc_type_const,
+        ScElementType.sc_type_arc_pos_const_perm,
+        keynode_nrel_format
+    )
+    if format is not None:
+        # fetermine mimetype
+        mimetype = sctp_client.iterate_elements(
+            SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
+            format[0][2],
+            ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
+            ScElementType.sc_type_link,
+            ScElementType.sc_type_arc_pos_const_perm,
+            keynode_nrel_mimetype
+        )
+        if mimetype is not None:
+            mime_value = sctp_client.get_link_content(mimetype[0][2])
+            if mime_value is not None:
+                mimetype_str = mime_value
+                
+    return mimetype_str
 
 # -------------- work with session -------------------------
 class ScSession:

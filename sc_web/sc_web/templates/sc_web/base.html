@@ -83,33 +83,12 @@
         <div class="col-xs-2 col-sm-2 col-md-2">
             <div id="history-container" class="panel panel-default">
                 <ul id="history-tabs" class="nav nav-pills nav-stacked">
-                    <!-- Tabs will be added later -->
-                    <li class="dropdown active">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="tab-name">Что такое треугольник?</span><span class="caret pull-right"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="#">SCg-код</a></li>
-                            <li><a href="#">SCs-код</a></li>
-                            <li><a href="#">SCn-код</a></li>
-                        </ul>
-                    </li>
-                    <li><a href="#">Profile</a></li>
-                    <li><a href="#">Messages</a></li>
+                    {# Tabs will be added later #}
                 </ul>
             </div>
         </div>
         <div id="window-container" class="col-xs-10 col-sm-10 col-md-10">
-            <div class="panel panel-primary">
-                <div class="panel-heading">Panel heading without title</div>
-                <div class="panel-body">
-                    Panel content
-                </div>
-            </div>
-            <div class="panel panel-primary">
-                <div class="panel-heading">Panel heading without title</div>
-                <div class="panel-body">
-                    Panel content
-                </div>
-            </div>
+            {# Windows will be add later #}
         </div>
         {% block content %}{% endblock %}
     </div>
@@ -152,6 +131,17 @@
                         menu_container_id: 'menu_container'
                     };
             SCWeb.core.Main.init(params, function() {
+                SCWeb.core.Server.resolveScAddr(['project_ostis', 'hypermedia_format_scn_json', 'ui_menu_view_full_semantic_neighborhood'], function(addrs) {
+                    var outputAddr = addrs['hypermedia_format_scn_json'];
+                    var argumentAddr = addrs['project_ostis'];
+                    var cmdAddr = addrs['ui_menu_view_full_semantic_neighborhood'];
+                    //var window = SCWeb.core.ui.Windows.createWindow(outputAddr);
+                    SCWeb.core.Server.doCommand(cmdAddr, [argumentAddr], function(data){
+                        SCWeb.core.Server.getAnswerTranslated(data["question"], outputAddr, function(data) {
+                            alert("ok");
+                        });
+                    });
+                });
             });
         });
 

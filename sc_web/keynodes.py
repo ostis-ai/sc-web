@@ -66,13 +66,20 @@ class KeynodeSysIdentifiers:
     ui_rrel_commnad = 'ui_rrel_command'
     ui_nrel_command_result = 'ui_nrel_command_result'
     ui_nrel_user_answer_formats = 'ui_nrel_user_answer_formats'
+    
     ui_command_generate_instance = 'ui_command_generate_instance'
+    ui_command_translate_from_sc = 'ui_command_translate_from_sc'
+    
     ui_command_initiated = 'ui_command_initiated'
     ui_command_finished = 'ui_command_finished'
     ui_displayed_answer = 'ui_displayed_answer'
     
     ui_nrel_user_used_language = 'ui_nrel_user_used_language'
     ui_nrel_user_default_ext_language = 'ui_nrel_user_default_ext_language'
+    
+    ui_rrel_source_sc_construction = 'ui_rrel_source_sc_construction'
+    ui_rrel_output_format = 'ui_rrel_output_format'
+    
     
     # languages
     languages = 'languages'

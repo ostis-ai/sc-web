@@ -1,16 +1,28 @@
 SCWeb.ui.WindowManager = {
     
+    // dictionary that contains information about windows corresponding to history items
+    windows: {},
+    window_count: 0,
+    
     init: function(callback) {
         
         this.history_tabs_id = '#history-tabs';
         this.history_tabs = $(this.history_tabs_id);
         
-        // test
-        for (var i = 0; i < 10; i++)
-            this.appendHistoryItem(i.toString());
+        this.window_container_id = '#window-container';
+        this.window_container = $(this.window_container_id);
         
-        for (var i = 0; i < 5; i++)
+        // test
+        for (var i = 0; i < 10; i++) {
+            this.appendHistoryItem(i.toString());
+            this.appendWindow(i.toString());
+        }
+        
+        for (var i = 0; i < 5; i++) {
             this.removeHistoryItem(i.toString());
+            this.removeWindow(i.toString());
+        }
+        
         
         callback();
     },
@@ -46,5 +58,33 @@ SCWeb.ui.WindowManager = {
      */
     removeHistoryItem: function(addr) {
         this.history_tabs.find("[sc_addr='" + addr + "']").remove();
+    },
+    
+    // ------------ Windows ------------
+    /**
+     * Append new window
+     * @param {String} addr sc-addr of window to append
+     */
+    appendWindow: function(addr) {
+        /*<div class="panel panel-primary">
+            <div class="panel-heading">Panel heading without title</div>
+            <div class="panel-body">
+                Panel content
+            </div>
+        </div>*/
+        
+        var window_html =   '<div class="panel panel-default" sc_addr="' + addr + '">' +
+                                '<div class="panel-heading">' + addr + '</div>' +
+                                '<div class="panel-body"></div>'
+                            '</div>';
+        this.window_container.prepend(window_html);
+    },
+    
+    /**
+     * Remove specified window
+     * @param {String} addr sc-addr of window to remove
+     */
+    removeWindow: function(addr) {
+        this.window_container.find("[sc_addr='" + addr + "']").remove();
     },
 };

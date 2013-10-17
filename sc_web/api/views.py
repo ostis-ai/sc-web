@@ -37,6 +37,7 @@ from sctp.types import ScAddr, SctpIteratorType, ScElementType
 from api.logic import (
     parse_menu_command, find_answer, find_translation,
     check_command_finished, append_to_system_elements,
+    find_translation_with_format, 
 )
 import api.logic as logic
 
@@ -118,7 +119,7 @@ def init(request):
 
 # -----------------------------------------
 @csrf_exempt
-def get_identifier(request):
+def idtf_resolve(request):
     result = None
     if request.is_ajax():
         # get arguments
@@ -198,34 +199,31 @@ def get_identifier(request):
     return HttpResponse(result, 'application/json')
 
 
-def do_command(request):
+@csrf_exempt
+def cmd_do(request):
     result = '[]'
     if request.is_ajax():
-        #result = u'[{"type": "node", "id": "1", "identifier": "node1"},' \
-        #        u'{"type": "arc", "id": "2", "begin": "1", "end": "3"},' \
-        #        u'{"type": "node", "id": "3", "identifier": "node2"}]'
         sctp_client = new_sctp_client()
 
-        cmd_addr = ScAddr.parse_from_string(request.GET.get(u'cmd', None))
-        output_addr = ScAddr.parse_from_string(request.GET.get(u'output', None))
+        cmd_addr = ScAddr.parse_from_string(request.POST.get(u'cmd', None))
         # parse arguments
         first = True
         arg = None
         arguments = []
         idx = 0
         while first or (arg is not None):
-            arg = ScAddr.parse_from_string(request.GET.get(u'%d_' % idx, None))
+            arg = ScAddr.parse_from_string(request.POST.get(u'%d_' % idx, None))
             if arg is not None:
                 # check if sc-element exist
                 if sctp_client.check_element(arg):
                     arguments.append(arg)
                 else:
-                    return serialize_error(404, "Invalid agument: %s" % arg)
+                    return serialize_error(404, "Invalid argument: %s" % arg)
 
             first = False
             idx += 1
 
-        if (len(arguments) > 0) and (cmd_addr is not None) and (output_addr is not None):
+        if (len(arguments) > 0) and (cmd_addr is not None):
 
             keys = Keynodes(sctp_client)
 
@@ -238,11 +236,11 @@ def do_command(request):
             keynode_ui_command_finished = keys[KeynodeSysIdentifiers.ui_command_finished]
             keynode_ui_nrel_command_result = keys[KeynodeSysIdentifiers.ui_nrel_command_result]
             keynode_ui_user = keys[KeynodeSysIdentifiers.ui_user]
-            keynode_ui_displayed_answer = keys[KeynodeSysIdentifiers.ui_displayed_answer]
+            #keynode_ui_displayed_answer = keys[KeynodeSysIdentifiers.ui_displayed_answer]
             keynode_nrel_authors = keys[KeynodeSysIdentifiers.nrel_authors]
-            keynode_ui_nrel_user_answer_formats = keys[KeynodeSysIdentifiers.ui_nrel_user_answer_formats]
-            keynode_nrel_translation = keys[KeynodeSysIdentifiers.nrel_translation]
-            keynode_nrel_answer = keys[KeynodeSysIdentifiers.question_nrel_answer]
+            #keynode_ui_nrel_user_answer_formats = keys[KeynodeSysIdentifiers.ui_nrel_user_answer_formats]
+            #keynode_nrel_translation = keys[KeynodeSysIdentifiers.nrel_translation]
+            #keynode_nrel_answer = keys[KeynodeSysIdentifiers.question_nrel_answer]
             keynode_question_initiated = keys[KeynodeSysIdentifiers.question_initiated]
             keynode_question = keys[KeynodeSysIdentifiers.question]
             keynode_system_element = keys[KeynodeSysIdentifiers.system_element]
@@ -328,7 +326,8 @@ def do_command(request):
             append_to_system_elements(sctp_client, keynode_system_element, question)
 
             # create author
-            user_node = logic.get_sc_addr_of_request_user(request.user)
+            sc_session = logic.ScSession(request.user, request.session, sctp_client, keys)
+            user_node = sc_session.get_sc_addr()
             if not user_node:
                 return serialize_error(404, "Can't resolve user node")
             arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_user, user_node)
@@ -340,7 +339,7 @@ def do_command(request):
             append_to_system_elements(sctp_client, keynode_system_element, arc)
 
             # create output formats set
-            output_formats_node = sctp_client.create_node(ScElementType.sc_type_node | ScElementType.sc_type_const)
+            '''output_formats_node = sctp_client.create_node(ScElementType.sc_type_node | ScElementType.sc_type_const)
             append_to_system_elements(sctp_client, keynode_system_element, output_formats_node)
             arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, output_formats_node, output_addr)
             append_to_system_elements(sctp_client, keynode_system_element, arc)
@@ -348,7 +347,7 @@ def do_command(request):
             format_arc = sctp_client.create_arc(ScElementType.sc_type_arc_common | ScElementType.sc_type_const, question, output_formats_node)
             append_to_system_elements(sctp_client, keynode_system_element, format_arc)
             arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_nrel_user_answer_formats, format_arc)
-            append_to_system_elements(sctp_client, keynode_system_element, arc)
+            append_to_system_elements(sctp_client, keynode_system_element, arc)'''
 
             # initiate question
             arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_question_initiated, question)
@@ -356,35 +355,94 @@ def do_command(request):
 
             # first of all we need to wait answer to this question
             #print sctp_client.iterate_elements(SctpIteratorType.SCTP_ITERATOR_3F_A_A, keynode_question_initiated, 0, 0)
+            
+            result = { 'question': question.to_id() }
+            
+        result = json.dumps(result)
+    
+    return HttpResponse(result, 'application/json')
 
-            wait_time = 0
-            answer = find_answer(question, keynode_nrel_answer, sctp_client)
-            while answer is None:
-                time.sleep(wait_dt)
-                wait_time += wait_dt
-                if wait_time > settings.EVENT_WAIT_TIMEOUT:
-                    return serialize_error(404, 'Timeout waiting for answer')
-                answer = find_answer(question, keynode_nrel_answer, sctp_client)
+@csrf_exempt
+def question_answer_translate(request):
+    
+    if request.is_ajax():
+        sctp_client = new_sctp_client()
 
+        question_addr = ScAddr.parse_from_string(request.POST.get(u'question', None))
+        format_addr = ScAddr.parse_from_string(request.POST.get(u'format', None))
+        
+        keys = Keynodes(sctp_client)
+        keynode_nrel_answer = keys[KeynodeSysIdentifiers.question_nrel_answer]
+        keynode_nrel_translation = keys[KeynodeSysIdentifiers.nrel_translation]
+        keynode_nrel_format = keys[KeynodeSysIdentifiers.nrel_format]
+        keynode_system_element = keys[KeynodeSysIdentifiers.system_element]
+        
+        # try to find answer for the question
+        wait_time = 0
+        wait_dt = 0.1
+        
+        answer = find_answer(question_addr, keynode_nrel_answer, sctp_client)
+        while answer is None:
+            time.sleep(wait_dt)
+            wait_time += wait_dt
+            if wait_time > settings.EVENT_WAIT_TIMEOUT:
+                return serialize_error(404, 'Timeout waiting for answer')
+            answer = find_answer(question_addr, keynode_nrel_answer, sctp_client)
+        
+        if answer is None:
+            return serialize_error(404, 'Answer not found')
+        
+        answer_addr = answer[0][2]
+        
+        result_link_addr = None
+        
+        # try to find translation to specified format
+        result_link_addr = find_translation_with_format(answer_addr, format_addr, keynode_nrel_format, keynode_nrel_translation, sctp_client)
+        
+        # if link addr not found, then run translation of answer to specified format
+        if result_link_addr is None:
+            trans_cmd_addr = sctp_client.create_node(ScElementType.sc_type_node | ScElementType.sc_type_const)
+            append_to_system_elements(sctp_client, keynode_system_element, trans_cmd_addr)
+            
+            arc_addr = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, trans_cmd_addr, answer_addr)
+            append_to_system_elements(sctp_client, keynode_system_element, arc_addr)
+            
+            arc_addr = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keys[KeynodeSysIdentifiers.ui_rrel_source_sc_construction], arc_addr)
+            append_to_system_elements(sctp_client, keynode_system_element, arc_addr)
+            
+            arc_addr = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, trans_cmd_addr, format_addr)
+            append_to_system_elements(sctp_client, keynode_system_element, arc_addr)
+            
+            arc_addr = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keys[KeynodeSysIdentifiers.ui_rrel_output_format], arc_addr)
+            append_to_system_elements(sctp_client, keynode_system_element, arc_addr)
+            
+            # add into translation command set
+            arc_addr = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keys[KeynodeSysIdentifiers.ui_command_translate_from_sc], trans_cmd_addr)
+            append_to_system_elements(sctp_client, keynode_system_element, arc_addr)
+            
+            # initialize command
+            arc_addr = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keys[KeynodeSysIdentifiers.ui_command_initiated], trans_cmd_addr)
+            append_to_system_elements(sctp_client, keynode_system_element, arc_addr)
+            
+            # now we need to wait translation result
             wait_time = 0
-            answer_addr = answer[0][2]
-            translation = find_translation(answer_addr, keynode_nrel_translation, sctp_client)
+            translation = find_translation_with_format(answer_addr, format_addr, keynode_nrel_format, keynode_nrel_translation, sctp_client)
             while translation is None:
                 time.sleep(wait_dt)
                 wait_time += wait_dt
                 if wait_time > settings.EVENT_WAIT_TIMEOUT:
                     return serialize_error(404, 'Timeout waiting for answer translation')
-
-                translation = find_translation(answer_addr, keynode_nrel_translation, sctp_client)
-
-            # get output string
-            translation_addr = translation[0][2]
-            result = sctp_client.get_link_content(translation_addr)
-
-            # mark answer as displayed
-            sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_displayed_answer, answer_addr)
-
-    return HttpResponse(result, 'application/json')
+ 
+                translation = find_translation_with_format(answer_addr, format_addr, keynode_nrel_format, keynode_nrel_translation, sctp_client)
+                
+            if translation is not None:
+                result_link_addr = translation[0][2]
+    
+        # if result exists, then we need to return it content
+        if result_link_addr is not None:
+            return HttpResponse(result, get_link_mime(result_link_addr, keynode_nrel_format, keys[KeynodeSysIdentifiers.nrel_mimetype], sctp_client) + '; charset=UTF-8')
+    
+    return serialize_error(404, "Can't make translation")
 
 @csrf_exempt
 def sc_addrs(request):
@@ -474,29 +532,4 @@ def link_content(request):
         if result is None:
             return serialize_error(404, 'Content not found')
 
-        mimetype_str = u'text/plain'
-        # determine format and mimetype
-        format = sctp_client.iterate_elements(
-            SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
-            addr,
-            ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
-            ScElementType.sc_type_node | ScElementType.sc_type_const,
-            ScElementType.sc_type_arc_pos_const_perm,
-            keynode_nrel_format
-        )
-        if format is not None:
-            # fetermine mimetype
-            mimetype = sctp_client.iterate_elements(
-                SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
-                format[0][2],
-                ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
-                ScElementType.sc_type_link,
-                ScElementType.sc_type_arc_pos_const_perm,
-                keynode_nrel_mimetype
-            )
-            if mimetype is not None:
-                mime_value = sctp_client.get_link_content(mimetype[0][2])
-                if mime_value is not None:
-                    mimetype_str = mime_value
-
-    return HttpResponse(result, mimetype_str + '; charset=UTF-8')
+    return HttpResponse(result, get_link_mime(addr, keynode_nrel_format, keynode_nrel_mimetype, sctp_client) + '; charset=UTF-8')
