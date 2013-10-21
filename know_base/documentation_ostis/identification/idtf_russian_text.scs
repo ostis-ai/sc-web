@@ -1,5 +1,0 @@
-/!* keyword: idtf_russian_text */
-idtf_russian_text => nrel_main_ru_idtf: 
-	[русскоязычный текст] ;;
-idtf_russian_text => nrel_main_en_idtf: 
-	[russian language text] ;;

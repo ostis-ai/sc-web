@@ -1,6 +1,0 @@
-/!* keyword: doc_nrel_previous_partition */
-sc_node_norole_relation -> doc_nrel_previous_partition;;
-doc_nrel_previous_partition => nrel_main_ru_idtf: 
-  [предыдущий раздел*] ;;
-doc_nrel_previous_partition => nrel_main_en_idtf: 
-  [previous partition*] ;;

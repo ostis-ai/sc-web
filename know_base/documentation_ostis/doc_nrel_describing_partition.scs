@@ -1,6 +1,0 @@
-/!* keyword: doc_nrel_describing_partition */
-sc_node_norole_relation -> doc_nrel_describing_partition;;
-doc_nrel_describing_partition => nrel_main_ru_idtf:
-  [описывающий раздел*] ;;
-doc_nrel_describing_partition => nrel_main_en_idtf:
-  [describing partition*] ;;

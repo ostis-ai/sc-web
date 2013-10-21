@@ -1,5 +1,0 @@
-/!* keyword: sc_arc_accesory_unknown_perm */
-sc_arc_accesory_unknown_perm => nrel_main_ru_idtf:
-	[sc-дуга принадлежности неизвестной стационарности] ;;
-sc_arc_accesory_unknown_perm => nrel_main_en_idtf:
-	[sc-arc accessory of unknown stationarity] ;;

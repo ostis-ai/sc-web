@@ -1,9 +1,0 @@
-/!* keyword: purpose  */
-purpose  => nrel_main_ru_idtf: 
-	[цель] ;;
-purpose  => nrel_main_en_idtf: 
-	[purpose] ;;
-
-purpose  => nrel_inclusion: question ;;
-	
-purpose  => nrel_inclusion: behavioral_purpose ;;

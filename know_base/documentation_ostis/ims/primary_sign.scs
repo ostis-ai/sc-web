@@ -1,8 +1,0 @@
-/!* keyword: primary_sign */
-primary_sign => nrel_main_ru_idtf: 
-	[первичный знак] ;;
-primary_sign => nrel_main_en_idtf: 
-	[primary sign] ;;
-
-primary_sign => nrel_ru_idtf: 
-	[знак фрагмента внешней среды] ;;

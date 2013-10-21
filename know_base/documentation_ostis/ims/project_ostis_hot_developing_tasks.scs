@@ -1,9 +1,0 @@
-/!* keyword: project_ostis_hot_developing_tasks */
-project_ostis_hot_developing_tasks => nrel_main_ru_idtf:
-	[Горячие проектные задачи Проекта OSTIS];;
-project_ostis_hot_developing_tasks => nrel_main_en_idtf:
-	[Project OSTIS hot developing tasks];;
-
-project_ostis_hot_developing_tasks => hypermedia_nrel_explanation:
-	[Это множество всех проектных задач, решаемых в рамках всевозможных проектов Проекта OSTIS и являющихся в текущий момент горячими (срочными) задачами];
-	[Это множество всех проектных задач, связанных с Проектом OSTIS отношением горячая проектная задача*];;

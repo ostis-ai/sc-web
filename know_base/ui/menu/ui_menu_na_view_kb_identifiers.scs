@@ -1,9 +1,0 @@
-ui_menu_na_view_kb_identifiers <- ui_user_command_noatom;;
-ui_menu_na_view_kb_identifiers => nrel_main_ru_idtf: 
-	[Просмотр идентификации];;
-ui_menu_na_view_kb_identifiers => nrel_main_en_idtf: 
-	[View identifiers];;
-ui_menu_na_view_kb_identifiers <= nrel_decomposition:
-{
-	ui_menu_view_all_identifiers
-};;

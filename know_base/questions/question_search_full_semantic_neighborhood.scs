@@ -1,9 +1,0 @@
-question_search_full_semantic_neighborhood <- sc_node_not_relation;;
-
-question_search_full_semantic_neighborhood <- question;;
-
-question_search_full_semantic_neighborhood => nrel_main_ru_idtf:
-	[вопрос поиска полной семантической окрестности];;
-
-question_search_full_semantic_neighborhood => nrel_main_en_idtf:
-	[question to search of full semantic neigborhood];;

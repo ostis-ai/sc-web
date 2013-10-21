@@ -1,8 +1,0 @@
-/!* keyword: situation */
-situation => nrel_main_ru_idtf: 
-	[ситуация] ;;
-situation => nrel_main_en_idtf: 
-	[situation] ;;
-
-situation => hypermedia_nrel_explanation: 
-	[Это квазистационарный фрагмент нестационарной предметной области, сохраняющий свою целостность в течении соответствующего отрезка времени .] ;;

@@ -1,8 +1,0 @@
-/!* keyword: set_non_transitive_set */
-set_non_transitive_set => nrel_main_ru_idtf: 
-	[нетранзитивное множество] ;;
-set_non_transitive_set => nrel_main_en_idtf: 
-	[non transitive set] ;;
-
-set_non_transitive_set => nrel_ru_idtf: 
-	[множество, не все элементы которого являются его подможествами /* множествами, все элементы которых являются его элементами*/] ;;

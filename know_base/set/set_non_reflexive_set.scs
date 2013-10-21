@@ -1,5 +1,0 @@
-/!* keyword: set_non_reflexive_set */
-set_non_reflexive_set => nrel_main_ru_idtf: 
-	[нерефлексивное множество] ;;
-set_non_reflexive_set => nrel_main_en_idtf: 
-	[non reflexive set] ;;

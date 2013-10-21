@@ -1,8 +1,0 @@
-/!* keyword: universal_sc_metavariable */
-universal_sc_metavariable => nrel_main_ru_idtf: 
-	[универсальная sc-метапеременная] ;;
-universal_sc_metavariable => nrel_main_en_idtf: 
-	[universal sc-metavariable] ;;
-	
-universal_sc_metavariable => nrel_ru_idtf: 
-	[sc-метапеременная, область возможных значений которой является множество всевозможных sc-элементов, в том числе, и сама эта метапеременная] ;;

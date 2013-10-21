@@ -1,7 +1,0 @@
-/!* keyword: scs_nrel_representation_scg_code */
-sc_node_norole_relation -> scs_nrel_representation_scg_code;;
-scs_nrel_representation_scg_code => nrel_main_ru_idtf: 
-  [отображение в SCg-коде*] ;;
-scs_nrel_representation_scg_code => nrel_main_en_idtf: 
-  [SCg-code representation*] ;;
-scs_nrel_representation_scg_code <- sc_node_norole_relation;;

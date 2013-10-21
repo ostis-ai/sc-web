@@ -1,9 +1,0 @@
-/!* keyword: nrel_project_partner */
-nrel_project_partner => nrel_main_ru_idtf:
-	[партнер проекта*];;
-nrel_project_partner => nrel_main_en_idtf:
-	[project partner*];;
-nrel_project_partner <- sc_node_norole_relation;;
-nrel_project_partner => nrel_ru_idtf:
-	[быть партнером соответствующего проекта*];
-	[быть коллективным участником соответствующего проекта*];;

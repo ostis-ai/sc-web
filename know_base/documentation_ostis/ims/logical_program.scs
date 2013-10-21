@@ -1,5 +1,0 @@
-/!* keyword: logical_program */
-logical_program => nrel_main_ru_idtf: 
-	[логическая программа] ;;
-logical_program => nrel_main_en_idtf: 
-	[logical program] ;;

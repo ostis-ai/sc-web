@@ -1,9 +1,0 @@
-question_search_decomposition <- sc_node_not_relation;;
-
-question_search_decomposition <- question;;
-
-question_search_decomposition => nrel_main_ru_idtf:
-	[вопрос поиска декомпозиции];;
-
-question_search_decomposition => nrel_main_en_idtf:
-	[question to search for decomposition];;

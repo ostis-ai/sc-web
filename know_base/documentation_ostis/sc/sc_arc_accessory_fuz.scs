@@ -1,5 +1,0 @@
-/!* keyword: sc_arc_accesory_fuz */
-sc_arc_accesory_fuz => nrel_main_ru_idtf:
-	[нечеткая sc-дуга принадлежности] ;;
-sc_arc_accesory_fuz => nrel_main_en_idtf:
-	[fuzzy sc-arc accessory] ;;

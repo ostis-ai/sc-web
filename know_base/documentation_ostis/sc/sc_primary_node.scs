@@ -1,5 +1,0 @@
-/!* keyword: sc_primary_node */
-sc_primary_node => nrel_main_ru_idtf:
-	[первичный sc-узел] ;;
-sc_primary_node => nrel_main_en_idtf:
-	[primary sc-node] ;;

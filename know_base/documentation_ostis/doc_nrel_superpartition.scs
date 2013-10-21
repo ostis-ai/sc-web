@@ -1,6 +1,0 @@
-/!* keyword: doc_nrel_superpartition */
-sc_node_norole_relation -> doc_nrel_superpartition;;
-doc_nrel_superpartition => nrel_main_ru_idtf:
-  [надраздел*] ;;
-doc_nrel_superpartition => nrel_main_en_idtf:
-  [superpartition*] ;;

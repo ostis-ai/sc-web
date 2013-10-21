@@ -1,8 +1,0 @@
-/!* keyword: set_reflexive_set */
-set_reflexive_set => nrel_main_ru_idtf: 
-	[рефлексивное множество] ;;
-set_reflexive_set => nrel_main_en_idtf: 
-	[reflexive set] ;;
-
-set_reflexive_set => nrel_ru_idtf: 
-	[множество, в число элементов которого входит sc-элемент, являющийся знаком самого этого множества] ;;

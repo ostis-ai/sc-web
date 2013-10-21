@@ -1,4 +1,0 @@
-/!* keyword: programming_nrel_algorithm */
-sc_node_norole_relation -> programming_nrel_algorithm;;
-programming_nrel_algorithm => nrel_main_ru_idtf:
-  [алгоритм*] ;;

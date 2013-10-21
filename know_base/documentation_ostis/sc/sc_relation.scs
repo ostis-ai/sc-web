@@ -1,5 +1,0 @@
-/!* keyword: sc_relation */
-sc_relation => nrel_main_ru_idtf:
-	[sc-отношение] ;;
-sc_relation => nrel_main_en_idtf:
-	[sc-relation] ;;

@@ -1,6 +1,0 @@
-/!* keyword: sc_arc_accesory_pos */
-sc_arc_accesory_pos => nrel_main_ru_idtf:
-	[позитивная sc-дуга принадлежности] ;;
-
-sc_arc_accesory_pos => nrel_main_en_idtf:
-	[positive sc-arc accessory] ;;

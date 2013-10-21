@@ -1,5 +1,0 @@
-/!* keyword: sc_arc_accesory_temp */
-sc_arc_accesory_temp => nrel_main_ru_idtf:
-	[нестационарная sc-дуга принадлежности] ;;
-sc_arc_accesory_temp => nrel_main_en_idtf:
-	[temporary sc-arc accessory] ;;

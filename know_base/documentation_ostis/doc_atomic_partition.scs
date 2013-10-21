@@ -1,5 +1,0 @@
-/!* keyword: doc_atomic_partition */
-doc_atomic_partition => nrel_main_ru_idtf: 
-	[атомарный раздел] ;;
-doc_atomic_partition => nrel_main_en_idtf: 
-	[atomic partition] ;;

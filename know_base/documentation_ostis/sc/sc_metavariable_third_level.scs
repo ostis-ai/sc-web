@@ -1,8 +1,0 @@
-/!* keyword: sc_metavariable_third_level */
-sc_metavariable_third_level => nrel_main_ru_idtf: 
-	[sc-метапеременная третьего уровня] ;;
-sc_metavariable_third_level => nrel_main_en_idtf: 
-	[third level sc-metavariable] ;;
-	
-sc_metavariable_third_level => nrel_ru_idtf: 
-	[sc-метапеременная, область возможных значений которой состоит только из sc-переменных второго уровня] ;;

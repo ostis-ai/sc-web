@@ -1,5 +1,0 @@
-ui_output_languages <- sc_node_not_relation;;
-
-ui_output_languages -> hypermedia_format_scg_json;;
-ui_output_languages -> hypermedia_format_scn_json;;
-ui_output_languages -> hypermedia_format_scs_json;;

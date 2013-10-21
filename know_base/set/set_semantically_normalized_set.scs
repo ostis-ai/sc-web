@@ -1,8 +1,0 @@
-/!* keyword: set_semantically_normalized_set */
-set_semantically_normalized_set => nrel_main_ru_idtf: 
-	[семантически нормализованное множество] ;;
-set_semantically_normalized_set => nrel_main_en_idtf: 
-	[semantically normalized set] ;;
-
-set_semantically_normalized_set => nrel_ru_idtf: 
-	[множество, все элементы которого являются sc-элементами] ;;

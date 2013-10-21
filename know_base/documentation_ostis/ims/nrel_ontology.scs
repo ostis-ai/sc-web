@@ -1,6 +1,0 @@
-/!* keyword: nrel_ontology */
-nrel_ontology => nrel_main_ru_idtf: 
-  [онтология*] ;;
-nrel_ontology => nrel_main_en_idtf: 
-  [ontology*] ;;
-nrel_ontology <- sc_node_norole_relation;;

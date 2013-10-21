@@ -1,6 +1,0 @@
-/!* keyword: idtf_nrel_element_identification_rule */
-sc_node_norole_relation -> nrel_element_identification_rules;;
-idtf_nrel_element_identification_rule => nrel_main_ru_idtf: 
-  [правило идентификации элементов*] ;;
-idtf_nrel_element_identification_rule => nrel_main_en_idtf: 
-  [rule of elements identification*] ;;

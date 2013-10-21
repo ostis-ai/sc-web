@@ -1,8 +1,0 @@
-/!* keyword: set_transitive_set */
-set_transitive_set => nrel_main_ru_idtf: 
-	[транзитивное множество] ;;
-set_transitive_set => nrel_main_en_idtf: 
-	[transitive set] ;;
-
-set_transitive_set => nrel_ru_idtf: 
-	[множество, все элементы которого являются его подможествами] ;;

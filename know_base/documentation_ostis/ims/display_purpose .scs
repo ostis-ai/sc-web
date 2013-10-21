@@ -1,5 +1,0 @@
-/!* keyword: display_purpose   */
-display_purpose => nrel_main_ru_idtf: 
-	[цель отображения пользователю заданного знания] ;;
-display_purpose => nrel_main_en_idtf: 
-	[user displaying purpose] ;;

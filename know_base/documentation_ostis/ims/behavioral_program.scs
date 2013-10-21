@@ -1,5 +1,0 @@
-/!* keyword: behavioral_program */
-behavioral_program => nrel_main_ru_idtf: 
-	[поведенческая программа] ;;
-behavioral_program => nrel_main_en_idtf: 
-	[behavioral program] ;;

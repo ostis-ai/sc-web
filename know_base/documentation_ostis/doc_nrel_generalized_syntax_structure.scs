@@ -1,6 +1,0 @@
-/!* keyword: doc_nrel_generalized_syntax_structure */
-sc_node_norole_relation -> doc_nrel_generalized_syntax_structure;;
-doc_nrel_generalized_syntax_structure => nrel_main_ru_idtf:	
-		[обобщенная синтаксическая структура*] ;;
-doc_nrel_generalized_syntax_structure => nrel_main_en_idtf:	
-		[generalized syntax structure*] ;;

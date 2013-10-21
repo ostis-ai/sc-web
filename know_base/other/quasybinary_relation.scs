@@ -1,9 +1,0 @@
-quasybinary_relation <- sc_node_role_relation;;
-
-quasybinary_relation -> nrel_decomposition;;
-quasybinary_relation -> nrel_subdividing;;
-
-quasybinary_relation => nrel_main_ru_idtf: 
-  [квазибинарное отношение*] ;;
-quasybinary_relation => nrel_main_en_idtf: 
-  [quasybinary relation*] ;;

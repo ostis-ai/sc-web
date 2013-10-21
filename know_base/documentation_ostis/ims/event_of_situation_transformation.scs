@@ -1,9 +1,0 @@
-/!* keyword: event_of_situation_transformation  */
-event_of_situation_transformation => nrel_main_ru_idtf: 
-	[событие трансформации ситуации] ;;
-event_of_situation_transformation => nrel_main_en_idtf: 
-	[event of situation transformation] ;;
-	
-event_of_situation_transformation  => hypermedia_nrel_explanation: 
-	[Это упорядоченная пара ситуаций, являющаяся событием, которое удовлетворяет следующему дополнительному требованию: момент конца "жизни" первой ситуации предшествует моменту начала "жизни" второй ситуации. При этом расстояние между указанными моментами пренебрежимо мало и определяется соответствующими переходными процессами.] ;;
-

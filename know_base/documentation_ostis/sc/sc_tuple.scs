@@ -1,5 +1,0 @@
-/!* keyword: sc_tuple */
-sc_tuple => nrel_main_ru_idtf:
-	[sc-связка] ;;
-sc_tuple => nrel_main_en_idtf:
-	[sc-tuple] ;;

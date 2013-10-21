@@ -1,9 +1,0 @@
-/!* keyword: nrel_description */
-nrel_description => nrel_main_ru_idtf: 
-	[описание*] ;;
-nrel_description => nrel_main_en_idtf: 
-	[description*] ;;
-nrel_description <- sc_node_norole_relation;;
-
-nrel_description => hypermedia_nrel_explanation: 
-	[Это бинарное ориентированное отношение, каждая пара которого связывает узел семантической сети с фрагментом базы знаний, который является достаточно детальным (полным) описанием сущности, обозначаемой указанным узлом. Наиболее полным вариантом такого описания является документация (например, Документация Проекта IMS.OSTIS, Документация Метасистемы IMS.OSTIS).] ;;

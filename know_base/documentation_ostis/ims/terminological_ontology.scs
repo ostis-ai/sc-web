@@ -1,9 +1,0 @@
-/!* keyword: terminological_ontology */
-terminological_ontology => nrel_main_ru_idtf: 
-	[терминологическая онтология] ;;
-terminological_ontology => nrel_main_en_idtf: 
-	[terminological ontology] ;;
-	
-terminological_ontology => hypermedia_nrel_explanation: 
-	[Это описание системы основных и неосновных терминов (имен, внешних обозначений), соответствующих концептам и отношениям заданной предметной области,
-	а также описание правил построения терминов для сущностей, являющихся элементами (экземплярами) указанных концептов и отношений.] ;;

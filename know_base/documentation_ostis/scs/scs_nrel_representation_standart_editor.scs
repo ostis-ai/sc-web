@@ -1,7 +1,0 @@
-/!* keyword: scs_nrel_representation_standart_editor */
-sc_node_norole_relation -> scs_nrel_representation_standart_editor;;
-scs_nrel_representation_standart_editor => nrel_main_ru_idtf:
-  [отображение в стандартных редакторах*] ;;
-scs_nrel_representation_standart_editor => nrel_main_en_idtf:
-  [standart editor representation*] ;;
-scs_nrel_representation_standart_editor <- sc_node_norole_relation;;

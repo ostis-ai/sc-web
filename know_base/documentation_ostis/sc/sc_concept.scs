@@ -1,5 +1,0 @@
-/!* keyword: sc_concept */
-sc_concept => nrel_main_ru_idtf:
-	[sc-концепт] ;;
-sc_concept => nrel_main_en_idtf:
-	[sc-concept] ;;

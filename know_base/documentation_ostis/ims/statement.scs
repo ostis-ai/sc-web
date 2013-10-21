@@ -1,8 +1,0 @@
-/!* keyword: statement */
-statement => nrel_main_ru_idtf: 
-	[высказывание] ;;
-statement => nrel_main_en_idtf: 
-	[statement] ;;
-
-statement => nrel_ru_idtf: 
-	[компонент формальной теории] ;;

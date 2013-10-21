@@ -1,7 +1,0 @@
-file_nrel_extension <- sc_node_norole_relation;;
-
-file_nrel_extension => nrel_main_ru_idtf:
-	[расширение файла*];;
-
-file_nrel_extension => nrel_main_en_idtf:
-	[file extension*];;
