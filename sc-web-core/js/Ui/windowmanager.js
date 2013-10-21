@@ -3,6 +3,7 @@ SCWeb.ui.WindowManager = {
     // dictionary that contains information about windows corresponding to history items
     windows: {},
     window_count: 0,
+    sandboxes: {},
     
     init: function(callback) {
         
@@ -11,17 +12,6 @@ SCWeb.ui.WindowManager = {
         
         this.window_container_id = '#window-container';
         this.window_container = $(this.window_container_id);
-        
-        // test
-        for (var i = 0; i < 10; i++) {
-            this.appendHistoryItem(i.toString());
-            this.appendWindow(i.toString());
-        }
-        
-        for (var i = 0; i < 5; i++) {
-            this.removeHistoryItem(i.toString());
-            this.removeWindow(i.toString());
-        }
         
         
         callback();
@@ -50,6 +40,23 @@ SCWeb.ui.WindowManager = {
                         '</li>';
 
         this.history_tabs.prepend(tab_html);
+        
+        
+        
+        // get translation and create window
+        var ext_lang_addr = SCWeb.core.Main.getDefaultExternalLang();
+        var fmt_addr = SCWeb.core.ComponentManager.getPrimaryFormatForExtLang(ext_lang_addr);
+		if (fmt_addr) {
+			var self = this;
+			SCWeb.core.Server.getAnswerTranslated(addr, fmt_addr, function(data) {
+				self.appendWindow(data.link, fmt_addr);
+			});
+		} else
+		{
+			// error
+		}
+        
+                
     },
     
     /**
@@ -63,9 +70,10 @@ SCWeb.ui.WindowManager = {
     // ------------ Windows ------------
     /**
      * Append new window
-     * @param {String} addr sc-addr of window to append
+     * @param {String} addr sc-addr of question
+     * @param {String} fmt_addr sc-addr of window format
      */
-    appendWindow: function(addr) {
+    appendWindow: function(addr, fmt_addr) {
         /*<div class="panel panel-primary">
             <div class="panel-heading">Panel heading without title</div>
             <div class="panel-body">
@@ -73,11 +81,23 @@ SCWeb.ui.WindowManager = {
             </div>
         </div>*/
         
-        var window_html =   '<div class="panel panel-default" sc_addr="' + addr + '">' +
+        var window_id = 'window_' + addr;
+        var window_html =   '<div class="panel panel-default" sc_addr="' + addr + '" sc-addr-fmt="' + fmt_addr + '">' +
                                 '<div class="panel-heading">' + addr + '</div>' +
-                                '<div class="panel-body"></div>'
+                                '<div class="panel-body" id="' + window_id + '"></div>'
                             '</div>';
         this.window_container.prepend(window_html);
+        
+        var sandbox = SCWeb.core.ComponentManager.createWindowSandbox(fmt_addr, window_id);
+        this.sandboxes[addr] = sandbox;
+        
+        SCWeb.core.Server.getLinkContent(addr, 
+			function(data) {
+				sandbox.onDataAppend(data);
+			},
+			function() { // error
+			}
+		);
     },
     
     /**

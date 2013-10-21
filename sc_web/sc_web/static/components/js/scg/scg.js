@@ -72,9 +72,9 @@ SCg.Editor.prototype = {
         var container = '#' + this.containerId;
         $(container).prepend('<div id="tools-' + this.containerId + '"></div>');
         var tools_container = '#tools-' + this.containerId;
-        $(tools_container).load('static/sc_web/html/scg-tools-panel.html', function() {
+        $(tools_container).load('static/components/html/scg-tools-panel.html', function() {
              $.ajax({
-                    url: "static/sc_web/html/scg-types-panel-nodes.html", 
+                    url: "static/components/html/scg-types-panel-nodes.html", 
                     dataType: 'html',
                     success: function(response) {
                            self.node_types_panel_content = response;
@@ -84,7 +84,7 @@ SCg.Editor.prototype = {
                     },
                     complete: function() {
                         $.ajax({
-                                url: "static/sc_web/html/scg-types-panel-edges.html", 
+                                url: "static/components/html/scg-types-panel-edges.html", 
                                 dataType: 'html',
                                 success: function(response) {
                                        self.edge_types_panel_content = response;
@@ -687,6 +687,8 @@ SCg.ModelObject.prototype.setScAddr = function(addr) {
     //! @todo update state
     if (this.sc_addr)
         this.scene.objects[this.sc_addr] = this;
+        
+    this.need_observer_sync = true;
 }
 
 // -------------- node ---------
@@ -1533,9 +1535,14 @@ SCg.Render.prototype = {
                             .classed('SCgStateSelected', function(d) {
                                 return d.is_selected;
                             })
-            g.select('use').attr('xlink:href', function(d) {
-                return '#' + SCgAlphabet.getDefId(d.sc_type); 
-            });
+                            
+            g.select('use')
+				.attr('xlink:href', function(d) {
+					return '#' + SCgAlphabet.getDefId(d.sc_type); 
+				})
+				.attr("sc_addr", function(d) {
+					return d.sc_addr;
+				});
             
             g.selectAll('text').text(function(d) { return d.text; });;
         });
@@ -2489,19 +2496,21 @@ SCg.LayoutManager.prototype.onTickUpdate = function() {
 
 /* --- scg-component.js --- */
 SCgComponent = {
+	ext_lang: 'scg_code',
     formats: ['hypermedia_format_scg_json'],
     factory: function(sandbox) {
-        return new scgViewerWindow(snadbox.container);
+        return new scgViewerWindow(sandbox);
     }
 };
+
 
 /**
  * scgViewerWindow
  * @param config
  * @constructor
  */
-var scgViewerWindow = function(container){
-    this._initWindow(container);
+var scgViewerWindow = function(sandbox){
+    this._initWindow(sandbox);
 };
 
 scgViewerWindow.prototype = {
@@ -2511,16 +2520,22 @@ scgViewerWindow.prototype = {
      * @param config
      * @private
      */
-    _initWindow : function(container){
+    _initWindow : function(sandbox){
 
         /**
          * Container for render graph
          * @type {String}
          */
-        this.domContainer = config.container;
+        this.domContainer = sandbox.container;
+        this.sandbox = sandbox;
 
         this.editor = new SCg.Editor();
-        this.editor.init({containerId: config.container});
+        this.editor.init({containerId: sandbox.container});
+        
+        // delegate event handlers
+        this.sandbox.eventDataAppend = $.proxy(this.receiveData, this);
+        this.sandbox.eventGetObjectsToTranslate = $.proxy(this.getObjectsToTranslate, this);
+        this.sandbox.eventApplyTranslation = $.proxy(this.applyTranslation, this);
     },
 
     /**
@@ -2603,41 +2618,19 @@ scgViewerWindow.prototype = {
         return true;
     },
 
+    getObjectsToTranslate : function(){      
+        return this.editor.scene.getScAddrs();
+    },
 
-    /**
-     * Emit translate identifiers
-     */
-    translateIdentifiers    : function(language){
-        
-        var self = this;
-        
-        SCWeb.core.Translation.translate(this.editor.scene.getScAddrs(), language, function(namesMap) {
-            for (addr in namesMap) {
-                var obj = self.editor.scene.getObjectByScAddr(addr);
-                if (obj) {
-                    obj.text = namesMap[addr];
-                }
-            }
+    applyTranslation: function(namesMap){
+		for (addr in namesMap) {
+			var obj = this.editor.scene.getObjectByScAddr(addr);
+			if (obj) {
+				obj.text = namesMap[addr];
+			}
+		}
             
-            self.editor.render.updateTexts();
-        });
-
-    },
-
-    /**
-     * Get current language in viewer
-     * @return String
-     */
-    getIdentifiersLanguage  : function(){
-        return this._currentLanguage;
-    },
-
-    _getObjectsForTranslate : function(){      
-        return [];
-    },
-
-    _translateObjects: function(namesMap){
-
+        this.editor.render.updateTexts();
     }
 
 };

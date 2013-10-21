@@ -141,7 +141,7 @@ def find_translation_with_format(construction_addr, format_addr, keynode_nrel_fo
                                            format_addr
                                            )
         if fmt is not None:
-            return fmt[0][2]
+            return fmt[0][0]
 
     return None
 

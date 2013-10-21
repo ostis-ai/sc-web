@@ -9,6 +9,7 @@ SCWeb.core.ComponentSandbox = function(container) {
     this.eventApplyTranslation = null;
     this.eventArgumentsUpdate = null;
     this.eventWindowActiveChanged = null;
+    this.eventDataAppend = null;
     
     SCWeb.core.Translation.registerListener(this);
     SCWeb.core.Arguments.registerListener(this);
@@ -27,6 +28,11 @@ SCWeb.core.ComponentSandbox.prototype.destroy = function() {
     SCWeb.core.Arguments.unregisterListener(this);
 };
 
+
+// ------------------ Functions to call from component --------
+SCWeb.core.ComponentSandbox.prototype.getIdentifiers = function(addr_list, callback) {
+	SCWeb.core.Server.resolveIdentifiers(addr_list, callback);
+};
 
 // ------ Translation ---------
 /**
@@ -85,4 +91,12 @@ SCWeb.core.ComponentSandbox.prototype.onArgumentCleared = function() {
 SCWeb.core.ComponentSandbox.prototype.onWindowActiveChanged = function(is_active) {
     if (this.eventWindowActiveChanged)
         this.eventWindowActiveChanged(is_active);
+};
+
+// --------- Data -------------
+SCWeb.core.ComponentSandbox.prototype.onDataAppend = function(data) {
+	if (this.eventDataAppend)
+		this.eventDataAppend(data);
+		
+	SCWeb.core.Translation.translate(this.getObjectsToTranslate(), $.proxy(this.updateTranslation, this));
 };

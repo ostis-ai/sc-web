@@ -9,29 +9,43 @@ SCWeb.core.ComponentManager = {
     _initialize_queue: [],
     _componentCount: 0,
     _factories: {},
+    _ext_langs: {},
     
     init: function(callback) {
         // callback will be invoked when all component will be registered
         this._componentCount = this._initialize_queue.length;
 
-        // first of all we need to resolve sc-addrs of formats
-        var formats = [];
+        // first of all we need to resolve sc-addrs of keynodes
+        var keynodes = [];
         for (var i = 0; i < this._initialize_queue.length; i++) {
-            formats = formats.concat(this._initialize_queue[i].formats);
+            keynodes = keynodes.concat(this._initialize_queue[i].formats);
+            keynodes.push(this._initialize_queue[i].ext_lang);
         }
         
         var self = this;
-        SCWeb.core.Server.resolveScAddr(formats, function(addrs) {
+        SCWeb.core.Server.resolveScAddr(keynodes, function(addrs) {
+			
             for (var i = 0; i < self._initialize_queue.length; i++) {
                 var comp_def = self._initialize_queue[i];
+                
+                var lang_addr = addrs[comp_def.ext_lang];
+                var formats = null;
+                if (lang_addr) {
+					formats = [];
+				}
                 
                 for (var j = 0; j < comp_def.formats.length; j++) {
                     var fmt = addrs[comp_def.formats[j]];
                     
                     if (fmt) {
                         self.registerFactory(fmt, comp_def.factory);
+                        formats.push(fmt);
                     }
                 }
+                
+                if (formats) {
+					self._ext_langs[lang_addr] = formats;
+				}
             }
             
             callback();
@@ -65,17 +79,31 @@ SCWeb.core.ComponentManager = {
      * @return Return component sandbox object for created window instance.
      * If window doesn't created, then returns null
      */
-    createWindow: function(format_addr, container) {
+    createWindowSandbox: function(format_addr, container) {
         var factory = this._factories[format_addr];
         
         if (factory) {
             var sandbox = new SCWeb.core.ComponentSandbox(container);
-            if (factory(sanbox))
+            if (factory(sandbox))
                 return sandbox;
         }
         
         return null;
     },
+    
+    /**
+     * Returns sc-addr of primary used format for specified external language
+     * @param {String} ext_lang_addr sc-addr of external language
+     */
+    getPrimaryFormatForExtLang: function(ext_lang_addr) {
+		var fmts = this._ext_langs[ext_lang_addr];
+		
+		if (fmts && fmts.length > 0) {
+			return fmts[0];
+		}
+		
+		return null;
+	},
     
     /**
      * Setup component listener

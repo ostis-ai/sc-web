@@ -224,7 +224,7 @@ SCWeb.core.Server = {
         
         this._push_task({
             type: "POST",
-            url: "api/scAddrs",
+            url: "api/addr/resolve/",
             data: arguments,
             success: callback
         });
@@ -246,7 +246,7 @@ SCWeb.core.Server = {
         
         this._push_task({
             type: "POST",
-            url: "api/linkFormat",
+            url: "api/link/format/",
             data: arguments,
             success: success
         });
@@ -266,7 +266,7 @@ SCWeb.core.Server = {
     getLinkContent: function(addr, success, error) {
         
         this._push_task({
-                url: 'api/linkContent',
+                url: 'api/link/content/',
                 data: {"addr": addr},
                 success: success,
             });

@@ -37,7 +37,7 @@ from sctp.types import ScAddr, SctpIteratorType, ScElementType
 from api.logic import (
     parse_menu_command, find_answer, find_translation,
     check_command_finished, append_to_system_elements,
-    find_translation_with_format, 
+    find_translation_with_format, get_link_mime
 )
 import api.logic as logic
 
@@ -436,11 +436,13 @@ def question_answer_translate(request):
                 translation = find_translation_with_format(answer_addr, format_addr, keynode_nrel_format, keynode_nrel_translation, sctp_client)
                 
             if translation is not None:
-                result_link_addr = translation[0][2]
+                result_link_addr = translation
     
         # if result exists, then we need to return it content
         if result_link_addr is not None:
-            return HttpResponse(result, get_link_mime(result_link_addr, keynode_nrel_format, keys[KeynodeSysIdentifiers.nrel_mimetype], sctp_client) + '; charset=UTF-8')
+            result = json.dumps({"link": result_link_addr.to_id()})
+    
+            return HttpResponse(result, 'application/json')
     
     return serialize_error(404, "Can't make translation")
 

@@ -20,6 +20,7 @@ SCWeb.core.Main = {
                 self.window_types = data.window_types;
                 self.lang_modes = data.lang_modes;
                 self.menu_commands = data.menu_commands;
+                self.user = data.user;
                 
                 var menu_params = {
                                 menu_container_id: params.menu_container_id,
@@ -51,6 +52,27 @@ SCWeb.core.Main = {
 
     _initUI: function() {
 
-    }
+    },
+    
+    /**
+     * Returns sc-addr of preffered output language for current user
+     */
+    getDefaultExternalLang: function() {
+		return this.user.default_ext_lang;
+	},
+    
+    /**
+     * Initiate user interface command
+     * @param {String} cmd_addr sc-addr of user command
+     * @param {Array} cmd_args Array of sc-addrs with command arguments
+     */
+    doCommand: function(cmd_addr, cmd_args) {
+		SCWeb.core.Server.doCommand(cmd_addr, cmd_args, function(result) {
+			if (result.question != undefined) {
+				SCWeb.ui.WindowManager.appendHistoryItem(result.question);
+			}
+		});
+	}
+	
 };
 

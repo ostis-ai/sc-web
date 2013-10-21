@@ -1,4 +1,5 @@
 SCsComponent = {
+	ext_lang: 'scs_code',
     formats: ['hypermedia_format_scs_json'],
     factory: function(sandbox) {
         return new SCsViewer({container: sandbox.container});

@@ -480,6 +480,7 @@ Ostis.ui.scn.HtmlLinkBuilder = (function() {
 })();
 
 Ostis.ui.scn.SCnComponent = {
+	ext_lang: 'scn_code',
     formats : ['hypermedia_format_scn_json'],
     factory : function(sandbox) {
         return new Ostis.ui.scn.Viewer({container: sanbox.container});
