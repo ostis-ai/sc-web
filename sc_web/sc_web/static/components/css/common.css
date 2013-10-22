@@ -1,5 +1,6 @@
 html, body {
-    height: 100%;
+	margin-top: 30px;
+    margin-bottom: 45px;
 }
 
 #sc-ui-locker {
@@ -38,7 +39,7 @@ html, body {
 
 
 .main-container {
-    padding-top: 70px;
+    
 }
 
 .hidden {

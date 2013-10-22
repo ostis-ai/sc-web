@@ -518,20 +518,20 @@ def link_format(request):
 
 def link_content(request):
     result = '{}'
-    if True:  # request.is_ajax():
-        sctp_client = new_sctp_client()
 
-        keys = Keynodes(sctp_client)
-        keynode_nrel_format = keys[KeynodeSysIdentifiers.nrel_format]
-        keynode_nrel_mimetype = keys[KeynodeSysIdentifiers.nrel_mimetype]
+    sctp_client = new_sctp_client()
 
-        # parse arguments
-        addr = ScAddr.parse_from_string(request.GET.get('addr', None))
-        if addr is None:
-            return serialize_error(404, 'Invalid arguments')
+    keys = Keynodes(sctp_client)
+    keynode_nrel_format = keys[KeynodeSysIdentifiers.nrel_format]
+    keynode_nrel_mimetype = keys[KeynodeSysIdentifiers.nrel_mimetype]
 
-        result = sctp_client.get_link_content(addr)
-        if result is None:
-            return serialize_error(404, 'Content not found')
+    # parse arguments
+    addr = ScAddr.parse_from_string(request.GET.get('addr', None))
+    if addr is None:
+        return serialize_error(404, 'Invalid arguments')
+
+    result = sctp_client.get_link_content(addr)
+    if result is None:
+        return serialize_error(404, 'Content not found')
 
     return HttpResponse(result, get_link_mime(addr, keynode_nrel_format, keynode_nrel_mimetype, sctp_client) + '; charset=UTF-8')

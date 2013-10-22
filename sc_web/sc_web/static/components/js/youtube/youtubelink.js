@@ -1,34 +1,25 @@
 YoutubeLinkComponent = {
-    type: 0,
-    outputLang: null,
     formats: ['hypermedia_format_youtubelink'],
-    factory: function(config) {
-        return new YoutubeLinkViewer(config);
+    factory: function(sandbox) {
+        return new YoutubeLinkViewer(sandbox);
     }
 };
 
-var YoutubeLinkViewer = function(config){
-    this._initWindow(config);
+var YoutubeLinkViewer = function(sandbox){
+    this._initWindow(sandbox);
     return this;
 };
 
 YoutubeLinkViewer.prototype = {
     
     _container: null,
-    _config: null,
     
-    _initWindow: function(config) {
-        this._container = '#' + config['container'];
-        this._config = config;
+    _initWindow: function(sandbox) {
+        this._container = '#' + sandbox.container;
+        this.sandbox = sandbox;
         
-        if (this._config.dataAddr) {
-            /*$.ajax({
-                url: SCWeb.core.Server._buildLinkContentUrl(this._config.dataAddr),
-                success: $.proxy(this.receiveData, this),
-                dataType: "text"
-            });*/
-            
-            SCWeb.core.Server.getLinkContent(this._config.dataAddr, 
+        if (this.sandbox.link_addr) {
+            SCWeb.core.Server.getLinkContent(this.sandbox.link_addr, 
                                             $.proxy(this.receiveData, this),
                                             function () {});
         }
@@ -38,20 +29,9 @@ YoutubeLinkViewer.prototype = {
     receiveData: function(data) {
         $(this._container).empty();
         $(this._container).append('<iframe title="YouTube video player" class="youtube-player" type="text/html" width="640" height="390" src="http://www.youtube.com/embed/' 
-                                  + data + '" frameborder="0" allowFullScreen></iframe>');
+                                  + data + '?wmode=transparent" frameborder="0" allowFullScreen></iframe>');
     },
-    
-    translateIdentifiers: function(language) {
-    },
-    
-    getIdentifiersLanguage: function() {
-        return [];
-    },
-    
-    destroy: function() {
-    }
+   
 };
 
-SCWeb.core.ComponentManager.appendComponentInitialize(function() {
-    SCWeb.core.ComponentManager.registerComponent(YoutubeLinkComponent);
-});
+SCWeb.core.ComponentManager.appendComponentInitialize(YoutubeLinkComponent);

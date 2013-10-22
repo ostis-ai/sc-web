@@ -1,34 +1,24 @@
 GoogleMapLinkComponent = {
-    type: 0,
-    outputLang: null,
     formats: ['hypermedia_format_googlemaplink'],
-    factory: function(config) {
-        return new GoogleMapLinkViewer(config);
+    factory: function(sandbox) {
+        return new GoogleMapLinkViewer(sandbox);
     }
 };
 
-var GoogleMapLinkViewer = function(config){
-    this._initWindow(config);
-    return this;
+var GoogleMapLinkViewer = function(sandbox){
+    this._initWindow(sandbox);
 };
 
 GoogleMapLinkViewer.prototype = {
     
     _container: null,
-    _config: null,
     
-    _initWindow: function(config) {
-        this._container = '#' + config['container'];
-        this._config = config;
+    _initWindow: function(sandbox) {
+        this._container = '#' + sandbox.container;
+        this.sandbox = sandbox;
         
-        if (this._config.dataAddr) {
-            /*$.ajax({
-                url: SCWeb.core.Server._buildLinkContentUrl(this._config.dataAddr),
-                success: $.proxy(this.receiveData, this),
-                dataType: "text"
-            });*/
-            
-            SCWeb.core.Server.getLinkContent(this._config.dataAddr, 
+        if (this.sandbox.link_addr) {           
+            this.sandbox.getLinkContent(this.sandbox.link_addr, 
                                             $.proxy(this.receiveData, this),
                                             function () {});
         }
@@ -38,20 +28,8 @@ GoogleMapLinkViewer.prototype = {
     receiveData: function(data) {
         $(this._container).empty();
         $(this._container).append('<iframe width="425" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'
-                                  + data + '" style="color:#0000FF;text-align:left">View Larger Map</a></small>');
+                                  + data + '" style="color:#0000FF;text-align:left">View Larger Map</a></small></iframe>');
     },
-    
-    translateIdentifiers: function(language) {
-    },
-    
-    getIdentifiersLanguage: function() {
-        return [];
-    },
-    
-    destroy: function() {
-    }
 };
 
-SCWeb.core.ComponentManager.appendComponentInitialize(function() {
-    SCWeb.core.ComponentManager.registerComponent(GoogleMapLinkComponent);
-});
+SCWeb.core.ComponentManager.appendComponentInitialize(GoogleMapLinkComponent);

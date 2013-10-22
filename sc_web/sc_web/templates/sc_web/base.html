@@ -131,12 +131,10 @@
                         menu_container_id: 'menu_container'
                     };
             SCWeb.core.Main.init(params, function() {
-                SCWeb.core.Server.resolveScAddr(['project_ostis', 'hypermedia_format_scn_json', 'ui_menu_view_full_semantic_neighborhood'], function(addrs) {
-                    var outputAddr = addrs['hypermedia_format_scn_json'];
+                SCWeb.core.Server.resolveScAddr(['project_ostis'], function(addrs) {
                     var argumentAddr = addrs['project_ostis'];
-                    var cmdAddr = addrs['ui_menu_view_full_semantic_neighborhood'];
                     //var window = SCWeb.core.ui.Windows.createWindow(outputAddr);
-                    SCWeb.core.Main.doCommand(cmdAddr, [argumentAddr]);
+                    SCWeb.core.Main.doDefaultCommand([argumentAddr]);
                 });
             });
         });

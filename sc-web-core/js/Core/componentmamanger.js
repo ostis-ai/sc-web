@@ -39,7 +39,9 @@ SCWeb.core.ComponentManager = {
                     
                     if (fmt) {
                         self.registerFactory(fmt, comp_def.factory);
-                        formats.push(fmt);
+                        if (formats) {
+							formats.push(fmt);
+						}
                     }
                 }
                 
@@ -75,15 +77,16 @@ SCWeb.core.ComponentManager = {
     /**
      * Create new instance of component window
      * @param {String} format_addr sc-addr of window format
+     * @param {String} link_addr sc-addr of link, that edit or viewed with sandbox
      * @param {String} container Id of dom object, that will contain window
      * @return Return component sandbox object for created window instance.
      * If window doesn't created, then returns null
      */
-    createWindowSandbox: function(format_addr, container) {
+    createWindowSandbox: function(format_addr, link_addr, container) {
         var factory = this._factories[format_addr];
         
         if (factory) {
-            var sandbox = new SCWeb.core.ComponentSandbox(container);
+            var sandbox = new SCWeb.core.ComponentSandbox(container, link_addr);
             if (factory(sandbox))
                 return sandbox;
         }

@@ -80,7 +80,7 @@ SCWeb.core.Server = {
                             data: task.data,
                             type: task.type,
                             success: task.success,
-                            error: task.error,
+							error: task.error,
                             complete: function() {
                                 SCWeb.core.Server._fireTaskFinished();
                                 self._task_active_num--;
@@ -135,9 +135,17 @@ SCWeb.core.Server = {
      * @param {Function} callback
      */
     resolveIdentifiers: function(objects, callback) {
+		
+		if (objects.length == 0) return; // do nothing
+		
         var data = '', id, index;
+        var used = {};
         for(var i = 1; i <= objects.length; i++) {
-            id = objects[i - 1];
+			id = objects[i - 1];
+			
+			if (used[id]) continue; // skip objects, that was processed
+			used[id] = true;
+            
             index = i + '_';
             if (i != 1) data += '&';
             data += index + '=' + id;
@@ -251,12 +259,7 @@ SCWeb.core.Server = {
             success: success
         });
     },
-    
-    
-    _buildLinkContentUrl: function(linkAddr) {
-        return 'api/linkContent?addr=' + linkAddr;
-    },
-    
+        
     /**
      * Returns data of specified content
      * @param {String} addr sc-addr of sc-link to get data
@@ -266,9 +269,11 @@ SCWeb.core.Server = {
     getLinkContent: function(addr, success, error) {
         
         this._push_task({
-                url: 'api/link/content/',
+                url: "api/link/content/",
+                type: "GET",
                 data: {"addr": addr},
                 success: success,
+                error: error
             });
     }
 };

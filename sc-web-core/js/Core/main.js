@@ -3,6 +3,7 @@ SCWeb.core.Main = {
     window_types: [],
     idtf_modes: [],
     menu_commands: {},
+    default_cmd_str: "ui_menu_view_full_semantic_neighborhood",
     
     /**
      * Initialize sc-web core and ui
@@ -72,7 +73,25 @@ SCWeb.core.Main = {
 				SCWeb.ui.WindowManager.appendHistoryItem(result.question);
 			}
 		});
-	}
+	},
+	
+	/**
+     * Initiate default user interface command
+     * @param {Array} cmd_args Array of sc-addrs with command arguments
+     */
+	doDefaultCommand: function(cmd_args) {
+		if (!this.default_cmd) {
+			var self = this;
+			SCWeb.core.Server.resolveScAddr([this.default_cmd_str], function(addrs) {
+				self.default_cmd = addrs[self.default_cmd_str];
+				if (self.default_cmd) {
+					self.doCommand(self.default_cmd, cmd_args);
+				}
+			});
+		} else {
+			this.doCommand(this.default_cmd, cmd_args);
+		}
+	},
 	
 };
 

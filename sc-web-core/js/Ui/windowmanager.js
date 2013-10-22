@@ -4,6 +4,8 @@ SCWeb.ui.WindowManager = {
     windows: {},
     window_count: 0,
     sandboxes: {},
+    active_window_addr: null,
+    active_history_addr: null,
     
     init: function(callback) {
         
@@ -12,6 +14,7 @@ SCWeb.ui.WindowManager = {
         
         this.window_container_id = '#window-container';
         this.window_container = $(this.window_container_id);
+        
         
         
         callback();
@@ -40,9 +43,7 @@ SCWeb.ui.WindowManager = {
                         '</li>';
 
         this.history_tabs.prepend(tab_html);
-        
-        
-        
+                
         // get translation and create window
         var ext_lang_addr = SCWeb.core.Main.getDefaultExternalLang();
         var fmt_addr = SCWeb.core.ComponentManager.getPrimaryFormatForExtLang(ext_lang_addr);
@@ -50,13 +51,22 @@ SCWeb.ui.WindowManager = {
 			var self = this;
 			SCWeb.core.Server.getAnswerTranslated(addr, fmt_addr, function(data) {
 				self.appendWindow(data.link, fmt_addr);
+				self.windows[addr] = data.link;
 			});
 		} else
 		{
 			// error
 		}
         
-                
+        this.setHistoryItemActive(addr);
+        
+        // setup input handlers
+        var self = this;
+        this.history_tabs.find("[sc_addr]").click(function() {
+			var addr = $(this).attr('sc_addr');
+			self.setHistoryItemActive(addr);
+			self.setWindowActive(self.windows[addr]);
+		});
     },
     
     /**
@@ -66,6 +76,19 @@ SCWeb.ui.WindowManager = {
     removeHistoryItem: function(addr) {
         this.history_tabs.find("[sc_addr='" + addr + "']").remove();
     },
+    
+    /**
+     * Set new active history item
+     * @param {String} addr sc-addr of history item
+     */
+    setHistoryItemActive: function(addr) {
+		if (this.active_history_addr) {
+			this.history_tabs.find("[sc_addr='" + this.active_history_addr + "']").removeClass('active');
+		}
+		
+		this.active_history_addr = addr;
+		this.history_tabs.find("[sc_addr='" + this.active_history_addr + "']").addClass('active');
+	},
     
     // ------------ Windows ------------
     /**
@@ -83,12 +106,12 @@ SCWeb.ui.WindowManager = {
         
         var window_id = 'window_' + addr;
         var window_html =   '<div class="panel panel-default" sc_addr="' + addr + '" sc-addr-fmt="' + fmt_addr + '">' +
-                                '<div class="panel-heading">' + addr + '</div>' +
+                                /*'<div class="panel-heading">' + addr + '</div>' +*/
                                 '<div class="panel-body" id="' + window_id + '"></div>'
                             '</div>';
         this.window_container.prepend(window_html);
         
-        var sandbox = SCWeb.core.ComponentManager.createWindowSandbox(fmt_addr, window_id);
+        var sandbox = SCWeb.core.ComponentManager.createWindowSandbox(fmt_addr, addr, window_id);
         this.sandboxes[addr] = sandbox;
         
         SCWeb.core.Server.getLinkContent(addr, 
@@ -98,6 +121,8 @@ SCWeb.ui.WindowManager = {
 			function() { // error
 			}
 		);
+		
+		this.setWindowActive(addr);
     },
     
     /**
@@ -107,4 +132,18 @@ SCWeb.ui.WindowManager = {
     removeWindow: function(addr) {
         this.window_container.find("[sc_addr='" + addr + "']").remove();
     },
+    
+    /**
+     * Makes window with specified addr active
+     * @param {String} addr sc-addr of window to make active
+     */
+    setWindowActive: function(addr) {
+		if (this.active_window_addr) {
+			this.window_container.find("[sc_addr='" + this.active_window_addr + "']").addClass('hidden');
+		}
+		
+		this.active_window_addr = addr;
+		this.window_container.find("[sc_addr='" + this.active_window_addr + "']").removeClass('hidden');
+	},
+
 };
