@@ -1,6 +1,18 @@
+/**
+ * Object controls list of command parameters.
+ * It can fires next events:
+ * - "arguments/add" - this event emits on new argument add. Parameters: arg, idx 
+ * where:
+ * 		- arg - is a sc-addr of object that added as argument;
+ * 		- idx - is an index of the argument
+ * - "arguments/remove" - this event emits on argument remove. Parameters: arg, idx
+ * where:
+ * 		- arg - is a sc-addr of object that removed from arguments;
+ * 		- idx - is an index of the argument
+ * - "arguments/clear" - this event emits on arguments clear (all arguments removed at once)
+ */
 SCWeb.core.Arguments = {
 
-    _listeners : [],
     _arguments : [],
 
     /**
@@ -64,33 +76,6 @@ SCWeb.core.Arguments = {
     },
 
     /**
-     * @param {Object}
-     * listener Listener object, that will recieve notifitacions on
-     * arguments list changes. It must have such functions as: 
-     * - onArgumentAppended(argument, idx) 
-     * - onArgumentRemoved(argument, idx) 
-     * - onArgumentsCleared(arguments)
-     */
-    registerListener : function(listener) {
-
-        if (this._listeners.indexOf(listener) == -1) {
-            this._listeners.push(listener);
-        }
-    },
-
-    /**
-     * @param {Object}
-     * listener Listener objects that need to be unregistered
-     */
-    unregisterListener : function(listener) {
-
-        var idx = this._listeners.indexOf(listener);
-        if (idx >= 0) {
-            this._listeners.splice(idx, 1);
-        }
-    },
-
-    /**
      * Notify listener on argument added
      *
      * @param {String}
@@ -100,9 +85,7 @@ SCWeb.core.Arguments = {
      */
     _fireArgumentAppended : function(argument, idx) {
 
-        for ( var i = 0; i < this._listeners.length; i++) {
-            this._listeners[i].onArgumentAppended(argument, idx);
-        }
+        SCWeb.core.EventManager.emit("arguments/add", argument, idx);
     },
 
     /**
@@ -115,9 +98,7 @@ SCWeb.core.Arguments = {
      */
     _fireArgumentRemoved : function(argument, idx) {
 
-        for ( var i = 0; i < this._listeners.length; i++) {
-            this._listeners[i].onArgumentRemoved(argument, idx);
-        }
+        SCWeb.core.EventManager.emit("arguments/remove", argument, idx);
     },
 
     /**
@@ -125,9 +106,7 @@ SCWeb.core.Arguments = {
      */
     _fireArgumentCleared : function() {
 
-        for ( var i = 0; i < this._listeners.length; i++) {
-            this._listeners[i].onArgumentsCleared();
-        }
+        SCWeb.core.EventManager.emit("arguments/clear");
     },
 
     /**

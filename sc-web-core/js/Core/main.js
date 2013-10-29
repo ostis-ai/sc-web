@@ -38,10 +38,13 @@ SCWeb.core.Main = {
                             
                                 SCWeb.core.ComponentManager.init(function() {
                                 
-                                    SCWeb.core.Translation.update(function() {
-                                        callback();
-                                        SCWeb.ui.Locker.hide();
-                                    });
+									SCWeb.core.DialogHistory.init(function() {
+                                
+										SCWeb.core.Translation.update(function() {	
+											callback();
+											SCWeb.ui.Locker.hide();
+										});
+									});
                                 });
                             });
                         });

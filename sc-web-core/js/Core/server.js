@@ -139,6 +139,7 @@ SCWeb.core.Server = {
 		if (objects.length == 0) return; // do nothing
 		
         var data = '', id, index;
+        var idx = 1;
         var used = {};
         for(var i = 1; i <= objects.length; i++) {
 			id = objects[i - 1];
@@ -146,7 +147,8 @@ SCWeb.core.Server = {
 			if (used[id]) continue; // skip objects, that was processed
 			used[id] = true;
             
-            index = i + '_';
+            index = idx + '_';
+            idx += 1;
             if (i != 1) data += '&';
             data += index + '=' + id;
         }

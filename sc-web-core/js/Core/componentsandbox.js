@@ -13,8 +13,24 @@ SCWeb.core.ComponentSandbox = function(container, link_addr) {
     this.eventWindowActiveChanged = null;
     this.eventDataAppend = null;
     
-    SCWeb.core.Translation.registerListener(this);
-    SCWeb.core.Arguments.registerListener(this);
+    this.listeners = [];
+    
+    var self = this;
+	this.listeners = [];
+    
+    // listen arguments
+    this.listeners.push(SCWeb.core.EventManager.subscribe("arguments/add", this, this.onArgumentAppended));
+	this.listeners.push(SCWeb.core.EventManager.subscribe("arguments/remove", this, this.onArgumentRemoved));
+    this.listeners.push(SCWeb.core.EventManager.subscribe("arguments/clear", this, this.onArgumentCleared));
+	
+	// listen translation
+	this.listeners.push(SCWeb.core.EventManager.subscribe("translation/update", this, this.updateTranslation));
+	this.listeners.push(SCWeb.core.EventManager.subscribe("translation/get", this, function(objects) {
+		var items = self.getObjectsToTranslate();
+		for (var i in items) {
+			objects.push(items[i]);
+		}
+	}));
 };
 
 SCWeb.core.ComponentSandbox.prototype = {
@@ -26,8 +42,9 @@ SCWeb.core.ComponentSandbox.prototype = {
  * Destroys component sandbox
  */
 SCWeb.core.ComponentSandbox.prototype.destroy = function() {
-    SCWeb.core.Translation.unregisterListener(this);
-    SCWeb.core.Arguments.unregisterListener(this);
+	for (var l in this.listeners) {
+		SCWeb.core.EventManager.unsubscribe(this.listeners[l]);
+	}
 };
 
 

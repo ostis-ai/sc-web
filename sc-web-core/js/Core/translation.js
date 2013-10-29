@@ -1,50 +1,28 @@
+/**
+ * This object conrols available modes for natural languages (russina, english ant etc.)
+ * It can fires next events:
+ * - "translation/update" - this event emits on mode changed. Parameter: dictionary, that contains new translation
+ * - "translation/get" - this event emits to collect all objects for translate. Parameter: array, that need to be filled by listener 
+ * (this array couldn't be cleared, listener just append new elements).
+ */
 SCWeb.core.Translation = {
     
     listeners: [],
-    
-    /**
-     * @param {Object} listener Listener object that will be notified on translation.
-     * It must has two functions:
-     * - getObjectsToTranslate() - funciton returns array of sc-addrs, that need to be
-     * translated
-     * - updateTranslation(identifiers) - fucntion, that calls when translation finished,
-     * and notify, that view must be updated
-     */
-    registerListener: function(listener) {
-        if (this.listeners.indexOf(listener) == -1) {
-            this.listeners.push(listener);
-        }
-    },
-    
-    /**
-     * @param {Object} listener Listener objects that need to be unregistered
-     */
-    unregisterListener: function(listener) {
-        var idx = this.listeners.indexOf(listener);
-        if (idx >= 0) {
-            this.listeners.splice(idx, 1);
-        }
-    },
-    
+       
     /** Updates all translations
      */
     update: function(callback) {
          
         // collect objects, that need to be translated
         var objects = [];
-        for (i in this.listeners) {
-            objects = objects.concat(this.listeners[i].getObjectsToTranslate());
-        }
+        SCWeb.core.EventManager.emit("translation/get", objects);
         
         // @todo need to remove duplicates from object list
         // translate
         var self = this;
         this.translate(objects, function(namesMap) {
-            // notify listeners for new translations
-            for (i in self.listeners) {
-                self.listeners[i].updateTranslation(namesMap);
-            }
-            
+			// notify listeners for new translations
+			SCWeb.core.EventManager.emit("translation/update", namesMap);
             callback();
         });
         

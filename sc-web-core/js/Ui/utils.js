@@ -7,14 +7,18 @@ SCWeb.ui.Utils = {
     bindArgumentsSelector: function(container_id, selector) {
 
         $("#" + container_id).on("mousedown", selector, function(e) {
-            var self = this;
-            clearTimeout(this.downTimer);
-            
-            this.downTimer = setTimeout(function() {
-                SCWeb.core.Arguments.appendArgument($(self).attr('sc_addr'));
-                self.done = true;
-                clearTimeout(this.downTimer);
-            }, 1000);
+			
+			if (e.which === 1) {
+				
+				var self = this;
+				clearTimeout(this.downTimer);
+				
+				this.downTimer = setTimeout(function() {
+					SCWeb.core.Arguments.appendArgument($(self).attr('sc_addr'));
+					self.done = true;
+					clearTimeout(this.downTimer);
+				}, 1000);
+			}
             
         }).on("mouseup mouseleave", selector, function(e) {
             clearTimeout(this.downTimer);

@@ -14,7 +14,15 @@ SCWeb.ui.Menu = {
         this.menu_container_id = '#' + params.menu_container_id;
         
         // register for translation updates
-        SCWeb.core.Translation.registerListener(this);
+        SCWeb.core.EventManager.subscribe("translation/get", this, function(objects) {
+			var items = self.getObjectsToTranslate();
+			for (var i in items) {
+				objects.push(items[i]);
+			}
+		});
+		SCWeb.core.EventManager.subscribe("translation/update", this, function(names) {
+			self.updateTranslation(names);
+		});
         
         this._build(params.menu_commands);
         callback();

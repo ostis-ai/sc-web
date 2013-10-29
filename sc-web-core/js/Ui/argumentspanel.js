@@ -3,10 +3,22 @@ SCWeb.ui.ArgumentsPanel = {
 
     init : function(callback) {
 
-        SCWeb.core.Translation.registerListener(this);
-
-        SCWeb.core.Arguments.registerListener(this);
-        SCWeb.core.Translation.registerListener(this);
+      	var self = this;
+		// listen events from arguments
+		SCWeb.core.EventManager.subscribe("arguments/add", this, this.onArgumentAppended);
+		SCWeb.core.EventManager.subscribe("arguments/remove", this, this.onArgumentRemoved);
+		SCWeb.core.EventManager.subscribe("arguments/clear", this, this.onArgumentsCleared);
+		
+        
+        // listen events from translation
+		SCWeb.core.EventManager.subscribe("translation/update", this, this.updateTranslation);
+        SCWeb.core.EventManager.subscribe("translation/get", this, function(objects) {
+			var items = self.getObjectsToTranslate();
+			for (var i in items) {
+				objects.push(items[i]);
+			}
+		});
+		
 
         $('#arguments_clear_button').click(function() {
 

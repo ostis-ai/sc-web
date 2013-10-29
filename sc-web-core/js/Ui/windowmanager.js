@@ -38,7 +38,7 @@ SCWeb.ui.WindowManager = {
         </li>*/
         var tab_html = '<li class="dropdown" sc_addr="' + addr + '">' +
                             '<a href="#" class="dropdown-toggle" data-toggle="dropdown"' +
-                                '<span class="tab-name">' + addr + '</span><span class="caret pull-right"></span>' +
+                                '<span class="tab-name">' + addr + '</span>'+//<span class="caret pull-right"></span>' +
                             '</a>' +
                         '</li>';
 
