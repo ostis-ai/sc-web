@@ -1,5 +1,5 @@
 GoogleMapLinkComponent = {
-    formats: ['hypermedia_format_googlemaplink'],
+    formats: ['format_googlemaplink'],
     factory: function(sandbox) {
         return new GoogleMapLinkViewer(sandbox);
     }

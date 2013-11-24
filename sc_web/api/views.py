@@ -496,6 +496,7 @@ def link_format(request):
 
         keys = Keynodes(sctp_client)
         keynode_nrel_format = keys[KeynodeSysIdentifiers.nrel_format]
+        keynode_format_txt = keys[KeynodeSysIdentifiers.format_txt]
 
         result = {}
         for arg in arguments:
@@ -511,6 +512,8 @@ def link_format(request):
             )
             if format is not None:
                 result[arg.to_id()] = format[0][2].to_id()
+            else:
+                result[arg.to_id()] = keynode_format_txt.to_id()
 
         result = json.dumps(result)
 

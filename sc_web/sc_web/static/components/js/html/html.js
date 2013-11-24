@@ -1,5 +1,5 @@
 HtmlComponent = {
-    formats: ['hypermedia_format_html'],
+    formats: ['format_html'],
     factory: function(sandbox) {
         return new HtmlViewer(sandbox);
     }

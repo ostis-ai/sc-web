@@ -42,13 +42,13 @@ class Keynodes:
 
 class KeynodeSysIdentifiers:
     
-    nrel_system_identifier = 'hypermedia_nrel_system_identifier'
+    nrel_system_identifier = 'nrel_system_identifier'
     nrel_main_idtf = 'nrel_main_idtf'
     nrel_translation = 'hypermedia_nrel_translation'
     nrel_decomposition = 'nrel_decomposition'
     nrel_authors = 'nrel_authors'
-    nrel_format = 'hypermedia_nrel_format'
-    nrel_mimetype = 'hypermedia_nrel_mimetype'
+    nrel_format = 'nrel_format'
+    nrel_mimetype = 'nrel_mimetype'
     
     question = 'question'
     question_nrel_answer = 'question_nrel_answer'
@@ -92,9 +92,10 @@ class KeynodeSysIdentifiers:
     scn_code = 'scn_code'
     
     # formats
-    format_scs = 'hypermedia_format_scs'
-    format_scg_json = 'hypermedia_format_scg_json'
-    format_scn_json = 'hypermedia_format_scn_json'
+    format_scs = 'format_scs'
+    format_scg_json = 'format_scg_json'
+    format_scn_json = 'format_scn_json'
+    format_txt = 'format_txt'
     
     system_element = 'system_element'
     

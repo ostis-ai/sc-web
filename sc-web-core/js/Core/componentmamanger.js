@@ -19,7 +19,8 @@ SCWeb.core.ComponentManager = {
         var keynodes = [];
         for (var i = 0; i < this._initialize_queue.length; i++) {
             keynodes = keynodes.concat(this._initialize_queue[i].formats);
-            keynodes.push(this._initialize_queue[i].ext_lang);
+            if (this._initialize_queue[i].ext_lang)
+				keynodes.push(this._initialize_queue[i].ext_lang);
         }
         
         var self = this;

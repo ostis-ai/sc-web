@@ -2497,7 +2497,7 @@ SCg.LayoutManager.prototype.onTickUpdate = function() {
 /* --- scg-component.js --- */
 SCgComponent = {
 	ext_lang: 'scg_code',
-    formats: ['hypermedia_format_scg_json'],
+    formats: ['format_scg_json'],
     factory: function(sandbox) {
         return new scgViewerWindow(sandbox);
     }

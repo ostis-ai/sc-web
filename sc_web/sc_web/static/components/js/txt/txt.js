@@ -1,5 +1,5 @@
 TextComponent = {
-    formats: ['hypermedia_format_txt'],
+    formats: ['format_txt'],
     factory: function(sandbox) {
         return new TextViewer(sandbox);
     }

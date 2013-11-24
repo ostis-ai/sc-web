@@ -1,5 +1,5 @@
 YoutubeLinkComponent = {
-    formats: ['hypermedia_format_youtubelink'],
+    formats: ['format_youtubelink'],
     factory: function(sandbox) {
         return new YoutubeLinkViewer(sandbox);
     }
