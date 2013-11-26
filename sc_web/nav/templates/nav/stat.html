@@ -7,7 +7,7 @@
 {% endblock extrastyles %}
 
 {% block extrapluginscripts %}
-    <script type="text/javascript" charset="utf-8" src="{{ STATIC_URL }}plugins/bootstrap/js/bootstrap-datepicker.js"></script>
+    <script type="text/javascript" charset="utf-8" src="{{ STATIC_URL }}common/bootstrap/js/bootstrap-datepicker.js"></script>
 	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 {% endblock extrapluginscripts %}
 
@@ -28,12 +28,12 @@
 		    </div>
 		    <div class="pull-right">
 		        Time scale:
-		        <div class="btn-group" data-toggle="buttons-radio">
-		            <button type="button" class="btn" id="hour">Hour</button>
-		            <button type="button" class="btn" id="day">Day</button>
-		            <button type="button" class="btn" id="week">Week</button>
-		            <button type="button" class="btn" id="month">Month</button>
-		            <button type="button" class="btn" id="year">Year</button>
+		        <div class="btn-group" data-toggle="buttons">
+		            <button type="button" class="btn" id="hour"> <input type="radio" name="options" id="option1"> Hour</button>
+		            <button type="button" class="btn" id="day"> <input type="radio" name="options" id="option2"> Day</button>
+		            <button type="button" class="btn" id="week"> <input type="radio" name="options" id="option3">Week</button>
+		            <button type="button" class="btn" id="month"> <input type="radio" name="options" id="option4"> Month</button>
+		            <button type="button" class="btn" id="year"> <input type="radio" name="options" id="option5"> Year</button>
 		        </div>
 		    </div>
 		</div>

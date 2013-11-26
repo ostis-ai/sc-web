@@ -230,13 +230,13 @@ Nav.stat.Main = {
 				
 		var self = this;
 		$('#button_select_range').button('loading');
-		SCWeb.core.ui.Locker.show();
+		SCWeb.ui.Locker.show();
 		
 		self._getStatisticsData(fromValue, toValue,
 			  function(data) {
 				  // success
 				  $('#button_select_range').button('reset');
-				  SCWeb.core.ui.Locker.hide();
+				  SCWeb.ui.Locker.hide();
 				  
 				  self.data = data;
 				  self.drawCharts();
@@ -244,7 +244,7 @@ Nav.stat.Main = {
 			  }, function() {
 				  // error
 				  $('#button_select_range').button('reset');
-				  SCWeb.core.ui.Locker.hide();
+				  SCWeb.ui.Locker.hide();
 				  alert("Can't get data!");
 		  });
 	},
