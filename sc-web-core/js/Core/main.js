@@ -32,21 +32,23 @@ SCWeb.core.Main = {
                     SCWeb.ui.ArgumentsPanel.init(function() {
                 
                         SCWeb.ui.UserPanel.init(data.user, function() {
+							
+							SCWeb.ui.SettingsPanel.init(data, function() {
                             
-                            SCWeb.ui.WindowManager.init(function() {
-                                
-                            
-                                SCWeb.core.ComponentManager.init(function() {
-                                
-									SCWeb.core.DialogHistory.init(function() {
-                                
-										SCWeb.core.Translation.update(function() {	
-											callback();
-											SCWeb.ui.Locker.hide();
+								SCWeb.ui.WindowManager.init(function() {
+									
+									SCWeb.core.ComponentManager.init(function() {
+									
+										SCWeb.core.DialogHistory.init(function() {
+									
+											SCWeb.core.Translation.update(function() {	
+												callback();
+												SCWeb.ui.Locker.hide();
+											});
 										});
 									});
-                                });
-                            });
+								});
+							});
                         });
                     });
                 });

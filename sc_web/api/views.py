@@ -37,7 +37,7 @@ from sctp.types import ScAddr, SctpIteratorType, ScElementType
 from api.logic import (
     parse_menu_command, find_answer, find_translation,
     check_command_finished, append_to_system_elements,
-    find_translation_with_format, get_link_mime
+    find_translation_with_format, get_link_mime, get_languages_list
 )
 import api.logic as logic
 
@@ -86,16 +86,7 @@ def init(request):
                 out_langs.append(items[2].to_id())
 
         # try to find available output natural languages
-        res_langs = sctp_client.iterate_elements(
-            SctpIteratorType.SCTP_ITERATOR_3F_A_A,
-            keynode_languages,
-            ScElementType.sc_type_arc_pos_const_perm,
-            ScElementType.sc_type_node | ScElementType.sc_type_const
-        )
-        langs = []
-        if (res_langs is not None):
-            for items in res_langs:
-                langs.append(items[2].to_id())
+        langs = get_languages_list(keynode_languages, sctp_client)
         
         # get user sc-addr
         sc_session = logic.ScSession(request.user, request.session, sctp_client, keys)
@@ -538,3 +529,16 @@ def link_content(request):
         return serialize_error(404, 'Content not found')
 
     return HttpResponse(result, get_link_mime(addr, keynode_nrel_format, keynode_nrel_mimetype, sctp_client) + '; charset=UTF-8')
+
+def get_languages(request):
+    result = []
+    if request.is_ajax():
+        
+        sctp_client = new_sctp_client()
+        keys = Keynodes(sctp_client)
+        
+        langs = get_languages_list(keys[KeynodeSysIdentifiers.languages], sctp_client)
+        
+        result = json.dumps(langs)
+        
+    return HttpResponse(result, 'application/json')

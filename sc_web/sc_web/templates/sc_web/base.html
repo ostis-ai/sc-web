@@ -58,9 +58,15 @@
                             <b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu">
-                            <li class="dropdown">
-                                <a id="auth-user-lang"></a>
-                                <a id="auth-user-ext-lang"></a>
+                            <li class="dropdown-submenu">
+                                <a href="#" id="auth-user-lang"></a>
+                                <ul class="dropdown-menu">
+									<li><a>test</a></li>
+									<li><a>test2</a></li>
+                                </ul>
+                            </li>
+                            <li>
+								<a id="auth-user-ext-lang"></a>
                             </li>
                             <li class="divider"></li>
                             <li><a href="{% url accounts:logout %}">Logout</a></li>
@@ -74,8 +80,20 @@
                 {# <li><a href="{% url accounts:registration %}">Register</a></li> #}
             </ul>
             {% endif %}
-            </ul>
         </div>
+        
+        <div id="settings-panel" class="pull-right">
+			<button id="settings-button" type="button" class="btn btn-primary navbar-btn" data-html="true" data-placement="bottom" data-toggle="popover"><span class="glyphicon glyphicon-wrench"></span></button>
+		</div>
+		
+		<div id="search-panel">
+			<form class="navbar-form navbar-right" role="search">
+			  <div class="form-group">
+				<input type="text" class="form-control" placeholder="Search">
+			  </div>
+			  <button type="button" class="btn btn-success"><span class="glyphicon glyphicon-search"></span></button>
+			</form>
+		</div>
     </nav>
 
     <!-- main content -->

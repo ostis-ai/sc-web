@@ -277,7 +277,19 @@ SCWeb.core.Server = {
                 success: success,
                 error: error
             });
-    }
+    },
+    
+    /**
+     * Returns list of available natural languages
+     */
+    getLanguages: function(callback) {
+		this._push_task({
+			url: "api/languages/",
+			type: "GET",
+			data: null,
+			success: callback
+		});
+	}
 };
 
 

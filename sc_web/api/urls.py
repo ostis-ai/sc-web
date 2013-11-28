@@ -7,6 +7,8 @@ urlpatterns = patterns('api.views',
     url(r'^init/$', 'init', name='init'),
     url(r'^cmd/do/$', 'cmd_do', name='do_command'),
     
+    url(r'^languages/$', 'get_languages', name="get_languages"),
+    
     url(r'^idtf/resolve/$', 'idtf_resolve', name='get_identifier'),
     
     url(r'^question/answer/translate/$', 'question_answer_translate', name='question_answer_translate'),

@@ -190,6 +190,21 @@ def get_link_mime(link_addr, keynode_nrel_format, keynode_nrel_mimetype, sctp_cl
                 
     return mimetype_str
 
+
+def get_languages_list(keynode_languages, sctp_client):
+    res_langs = sctp_client.iterate_elements(
+            SctpIteratorType.SCTP_ITERATOR_3F_A_A,
+            keynode_languages,
+            ScElementType.sc_type_arc_pos_const_perm,
+            ScElementType.sc_type_node | ScElementType.sc_type_const
+        )
+    langs = []
+    if (res_langs is not None):
+        for items in res_langs:
+            langs.append(items[2].to_id())
+                
+    return langs
+
 # -------------- work with session -------------------------
 class ScSession:
     
