@@ -542,3 +542,21 @@ def get_languages(request):
         result = json.dumps(langs)
         
     return HttpResponse(result, 'application/json')
+
+@csrf_exempt
+def set_language(request):
+    
+    if (request.is_ajax()):
+        
+        lang_addr = ScAddr.parse_from_string(request.POST.get(u'lang_addr', None))
+        
+        sctp_client = new_sctp_client()
+        keys = Keynodes(sctp_client)
+        
+        sc_session = logic.ScSession(request.user, request.session, sctp_client, keys)
+        sc_session.set_current_lang_mode(lang_addr)
+        
+        result = json.dumps('')
+    
+    return HttpResponse(result, 'application/json')
+    

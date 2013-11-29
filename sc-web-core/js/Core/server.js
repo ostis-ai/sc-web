@@ -289,6 +289,19 @@ SCWeb.core.Server = {
 			data: null,
 			success: callback
 		});
+	},
+	
+	/**
+	 * Setup default natular language for user
+	 * @param {String} lang_addr sc-addr of new language to setup
+	 */
+	setLanguage: function(lang_addr, callback) {
+		this._push_task({
+			url: "api/languages/set/",
+			type: "POST",
+			data: {"lang_addr": lang_addr},
+			success: callback
+		});
 	}
 };
 

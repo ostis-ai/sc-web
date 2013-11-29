@@ -33,7 +33,7 @@ SCWeb.core.Main = {
                 
                         SCWeb.ui.UserPanel.init(data.user, function() {
 							
-							SCWeb.ui.SettingsPanel.init(data, function() {
+							SCWeb.ui.LanguagePanel.init(data, function() {
                             
 								SCWeb.ui.WindowManager.init(function() {
 									

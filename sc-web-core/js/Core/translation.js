@@ -14,15 +14,13 @@ SCWeb.core.Translation = {
     update: function(callback) {
          
         // collect objects, that need to be translated
-        var objects = [];
-        SCWeb.core.EventManager.emit("translation/get", objects);
+        var objects = this.collectObjects();
         
         // @todo need to remove duplicates from object list
         // translate
         var self = this;
         this.translate(objects, function(namesMap) {
-			// notify listeners for new translations
-			SCWeb.core.EventManager.emit("translation/update", namesMap);
+			self.fireUpdate(namesMap);
             callback();
         });
         
@@ -40,6 +38,36 @@ SCWeb.core.Translation = {
         SCWeb.core.Server.resolveIdentifiers(objects, function(namesMap) {
             callback(namesMap);
         });
-    }
+    },
+    
+    /** Change translation language
+     * @param {String} lang_addr sc-addr of language to translate
+     * @param {Function} callback Callbcak function that will be called on language change finish
+     */
+    setLanguage: function(lang_addr, callback) {
+		var self = this;
+		SCWeb.core.Server.setLanguage(lang_addr, function() { 
+			self.translate(self.collectObjects(), function (namesMap) {
+				self.fireUpdate(namesMap);
+				callback();
+			});
+		});
+	},
+	
+	/** Fires translation update event
+	 * @param {Dict} namesMap Dictionary that contains translations
+	 */
+	fireUpdate: function(namesMap) {
+		// notify listeners for new translations
+		SCWeb.core.EventManager.emit("translation/update", namesMap);
+	},
+	
+	/** Collect objects for translation
+	 */
+	collectObjects: function() {
+		var objects = [];
+        SCWeb.core.EventManager.emit("translation/get", objects);
+        return objects;
+	}
     
 };

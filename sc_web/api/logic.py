@@ -247,7 +247,7 @@ class ScSession:
                                                SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
                                                self.get_sc_addr(),
                                                ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
-                                               ScElementType.sc_type_node,
+                                               ScElementType.sc_type_node | ScElementType.sc_type_const,
                                                ScElementType.sc_type_arc_pos_const_perm,
                                                self.keynodes[KeynodeSysIdentifiers.ui_nrel_user_used_language]
                                             )
@@ -268,7 +268,7 @@ class ScSession:
                                                SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
                                                self.get_sc_addr(),
                                                ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
-                                               ScElementType.sc_type_node,
+                                               ScElementType.sc_type_node | ScElementType.sc_type_const,
                                                ScElementType.sc_type_arc_pos_const_perm,
                                                self.keynodes[KeynodeSysIdentifiers.ui_nrel_user_default_ext_language]
                                             )
@@ -288,7 +288,7 @@ class ScSession:
         # try to find currently used mode and remove it
         results = self.sctp_client.iterate_elements(
                                                SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
-                                               self.sc_addr,
+                                               self.get_sc_addr(),
                                                ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
                                                ScElementType.sc_type_node | ScElementType.sc_type_const,
                                                ScElementType.sc_type_arc_pos_const_perm,
@@ -308,7 +308,7 @@ class ScSession:
         # try to find default external language and remove it
         results = self.sctp_client.iterate_elements(
                                                SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
-                                               self.sc_addr,
+                                               self.get_sc_addr(),
                                                ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
                                                ScElementType.sc_type_node | ScElementType.sc_type_const,
                                                ScElementType.sc_type_arc_pos_const_perm,
