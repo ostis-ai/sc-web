@@ -130,3 +130,13 @@ html, body {
         margin-left: 5px;
 }
 
+/* --- history --- */
+.history-tab-name {
+		margin-left: 10px;
+}
+
+.histoy-item-btn {
+	margin-left: -5px;
+	margin-top: -5px;
+}
+

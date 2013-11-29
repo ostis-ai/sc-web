@@ -7,7 +7,9 @@ SCWeb.ui.WindowManager = {
     active_window_addr: null,
     active_history_addr: null,
     
-    init: function(callback) {
+    init: function(params, callback) {
+        
+        this.ext_langs = params.external_languages;
         
         this.history_tabs_id = '#history-tabs';
         this.history_tabs = $(this.history_tabs_id);
@@ -36,9 +38,11 @@ SCWeb.ui.WindowManager = {
                 <li><a href="#">SCn-код</a></li>
             </ul>
         </li>*/
+        
         var tab_html = '<li class="dropdown" sc_addr="' + addr + '">' +
-                            '<a href="#" class="dropdown-toggle" data-toggle="dropdown"' +
-                                '<span class="tab-name">' + addr + '</span>'+//<span class="caret pull-right"></span>' +
+                            '<a href="#">' +
+								'<button type="button" class="histoy-item-btn btn btn-success btn-sm dropdown-toggle pull-left" data-toggle="dropdown"><span class="glyphicon glyphicon-list-alt"></span></button>' +
+                                '<span class="history-tab-name">' + addr + '</span>' +
                             '</a>' +
                         '</li>';
 
@@ -83,11 +87,11 @@ SCWeb.ui.WindowManager = {
      */
     setHistoryItemActive: function(addr) {
 		if (this.active_history_addr) {
-			this.history_tabs.find("[sc_addr='" + this.active_history_addr + "']").removeClass('active');
+			this.history_tabs.find("[sc_addr='" + this.active_history_addr + "']").removeClass('active').find('.histoy-item-btn').addClass('hidden');
 		}
 		
 		this.active_history_addr = addr;
-		this.history_tabs.find("[sc_addr='" + this.active_history_addr + "']").addClass('active');
+		this.history_tabs.find("[sc_addr='" + this.active_history_addr + "']").addClass('active').find('.histoy-item-btn').removeClass('hidden');
 	},
     
     // ------------ Windows ------------
