@@ -1,6 +1,6 @@
 html, body {
 	margin-top: 30px;
-    margin-bottom: 45px;
+   margin-bottom: 45px;
 }
 
 #sc-ui-locker {
@@ -131,12 +131,19 @@ html, body {
 }
 
 /* --- history --- */
-.history-tab-name {
+.history-item {
+	cursor: pointer;
+}
+
+.history-item:hover {
+	background: #ddd;
+}
+
+.history-item-name {
 		margin-left: 10px;
 }
 
 .histoy-item-btn {
-	margin-left: -5px;
-	margin-top: -5px;
+	margin-bottom: 10px;
 }
 

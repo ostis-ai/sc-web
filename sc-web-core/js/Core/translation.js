@@ -27,6 +27,7 @@ SCWeb.core.Translation = {
      },
       
     /**
+     * Do translation routines. Just for internal usage.
      * @param {Array} objects List of sc-addrs, that need to be translated
      * @param {Function} callback
      * key is sc-addr of element and value is identifier.
@@ -36,7 +37,7 @@ SCWeb.core.Translation = {
 
         var self = this;
         SCWeb.core.Server.resolveIdentifiers(objects, function(namesMap) {
-            callback(namesMap);
+			callback(namesMap);
         });
     },
     
@@ -68,6 +69,16 @@ SCWeb.core.Translation = {
 		var objects = [];
         SCWeb.core.EventManager.emit("translation/get", objects);
         return objects;
+	},
+	
+	/** Request to translate objects
+	 * @param {Array} objects Array of objects to translate
+	 */
+	requestTranslate: function(objects) {
+		var self = this;
+		this.translate(objects, function(namesMap) {
+			self.fireUpdate(namesMap);
+		});
 	}
     
 };

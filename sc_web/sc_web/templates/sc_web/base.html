@@ -103,9 +103,19 @@
     <div id="main-container" class="main-container row">
         <div class="col-xs-2 col-sm-2 col-md-2">
             <div id="history-container" class="panel panel-default">
-                <ul id="history-tabs" class="nav nav-pills nav-stacked">
-                    {# Tabs will be added later #}
-                </ul>
+				<div class="btn-group">
+					<button type="button" class="histoy-item-btn btn btn-success dropdown-toggle" data-toggle="dropdown">
+						<span class="glyphicon glyphicon-list-alt"></span>
+					</button>
+					<ul id="history-item-langs" class="dropdown-menu" role="menu">
+						{# languages will be added #}
+					</ul>
+				</div>
+				<div>
+					<ul id="history-items" class="list-group">
+						{# Tabs will be added later #}
+					</ul>
+                </div>
             </div>
         </div>
         <div id="window-container" class="col-xs-10 col-sm-10 col-md-10">
@@ -169,8 +179,7 @@
 
 <div id="sc-ui-locker">
     <div id="sc-ui-locker-text">Loading...</div>
-    <div id="sc-ui-locker-icon"></div>
-    
+    <div id="sc-ui-locker-icon"></div>   
 </div>
 
 {% include 'sc_web/base_google_analitycs.html' %}
