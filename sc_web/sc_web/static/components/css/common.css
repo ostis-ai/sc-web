@@ -97,6 +97,7 @@ html, body {
 
 .sc_window_data {
     height: 100%;
+    overflow: auto;
 }
 
 .menu_item {
