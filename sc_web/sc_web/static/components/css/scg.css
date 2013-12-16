@@ -118,8 +118,6 @@
     stroke-dasharray: 4, 10;
 }
 
-
-
 /* --- contours --- */
 .SCgContour {
     fill: #ddddff;
@@ -133,6 +131,12 @@
     stroke: #FBF4F2;
     stroke-width: 3px;
     fill: #D60011;
+}
+
+.SCgContourAcceptPoint {
+    stroke: #FBF4F2;
+    stroke-width: 3px;
+    fill: #33BB33;
 }
 
 .SCgDragLinePointHighlighted {
@@ -159,10 +163,41 @@ path.dragline {
     fill:   none;
 }
 
+path.draglineBus {
+    stroke: blue;
+    stroke-dasharray: 25,10,10,10;
+    stroke-width: 5px;
+    fill:   none;
+}
+
 path.SCgEdge.hidden {
     stroke-width: 0;
 }
 
+.SCgBusEndPoint {
+	stroke: #FBF4F2;
+    stroke-width: 0;
+    fill: #D60011;	
+}
+
+.SCgBusEndPointHighlighted {
+	stroke: #FFBE52;
+    stroke-width: 0;
+    fill: #FF3300;	
+}
+
+
+path.SCgBus {
+    fill:   none;
+	stroke: black;
+    stroke-dasharray: none;
+    stroke-width: 5px;
+}
+
+path.SCgBusPath {
+    fill:   none;
+    stroke-width: 5px;	
+}
 
 /* ----- States ----- */
 .SCgStateNormal {

@@ -44,14 +44,14 @@ class KeynodeSysIdentifiers:
     
     nrel_system_identifier = 'nrel_system_identifier'
     nrel_main_idtf = 'nrel_main_idtf'
-    nrel_translation = 'hypermedia_nrel_translation'
+    nrel_translation = 'nrel_translation'
     nrel_decomposition = 'nrel_decomposition'
     nrel_authors = 'nrel_authors'
     nrel_format = 'nrel_format'
     nrel_mimetype = 'nrel_mimetype'
     
     question = 'question'
-    question_nrel_answer = 'question_nrel_answer'
+    question_nrel_answer = 'nrel_answer'
     question_initiated = 'question_initiated'
     question_search_all_output_arcs = 'question_search_all_output_arcs'
     
