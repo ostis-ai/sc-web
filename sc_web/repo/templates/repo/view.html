@@ -7,19 +7,19 @@
 {% block content %}
 
     <div class="source-view-wrapper">
-        <ul class="breadcrumb" id="repo-path">
-        </ul>
+        <ol class="breadcrumb" id="repo-path">
+        </ol>
         
         <div class="tree-browser-wrapper bubble">
             <div class="tree-browser-tools">
-                <button href="#new-file-modal" class="btn" title="Create new file" data-toggle="modal"><i class="icon-file"></i></button>
-                <button href="#new-dir-modal" class="btn" title="Create new directory" data-toggle="modal"><i class="icon-folder-open"></i></button>
-                <button class="btn" title="Upload file"><i class="icon-upload"></i></button>
+                <button href="#new-file-modal" class="btn" title="Create new file" data-toggle="modal"><span class="glyphicon glyphicon-file"></span></button>
+                <button href="#new-dir-modal" class="btn" title="Create new directory" data-toggle="modal"><span class="glyphicon glyphicon-folder-close"></span></button>
+                <button class="btn" title="Upload file"><span class="glyphicon glyphicon-cloud-upload"></span></button>
                 
                 <form class="form-search pull-right">
                     <div class="input-append">
                         <input class="span2 search-query" id="tree-browser-seach-button" type="text" data-provide="typeahead">
-                        <button class="btn btn-info" type="button" title="Search file"><i class="icon-search"></i></button>
+                        <button class="btn btn-info" type="button" title="Search file"><span class="glyphicon glyphicon-search"></span></button>
                     </div>
                 </form>
             </div>

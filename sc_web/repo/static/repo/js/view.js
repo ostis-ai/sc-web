@@ -54,16 +54,14 @@ Repo.view.Tree = {
         
         // split path to subdirectories
         var dirs = path.split('/');
-        var resHtml = '<li><a href="#" class="dir-path" repo_path="">repo</a><span class="divider">/</span></li>';
+        var resHtml = '<li><a href="#" class="dir-path" repo_path="">repo</a></li>';
         
         var relPath = '';
         for(var i = 0; i < dirs.length; i++) 
         {
-            if (i > 0)
-                relPath += '/';
             relPath += dirs[i];
             if (i < dirs.length - 1) {
-                resHtml += '<li><a href="#" class="dir-path" repo_path="' + relPath + '">' + dirs[i] + '</a> <span class="divider">/</span></li>';
+                resHtml += '<li><a href="#" class="dir-path" repo_path="' + relPath + '">' + dirs[i] + '</a></li>';
             } else {
                 resHtml += '<li>' + dirs[i] + '</li>';
             }

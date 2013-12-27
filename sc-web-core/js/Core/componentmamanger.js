@@ -28,7 +28,7 @@ SCWeb.core.ComponentManager = {
 			
             for (var i = 0; i < self._initialize_queue.length; i++) {
                 var comp_def = self._initialize_queue[i];
-                
+
                 var lang_addr = addrs[comp_def.ext_lang];
                 var formats = null;
                 if (lang_addr) {

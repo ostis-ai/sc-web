@@ -16,6 +16,13 @@ Ostis.ui.scn.IdentifierGenerator = (function() {
     };
 })();
 
+Ostis.ui.scn.KeynodesIdtf = {
+	'nrel_main_idtf': 1,
+	'nrel_idtf': 2,
+	'nrel_system_idtf': 3
+	};
+Ostis.ui.scn.KeynodesAddr = {};
+
 Ostis.ui.scn.Viewer = function(sandbox) {
 	this._init(sandbox);
 };
@@ -32,7 +39,6 @@ Ostis.ui.scn.Viewer.prototype = {
 		this.toTranslate = [];
 		this.currentLanguage = null;
 		this.sandbox = sandbox;
-		
 		
 		this.sandbox.eventDataAppend = $.proxy(this.receiveData, this);
 		this.sandbox.eventGetObjectsToTranslate = $.proxy(this.getObjectsToTranslate, this);
@@ -76,7 +82,6 @@ Ostis.ui.scn.Viewer.prototype = {
                             });
 
     },
-    
     
     /**
 	 * to support component interface
@@ -483,7 +488,24 @@ Ostis.ui.scn.SCnComponent = {
     formats : ['format_scn_json'],
     factory : function(sandbox) {
         return new Ostis.ui.scn.Viewer(sandbox);
-    }
+    },
+    init: function(callback) {
+		var idtfs = [];
+		for (key in Ostis.ui.scn.KeynodesIdtf) {
+			if (!Ostis.ui.scn.KeynodesAddr.hasOwnProperty(key))
+				idtfs.push(key);
+		}
+		if (idtfs.length > 0) {
+			this.sandbox.resolveAddrs(idtfs, function(data) {
+				for (key in data) {
+					if (Ostis.ui.scn.KeynodesIdtf.hasOwnProperty(key))
+						Ostis.ui.scn.KeynodesAddr[key] = Ostis.ui.scn.KeynodesIdtf[key];
+				}
+				callback();
+			});
+		} else
+			callback();
+	}
 };
 
 SCWeb.core.ComponentManager.appendComponentInitialize(Ostis.ui.scn.SCnComponent);

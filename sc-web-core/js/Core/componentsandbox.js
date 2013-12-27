@@ -1,3 +1,5 @@
+SCWeb.core.scAddrsDict = {};
+
 /**
  * Create new instance of component sandbox.
  * @param {String} container Id of dom object, that will contain component
@@ -55,6 +57,29 @@ SCWeb.core.ComponentSandbox.prototype.getIdentifiers = function(addr_list, callb
 
 SCWeb.core.ComponentSandbox.prototype.getLinkContent = function(addr, callback_success, callback_error) {
 	SCWeb.core.Server.getLinkContent(addr, callback_success, callback_error);
+};
+
+SCWeb.core.ComponentSandbox.prototype.resolveAddrs = function(idtf_list, callback) {
+	
+	var arguments = [];
+	var result = {};
+	for (idx in idtf_list) {
+		var idtf = idtf_list[idx];
+		var addr = SCWeb.core.scAddrsDict[idtf];
+		if (addr)
+			result[idtf] = addr;
+		else
+			arguments.push(idtf);			
+	}
+	
+	SCWeb.core.Server.resolveScAddr(arguments, function(data) {
+		
+		for(var key in data) {
+			if(data.hasOwnProperty(key))
+				SCWeb.core.scAddrsDict[key] = data[key];
+		}		
+		callback(SCWeb.core.scAddrsDict);
+	});
 };
 
 /**
