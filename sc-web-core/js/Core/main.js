@@ -15,6 +15,8 @@ SCWeb.core.Main = {
         var self = this;
         SCWeb.ui.Locker.show();
         
+        SCWeb.ui.Utils.bindArgumentsSelector("body", "[sc_addr]");
+        
         SCWeb.ui.TaskPanel.init(function() {
         
             SCWeb.core.Server.init(function(data) {

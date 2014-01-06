@@ -540,14 +540,14 @@ Ostis.ui.scn.Selection = function(parent) {
 
     var _elementClick = function(event) {
 
-        if (event.ctrlKey) {
+    /*    if (event.ctrlKey) {
             var scAddr;
             $(event.currentTarget).toggleClass(
                     Ostis.ui.scn.SCnCssClass.SELECTED, true);
             scAddr = $(event.currentTarget)
                     .attr(Ostis.ui.scn.HtmlAttributes.ID);
             SCWeb.core.Arguments.appendArgument(scAddr);
-        } else {
+        } else*/ {
             scAddr = $(event.currentTarget)
                     .attr(Ostis.ui.scn.HtmlAttributes.ID);
             //$(parentSelector).trigger('semanticNeighbourhood', scAddr);

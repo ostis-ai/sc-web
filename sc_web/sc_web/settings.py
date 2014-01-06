@@ -18,6 +18,13 @@ MANAGERS = ADMINS
 SCTP_HOST = 'localhost'
 SCTP_PORT = 55770
 
+REDIS_HOST = 'localhost'
+REDIS_PORT = 6379
+REDIS_DB = 1
+
+# repo
+ 
+
 REPO_EDIT_TIMEOUT = 60 # seconds
 EVENT_WAIT_TIMEOUT = 10 # seconds
 

@@ -28,9 +28,7 @@ SCWeb.ui.UserPanel = {
 				objects.push($(element).attr('sc_addr'));
 			});
 		});
-        
-        SCWeb.ui.Utils.bindArgumentsSelector("auth-user-panel", "[sc_addr]");
-        
+                
         callback();
     },
     
