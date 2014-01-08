@@ -3,6 +3,10 @@ html, body {
    margin-bottom: 45px;
 }
 
+html.drag {
+	cursor: move;
+}
+
 #sc-ui-locker {
     position: absolute;
     top: 50%;
@@ -43,7 +47,7 @@ html, body {
 }
 
 .hidden {
-    visibility:hidden;
+    visibility: hidden;
 }
 
 .no_display {
@@ -81,6 +85,10 @@ html, body {
 
 .argument-container {
     min-height: 38px;
+}
+
+.argument-container.over {
+	background-color: #999;
 }
 
 .argument-buttons {
@@ -147,4 +155,15 @@ html, body {
 .histoy-item-btn {
 	margin-bottom: 10px;
 }
+
+/* --- drag --- */
+.drag-value {
+	background-color: #ddd;
+    display: display: inline-block;
+    max-width: 250px;
+    border: 1px dotted #999;
+    padding: 3px;
+    z-index: 1000;
+}
+
 

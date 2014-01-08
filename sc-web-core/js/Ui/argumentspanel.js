@@ -30,6 +30,78 @@ SCWeb.ui.ArgumentsPanel = {
             var idx = $(this).attr('arg_idx');
             SCWeb.core.Arguments.removeArgumentByIndex(parseInt(idx));
         });
+        	
+		
+		// initialize sc-elements drag and drop
+		this.dragEl = null;
+		this.dragging = false;
+		this.dragPos = {x: 0, y: 0};
+		
+		$('body').append('<span class="drag-value hidden"></span>');
+		this.dragElValue = $('.drag-value');
+		
+		function stopDrag() {
+			if (self.dragEl) {
+				self.dragElValue.addClass('hidden');
+				self.dragEl = null;
+			}
+			if (self.dragging) {
+				self.dragging = false;
+				$('html').removeClass('drag');
+				$('#arguments_container').removeClass('over');
+			}
+		}
+		
+		$(document).delegate('[sc_addr]:not(:has([sc_addr]))', "mousedown", function(e) {
+			self.dragEl = $(this);
+			e.preventDefault();
+			
+			self.dragging = false;
+			self.dragPos = {x: e.pageX, y: e.pageY};
+		})
+		.mousemove(function(e) {
+			
+			if (!self.dragging && self.dragEl) {
+				var dx = self.dragPos.x - e.pageX;
+				var dy = self.dragPos.y - e.pageY;
+				if (Math.sqrt(dx * dx + dy * dy) > 30) {
+					self.dragging = true;
+					$('html').addClass('drag');
+				}
+			} else {
+				if (self.dragEl) {
+					self.dragElValue.removeClass('hidden');
+					self.dragElValue.text(self.dragEl.text());
+				}
+				
+				if (self.dragElValue) {
+					self.dragElValue.offset({
+						top: e.pageY + 10,
+						left: e.pageX + 10
+					});
+				}
+			}
+		})
+		.mouseup(function(e) {
+			stopDrag();
+		});
+		
+		$('#arguments_container').mouseup(function(e) {
+			if (!self.dragEl || !self.dragging) return;
+		
+			SCWeb.core.Arguments.appendArgument(self.dragEl.attr('sc_addr'));
+			stopDrag();
+		})
+		.mouseenter(function(e) {
+			if (self.dragging) {
+				$(this).addClass('over');
+			}
+		})
+		.mouseleave(function(e) {
+			if (self.dragging) {
+				$(this).removeClass('over');
+			}
+		});
         
         callback();
     },

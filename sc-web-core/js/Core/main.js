@@ -15,8 +15,6 @@ SCWeb.core.Main = {
         var self = this;
         SCWeb.ui.Locker.show();
         
-        SCWeb.ui.Utils.bindArgumentsSelector("body", "[sc_addr]");
-        
         SCWeb.ui.TaskPanel.init(function() {
         
             SCWeb.core.Server.init(function(data) {
@@ -25,34 +23,17 @@ SCWeb.core.Main = {
                 self.menu_commands = data.menu_commands;
                 self.user = data.user;
                 
-                var menu_params = {
-                                menu_container_id: params.menu_container_id,
-                                menu_commands: self.menu_commands
-                            };
-                SCWeb.ui.Menu.init(menu_params, function() {
+                data.menu_container_id = params.menu_container_id;
                 
-                    SCWeb.ui.ArgumentsPanel.init(function() {
-                
-                        SCWeb.ui.UserPanel.init(data.user, function() {
-							
-							SCWeb.ui.LanguagePanel.init(data, function() {
-                            
-								SCWeb.ui.WindowManager.init(data, function() {
-									
-									SCWeb.core.ComponentManager.init(function() {
-									
-										SCWeb.core.DialogHistory.init(function() {
-									
-											SCWeb.core.Translation.update(function() {	
-												callback();
-												SCWeb.ui.Locker.hide();
-											});
-										});
-									});
-								});
+                SCWeb.ui.Core.init(data, function() {
+					SCWeb.core.ComponentManager.init(function() {
+						SCWeb.core.DialogHistory.init(function() {
+							SCWeb.core.Translation.update(function() {	
+								callback();
+								SCWeb.ui.Locker.hide();
 							});
-                        });
-                    });
+						});
+					});
                 });
             });
         });
