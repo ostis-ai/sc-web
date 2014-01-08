@@ -88,7 +88,7 @@ html.drag {
 }
 
 .argument-container.over {
-	background-color: #999;
+	opacity: 0.7;
 }
 
 .argument-buttons {
@@ -159,8 +159,9 @@ html.drag {
 /* --- drag --- */
 .drag-value {
 	background-color: #ddd;
-    display: display: inline-block;
-    max-width: 250px;
+    display: display: inline-block !important;
+    max-width: 250px !important;
+    max-height: 200px !important;
     border: 1px dotted #999;
     padding: 3px;
     z-index: 1000;

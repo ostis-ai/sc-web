@@ -32,12 +32,19 @@ SCWeb.ui.ArgumentsPanel = {
         });
         	
 		
+		this.initDrag();
+        
+        callback();
+    },
+    
+    initDrag: function() {
+		var self = this;
 		// initialize sc-elements drag and drop
 		this.dragEl = null;
 		this.dragging = false;
 		this.dragPos = {x: 0, y: 0};
 		
-		$('body').append('<span class="drag-value hidden"></span>');
+		$('body').append('<div class="drag-value hidden"></div>');
 		this.dragElValue = $('.drag-value');
 		
 		function stopDrag() {
@@ -67,12 +74,15 @@ SCWeb.ui.ArgumentsPanel = {
 				if (Math.sqrt(dx * dx + dy * dy) > 30) {
 					self.dragging = true;
 					$('html').addClass('drag');
+					
+					if (self.dragEl) {
+						self.dragElValue.removeClass('hidden');
+						self.dragElValue.empty();
+						self.dragElValue.append(self.dragEl.clone());
+					}
 				}
+				
 			} else {
-				if (self.dragEl) {
-					self.dragElValue.removeClass('hidden');
-					self.dragElValue.text(self.dragEl.text());
-				}
 				
 				if (self.dragElValue) {
 					self.dragElValue.offset({
@@ -102,9 +112,7 @@ SCWeb.ui.ArgumentsPanel = {
 				$(this).removeClass('over');
 			}
 		});
-        
-        callback();
-    },
+	},
 
     // ------- Arguments listener interface -----------
     onArgumentAppended : function(argument, idx) {
