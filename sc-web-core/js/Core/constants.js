@@ -27,6 +27,7 @@ var sc_type_node_class = (0x800)
 var sc_type_node_abstract = (0x1000)
 var sc_type_node_material = (0x2000)
 
+
 var sc_type_arc_pos_const_perm = (sc_type_arc_access | sc_type_const | sc_type_arc_pos | sc_type_arc_perm)
 
 // type mask

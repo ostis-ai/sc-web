@@ -1,12 +1,31 @@
 .scs_element {
-    float:left;
+    float: left;
+    cursor: pointer !important;
 }
 
 .scs_sentence {
     margin: auto;
+    clear: both;
 }
 
 .scs_connector {
+	float: left;
     margin-left: 10px;
     margin-right: 10px;
+}
+
+.scs_scn_link {
+	border: solid 1px #cccccc;
+	background-color: #CDC7C6;
+	padding: 3px;
+	display: inline-block;
+	background:url("../images/scn/content_corner.png") 0 0 no-repeat #eeeeee;
+}
+
+.scs_scn_contour {
+	border: solid 1px #96a399;
+	background-color: #eeeeee;
+	display: inline-block;
+	padding: 3px;
+	border-radius: 8px;
 }

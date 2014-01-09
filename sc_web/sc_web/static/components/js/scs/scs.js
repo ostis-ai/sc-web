@@ -2,27 +2,48 @@ SCsComponent = {
 	ext_lang: 'scs_code',
     formats: ['format_scs_json'],
     factory: function(sandbox) {
-        return new SCsViewer({container: sandbox.container});
+        return new SCsViewer(sandbox);
     }
 };
 
-var SCsViewer = function(config){
-    this._initWindow(config);
+var SCsViewer = function(sandbox) {
+    this.init(sandbox);
     return this;
 };
 
+var SCsConnectors = {};
+
+$(document).ready(function() {
+	
+	SCsConnectors[sc_type_arc_pos_const_perm] = "->";
+	SCsConnectors[sc_type_edge_common | sc_type_const] = "==";
+	SCsConnectors[sc_type_edge_common | sc_type_var] = "_==";
+	SCsConnectors[sc_type_arc_common | sc_type_const] = "=>";
+	SCsConnectors[sc_type_arc_common | sc_type_var] = "_=>";
+	SCsConnectors[sc_type_arc_access | sc_type_var | sc_type_arc_pos | sc_type_arc_perm] = "_->";
+});
+
 SCsViewer.prototype = {
     
-    _container: null,
-    _objects: [],
-    _addrs: [],
-    _sc_links: {}, // map of sc-link objects key:addr, value: object
-    _current_language: null,
-    _config: null,
+    container: null,
+    objects: [],
+    addrs: [],
+    sc_links: {}, // map of sc-link objects key:addr, value: object
+    data: null,
+    sandbox: null,
     
-    _initWindow: function(config) {
-        this._container = '#' + config['container'];
-        this._config = config;
+    init: function(sandbox) {
+        this.container = '#' + sandbox.container;       
+        this.sandbox = sandbox;
+        
+        this.sandbox.eventDataAppend = $.proxy(this.receiveData, this);
+		this.sandbox.eventGetObjectsToTranslate = $.proxy(this.getObjectsToTranslate, this);
+		this.sandbox.eventApplyTranslation = $.proxy(this.updateTranslation, this);
+		
+		var self = this;
+		$(this.container).delegate('[sc_addr]', 'click', function(e) {
+			self.sandbox.doDefaultCommand([$(e.currentTarget).attr('sc_addr')]);
+		});
     },
     
     /**
@@ -30,91 +51,78 @@ SCsViewer.prototype = {
      * @param {String} addr sc-addr to append
      */
     _appendAddr: function(addr) {
-        if (this._addrs.indexOf(addr) < 0) {
-            this._addrs.push(addr);
+        if (this.addrs.indexOf(addr) < 0) {
+            this.addrs.push(addr);
         }
     },
-    
-    /**
-     * Function to create html representation of one sc-element.
-     * Just for internal usage
-     * @param {Object} object Object that represents sc-element in json
-     * @return Returns string, that contains generated html
+        
+    /*! Generate html, that represents one element of scs sentence
      */
-    _generateElementHtml: function(object) {
-        // check if sc-element is and sc-link
+    scsElementToHtml: function(object) {
+		// check if sc-element is and sc-link
         if (object.type & sc_type_link) {
-            this._sc_links[object.addr] = object;
-            var containerId = "scs_window_" + this._id.toString() + '_' + object.addr;
-            return '<div class="scs_element" id="' + containerId + '">' + '</div>';
+			var containerId = this.sandbox.container + '_' + this.addrs.length;
+            this.sc_links[containerId] = object.addr;
+            return '<div class="scs_element scs_scn_link" id="' + containerId + '" sc_addr="' + object.addr + '">' + '</div>';
         }
         
-        return '<div class="scs_element" sc_addr="' + object.addr + '">' + object.addr + '</div>'
-    },
+        return '<div class="scs_element"><a href="#" sc_addr="' + object.addr + '">' + object.addr + '</a></div>'
+	},
+    
+    /*! Generates output html used by scs level 2
+     */
+    generateSCsLevel2: function() {
+		var html = '';
+		var triples = this.data.triples;
+		for (idx in triples) {
+			var triple = triples[idx];
+			
+			html += '<div class="scs_sentence">';
+			html += this.scsElementToHtml(triple[0]);
+			this._appendAddr(triple[0].addr);
+			html += '<div class="scs_connector"><a href="#" sc_addr="' + triple[1].addr + '">' + SCsConnectors[triple[1].type] + '</a></div>';
+			this._appendAddr(triple[1].addr);
+			html += this.scsElementToHtml(triple[2]);
+			this._appendAddr(triple[2].addr);
+			html += '</div></br>';
+			
+		}
+		
+		return html;
+	},
     
     // ---- window interface -----
     receiveData: function(data) {
-        var outputHtml = ''
-        this._objects = [];
+		this.data = data;
+		this.sc_links = [];
+		this.addrs = [];
+		
+		$(this.container).empty();
+        $(this.container).append(this.generateSCsLevel2());
         
-        
-        this._sc_links = {};
-        
-        for (var i = 0; i < data.length; i++) {
-            var sentence = data[i];
-            
-            outputHtml += '<div class="scs_sentence">' + this._generateElementHtml(sentence[0]) +
-                        '<div class="scs_connector scs_element">' + sentence[1] + '</div>' +
-                        this._generateElementHtml(sentence[2]) + ';;</div>';
-            this._objects.push(sentence[0]);
-            this._objects.push(sentence[2]);
-            
-            this._appendAddr(sentence[0].addr);
-            this._appendAddr(sentence[2].addr);
-        }
-        
-        $(this._container).empty();
-        $(this._container).append(outputHtml);
-        
-        var self = this;
-        var containers = {};
-        // now get sc-links data, and show them
-        $.each(this._sc_links, function(addr, obj) {
-            var containerId = "scs_window_" + self._id.toString() + '_' + addr;
-            containers[addr] = containerId;
-            
-        });
-        
-        SCWeb.core.ui.Windows.createViewersForScLinks(containers, 
-                function() { // success
-                    //$(self._container + ' #' + containerId).text('value');
-                },
-                function() { // error
-                });
+        this.sandbox.createViewersForScLinks(this.sc_links, 
+							function() { // success
+
+                            }, function() { // error
+
+                            });
     },
     
-    translateIdentifiers: function(language) {
-        
-        var self = this;
-        var addrs = [];
-        
-        SCWeb.core.Translation.translate(this._addrs, language, function(namesMap) {
-            // apply translation
-            $(self._container + ' [sc_addr]').each(function(index, element) {
-                var addr = $(element).attr('sc_addr');
-                if(namesMap[addr]) {
-                    $(element).text(namesMap[addr]);
-                }
-            });
-        });
+    updateTranslation: function(namesMap) {
+        // apply translation
+		$(this.container + ' [sc_addr]').each(function(index, element) {
+			var addr = $(element).attr('sc_addr');
+			if(namesMap[addr]) {
+				$(element).text(namesMap[addr]);
+			}
+		});
     },
     
-    getIdentifiersLanguage: function() {
-        return this._current_language;
-    },
+    getObjectsToTranslate: function() {
+		return this.addrs;
+	}
     
-    destroy: function() {
-    }
+
 };
 
 SCWeb.core.ComponentManager.appendComponentInitialize(SCsComponent);

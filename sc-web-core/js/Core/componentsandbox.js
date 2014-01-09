@@ -51,6 +51,13 @@ SCWeb.core.ComponentSandbox.prototype.destroy = function() {
 
 
 // ------------------ Functions to call from component --------
+/*!
+ * @param {Array} args Array of sc-addrs of commnad arguments.
+ */
+SCWeb.core.ComponentSandbox.prototype.doDefaultCommand = function(args) {
+	SCWeb.core.Main.doDefaultCommand(args);
+};
+
 SCWeb.core.ComponentSandbox.prototype.getIdentifiers = function(addr_list, callback) {
 	SCWeb.core.Server.resolveIdentifiers(addr_list, callback);
 };
@@ -91,19 +98,19 @@ SCWeb.core.ComponentSandbox.prototype.resolveAddrs = function(idtf_list, callbac
  */
 SCWeb.core.ComponentSandbox.prototype.createViewersForScLinks = function(containers_map, callback_success, callback_error) {
 	var linkAddrs = [];
-	for (var addr in containers_map)
-			linkAddrs.push(addr);
+	for (var cntId in containers_map)
+			linkAddrs.push(containers_map[cntId]);
                 
 	SCWeb.core.Server.getLinksFormat(linkAddrs,
 		function(formats) {
 			
 			var result = {};
-			for (var i = 0; i < linkAddrs.length; i++) {
-				var addr = linkAddrs[i];
+			for (var cntId in containers_map) {
+				var addr = containers_map[cntId];
 				var fmt = formats[addr];
 				if (fmt) {
 					
-					sandbox = SCWeb.core.ComponentManager.createWindowSandbox(fmt, addr, containers_map[addr]);
+					sandbox = SCWeb.core.ComponentManager.createWindowSandbox(fmt, addr, cntId);
 					
 					if (sandbox) {
 						result[addr] = sandbox;

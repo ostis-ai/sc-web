@@ -277,7 +277,7 @@ class ScSession:
             return results[0][2]
         
         # setup scn mode by default
-        _lang = self.keynodes[KeynodeSysIdentifiers.scn_code]
+        _lang = self.keynodes[KeynodeSysIdentifiers.scs_code]
         self.set_default_ext_lang(_lang)
         
         return _lang

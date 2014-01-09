@@ -33,7 +33,7 @@ Ostis.ui.scn.Viewer.prototype = {
 		this.viewerId = sandbox.container;
 		this.viewerSelector = '#' + this.viewerId;
 		this.htmlBuilder = Ostis.ui.scn.HtmlBuilder(this.viewerId);
-		this.selectionHandler = Ostis.ui.scn.Selection(this.viewerId);
+		this.selectionHandler = Ostis.ui.scn.Selection(this.viewerId, sandbox);
 		this.selectionHandler.init();
 		this.nodeLabels = [];
 		this.toTranslate = [];
@@ -71,7 +71,7 @@ Ostis.ui.scn.Viewer.prototype = {
                             Ostis.ui.scn.HtmlAttributes.LINK);
                     var containerId = $(element).attr(
                             Ostis.ui.scn.HtmlAttributes.HTML_ID);
-					containers[scAddr] = containerId;
+					containers[containerId] = scAddr;
                 });
                 
          this.sandbox.createViewersForScLinks(containers, 
@@ -533,7 +533,7 @@ Ostis.ui.scn.SCnCssClass = {
 };
 
 
-Ostis.ui.scn.Selection = function(parent) {
+Ostis.ui.scn.Selection = function(parent, sandbox) {
 
     var elementQueue = [];
     var parentSelector = '#' + parent;
@@ -551,7 +551,7 @@ Ostis.ui.scn.Selection = function(parent) {
             scAddr = $(event.currentTarget)
                     .attr(Ostis.ui.scn.HtmlAttributes.ID);
             //$(parentSelector).trigger('semanticNeighbourhood', scAddr);
-            SCWeb.core.Main.doDefaultCommand([scAddr]);
+            sandbox.doDefaultCommand([scAddr]);
         }
     };
 
@@ -682,7 +682,7 @@ Ostis.ui.scn.TypeResolver = (function() {
         forward : '_⇒',
         backward : '_⇐'
     };
-    scnArcs[sc_type_arc_access | sc_type_const] = {
+    scnArcs[sc_type_arc_access | sc_type_var | sc_type_arc_pos | sc_type_arc_perm] = {
         forward : '_∍',
         backward : '_∊'
     };
@@ -740,7 +740,6 @@ Ostis.ui.scn.TypeResolver = (function() {
     };
     return {
         resolveArc : function(arcMask, backward) {
-
             return backward ? scnArcs[arcMask].backward
                     : scnArcs[arcMask].forward;
         },
