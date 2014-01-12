@@ -1,31 +1,74 @@
-.scs_element {
+.scs-container {
+    border: solid 1px #cccccc;
+    background-color: #f8f8f9;
+    min-width: 100px;
+    min-height: 100px;
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+}
+
+.scs-element {
     float: left;
     cursor: pointer !important;
 }
 
-.scs_sentence {
+.scs-sentence {
     margin: auto;
     clear: both;
 }
 
-.scs_connector {
-	float: left;
+.scs-connector {
+    float: left;
     margin-left: 10px;
     margin-right: 10px;
 }
 
-.scs_scn_link {
-	border: solid 1px #cccccc;
-	background-color: #CDC7C6;
-	padding: 3px;
-	display: inline-block;
-	background:url("../images/scn/content_corner.png") 0 0 no-repeat #eeeeee;
+/* SCn */
+.scs-scn-content {
+    border: solid 1px #cccccc;
+    background-color: #CDC7C6;
+    padding: 3px;
+    display: inline-block;
+    background:url("../images/scn/content_corner.png") 0 0 no-repeat #eeeeee;
 }
 
-.scs_scn_contour {
-	border: solid 1px #96a399;
-	background-color: #eeeeee;
-	display: inline-block;
-	padding: 3px;
-	border-radius: 8px;
+.scs-scn-contour {
+    border: solid 1px #96a399;
+    background-color: #eeeeee;
+    display: inline-block;
+    padding: 3px;
+    border-radius: 8px;
+}
+
+.scs-scn-level {
+    padding-left: 15px;
+}
+
+.scs-scn-field-value {
+    vertical-align: text-top;
+}
+
+.scs-scn-field {
+    clear: both;
+}
+
+.scn-keyword {
+    padding: 20px 2px 0px 2px;
+    font-weight: bold;
+    font-style: italic;
+}
+
+.scs-scn-element {
+    font-style: italic;
+    cursor: pointer !important;
+}
+
+.scs-scn-field-marker {
+    width: 15px;
+    text-align: left;
+    float: left;
+    margin-top: -2px;
+    vertical-align: text-top;
+    font-family: "Unicode Symbols", "Times New Roman", "Apple Symbols","Arial Unicode MS";
 }
