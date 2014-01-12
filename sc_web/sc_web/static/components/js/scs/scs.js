@@ -143,7 +143,7 @@ SCs.SCnOutput.prototype = {
                     output += '<a href="#" class="scs-scn-element" sc_addr="' + attr.n.addr + '">' + attr.n.addr + '</a>' + '<span>' + sep + '</span>';
                 }
                 output += '</div>';
-                output += '<div style="padding-left: ' + (treeNode.level + 1) * 15 + 'px">' + this.treeNodeElementHtml(treeNode) + '</div>';
+                output += '<div style="padding-left: 15px">' + this.treeNodeElementHtml(treeNode) + '</div>';
             } else {
                 output += '<div>' + this.treeNodeElementHtml(treeNode) + '</div>';
             }
@@ -162,9 +162,9 @@ SCs.SCnOutput.prototype = {
             var containerId = this.container + '_' + this.linkCounter;
             this.linkCounter++;
             this.sc_links[containerId] = treeNode.element.addr;
-            return '<div class="scs-scn-element scs-scn-content" id="' + containerId + '" sc_addr="' + treeNode.element.addr + '">' + '</div>';
+            return '<div class="scs-scn-element scs-scn-content scs-scn-field" id="' + containerId + '" sc_addr="' + treeNode.element.addr + '">' + '</div>';
         } else {
-            return '<a href="#" class="scs-scn-element" sc_addr="' + treeNode.element.addr + '">' + treeNode.element.addr + '</a>';
+            return '<a href="#" class="scs-scn-element scs-scn-field" sc_addr="' + treeNode.element.addr + '">' + treeNode.element.addr + '</a>';
         }
     },
 
