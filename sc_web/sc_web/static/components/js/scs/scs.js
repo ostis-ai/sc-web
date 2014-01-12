@@ -225,6 +225,7 @@ SCs.SCnTree.prototype = {
             while (idx < triples.length) {
                 var tpl = triples[idx];
                 var found = false;
+                var backward = false;
                 
                 if (!tpl.output) {
                     // arc attributes
@@ -250,6 +251,7 @@ SCs.SCnTree.prototype = {
                         predicate = tpl[1];
                         el = tpl[0];
                         found = true;
+                        backward = true;
                     }
                     
                     if (found) {
@@ -260,6 +262,7 @@ SCs.SCnTree.prototype = {
                         nd.predicate = predicate;
                         nd.level = node.level + 1;
                         nd.parent = node;
+                        nd.backward = backward;
                         
                         node.childs.push(nd);
                         tpl.output = true;
