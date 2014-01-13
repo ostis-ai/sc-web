@@ -27,10 +27,10 @@
 /* SCn */
 .scs-scn-content {
     border: solid 1px #cccccc;
-    background-color: #CDC7C6;
+    background-color: #fff;
     padding: 3px;
     display: inline-block;
-    background:url("../images/scn/content_corner.png") 0 0 no-repeat #eeeeee;
+    background:url("../images/scn/content_corner.png") 0 0 no-repeat #fafafa;
 }
 
 .scs-scn-contour {

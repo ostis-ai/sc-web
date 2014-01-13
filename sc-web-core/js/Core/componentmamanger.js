@@ -10,6 +10,7 @@ SCWeb.core.ComponentManager = {
     _componentCount: 0,
     _factories: {},
     _ext_langs: {},
+    _keynodes: [],      // array of keynodes that requested by components
     
     init: function(callback) {
         // callback will be invoked when all component will be registered
@@ -18,22 +19,27 @@ SCWeb.core.ComponentManager = {
         // first of all we need to resolve sc-addrs of keynodes
         var keynodes = [];
         for (var i = 0; i < this._initialize_queue.length; i++) {
-            keynodes = keynodes.concat(this._initialize_queue[i].formats);
+            var c = this._initialize_queue[i];
+            keynodes = keynodes.concat(c.formats);
+            if (c.getRequestKeynodes) {
+                keynodes = keynodes.concat(c.getRequestKeynodes());
+            }
             if (this._initialize_queue[i].ext_lang)
-				keynodes.push(this._initialize_queue[i].ext_lang);
+                keynodes.push(c.ext_lang);
         }
         
         var self = this;
         SCWeb.core.Server.resolveScAddr(keynodes, function(addrs) {
-			
+            
+            self._keynodes = addrs;
             for (var i = 0; i < self._initialize_queue.length; i++) {
                 var comp_def = self._initialize_queue[i];
 
                 var lang_addr = addrs[comp_def.ext_lang];
                 var formats = null;
                 if (lang_addr) {
-					formats = [];
-				}
+                    formats = [];
+                }
                 
                 for (var j = 0; j < comp_def.formats.length; j++) {
                     var fmt = addrs[comp_def.formats[j]];
@@ -41,14 +47,14 @@ SCWeb.core.ComponentManager = {
                     if (fmt) {
                         self.registerFactory(fmt, comp_def.factory);
                         if (formats) {
-							formats.push(fmt);
-						}
+                            formats.push(fmt);
+                        }
                     }
                 }
                 
                 if (formats) {
-					self._ext_langs[lang_addr] = formats;
-				}
+                    self._ext_langs[lang_addr] = formats;
+                }
             }
             
             callback();
@@ -87,7 +93,7 @@ SCWeb.core.ComponentManager = {
         var factory = this._factories[format_addr];
         
         if (factory) {
-            var sandbox = new SCWeb.core.ComponentSandbox(container, link_addr);
+            var sandbox = new SCWeb.core.ComponentSandbox(container, link_addr, this._keynodes);
             if (factory(sandbox))
                 return sandbox;
         }
@@ -100,14 +106,14 @@ SCWeb.core.ComponentManager = {
      * @param {String} ext_lang_addr sc-addr of external language
      */
     getPrimaryFormatForExtLang: function(ext_lang_addr) {
-		var fmts = this._ext_langs[ext_lang_addr];
-		
-		if (fmts && fmts.length > 0) {
-			return fmts[0];
-		}
-		
-		return null;
-	},
+        var fmts = this._ext_langs[ext_lang_addr];
+        
+        if (fmts && fmts.length > 0) {
+            return fmts[0];
+        }
+        
+        return null;
+    },
     
     /**
      * Setup component listener
