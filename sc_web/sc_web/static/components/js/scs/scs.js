@@ -121,20 +121,21 @@ SCs.SCnOutput.prototype = {
     /*! Returns string that contains html representation of scn-text
      */
     toHtml: function() {
+        this.determineSets();
         this.treeSort();
         this.treeMerge();
 
         var output = '';
 
         for (idx in this.tree.nodes) {
-            output += this.treeNodeHtml(this.tree.nodes[idx], null, 0);
+            output += this.treeNodeHtml(this.tree.nodes[idx], null, 0, false);
         }
         return output;
     },
 
     /*! Returns string that contains html representation of scn-tree node
      */
-    treeNodeHtml: function(treeNode, prevNode, levelOffset) {
+    treeNodeHtml: function(treeNode, prevNode, levelOffset, childOfSet) {
         var output = '';
         var offset = 0;
 
@@ -163,7 +164,7 @@ SCs.SCnOutput.prototype = {
                     }
                     output += '</div>';
                 }
-                if (treeNode.mergeNext || treeNode.mergePrev) {
+                if (treeNode.mergeNext || treeNode.mergePrev || (treeNode && treeNode.parent.isSet)) {
                     offset = 1;
                     output += '<div style="padding-left: 15px"><div class="scs-scn-field-marker scs-scn-element">●</div>' + this.treeNodeElementHtml(treeNode) + '</div>';
                 } else {
@@ -180,7 +181,7 @@ SCs.SCnOutput.prototype = {
         
         var prev = null;
         for (idx in treeNode.childs) {
-            output += this.treeNodeHtml(treeNode.childs[idx], prev, offset);
+            output += this.treeNodeHtml(treeNode.childs[idx], prev, offset, false);
             prev = treeNode.childs[idx];
         }
 
@@ -231,7 +232,24 @@ SCs.SCnOutput.prototype = {
                         res = v;
                     }
                 }
-                return res;
+                return res + 1;
+            }
+            
+            if (a.parent && b.parent) {
+                if (a.parent != b.parent) throw "Not equal parents";
+                if (a.parent.isSet) {
+                    var oA = a.parent.setOrder[a.element.addr];
+                    var oB = a.parent.setOrder[b.element.addr];
+
+                    if (oA && oB) {
+                        return oA - oB;
+                    } else {
+                        if (!oA && oB) return 1;
+                        if (!oB && oA) return -1;
+                    }
+                    
+                    return 0;
+                }
             }
             
             var orderA = minOrderAttr(a.attrs);
@@ -240,8 +258,8 @@ SCs.SCnOutput.prototype = {
             if (orderA && orderB) {
                 return orderA - orderB;
             } else {
-                if (!orderA) return 1;
-                if (!orderB) return -1;
+                if (!orderA && orderB) return 1;
+                if (!orderB && orderA) return -1;
             }
 
             // order by attribute addrs (simple compare, without semantic)
@@ -300,6 +318,124 @@ SCs.SCnOutput.prototype = {
         }
     },
 
+    /*! Determine all sets in tree and prepare them for visualization
+     */
+    determineSets: function() {
+
+        // collect all possible order attributes list
+        var orderKeys = [this.getKeynode('nrel_section_base_order')];
+        var orderAttrs = [];
+        for (idx in this.tree.triples) {
+            var tpl = this.tree.triples[idx];
+            for (key in orderKeys) {
+                if (tpl[0].addr == orderKeys[key]) {
+                    orderAttrs.push(tpl);
+                    break;
+                }
+            }
+        }
+        
+        var queue = [];
+        for (idx in this.tree.nodes) {
+            queue.push(this.tree.nodes[idx]);
+        }
+
+        while (queue.length > 0) {
+            var node = queue.shift();
+
+            for (idx in node.childs)
+                queue.push(node.childs[idx]);
+
+            if (node.type == SCs.SCnTreeNodeType.Keyword) continue;
+            if (!(node.element.type & sc_type_node_tuple)) continue;
+
+            // find all child nodes of set
+            var elements = [];
+            var idx = 0;
+            while (idx < node.childs.length) {
+                var child = node.childs[idx];
+                if (child.predicate.type == sc_type_arc_pos_const_perm) {
+                    elements = elements.concat(node.childs.splice(idx, 1));
+                } else {
+                    idx++;
+                }
+            }
+
+            node.setOrder = {};
+
+            function checkInElements(addr) {
+                for (j in elements) {
+                    if (elements[j].element.addr == addr) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            // TODO: optimize that code
+            // try to determine order of elements in set
+            var orderTriples = [];
+            for (idx in this.tree.triples) {
+                var tpl = this.tree.triples[idx];
+                
+                if (tpl[1].type != (sc_type_arc_common | sc_type_const)) continue;
+                if (!checkInElements(tpl[0].addr) || !checkInElements(tpl[2].addr)) continue;
+                
+                // determine if it's order relation
+                var found = false;
+                for (attr in orderAttrs) {
+                    var a = orderAttrs[attr];
+                    if (a[2].addr == tpl[1].addr) {
+                        found = true;
+                        a.ignore = true;
+                        break;
+                    }
+                }
+
+                if (!found) continue;
+                
+                // now change odred elements. create order map
+                node.setOrder[tpl[0].addr] = tpl[2].addr;
+                tpl.ignore = true;
+                orderTriples.push(tpl);
+            }
+
+            // reorganize setOder
+            var setOrder = node.setOrder;
+            node.setOrder = {};
+            var values = [];
+            for (key in setOrder) {
+                values.push(setOrder[key]);
+            }
+            var src = null;
+            for (key in setOrder) {
+                if (values.indexOf(key) < 0) {
+                    src = key;
+                    break;
+                }
+            }
+            var i = 1;
+            while (src) {
+                node.setOrder[src] = i;
+                i++;
+                src = setOrder[src];
+            }
+
+            // insert set elements at the begin of childs
+            for (idx in elements) {
+                node.childs.unshift(elements[idx]);
+            }
+
+            // rebuild tree, we need to find place for triples, that was sub-trees for order relations
+            for (idx in orderTriples) {
+                var tpl = orderTriples[idx];
+                this.tree.destroySubTree(tpl.scn.treeNode);
+            }
+            
+
+            node.isSet = true;
+        }
+    },
+
 };
 
 
@@ -314,6 +450,7 @@ SCs.SCnTree.prototype = {
         this.nodes = [];
         this.addrs = [];    // array of sc-addrs
         this.links = [];
+        this.triples = [];
     },
     
     /**
@@ -331,7 +468,7 @@ SCs.SCnTree.prototype = {
      */
     build: function(keywords, triples) {
         var queue = [];
-        
+        this.triples = triples;
         // first of all we need to create root nodes for all keywords
         for (i in keywords) {
             var node = new SCs.SCnTreeNode();
@@ -359,13 +496,13 @@ SCs.SCnTree.prototype = {
                 var found = false;
                 var backward = false;
                 
-                if (!tpl.output) {
+                if (!tpl.output && !tpl.ignore) {
                     // arc attributes
                     if (node.type == SCs.SCnTreeNodeType.Sentence) {
                         if ((tpl[0].type & (sc_type_node_role | sc_type_node_norole)) 
                                 && (tpl[1].type & sc_type_arc_pos_const_perm | sc_type_var)
                                 && tpl[2].addr == node.predicate.addr) {
-                            node.attrs.push({n: tpl[0], a: tpl[1]});
+                            node.attrs.push({n: tpl[0], a: tpl[1], triple: tpl});
                             tpl.output = true;
                             
                             this._appendAddr(tpl[0]);
@@ -395,8 +532,10 @@ SCs.SCnTree.prototype = {
                         nd.level = node.level + 1;
                         nd.parent = node;
                         nd.backward = backward;
+                        tpl.scn = { treeNode: nd };
                         
                         node.childs.push(nd);
+                        nd.triple = tpl;
                         tpl.output = true;
                         
                         queue.push(nd);
@@ -412,6 +551,42 @@ SCs.SCnTree.prototype = {
         }
     },
     
+    /*! Destroy whole node sub-trees of specified node.
+     * @param {Object} node Node to destroy
+     */
+    destroySubTree: function(node) {
+        var queue = [node];
+        
+        while (queue.length > 0) {
+            var n = queue.shift();
+            for (idx in n.childs) {
+                queue.push(n.childs[idx]);
+            }
+            
+            // remove from parent
+            if (n.parent) {
+                for (idx in n.parent.childs) {
+                    var i = n.parent.childs.indexOf(n);
+                    if (i >= 0) {
+                        n.parent.childs.splice(i, 1);
+                    }
+                }
+            }
+            
+            for (idx in n.attrs) {
+                n.attrs[idx].triple.ouput = false;
+            }
+            
+            n.triple.output = false;
+            n.triple = null;
+            n.parent = null;
+            
+            for (idx in node.childs) {
+                queue.push(node.childs[idx]);
+            }
+            node.childs.splice(0, node.childs.length);
+        }
+    }
     
 };
 
@@ -446,7 +621,8 @@ SCsComponent = {
         return new SCsViewer(sandbox);
     },
     getRequestKeynodes: function() {
-        return SCs.SCnSortOrder;
+        var keynodes = ['nrel_section_base_order'];
+        return keynodes.concat(SCs.SCnSortOrder);
     }
 };
 

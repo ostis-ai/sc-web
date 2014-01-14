@@ -1,10 +1,10 @@
 html, body {
-	margin-top: 30px;
+    margin-top: 30px;
    margin-bottom: 45px;
 }
 
 html.drag {
-	cursor: move;
+    cursor: move;
 }
 
 #sc-ui-locker {
@@ -88,7 +88,7 @@ html.drag {
 }
 
 .argument-container.over {
-	opacity: 0.7;
+    opacity: 0.7;
 }
 
 .argument-buttons {
@@ -141,24 +141,24 @@ html.drag {
 
 /* --- history --- */
 .history-item {
-	cursor: pointer;
+    cursor: pointer;
 }
 
 .history-item:hover {
-	background: #ddd;
+    background: #ddd;
 }
 
 .history-item-name {
-		margin-left: 10px;
+        margin-left: 10px;
 }
 
 .histoy-item-btn {
-	margin-bottom: 10px;
+    margin-bottom: 10px;
 }
 
 /* --- drag --- */
 .drag-value {
-	background-color: #ddd;
+    background-color: #ddd;
     display: display: inline-block !important;
     max-width: 250px !important;
     max-height: 200px !important;
@@ -167,4 +167,8 @@ html.drag {
     z-index: 1000;
 }
 
-
+.copyright {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
