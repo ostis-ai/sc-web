@@ -10,6 +10,8 @@ SCs.SCnSortOrder = [,
                 'nrel_section_decomposition'
                 ];
 
+SCs.SCnBallMarker = '●';
+
 $(document).ready(function() {
     SCs.Connectors[sc_type_edge_common] = {f: "<>", b: "<>"};
     SCs.Connectors[sc_type_arc_common] = {f: ">", b: "<"};
@@ -128,25 +130,35 @@ SCs.SCnOutput.prototype = {
         var output = '';
 
         for (idx in this.tree.nodes) {
-            output += this.treeNodeHtml(this.tree.nodes[idx], null, 0, false);
+            output += this.treeNodeHtml(this.tree.nodes[idx]);
         }
         return output;
     },
 
     /*! Returns string that contains html representation of scn-tree node
      */
-    treeNodeHtml: function(treeNode, prevNode, levelOffset, childOfSet) {
+    treeNodeHtml: function(treeNode) {
         var output = '';
         var offset = 0;
 
-        if (treeNode.type == SCs.SCnTreeNodeType.Keyword) {
+        /*if (treeNode.type == SCs.SCnTreeNodeType.Keyword) {
             output = '<div class="scn-keyword"><a href="#" class="scs-scn-element" sc_addr="' + treeNode.element.addr + '">' + treeNode.element.addr + '</a></div>';
         } else {
             var marker = SCs.SCnConnectors[treeNode.predicate.type];
             marker = treeNode.backward ? marker.b : marker.f;
+            var level = (treeNode.level + levelOffset);
+
+            if (treeNode.isSetElement) {
+                marker = SCs.SCnBallMarker;
+                level = 0;
+            }
+
+            if (treeNode.parent && treeNode.parent.isSetElement) {
+                level = 1;
+            }
 
             if (!treeNode.mergePrev) {
-                output = '<div class="scs-scn-field" style="padding-left: ' + ((treeNode.level + levelOffset) * 15) + 'px">';
+                output = '<div class="scs-scn-field" style="padding-left: ' + (level * 15) + 'px">';
                 output += '<div class="scs-scn-field-marker scs-scn-element">' + marker + '</div>';
             }
 
@@ -164,15 +176,17 @@ SCs.SCnOutput.prototype = {
                     }
                     output += '</div>';
                 }
-                if (treeNode.mergeNext || treeNode.mergePrev || (treeNode && treeNode.parent.isSet)) {
+                if (treeNode.mergeNext || treeNode.mergePrev) {
                     offset = 1;
-                    output += '<div style="padding-left: 15px"><div class="scs-scn-field-marker scs-scn-element">●</div>' + this.treeNodeElementHtml(treeNode) + '</div>';
+                    output += '<div style="padding-left: 15px"><div class="scs-scn-field-marker scs-scn-element">' + SCs.SCnBallMarker + '</div>';
                 } else {
-                    output += '<div style="padding-left: 15px">' + this.treeNodeElementHtml(treeNode) + '</div>';
+                    output += '<div style="padding-left: 15px">';
                 }
             } else {
-                output += '<div>' + this.treeNodeElementHtml(treeNode) + '</div>';
+                output += '<div>';
             }
+            
+            output += this.treeNodeElementHtml(treeNode) + '</div>';
 
             if (!treeNode.mergePrev) {
                 output += '</div>';
@@ -181,22 +195,100 @@ SCs.SCnOutput.prototype = {
         
         var prev = null;
         for (idx in treeNode.childs) {
+            if (treeNode.childs[idx].isSetElement) continue;
             output += this.treeNodeHtml(treeNode.childs[idx], prev, offset, false);
             prev = treeNode.childs[idx];
+        }*/
+        
+        var self = this;
+        function childsToHtml() {
+            var output = '';
+            for (idx in treeNode.childs) {
+                if (treeNode.childs[idx].isSetElement) continue;
+                output += self.treeNodeHtml(treeNode.childs[idx]);
+            }
+            return output;
+        }
+
+        if (treeNode.type == SCs.SCnTreeNodeType.Keyword) {
+            output = '<div class="scs-scn-field"><div class="scn-keyword"><a href="#" class="scs-scn-element" sc_addr="' + treeNode.element.addr + '">' + treeNode.element.addr + '</a></div>';
+            output += childsToHtml();
+            output += '</div>';
+        } else {
+            var marker = SCs.SCnConnectors[treeNode.predicate.type];
+            marker = treeNode.backward ? marker.b : marker.f;
+            if (treeNode.isSetElement) {
+                marker = SCs.SCnBallMarker;
+            }
+            
+            if (!treeNode.mergePrev) {
+                output = '<div class="scs-scn-field">';
+                output += '<div class="scs-scn-field-marker scs-scn-element">' + marker + '</div>';
+            }
+
+            if (treeNode.attrs.length > 0 && !treeNode.mergePrev) {
+                output += '<div>';
+                for (idx in treeNode.attrs) {
+                    var attr = treeNode.attrs[idx];
+                    var sep = '∶';
+                    if (attr.a.type & sc_type_var) {
+                        sep = '∷';
+                    }
+                    output += '<a href="#" class="scs-scn-element" sc_addr="' + attr.n.addr + '">' + attr.n.addr + '</a>' + '<span>' + sep + '</span>';
+                }
+                output += '</div>';
+            }
+
+            if (treeNode.mergePrev || treeNode.mergeNext) {
+                output += '<div style="padding-left: 15px"><div class="scs-scn-field-marker scs-scn-element">' + SCs.SCnBallMarker + '</div></div>';
+                output += '<div style="padding-left: 30px">';
+            } else {
+                output += '<div style="padding-left: 15px">';
+            }
+
+            if (!treeNode.isSet) {
+                output += this.treeNodeElementHtml(treeNode);
+                output += childsToHtml();
+            } else {
+                output += '{';
+                for (idx in treeNode.childs) {
+                    if (!treeNode.childs[idx].isSetElement) continue;
+                    output += self.treeNodeHtml(treeNode.childs[idx]);
+                }
+                output += '}';
+                output += childsToHtml();
+            }
+            output += '</div>';
+
+
+            output += '</div>';
         }
 
         return output;
     },
 
     treeNodeElementHtml: function(treeNode) {
+
         if (treeNode.element.type & sc_type_link) {
             var containerId = this.container + '_' + this.linkCounter;
             this.linkCounter++;
             this.sc_links[containerId] = treeNode.element.addr;
             return '<div class="scs-scn-element scs-scn-content scs-scn-field" id="' + containerId + '" sc_addr="' + treeNode.element.addr + '">' + '</div>';
-        } else {
-            return '<a href="#" class="scs-scn-element scs-scn-field" sc_addr="' + treeNode.element.addr + '">' + treeNode.element.addr + '</a>';
         }
+
+       /* if (treeNode.isSet) {
+            var res = '';
+            res += '{';
+            for (idx in treeNode.childs) {
+                if (!treeNode.childs[idx].isSetElement) continue;
+                res += this.treeNodeHtml(treeNode.childs[idx]);
+            }
+            res += '}';
+            
+            return res;
+        }*/
+        
+        return '<a href="#" class="scs-scn-element scs-scn-field" sc_addr="' + treeNode.element.addr + '">' + treeNode.element.addr + '</a>';
     },
 
     /*! Sort tree elements
@@ -422,6 +514,7 @@ SCs.SCnOutput.prototype = {
 
             // insert set elements at the begin of childs
             for (idx in elements) {
+                elements[idx].isSetElement = true;
                 node.childs.unshift(elements[idx]);
             }
 
@@ -432,7 +525,7 @@ SCs.SCnOutput.prototype = {
             }
             
 
-            node.isSet = true;
+            node.isSet = elements.length > 0;
         }
     },
 
