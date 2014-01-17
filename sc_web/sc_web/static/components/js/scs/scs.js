@@ -7,6 +7,7 @@ SCs.SCnSortOrder = [,
                 'nrel_main_idtf',
                 'nrel_system_identifier',
                 'nrel_idtf',
+                'nrel_section_base_order',
                 'nrel_section_decomposition'
                 ];
 
@@ -78,7 +79,7 @@ SCs.Viewer.prototype = {
      */
     appendData: function(data) {
         this.tree.build(data.keywords, data.triples);
-        $(this.containerId).html(this.output.toHtml());
+        $(this.containerId).html($(this.containerId).html() + this.output.toHtml());
     },
 
     getAddrs: function() {
@@ -141,65 +142,6 @@ SCs.SCnOutput.prototype = {
         var output = '';
         var offset = 0;
 
-        /*if (treeNode.type == SCs.SCnTreeNodeType.Keyword) {
-            output = '<div class="scn-keyword"><a href="#" class="scs-scn-element" sc_addr="' + treeNode.element.addr + '">' + treeNode.element.addr + '</a></div>';
-        } else {
-            var marker = SCs.SCnConnectors[treeNode.predicate.type];
-            marker = treeNode.backward ? marker.b : marker.f;
-            var level = (treeNode.level + levelOffset);
-
-            if (treeNode.isSetElement) {
-                marker = SCs.SCnBallMarker;
-                level = 0;
-            }
-
-            if (treeNode.parent && treeNode.parent.isSetElement) {
-                level = 1;
-            }
-
-            if (!treeNode.mergePrev) {
-                output = '<div class="scs-scn-field" style="padding-left: ' + (level * 15) + 'px">';
-                output += '<div class="scs-scn-field-marker scs-scn-element">' + marker + '</div>';
-            }
-
-            if (treeNode.attrs.length > 0) {
-
-                if (!treeNode.mergePrev) {
-                    output += '<div>';
-                    for (idx in treeNode.attrs) {
-                        var attr = treeNode.attrs[idx];
-                        var sep = '∶';
-                        if (attr.a.type & sc_type_var) {
-                            sep = '∷';
-                        }
-                        output += '<a href="#" class="scs-scn-element" sc_addr="' + attr.n.addr + '">' + attr.n.addr + '</a>' + '<span>' + sep + '</span>';
-                    }
-                    output += '</div>';
-                }
-                if (treeNode.mergeNext || treeNode.mergePrev) {
-                    offset = 1;
-                    output += '<div style="padding-left: 15px"><div class="scs-scn-field-marker scs-scn-element">' + SCs.SCnBallMarker + '</div>';
-                } else {
-                    output += '<div style="padding-left: 15px">';
-                }
-            } else {
-                output += '<div>';
-            }
-            
-            output += this.treeNodeElementHtml(treeNode) + '</div>';
-
-            if (!treeNode.mergePrev) {
-                output += '</div>';
-            }
-        }
-        
-        var prev = null;
-        for (idx in treeNode.childs) {
-            if (treeNode.childs[idx].isSetElement) continue;
-            output += this.treeNodeHtml(treeNode.childs[idx], prev, offset, false);
-            prev = treeNode.childs[idx];
-        }*/
-        
         var self = this;
         function childsToHtml() {
             var output = '';

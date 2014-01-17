@@ -172,3 +172,18 @@ html.drag {
     margin-right: auto;
     text-align: center;
 }
+
+
+// --- print ---
+@media print {
+    @page {
+        margin: 0.5cm;
+    }
+
+    body {
+       font: 8pt Georgia, "Times New Roman", Times, serif !important;
+       line-height: 1.3;
+    }
+
+}
+

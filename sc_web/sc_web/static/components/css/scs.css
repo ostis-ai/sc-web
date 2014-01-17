@@ -73,3 +73,27 @@
     font-family: "Unicode Symbols", "Times New Roman", "Apple Symbols","Arial Unicode MS";
     color: #2a6496;
 }
+
+
+// --- Print preview ---
+.print-preview .scs-scn-element {
+    color: #000;
+    font-size: 12px;
+}
+
+.print-preview a {
+    color: #000;
+}
+
+@media print {
+    .scs-scn-element {
+        font-size: 12px;
+    }
+
+    .scs-scn-field-marker {
+        width: 15px;
+        text-align: left;
+        float: left;
+        margin-top: 2px;
+    }
+}

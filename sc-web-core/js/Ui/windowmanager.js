@@ -11,8 +11,8 @@ SCWeb.ui.WindowManager = {
     
     // function to create hash from question addr and format addr
     hash_addr: function(question_addr, fmt_addr) {
-		return question_addr + ':' + fmt_addr;
-	},
+        return question_addr + ':' + fmt_addr;
+    },
     
     init: function(params, callback) {
         
@@ -29,30 +29,49 @@ SCWeb.ui.WindowManager = {
         // external language
         var ext_langs_items = '';
         for (idx in this.ext_langs) {
-			var addr = this.ext_langs[idx];
-			ext_langs_items += '<li><a href="#" sc_addr="' + addr + '">' + addr + '</a></li>';
-		}
-		$('#history-item-langs').html(ext_langs_items).find('[sc_addr]').click(function(event) {
-			var question_addr = self.active_history_addr;
-			var lang_addr = $(this).attr('sc_addr');
-			var fmt_addr = SCWeb.core.ComponentManager.getPrimaryFormatForExtLang(lang_addr);
-			
-			if (fmt_addr) {
-				self.window_active_formats[question_addr] = fmt_addr;
-				self.requestTranslation(question_addr, fmt_addr);
-			} else {
-				// TODO: process error
-			}
-			
-		});
+            var addr = this.ext_langs[idx];
+            ext_langs_items += '<li><a href="#" sc_addr="' + addr + '">' + addr + '</a></li>';
+        }
+        $('#history-item-langs').html(ext_langs_items).find('[sc_addr]').click(function(event) {
+            var question_addr = self.active_history_addr;
+            var lang_addr = $(this).attr('sc_addr');
+            var fmt_addr = SCWeb.core.ComponentManager.getPrimaryFormatForExtLang(lang_addr);
+            
+            if (fmt_addr) {
+                self.window_active_formats[question_addr] = fmt_addr;
+                self.requestTranslation(question_addr, fmt_addr);
+            } else {
+                // TODO: process error
+            }
+            
+        });
+    
+        $('#history-item-print').click(function (){
+            // get ctive window data
+            var data = self.window_container.find("[sc_addr='" + self.active_window_addr + "']").html();
+            
+            var html = '<html><head>' + $('head').html() + '</head></html><body>' + data + '</body>';
+            var styles = '';
+
+            var DOCTYPE = "<!DOCTYPE html>"; // your doctype declaration
+            var printPreview = window.open('about:blank', 'print_preview');
+            var printDocument = printPreview.document;
+            printDocument.open();
+            printDocument.write(DOCTYPE +
+                    '<html>' +
+                        '<head>' + styles + '</head>' +
+                        '<body class="print-preview">' + html + '</body>' +
+                    '</html>');
+            printDocument.close();
+        });
         
         // listen translation events
-		SCWeb.core.EventManager.subscribe("translation/update", this, this.updateTranslation);
-		SCWeb.core.EventManager.subscribe("translation/get", this, function(objects) {
-			$(this.history_tabs_id + ' [sc_addr], #history-item-langs [sc_addr]').each(function(index, element) {
-				objects.push($(element).attr('sc_addr'));
-			});
-		});
+        SCWeb.core.EventManager.subscribe("translation/update", this, this.updateTranslation);
+        SCWeb.core.EventManager.subscribe("translation/get", this, function(objects) {
+            $(this.history_tabs_id + ' [sc_addr], #history-item-langs [sc_addr]').each(function(index, element) {
+                objects.push($(element).attr('sc_addr'));
+            });
+        });
         
         callback();
     },
@@ -66,32 +85,32 @@ SCWeb.ui.WindowManager = {
         
         // @todo check if tab exist        
         var tab_html = '<li class="list-group-item history-item" sc_addr="' + question_addr + '">' +
-							'<h5 class="history-item-name list-group-item-heading">' + question_addr + '</h5>' +
-							'<p class="list-group-item-text"> description </p>' +
-						'</li>';
+                            '<h5 class="history-item-name list-group-item-heading">' + question_addr + '</h5>' +
+                            '<p class="list-group-item-text"> description </p>' +
+                        '</li>';
 
         this.history_tabs.prepend(tab_html);
                 
         // get translation and create window
         var ext_lang_addr = SCWeb.core.Main.getDefaultExternalLang();
         var fmt_addr = SCWeb.core.ComponentManager.getPrimaryFormatForExtLang(ext_lang_addr);
-		if (fmt_addr) {
-			this.requestTranslation(question_addr, fmt_addr);
-		} else
-		{
-			// error
-		}
+        if (fmt_addr) {
+            this.requestTranslation(question_addr, fmt_addr);
+        } else
+        {
+            // error
+        }
         
         this.setHistoryItemActive(question_addr);
         
         // setup input handlers
         var self = this;
         this.history_tabs.find("[sc_addr]").click(function(event) {
-			var question_addr = $(this).attr('sc_addr');
-			self.setHistoryItemActive(question_addr);
-			self.setWindowActive(self.windows[self.hash_addr(question_addr, self.window_active_formats[question_addr])]);
-			
-		});
+            var question_addr = $(this).attr('sc_addr');
+            self.setHistoryItemActive(question_addr);
+            self.setWindowActive(self.windows[self.hash_addr(question_addr, self.window_active_formats[question_addr])]);
+            
+        });
     },
     
     /**
@@ -107,37 +126,37 @@ SCWeb.ui.WindowManager = {
      * @param {String} addr sc-addr of history item
      */
     setHistoryItemActive: function(addr) {
-		if (this.active_history_addr) {
-			this.history_tabs.find("[sc_addr='" + this.active_history_addr + "']").removeClass('active').find('.histoy-item-btn').addClass('hidden');
-		}
-		
-		this.active_history_addr = addr;
-		this.history_tabs.find("[sc_addr='" + this.active_history_addr + "']").addClass('active').find('.histoy-item-btn').removeClass('hidden');
-	},
-	
-	/**
-	 * Get translation of question to external language and append new window for it
-	 * @param {String} question_addr sc-addr of question to translate
-	 * @param {String} fmt_addt sc-addr of output format
-	 */
-	requestTranslation: function(question_addr, fmt_addr) {
-		var self = this;
-		var window = self.windows[self.hash_addr(question_addr, fmt_addr)];
-		if (window) {
-			self.setWindowActive(window);
-		} else {
-			
-			SCWeb.ui.Locker.show();
-			// scroll window to the top
-			$("html, body").animate({ scrollTop: 0}, "slow");
-			SCWeb.core.Server.getAnswerTranslated(question_addr, fmt_addr, function(data) {
-				self.appendWindow(data.link, fmt_addr);
-				self.window_active_formats[question_addr] = fmt_addr;
-				self.windows[self.hash_addr(question_addr, fmt_addr)] = data.link;
-				SCWeb.ui.Locker.hide();
-			});
-		}
-	},
+        if (this.active_history_addr) {
+            this.history_tabs.find("[sc_addr='" + this.active_history_addr + "']").removeClass('active').find('.histoy-item-btn').addClass('hidden');
+        }
+        
+        this.active_history_addr = addr;
+        this.history_tabs.find("[sc_addr='" + this.active_history_addr + "']").addClass('active').find('.histoy-item-btn').removeClass('hidden');
+    },
+    
+    /**
+     * Get translation of question to external language and append new window for it
+     * @param {String} question_addr sc-addr of question to translate
+     * @param {String} fmt_addt sc-addr of output format
+     */
+    requestTranslation: function(question_addr, fmt_addr) {
+        var self = this;
+        var window = self.windows[self.hash_addr(question_addr, fmt_addr)];
+        if (window) {
+            self.setWindowActive(window);
+        } else {
+            
+            SCWeb.ui.Locker.show();
+            // scroll window to the top
+            $("html, body").animate({ scrollTop: 0}, "slow");
+            SCWeb.core.Server.getAnswerTranslated(question_addr, fmt_addr, function(data) {
+                self.appendWindow(data.link, fmt_addr);
+                self.window_active_formats[question_addr] = fmt_addr;
+                self.windows[self.hash_addr(question_addr, fmt_addr)] = data.link;
+                SCWeb.ui.Locker.hide();
+            });
+        }
+    },
     
     // ------------ Windows ------------
     /**
@@ -164,14 +183,14 @@ SCWeb.ui.WindowManager = {
         this.sandboxes[addr] = sandbox;
         
         SCWeb.core.Server.getLinkContent(addr, 
-			function(data) {
-				sandbox.onDataAppend(data);
-			},
-			function() { // error
-			}
-		);
-		
-		this.setWindowActive(addr);
+            function(data) {
+                sandbox.onDataAppend(data);
+            },
+            function() { // error
+            }
+        );
+        
+        this.setWindowActive(addr);
     },
     
     /**
@@ -187,15 +206,15 @@ SCWeb.ui.WindowManager = {
      * @param {String} addr sc-addr of window to make active
      */
     setWindowActive: function(addr) {
-		if (this.active_window_addr) {
-			this.window_container.find("[sc_addr='" + this.active_window_addr + "']").addClass('hidden');
-		}
-		
-		this.active_window_addr = addr;
-		this.window_container.find("[sc_addr='" + this.active_window_addr + "']").removeClass('hidden');		
-	},
+        if (this.active_window_addr) {
+            this.window_container.find("[sc_addr='" + this.active_window_addr + "']").addClass('hidden');
+        }
+        
+        this.active_window_addr = addr;
+        this.window_container.find("[sc_addr='" + this.active_window_addr + "']").removeClass('hidden');        
+    },
 
-	// ---------- Translation listener interface ------------
+    // ---------- Translation listener interface ------------
     updateTranslation: function(namesMap) {
         // apply translation
         $(this.history_tabs_id + '[sc_addr] , #history-item-langs [sc_addr]').each(function(index, element) {
