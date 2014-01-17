@@ -26,11 +26,19 @@
 
 /* SCn */
 .scs-scn-content {
+    position: relative;
     border: solid 1px #cccccc;
     background-color: #fff;
     padding: 3px;
     display: inline-block;
-    background:url("../images/scn/content_corner.png") 0 0 no-repeat #fafafa;
+    /*background:url("../images/scn/content_corner.png") 0 0 no-repeat #fafafa;*/
+}
+
+.scs-scn-content:before {
+    position: absolute;
+    top: -8px;
+    left: -1px;
+    content: url("../images/scn/content_corner.png");
 }
 
 .scs-scn-contour {
@@ -95,5 +103,12 @@
         text-align: left;
         float: left;
         margin-top: 2px;
+    }
+
+    .scs-scn-content:before {
+        position: absolute;
+        top: -6px;
+        left: -1px;
+        content: url("../images/scn/content_corner.png");
     }
 }
