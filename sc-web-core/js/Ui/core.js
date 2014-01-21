@@ -11,7 +11,7 @@ SCWeb.ui.Core = {
             ).done(function() {
 
                 // listen clicks on sc-elements
-                $('#window-container').delegate('[sc_addr]', 'click', function(e) {
+                $('#window-container').delegate('[sc_addr]:not(.sc-window)', 'click', function(e) {
                     SCWeb.core.Main.doDefaultCommand([$(e.currentTarget).attr('sc_addr')]);
                     e.stopPropagation();
                 });

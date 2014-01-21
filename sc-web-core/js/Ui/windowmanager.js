@@ -174,7 +174,7 @@ SCWeb.ui.WindowManager = {
         </div>*/
         
         var window_id = 'window_' + addr;
-        var window_html =   '<div class="panel panel-default" sc_addr="' + addr + '" sc-addr-fmt="' + fmt_addr + '">' +
+        var window_html =   '<div class="panel panel-default sc-window" sc_addr="' + addr + '" sc-addr-fmt="' + fmt_addr + '">' +
                                 /*'<div class="panel-heading">' + addr + '</div>' +*/
                                 '<div class="panel-body" id="' + window_id + '"></div>'
                             '</div>';
