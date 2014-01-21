@@ -32,16 +32,6 @@ HtmlViewer.prototype = {
         this.sandbox.eventDataAppend = $.proxy(this.receiveData, this);
         
         var self = this;
-        $(this.container).delegate('[sc_addr]', 'click', function(e) {
-            self.sandbox.doDefaultCommand([$(e.currentTarget).attr('sc_addr')]);
-        });
-        
-        /*if (this.sandbox.link_addr) {
-            this.sandbox.getLinkContent(this.sandbox.link_addr,
-                                            $.proxy(this.receiveData, this),
-                                            function () {});
-        }*/
-
     },
 
     receiveData: function(data) {
@@ -70,7 +60,8 @@ HtmlViewer.prototype = {
             for (var i = 0; i < sc_elements.length; ++i) {
                 var addr = addrs[ $(sc_elements[i]).attr('sys_idtf')];
                 if (addr) {
-                    $(sc_elements[i]).attr('sc_addr', addr).addClass('sc-element');
+                    $(sc_elements[i]).html('<a href="#" class="sc-element" sc_addr="' + addr + '">' + $(sc_elements[i]).html() + "</a>");
+                    
                 }
             }
 

@@ -173,13 +173,13 @@ html.drag {
     text-align: center;
 }
 
-// --- sc-elements ---
+/* --- sc-elements --- */
 .sc-element {
     color: #2a6496;
-    cursor: pointer;
+    cursor: pointer !important;
 }
 
-// --- print ---
+/* --- print --- */
 @media print {
     @page {
         margin: 0.5cm;

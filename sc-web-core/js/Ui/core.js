@@ -9,6 +9,12 @@ SCWeb.ui.Core = {
                SCWeb.ui.LanguagePanel.init(data),
                SCWeb.ui.WindowManager.init(data)
             ).done(function() {
+
+                // listen clicks on sc-elements
+                $('#window-container').delegate('[sc_addr]', 'click', function(e) {
+                    SCWeb.core.Main.doDefaultCommand([$(e.currentTarget).attr('sc_addr')]);
+                    e.stopPropagation();
+                });
                 dfd.resolve();
             });
         return dfd.promise();

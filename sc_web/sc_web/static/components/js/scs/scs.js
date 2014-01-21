@@ -827,11 +827,6 @@ SCsViewer.prototype = {
         this.sandbox.eventGetObjectsToTranslate = $.proxy(this.getObjectsToTranslate, this);
         this.sandbox.eventApplyTranslation = $.proxy(this.updateTranslation, this);
         
-        var self = this;
-        $(this.container).delegate('[sc_addr]', 'click', function(e) {
-            self.sandbox.doDefaultCommand([$(e.currentTarget).attr('sc_addr')]);
-        });
-        
         this.viewer = new SCs.Viewer();
         this.viewer.init(sandbox.container, $.proxy(sandbox.getKeynode, sandbox));
     },
