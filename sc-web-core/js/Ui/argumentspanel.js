@@ -122,27 +122,25 @@ SCWeb.ui.ArgumentsPanel = {
         var idx_str = idx.toString();
         var self = this;
 
-        // translate added command
-        SCWeb.core.Translation
-                .translate(
-                        [ argument ],
-                        function(namesMap) {
+        // translate added argument
+        $.when(SCWeb.core.Translation.translate([ argument ])).done(
+            function(namesMap) {
 
-                            var value = argument;
-                            if (namesMap[argument]) {
-                                value = namesMap[argument];
-                            }
+            var value = argument;
+            if (namesMap[argument]) {
+                value = namesMap[argument];
+            }
 
-                            var new_button = '<button class="btn btn-primary arguments_item" sc_addr="'
-                                    + argument
-                                    + '" arg_idx="'
-                                    + idx_str
-                                    + '" id="argument_'
-                                    + idx_str
-                                    + '">'
-                                    + value + '</button>';
-                            $(self._container).append(new_button);
-                        });
+            var new_button = '<button class="btn btn-primary arguments_item" sc_addr="'
+                    + argument
+                    + '" arg_idx="'
+                    + idx_str
+                    + '" id="argument_'
+                    + idx_str
+                    + '">'
+                    + value + '</button>';
+            $(self._container).append(new_button);
+        });
 
     },
 
