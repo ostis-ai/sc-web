@@ -1,18 +1,17 @@
 SCWeb.ui.Core = {
-	
-	init: function(data, callback) {
-		
-		SCWeb.ui.Menu.init(data, function() {
-			SCWeb.ui.ArgumentsPanel.init(function() {
-				SCWeb.ui.UserPanel.init(data, function() {
-					SCWeb.ui.LanguagePanel.init(data, function() {
-						SCWeb.ui.WindowManager.init(data, function() {
-							callback();
-						})
-					})
-				})
-			})
-		});
-	},
-	
+    
+    init: function(data, callback) {
+        var dfd = new jQuery.Deferred();
+
+        $.when(SCWeb.ui.Menu.init(data),
+               SCWeb.ui.ArgumentsPanel.init(),
+               SCWeb.ui.UserPanel.init(data),
+               SCWeb.ui.LanguagePanel.init(data),
+               SCWeb.ui.WindowManager.init(data)
+            ).done(function() {
+                dfd.resolve();
+            });
+        return dfd.promise();
+    },
+    
 };

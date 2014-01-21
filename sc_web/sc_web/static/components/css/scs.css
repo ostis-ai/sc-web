@@ -28,7 +28,7 @@
 .scs-scn-content {
     position: relative;
     border: solid 1px #cccccc;
-    background-color: #fff;
+    background-color: #fafafa;
     padding: 3px;
     display: inline-block;
     /*background:url("../images/scn/content_corner.png") 0 0 no-repeat #fafafa;*/
@@ -43,7 +43,7 @@
 
 .scs-scn-contour {
     border: solid 1px #96a399;
-    background-color: #eeeeee;
+    background-color: #fdfdfd;
     display: inline-block;
     padding: 3px;
     border-radius: 8px;
@@ -61,15 +61,18 @@
     clear: both;
 }
 
-.scn-keyword {
-    padding: 20px 2px 0px 2px;
+.scs-scn-keyword {
+    padding: 2px 2px 0px 2px;
     font-weight: bold;
     font-style: italic;
 }
 
 .scs-scn-element {
-    font-style: italic;
     cursor: pointer !important;
+}
+
+.scs-scn-element a {
+    font-style: italic;
 }
 
 .scs-scn-field-marker {
@@ -90,6 +93,10 @@
 }
 
 .print-preview a {
+    color: #000;
+}
+
+.print-preview .scs-scn-field-marker {
     color: #000;
 }
 

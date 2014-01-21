@@ -8,8 +8,9 @@ SCWeb.ui.UserPanel = {
      * - is_authenticated - flag that have True value, in case when user is authenticated
      * - current_lang - sc-addr of used natural language
      */
-    init: function(params, callback) {
-        
+    init: function(params) {
+        var dfd = new jQuery.Deferred();
+
         this.is_authenticated = params.user.is_authenticated;
         this.user_sc_addr = params.user.sc_addr;
         this.lang_mode_sc_addr = params.user.current_lang;
@@ -22,14 +23,15 @@ SCWeb.ui.UserPanel = {
         }
         
         // listen translation events
-		SCWeb.core.EventManager.subscribe("translation/update", this, this.updateTranslation);
-		SCWeb.core.EventManager.subscribe("translation/get", this, function(objects) {
-			$('#auth-user-panel [sc_addr]').each(function(index, element) {
-				objects.push($(element).attr('sc_addr'));
-			});
-		});
+        SCWeb.core.EventManager.subscribe("translation/update", this, this.updateTranslation);
+        SCWeb.core.EventManager.subscribe("translation/get", this, function(objects) {
+            $('#auth-user-panel [sc_addr]').each(function(index, element) {
+                objects.push($(element).attr('sc_addr'));
+            });
+        });
                 
-        callback();
+        dfd.resolve();
+        return dfd.promise();
     },
     
     // ---------- Translation listener interface ------------

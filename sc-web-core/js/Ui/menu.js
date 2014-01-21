@@ -8,24 +8,26 @@ SCWeb.ui.Menu = {
      * - menu_container_id - id of dom element that will contains menu items
      * - menu_commands - object, that represent menu command hierachy (in format returned from server)
      */
-    init: function(params, callback) {
+    init: function(params) {
+        var dfd = new jQuery.Deferred();
         var self = this;
         
         this.menu_container_id = '#' + params.menu_container_id;
         
         // register for translation updates
         SCWeb.core.EventManager.subscribe("translation/get", this, function(objects) {
-			var items = self.getObjectsToTranslate();
-			for (var i in items) {
-				objects.push(items[i]);
-			}
-		});
-		SCWeb.core.EventManager.subscribe("translation/update", this, function(names) {
-			self.updateTranslation(names);
-		});
+            var items = self.getObjectsToTranslate();
+            for (var i in items) {
+                objects.push(items[i]);
+            }
+        });
+        SCWeb.core.EventManager.subscribe("translation/update", this, function(names) {
+            self.updateTranslation(names);
+        });
         
         this._build(params.menu_commands);
-        callback();
+        dfd.resolve();
+        return dfd.promise();
     },
 
     _build: function(menuData) {
@@ -82,8 +84,8 @@ SCWeb.ui.Menu = {
             
             var sc_addr = $(this).attr('sc_addr');
             if ($(this).hasClass('cmd_atom')) {
-				SCWeb.core.Main.doCommand(sc_addr, SCWeb.core.Arguments._arguments);
-			}
+                SCWeb.core.Main.doCommand(sc_addr, SCWeb.core.Arguments._arguments);
+            }
         });
     },
     

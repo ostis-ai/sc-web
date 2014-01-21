@@ -111,6 +111,8 @@ SCWeb.core.ComponentSandbox.prototype.resolveAddrs = function(idtf_list, callbac
  * @param {Function} callback_error Function that calls on error result
  */
 SCWeb.core.ComponentSandbox.prototype.createViewersForScLinks = function(containers_map, callback_success, callback_error) {
+    var dfd = new jQuery.Deferred();
+
     var linkAddrs = [];
     for (var cntId in containers_map)
             linkAddrs.push(containers_map[cntId]);
@@ -119,23 +121,44 @@ SCWeb.core.ComponentSandbox.prototype.createViewersForScLinks = function(contain
         function(formats) {
             
             var result = {};
+            var promises = [];
+            var defferers = {};
+
             for (var cntId in containers_map) {
                 var addr = containers_map[cntId];
                 var fmt = formats[addr];
                 if (fmt) {
-                    
-                    sandbox = SCWeb.core.ComponentManager.createWindowSandbox(fmt, addr, cntId);
-                    
-                    if (sandbox) {
-                        result[addr] = sandbox;
-                    }
+                    var d = new jQuery.Deferred();
+                    defferers[addr] = d;
+                    promises.push(d.promise());
+
+                    $.when(SCWeb.core.ComponentManager.createWindowSandbox(fmt, addr, cntId)).then(
+                                    function(sandbox) {
+                                        if (sandbox) {
+                                            result[addr] = sandbox;
+                                            defferers[sandbox.link_addr].resolve();
+                                        }
+                                    },
+                                    function() {
+                                        d.reject();
+                                    });
                 }
             }
             
-            callback_success(result);
+            $.when.apply($, promises).then(
+                    function () {
+                        dfd.resolve();
+                    },
+                    function() {
+                        dfd.reject();
+                    });
         },
-        callback_error
+        function() {
+            dfd.reject();
+        }
     );
+    
+    return dfd.promise();
 };
 
 // ------ Translation ---------
@@ -199,8 +222,27 @@ SCWeb.core.ComponentSandbox.prototype.onWindowActiveChanged = function(is_active
 
 // --------- Data -------------
 SCWeb.core.ComponentSandbox.prototype.onDataAppend = function(data) {
+    var dfd = new jQuery.Deferred();
+
     if (this.eventDataAppend)
-        this.eventDataAppend(data);
+    {
+        var self = this;
+        $.when(this.eventDataAppend(data)).then(
+            function() {
+                $.when(SCWeb.core.Translation.translate(self.getObjectsToTranslate())).done(
+                    function(namesMap) {
+                        self.updateTranslation(namesMap);
+                        dfd.resolve();
+                    });
+                //dfd.resolve();
+            },
+            function() {
+                dfd.reject();
+            });
         
-    SCWeb.core.Translation.translate(this.getObjectsToTranslate(), $.proxy(this.updateTranslation, this));
+    } else {
+        dfd.resolve();
+    }
+
+    return dfd.promise();
 };

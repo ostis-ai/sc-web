@@ -14,8 +14,8 @@ SCWeb.ui.WindowManager = {
         return question_addr + ':' + fmt_addr;
     },
     
-    init: function(params, callback) {
-        
+    init: function(params) {
+        var dfd = new jQuery.Deferred();
         this.ext_langs = params.external_languages;
         
         this.history_tabs_id = '#history-items';
@@ -73,7 +73,8 @@ SCWeb.ui.WindowManager = {
             });
         });
         
-        callback();
+        dfd.resolve();
+        return dfd.promise();
     },
     
     // ----------- History ------------
@@ -148,7 +149,7 @@ SCWeb.ui.WindowManager = {
             
             SCWeb.ui.Locker.show();
             // scroll window to the top
-            $("html, body").animate({ scrollTop: 0}, "slow");
+            //$("html, body").animate({ scrollTop: 0}, "slow");
             SCWeb.core.Server.getAnswerTranslated(question_addr, fmt_addr, function(data) {
                 self.appendWindow(data.link, fmt_addr);
                 self.window_active_formats[question_addr] = fmt_addr;
@@ -179,18 +180,16 @@ SCWeb.ui.WindowManager = {
                             '</div>';
         this.window_container.prepend(window_html);
         
-        var sandbox = SCWeb.core.ComponentManager.createWindowSandbox(fmt_addr, addr, window_id);
-        this.sandboxes[addr] = sandbox;
+        var self = this;
+        $.when(SCWeb.core.ComponentManager.createWindowSandbox(fmt_addr, addr, window_id)).then( 
+                function(sandbox) {
+                    self.sandboxes[addr] = sandbox;
+                    self.setWindowActive(addr);
+                },
+                function() {
+                    throw "Error while create window";
+                });
         
-        SCWeb.core.Server.getLinkContent(addr, 
-            function(data) {
-                sandbox.onDataAppend(data);
-            },
-            function() { // error
-            }
-        );
-        
-        this.setWindowActive(addr);
     },
     
     /**

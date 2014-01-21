@@ -12,8 +12,10 @@ SCWeb.core.ComponentManager = {
     _ext_langs: {},
     _keynodes: [],      // array of keynodes that requested by components
     
-    init: function(callback) {
-        // callback will be invoked when all component will be registered
+    init: function() {
+        var dfd = new jQuery.Deferred();
+
+        // deffered will be resolved when all component will be registered
         this._componentCount = this._initialize_queue.length;
 
         // first of all we need to resolve sc-addrs of keynodes
@@ -57,8 +59,10 @@ SCWeb.core.ComponentManager = {
                 }
             }
             
-            callback();
+            dfd.resolve();
         });
+
+        return dfd.promise();
     },
     
     /**
@@ -86,19 +90,36 @@ SCWeb.core.ComponentManager = {
      * @param {String} format_addr sc-addr of window format
      * @param {String} link_addr sc-addr of link, that edit or viewed with sandbox
      * @param {String} container Id of dom object, that will contain window
+     * @param {Function} callback Callback function that calls on creation finished
      * @return Return component sandbox object for created window instance.
      * If window doesn't created, then returns null
      */
-    createWindowSandbox: function(format_addr, link_addr, container) {
+    createWindowSandbox: function(format_addr, link_addr, container, callback) {
+        var dfd = new jQuery.Deferred();
         var factory = this._factories[format_addr];
         
         if (factory) {
             var sandbox = new SCWeb.core.ComponentSandbox(container, link_addr, this._keynodes);
-            if (factory(sandbox))
-                return sandbox;
+            if (factory(sandbox)) {
+                sandbox.getLinkContent(link_addr,
+                                        function (data) {
+                                            $.when(sandbox.onDataAppend(data)).then(
+                                                function() {
+                                                    dfd.resolve(sandbox);
+                                                },
+                                                function() {
+                                                    dfd.reject();
+                                                }
+                                            );
+                                        },
+                                        function () { dfd.reject(); });
+                
+            } else throw "Can't create viewer properly"
+        } else {        
+            dfd.reject();
         }
-        
-        return null;
+
+        return dfd.promise();
     },
     
     /**

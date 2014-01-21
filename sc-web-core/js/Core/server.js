@@ -80,7 +80,7 @@ SCWeb.core.Server = {
                             data: task.data,
                             type: task.type,
                             success: task.success,
-							error: task.error,
+                            error: task.error,
                             complete: function() {
                                 SCWeb.core.Server._fireTaskFinished();
                                 self._task_active_num--;
@@ -135,17 +135,20 @@ SCWeb.core.Server = {
      * @param {Function} callback
      */
     resolveIdentifiers: function(objects, callback) {
-		
-		if (objects.length == 0) return; // do nothing
-		
+        
+        if (objects.length == 0) {
+            callback();
+            return; // do nothing
+        }
+        
         var data = '', id, index;
         var idx = 1;
         var used = {};
         for(var i = 1; i <= objects.length; i++) {
-			id = objects[i - 1];
-			
-			if (used[id]) continue; // skip objects, that was processed
-			used[id] = true;
+            id = objects[i - 1];
+            
+            if (used[id]) continue; // skip objects, that was processed
+            used[id] = true;
             
             index = idx + '_';
             idx += 1;
@@ -283,26 +286,26 @@ SCWeb.core.Server = {
      * Returns list of available natural languages
      */
     getLanguages: function(callback) {
-		this._push_task({
-			url: "api/languages/",
-			type: "GET",
-			data: null,
-			success: callback
-		});
-	},
-	
-	/**
-	 * Setup default natular language for user
-	 * @param {String} lang_addr sc-addr of new language to setup
-	 */
-	setLanguage: function(lang_addr, callback) {
-		this._push_task({
-			url: "api/languages/set/",
-			type: "POST",
-			data: {"lang_addr": lang_addr},
-			success: callback
-		});
-	}
+        this._push_task({
+            url: "api/languages/",
+            type: "GET",
+            data: null,
+            success: callback
+        });
+    },
+    
+    /**
+     * Setup default natular language for user
+     * @param {String} lang_addr sc-addr of new language to setup
+     */
+    setLanguage: function(lang_addr, callback) {
+        this._push_task({
+            url: "api/languages/set/",
+            type: "POST",
+            data: {"lang_addr": lang_addr},
+            success: callback
+        });
+    }
 };
 
 

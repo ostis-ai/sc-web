@@ -15,26 +15,23 @@ TextViewer.prototype = {
     _config: null,
     
     _initWindow: function(sandbox) {
-		this.sandbox = sandbox;
+        this.sandbox = sandbox;
         this.container = '#' + sandbox.container;
         
-		this.sandbox.eventDataAppend = $.proxy(this.receiveData, this);
-		
-		var self = this;
-		this.sandbox.getLinkContent(this.sandbox.link_addr,
-			function(data) {
-				self.sandbox.onDataAppend(data)
-			},
-			function(jqXHR, textStatus, errorThrown) {
-				self.receiveData('<span style="color: red;">error</span>');
-			} // error
-		);
+        this.sandbox.eventDataAppend = $.proxy(this.receiveData, this);
+        
+        var self = this;
     },
     
     // ---- window interface -----
     receiveData: function(data) {
+        var dfd = new jQuery.Deferred();
+        
         $(this.container).empty();
         $(this.container).text( data );
+        dfd.resolve();
+
+        return dfd.promise();
     },
     
 };

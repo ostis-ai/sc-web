@@ -166,12 +166,13 @@
             var params = {
                         menu_container_id: 'menu_container'
                     };
-            SCWeb.core.Main.init(params, function() {
+            $.when(SCWeb.core.Main.init(params)).done(function() {
                 SCWeb.core.Server.resolveScAddr(['doc_technology_ostis'], function(addrs) {
                     var argumentAddr = addrs['doc_technology_ostis'];
                     //var window = SCWeb.core.ui.Windows.createWindow(outputAddr);
                     SCWeb.core.Main.doDefaultCommand([argumentAddr]);
                 });
+                SCWeb.ui.Locker.hide();
             });
         });
 

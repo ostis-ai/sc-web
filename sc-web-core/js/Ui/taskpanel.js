@@ -4,11 +4,12 @@ SCWeb.ui.TaskPanel = {
     _task_num: 0,
     
     init: function(callback) {
-        
+        var dfd = new jQuery.Deferred();
+
         SCWeb.core.Server.appendListener(this);
-        
-        if (callback)
-            callback();
+        dfd.resolve();
+
+        return dfd.promise();
     },
     
     /*!
@@ -30,10 +31,12 @@ SCWeb.ui.TaskPanel = {
     taskStarted: function() {
         this._task_num++;
         this.updatePanel();
+        SCWeb.ui.Locker.show();
     },
     
     taskFinished: function() {
         this._task_num--;
         this.updatePanel();
+        SCWeb.ui.Locker.hide();
     }
 };

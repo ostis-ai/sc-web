@@ -173,6 +173,11 @@ html.drag {
     text-align: center;
 }
 
+// --- sc-elements ---
+.sc-element {
+    color: #2a6496;
+    cursor: pointer;
+}
 
 // --- print ---
 @media print {
