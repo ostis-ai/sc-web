@@ -181,12 +181,14 @@ SCWeb.ui.WindowManager = {
         this.window_container.prepend(window_html);
         
         var self = this;
+        this.hideActiveWindow();
         $.when(SCWeb.core.ComponentManager.createWindowSandbox(fmt_addr, addr, window_id)).then( 
                 function(sandbox) {
                     self.sandboxes[addr] = sandbox;
                     self.setWindowActive(addr);
                 },
                 function() {
+                    self.showActiveWindow();
                     throw "Error while create window";
                 });
         
@@ -205,12 +207,22 @@ SCWeb.ui.WindowManager = {
      * @param {String} addr sc-addr of window to make active
      */
     setWindowActive: function(addr) {
+        this.hideActiveWindow();
+        
+        this.active_window_addr = addr;
+        this.showActiveWindow();
+    },
+
+    hideActiveWindow: function() {
         if (this.active_window_addr) {
             this.window_container.find("[sc_addr='" + this.active_window_addr + "']").addClass('hidden');
         }
-        
-        this.active_window_addr = addr;
-        this.window_container.find("[sc_addr='" + this.active_window_addr + "']").removeClass('hidden');        
+    },
+
+    showActiveWindow: function() {
+        if (this.active_window_addr) {
+            this.window_container.find("[sc_addr='" + this.active_window_addr + "']").removeClass('hidden'); 
+        }
     },
 
     // ---------- Translation listener interface ------------

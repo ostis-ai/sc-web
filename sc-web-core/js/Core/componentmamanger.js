@@ -102,17 +102,19 @@ SCWeb.core.ComponentManager = {
             var sandbox = new SCWeb.core.ComponentSandbox(container, link_addr, this._keynodes);
             if (factory(sandbox)) {
                 sandbox.getLinkContent(link_addr,
-                                        function (data) {
-                                            $.when(sandbox.onDataAppend(data)).then(
-                                                function() {
-                                                    dfd.resolve(sandbox);
-                                                },
-                                                function() {
-                                                    dfd.reject();
-                                                }
-                                            );
-                                        },
-                                        function () { dfd.reject(); });
+                    function (data) {
+                        $.when(sandbox.onDataAppend(data)).then(
+                            function() {
+                                dfd.resolve(sandbox);
+                            },
+                            function() {
+                                dfd.reject();
+                            }
+                        );
+                    },
+                    function () {
+                        dfd.reject(); 
+                    });
                 
             } else throw "Can't create viewer properly"
         } else {        

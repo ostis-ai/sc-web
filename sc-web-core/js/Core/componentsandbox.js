@@ -131,14 +131,14 @@ SCWeb.core.ComponentSandbox.prototype.createViewersForScLinks = function(contain
                 var fmt = formats[addr];
                 if (fmt) {
                     var d = new jQuery.Deferred();
-                    defferers[addr] = d;
+                    defferers[cntId] = d;
                     promises.push(d.promise());
 
                     $.when(SCWeb.core.ComponentManager.createWindowSandbox(fmt, addr, cntId)).then(
                                     function(sandbox) {
                                         if (sandbox) {
                                             result[addr] = sandbox;
-                                            defferers[sandbox.link_addr].resolve();
+                                            defferers[sandbox.container].resolve();
                                         }
                                     },
                                     function() {
