@@ -179,6 +179,22 @@ html.drag {
     cursor: pointer !important;
 }
 
+.sc-content {
+    position: relative;
+    border: solid 1px #cccccc;
+    background-color: #fafafa;
+    padding: 3px;
+    display: inline-block;
+    /*background:url("../images/scn/content_corner.png") 0 0 no-repeat #fafafa;*/
+}
+
+.sc-content:before {
+    position: absolute;
+    top: -8px;
+    left: -1px;
+    content: url("../images/scn/content_corner.png");
+}
+
 /* --- print --- */
 @media print {
     @page {

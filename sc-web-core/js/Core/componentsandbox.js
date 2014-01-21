@@ -106,16 +106,18 @@ SCWeb.core.ComponentSandbox.prototype.resolveAddrs = function(idtf_list, callbac
 /**
  * Create viewers for specified sc-links
  * @param {Object} containers_map Map of viewer containers (key: sc-link addr, value: id of container)
- * @param {Function} callback_success Function that calls on success result. It takes one object as parameter. That object 
- * is a dictionary that contains created snadboxes for links sc-addr
- * @param {Function} callback_error Function that calls on error result
  */
-SCWeb.core.ComponentSandbox.prototype.createViewersForScLinks = function(containers_map, callback_success, callback_error) {
+SCWeb.core.ComponentSandbox.prototype.createViewersForScLinks = function(containers_map) {
     var dfd = new jQuery.Deferred();
 
     var linkAddrs = [];
     for (var cntId in containers_map)
             linkAddrs.push(containers_map[cntId]);
+
+    if (linkAddrs.length == 0) {
+        dfd.resolve();
+        return dfd.promise();
+    }
                 
     SCWeb.core.Server.getLinksFormat(linkAddrs,
         function(formats) {

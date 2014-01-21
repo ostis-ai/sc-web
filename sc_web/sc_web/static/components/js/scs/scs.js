@@ -224,7 +224,7 @@ SCs.SCnOutput.prototype = {
             var containerId = this.container + '_' + this.linkCounter;
             this.linkCounter++;
             this.sc_links[containerId] = treeNode.element.addr;
-            return '<div class="scs-scn-element scs-scn-content scs-scn-field" id="' + containerId + '" sc_addr="' + treeNode.element.addr + '">' + '</div>';
+            return '<div class="scs-scn-element sc-content scs-scn-field" id="' + containerId + '" sc_addr="' + treeNode.element.addr + '">' + '</div>';
         }
         
         return '<a href="#" class="scs-scn-element scs-scn-field" sc_addr="' + treeNode.element.addr + '">' + treeNode.element.addr + '</a>';
@@ -850,12 +850,12 @@ SCsViewer.prototype = {
     
     updateTranslation: function(namesMap) {
         // apply translation
-        $(this.container + ' [sc_addr]:not(.scs-scn-content > [sc_addr])').each(function(index, element) {
+        $(SCWeb.ui.Core.selectorWindowScAddr(this.container)).each(function(index, element) {
             var addr = $(element).attr('sc_addr');
             if(namesMap[addr]) {
                 $(element).text(namesMap[addr]);
             } else {
-                if (!$(element).hasClass('scs-scn-content'))
+                if (!$(element).hasClass('sc-content'))
                     $(element).html('<b>ⵔ</b>');
             }
         });
