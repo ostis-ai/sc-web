@@ -70,6 +70,8 @@ HtmlViewer.prototype = {
                 var addr = addrs[ $(sc_elements[i]).attr('sys_idtf')];
                 if (addr) {
                     $(sc_elements[i]).html('<a href="#" class="sc-element" sc_addr="' + addr + '">' + $(sc_elements[i]).html() + "</a>");
+                } else {
+                    $(sc_elements[i]).addClass('sc-not-exist');
                 }
             }
 

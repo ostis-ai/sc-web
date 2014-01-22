@@ -179,6 +179,10 @@ html.drag {
     cursor: pointer !important;
 }
 
+.sc-not-exist {
+    color: #ff0000;
+}
+
 .sc-content {
     position: relative;
     border: solid 1px #cccccc;
