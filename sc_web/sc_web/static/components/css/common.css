@@ -195,6 +195,14 @@ html.drag {
     content: url("../images/scn/content_corner.png");
 }
 
+.sc-contour {
+    border: solid 1px #96a399;
+    background-color: #fdfdfd;
+    display: inline-block;
+    padding: 3px;
+    border-radius: 8px;
+}
+
 /* --- print --- */
 @media print {
     @page {

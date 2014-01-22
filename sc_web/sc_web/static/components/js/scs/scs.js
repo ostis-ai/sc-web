@@ -69,7 +69,7 @@ SCs.Viewer.prototype = {
         this.getKeynode = keynode_func;
 
         this.tree = new SCs.SCnTree();
-        this.tree.init();
+        this.tree.init(null, keynode_func);
         
         this.output = new SCs.SCnOutput();
         this.output.init(this.tree, container, this.getKeynode);
@@ -160,7 +160,7 @@ SCs.SCnOutput.prototype = {
             var contourTree = this.tree.subtrees[treeNode.element.addr];
             if (contourTree) {
                 output += '<div class="scs-scn-field-marker scs-scn-element">=</div>'
-                        + '<div class="scs-scn-element scs-scn-contour scs-scn-field">' //sc_addr="' + treeNode.element.addr + '">'
+                        + '<div class="scs-scn-element sc-contour scs-scn-field">' //sc_addr="' + treeNode.element.addr + '">'
                         + this.subtreeToHtml(contourTree)
                         + '</div>';
             }
@@ -201,13 +201,14 @@ SCs.SCnOutput.prototype = {
             if (!treeNode.isSet) {
                 var contourTree = this.tree.subtrees[treeNode.element.addr];
                 if (contourTree) {
-                    output += '<div class="scs-scn-element scs-scn-contour scs-scn-field">' //sc_addr="' + treeNode.element.addr + '">'
+                    output += '<div class="scs-scn-element sc-contour scs-scn-field" sc_addr="' + treeNode.element.addr + '">'
                             + this.subtreeToHtml(contourTree)
                             + '</div>';
                 } else {
                     output += this.treeNodeElementHtml(treeNode);
-                    output += childsToHtml();
+                    
                 }
+                output += childsToHtml();
             } else {
                 output += '{';
                 for (idx in treeNode.childs) {
@@ -620,8 +621,13 @@ SCs.SCnTree.prototype = {
                 var tpl = subtree.triples[idx];
                 var n = 1;
                 
-                 if (tpl[2].type & sc_type_arc_mask)
-                    n = -1; // minimize priority of nodes, that has output arcs to other arcs
+                if (tpl[2].type & sc_type_arc_mask | tpl[0].type & sc_type_link)
+                    n -= 1; // minimize priority of nodes, that has output/input arcs to other arcs or links
+                if (tpl[2].type & sc_type_link || tpl[0].type & sc_type_link)
+                    n -= 1; // minimize priority of nodes, that has output/input arcs to links
+                if (tpl[1].type & (sc_type_arc_common | sc_type_edge_common))
+                    n += 1;
+
                 if (tpl[0].addr != addr)
                     addArc(tpl[0], n);
                 if (tpl[2].addr != addr)
@@ -803,7 +809,7 @@ SCsComponent = {
         return new SCsViewer(sandbox);
     },
     getRequestKeynodes: function() {
-        var keynodes = ['nrel_section_base_order'];
+        var keynodes = ['nrel_section_base_order', 'rrel_key_sc_element'];
         return keynodes.concat(SCs.SCnSortOrder);
     }
 };
@@ -872,7 +878,7 @@ SCsViewer.prototype = {
             if(namesMap[addr]) {
                 $(element).text(namesMap[addr]);
             } else {
-                if (!$(element).hasClass('sc-content'))
+                if (!$(element).hasClass('sc-content') && !$(element).hasClass('sc-contour'))
                     $(element).html('<b>ⵔ</b>');
             }
         });
