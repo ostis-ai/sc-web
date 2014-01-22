@@ -180,17 +180,15 @@ SCWeb.ui.WindowManager = {
                             '</div>';
         this.window_container.prepend(window_html);
         
-        var self = this;
         this.hideActiveWindow();
-        $.when(SCWeb.core.ComponentManager.createWindowSandbox(fmt_addr, addr, window_id)).then( 
-                function(sandbox) {
-                    self.sandboxes[addr] = sandbox;
-                    self.setWindowActive(addr);
-                },
-                function() {
-                    self.showActiveWindow();
-                    throw "Error while create window";
-                });
+        var sandbox = SCWeb.core.ComponentManager.createWindowSandbox(fmt_addr, addr, window_id);
+        if (sandbox) {
+            this.sandboxes[addr] = sandbox;
+            this.setWindowActive(addr);
+        } else {
+            this.showActiveWindow();
+            throw "Error while create window";
+        };
         
     },
     

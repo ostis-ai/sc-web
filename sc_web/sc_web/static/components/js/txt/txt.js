@@ -20,7 +20,7 @@ TextViewer.prototype = {
         
         this.sandbox.eventDataAppend = $.proxy(this.receiveData, this);
         
-        var self = this;
+        this.sandbox.updateContent();
     },
     
     // ---- window interface -----

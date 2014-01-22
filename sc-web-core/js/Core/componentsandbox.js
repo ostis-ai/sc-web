@@ -123,43 +123,49 @@ SCWeb.core.ComponentSandbox.prototype.createViewersForScLinks = function(contain
         function(formats) {
             
             var result = {};
-            var promises = [];
-            var defferers = {};
 
             for (var cntId in containers_map) {
                 var addr = containers_map[cntId];
                 var fmt = formats[addr];
                 if (fmt) {
-                    var d = new jQuery.Deferred();
-                    defferers[cntId] = d;
-                    promises.push(d.promise());
-
-                    $.when(SCWeb.core.ComponentManager.createWindowSandbox(fmt, addr, cntId)).then(
-                                    function(sandbox) {
-                                        if (sandbox) {
-                                            result[addr] = sandbox;
-                                            defferers[sandbox.container].resolve();
-                                        }
-                                    },
-                                    function() {
-                                        d.reject();
-                                    });
+                    var sandbox = SCWeb.core.ComponentManager.createWindowSandbox(fmt, addr, cntId);
+                    if (sandbox) {
+                        result[addr] = sandbox;
+                    }
                 }
             }
             
-            $.when.apply($, promises).then(
-                    function () {
-                        dfd.resolve();
-                    },
-                    function() {
-                        dfd.reject();
-                    });
+            dfd.resolve();
         },
         function() {
             dfd.reject();
         }
     );
     
+    return dfd.promise();
+};
+
+/*! Function takes content of sc-link from server and call onDataAppend function with it
+ */
+SCWeb.core.ComponentSandbox.prototype.updateContent = function() {
+    var dfd = new jQuery.Deferred();
+    var self = this;
+
+    this.getLinkContent(this.link_addr,
+        function (data) {
+            $.when(self.onDataAppend(data)).then(
+                function() {
+                    dfd.resolve();
+                },
+                function() {
+                    dfd.reject();
+                }
+            );
+        },
+        function () {
+            dfd.reject();
+        });
+
     return dfd.promise();
 };
 

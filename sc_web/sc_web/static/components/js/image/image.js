@@ -23,8 +23,13 @@ ImageViewer.prototype = {
     
     // ---- window interface -----
     receiveData: function(data) {
+        var dfd = new jQuery.Deferred();
+
         $(this.container).empty();
         $(this.container).append('<img src="' + data + '"></img>');
+
+        dfd.resolve();
+        return dfd.promise();
     },
 
 };
