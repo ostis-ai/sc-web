@@ -3731,15 +3731,21 @@ scgViewerWindow.prototype = {
         this.sandbox.eventDataAppend = $.proxy(this.receiveData, this);
         this.sandbox.eventGetObjectsToTranslate = $.proxy(this.getObjectsToTranslate, this);
         this.sandbox.eventApplyTranslation = $.proxy(this.applyTranslation, this);
+
+        this.sandbox.updateContent();
     },
 
     /**
      * Set new data in viewer
      * @param {Object} data
      */
-    receiveData : function(data){
-        
+    receiveData : function(data) {
+        var dfd = new jQuery.Deferred();
+
         this._buildGraph(data);
+
+        dfd.resolve();
+        return dfd.promise();
     },
 
     /**
