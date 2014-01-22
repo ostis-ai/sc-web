@@ -41,3 +41,4 @@ settings_local.py
 *db
 sc-web-core.js
 sc_web/media/
+sc_web/secret.txt
