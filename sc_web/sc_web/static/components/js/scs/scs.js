@@ -199,8 +199,15 @@ SCs.SCnOutput.prototype = {
             }
 
             if (!treeNode.isSet) {
-                output += this.treeNodeElementHtml(treeNode);
-                output += childsToHtml();
+                var contourTree = this.tree.subtrees[treeNode.element.addr];
+                if (contourTree) {
+                    output += '<div class="scs-scn-element scs-scn-contour scs-scn-field">' //sc_addr="' + treeNode.element.addr + '">'
+                            + this.subtreeToHtml(contourTree)
+                            + '</div>';
+                } else {
+                    output += this.treeNodeElementHtml(treeNode);
+                    output += childsToHtml();
+                }
             } else {
                 output += '{';
                 for (idx in treeNode.childs) {
@@ -533,7 +540,15 @@ SCs.SCnTree.prototype = {
                 continue;
             }
             
+            // check if there are any input/output arcs
             tpl.ignore = true;
+            for (k in this.triples) {
+                if (this.triples[k][0].addr == tpl[1].addr || this.triples[k][2].addr == tpl[1].addr) {
+                    tpl.ignore = false;
+                    break;
+                }
+            }
+
             var st = subtrees[tpl[0].addr];
             if (st) {
                 if (!isElementExist(st, tpl[2].addr))
