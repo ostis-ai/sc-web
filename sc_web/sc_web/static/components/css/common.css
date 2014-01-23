@@ -207,6 +207,16 @@ html.drag {
     border-radius: 8px;
 }
 
+/* typeahead */
+ul.typeahead {
+    max-width: 450px;
+}
+ul.typeahead>li>a {
+    display: inline-block;
+    max-width: 450px !important;
+    white-space: normal !important;
+}
+
 /* --- print --- */
 @media print {
     @page {
