@@ -215,11 +215,12 @@ def idtf_find(request):
                     break
                 
                 rep = r.get(idtf)
+                utf = idtf.encode('utf-8')
                 addr = ScAddr.parse_binary(rep)
-                if idtf.startswith(u"idtf:sys:") and len(sys) < settings.IDTF_SEARCH_LIMIT:
-                    sys.append([addr.to_id(), idtf[9:]])
-                elif idtf.startswith(u"idtf:main:") and len(main) < settings.IDTF_SEARCH_LIMIT:
-                    main.append([addr.to_id(), idtf[10:]])        
+                if utf.startswith(u"idtf:sys:") and len(sys) < settings.IDTF_SEARCH_LIMIT:
+                    sys.append([addr.to_id(), utf[9:]])
+                elif utf.startswith(u"idtf:main:") and len(main) < settings.IDTF_SEARCH_LIMIT:
+                    main.append([addr.to_id(), utf[10:]])        
 
         sctp_client = new_sctp_client()
         keys = Keynodes(sctp_client)    
