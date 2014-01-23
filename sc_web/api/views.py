@@ -215,7 +215,7 @@ def idtf_find(request):
                     break
                 
                 rep = r.get(idtf)
-                utf = idtf.encode('utf-8')
+                utf = idtf.decode('utf-8')
                 addr = ScAddr.parse_binary(rep)
                 if utf.startswith(u"idtf:sys:") and len(sys) < settings.IDTF_SEARCH_LIMIT:
                     sys.append([addr.to_id(), utf[9:]])
