@@ -305,6 +305,20 @@ SCWeb.core.Server = {
             data: {"lang_addr": lang_addr},
             success: callback
         });
+    },
+
+    /** 
+     * Request identifiers that contains specified substring
+     * @param str Substring to find
+     */
+    findIdentifiersSubStr: function(str, callback) {
+
+        $.ajax({
+            url: "api/idtf/find",
+            data: {"substr": str},
+            type: "GET",
+            success: callback
+        });
     }
 };
 

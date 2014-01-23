@@ -7,7 +7,8 @@ SCWeb.ui.Core = {
                SCWeb.ui.ArgumentsPanel.init(),
                SCWeb.ui.UserPanel.init(data),
                SCWeb.ui.LanguagePanel.init(data),
-               SCWeb.ui.WindowManager.init(data)
+               SCWeb.ui.WindowManager.init(data),
+               SCWeb.ui.SearchPanel.init()
             ).done(function() {
 
                 // listen clicks on sc-elements

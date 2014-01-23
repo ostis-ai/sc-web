@@ -23,6 +23,7 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 
 import json
 import time
+import redis
 
 
 from django.conf import settings
@@ -189,6 +190,48 @@ def idtf_resolve(request):
 
     return HttpResponse(result, 'application/json')
 
+def idtf_find(request):
+    result = None
+    if request.is_ajax():
+        # get arguments
+        substr = request.GET.get('substr', None)
+        
+        # connect to redis an try to find identifiers
+        r = redis.StrictRedis(host = settings.REDIS_HOST, port = settings.REDIS_PORT, db = settings.REDIS_DB)
+        result = {}
+        sys = []
+        main = []
+        # first of all need to find system identifiers
+        cursor = 0
+        while len(sys) < settings.IDTF_SEARCH_LIMIT or len(main) < settings.IDTF_SEARCH_LIMIT:
+            reply = r.scan(cursor, u"idtf:*%s*" % substr, 200)
+            if not reply or len(reply) == 0:
+                break
+            cursor = int(reply[0])
+            if cursor == 0:
+                break
+            for idtf in reply[1]:
+                if len(sys) == settings.IDTF_SEARCH_LIMIT and len(main) == settings.IDTF_SEARCH_LIMIT:
+                    break
+                
+                rep = r.get(idtf)
+                addr = ScAddr.parse_binary(rep)
+                if idtf.startswith(u"idtf:sys:") and len(sys) < settings.IDTF_SEARCH_LIMIT:
+                    sys.append([addr.to_id(), idtf[9:]])
+                elif idtf.startswith(u"idtf:main:") and len(main) < settings.IDTF_SEARCH_LIMIT:
+                    main.append([addr.to_id(), idtf[10:]])        
+
+        sctp_client = new_sctp_client()
+        keys = Keynodes(sctp_client)    
+        keynode_nrel_main_idtf = keys[KeynodeSysIdentifiers.nrel_main_idtf]
+        keynode_nrel_system_identifier = keys[KeynodeSysIdentifiers.nrel_system_identifier]
+                    
+        result[keynode_nrel_system_identifier.to_id()] = sys
+        result[keynode_nrel_main_idtf.to_id()] = main
+        
+        result = json.dumps(result)
+
+    return HttpResponse(result, 'application/json')
 
 @csrf_exempt
 def cmd_do(request):

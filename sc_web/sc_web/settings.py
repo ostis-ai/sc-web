@@ -5,7 +5,7 @@ import os
 
 PROJECT_ROOT = '/'.join(os.path.abspath(os.path.dirname(__file__)).split('/')[:-1])
 PROJECT = 'sc_web'
-VERSION = '0.0.1'
+VERSION = '0.1.0'
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
@@ -18,9 +18,11 @@ MANAGERS = ADMINS
 SCTP_HOST = 'localhost'
 SCTP_PORT = 55770
 
-REDIS_HOST = 'localhost'
+REDIS_HOST = '127.0.0.1'
 REDIS_PORT = 6379
-REDIS_DB = 1
+REDIS_DB = 0
+
+IDTF_SEARCH_LIMIT = 20  # maximum number of identifiers substring search results
 
 # repo
  

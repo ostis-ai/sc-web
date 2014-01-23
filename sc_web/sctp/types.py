@@ -20,6 +20,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 """
+import struct
 
 __all__ = (
     'SctpCommandType',
@@ -138,6 +139,15 @@ class ScAddr:
             return None
 
         return addr
+    
+    @staticmethod
+    def parse_binary(data):
+        
+        try:
+            seg, offset = struct.unpack('=HH', data)
+            return ScAddr (seg, offset) 
+        except:
+            return None
 
 
 class ScStatItem:
