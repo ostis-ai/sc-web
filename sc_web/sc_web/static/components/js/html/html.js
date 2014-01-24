@@ -26,6 +26,7 @@ HtmlViewer.prototype = {
     init: function(sandbox) {
         this.container = '#' + sandbox.container;
         this.sandbox = sandbox;
+        $(this.container).addClass("html-window");
         
         this.sandbox.eventGetObjectsToTranslate = $.proxy(this.getObjectsToTranslate, this);
         this.sandbox.eventApplyTranslation = $.proxy(this.updateTranslation, this);
