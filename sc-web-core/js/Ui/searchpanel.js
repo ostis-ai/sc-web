@@ -8,6 +8,7 @@ SCWeb.ui.SearchPanel = {
 
         $('.typeahead').typeahead({
             minLength: 3,
+            items: 20,
             source: function(query, process) {
                 SCWeb.core.Server.findIdentifiersSubStr(query, function(data) {
                     keys = [];

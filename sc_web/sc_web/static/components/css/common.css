@@ -215,6 +215,16 @@ ul.typeahead>li>a {
     display: inline-block;
     max-width: 450px !important;
     white-space: normal !important;
+    width: 100%;
+}
+
+ul.typeahead>li:nth-child(odd) {
+    background-color: #fafafa;
+}
+
+ul.typeahead {
+    max-height: 400px;
+    overflow-y: scroll;
 }
 
 /* --- print --- */
