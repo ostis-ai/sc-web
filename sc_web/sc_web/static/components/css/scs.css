@@ -84,6 +84,10 @@
     color: #2a6496;
 }
 
+.scs-scn-hovered{
+    cursor: pointer !important;
+    background-color: #CBD9F1;
+}
 
 // --- Print preview ---
 .print-preview .scs-scn-element {
