@@ -43,11 +43,9 @@ class HomeView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(HomeView, self).get_context_data(**kwargs)
 
-        try:
+        if settings.GOOGLE_ANALITYCS_ID:
             context['google_analitycs_id'] = settings.GOOGLE_ANALITYCS_ID
-        except:
-            pass
-
+        
         return context
     
 
