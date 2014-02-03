@@ -8,8 +8,9 @@ SCWeb.core.scAddrsDict = {};
  */
 SCWeb.core.ComponentSandbox = function(container, link_addr, keynodes) {
     this.container = container;
+    this.wrap_selector = '#' + this.container + '_wrap';
     this.link_addr = link_addr;
-    
+
     this.eventGetObjectsToTranslate = null;
     this.eventApplyTranslation = null;
     this.eventArgumentsUpdate = null;
@@ -21,7 +22,9 @@ SCWeb.core.ComponentSandbox = function(container, link_addr, keynodes) {
     
     var self = this;
     this.listeners = [];
-    
+
+    this.createWindowControls();
+
     // listen arguments
     this.listeners.push(SCWeb.core.EventManager.subscribe("arguments/add", this, this.onArgumentAppended));
     this.listeners.push(SCWeb.core.EventManager.subscribe("arguments/remove", this, this.onArgumentRemoved));
@@ -51,6 +54,22 @@ SCWeb.core.ComponentSandbox.prototype.destroy = function() {
     }
 };
 
+/**
+ * Create controls for window
+ */
+SCWeb.core.ComponentSandbox.prototype.createWindowControls = function() {
+    var html = '<button type="button" class="button-menu btn btn-default btn-xs" data-toggle="button"><span class="caret"></span></button>\
+                <div class="btn-group-vertical btn-group-xs hidden"> \
+                    <button type="button" class="btn btn-success"><span class="glyphicon glyphicon-tags"></span></button> \
+                    <button type="button" class="btn btn-success">2</button> \
+                </div>';
+    var self = this;
+    var controls = $(this.wrap_selector + ' > .sc-content-controls');
+    controls.append(html).find('.button-menu').on('click', function() {
+        controls.find('.btn-group-vertical').toggleClass('hidden');
+    });
+    
+};
 
 // ------------------ Functions to call from component --------
 /*!
@@ -58,6 +77,20 @@ SCWeb.core.ComponentSandbox.prototype.destroy = function() {
  */
 SCWeb.core.ComponentSandbox.prototype.doDefaultCommand = function(args) {
     SCWeb.core.Main.doDefaultCommand(args);
+};
+
+/*!
+ * Genarate html for new window container
+ * @param {String} containerId ID that will be set to container
+ * @param {String} classes Classes that will be added to container
+ * @param {String} addr sc-addr of window
+ */
+SCWeb.core.ComponentSandbox.prototype.generateWindowContainer = function(containerId, classes, addr) {
+
+    return '<div class="sc-content-wrap" id="' + containerId + '_wrap"> \
+                <div class="sc-content-controls"> </div> \
+                <div id="' + containerId + '" class="sc-content ' + classes + '" sc_addr="' + addr + '"> </div> \
+            </div>';
 };
 
 /*! Returns keynode by it system identifier

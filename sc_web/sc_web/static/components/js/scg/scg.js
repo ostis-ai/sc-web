@@ -816,7 +816,7 @@ SCg.Editor.prototype = {
      */
     onSelectionChanged: function() {
         
-        if (this.scene.selected_objects.length == 1) {
+        if (this.scene.selected_objects.length == 1 && !(this.scene.selected_objects[0] instanceof SCg.ModelContour)) {
             this._enableTool('#scg-tool-change-idtf');
             this._enableTool('#scg-tool-change-type');
         } else {
@@ -880,7 +880,7 @@ var SCgDebug = {
     error: function(message) {
         if (!this.enabled) return; // do nothing
         
-        alert(message);
+        throw message;
     }
     
 }
@@ -1684,64 +1684,45 @@ SCg.ModelContour = function(options) {
     SCg.ModelObject.call(this, options);
 
     this.childs = [];
-    this.verticies = options.verticies ? options.verticies : [];
-    this.sc_type = options.sc_type ? options.sc_type : sc_type_contour;
+    this.points = options.verticies ? options.verticies : [];
+    this.sc_type = options.sc_type ? options.sc_type : sc_type_node_struct | sc_type_node;
     this.previousPoint = null;
 
     var cx = 0;
     var cy = 0;
-    for (var i = 0; i < this.verticies.length; i++) {
-        cx += this.verticies[i].x;
-        cy += this.verticies[i].y;
+    for (var i = 0; i < this.points.length; i++) {
+        cx += this.points[i].x;
+        cy += this.points[i].y;
     }
 
-    cx /= this.verticies.length;
-    cy /= this.verticies.length;
-    this.setPosition(new SCg.Vector3(cx, cy, 0));
-    this.previousPoint = this.position;
-    this.newPoint = this.position;
+    cx /= this.points.length;
+    cy /= this.points.length;
+    this.position.x = cx;
+    this.position.y = cy;
 };
 
 SCg.ModelContour.prototype = Object.create( SCg.ModelObject.prototype );
 
-SCg.ModelContour.prototype.setNewPoint = function(pos) {
 
-    this.newPoint = pos;
-    this.need_observer_sync = true;
+SCg.ModelContour.prototype.setPosition = function(pos) {
 
-    this.requestUpdate();
-    this.notifyEdgesUpdate();
+    var dp = pos.clone().sub(this.position);
+    
+    for (var i = 0; i < this.childs.length; i++) {
+        var newPos = this.childs[i].position.clone().add(dp);
+        this.childs[i].setPosition(newPos);
+    }
+
+    for (var i = 0; i < this.points.length; i++) {
+        this.points[i].x += dp.x;
+        this.points[i].y += dp.y;
+    }
+    
+    SCg.ModelObject.prototype.setPosition.call(this, pos);
 };
 
 SCg.ModelContour.prototype.update = function() {
-    if (this.previousPoint) {
-        //var dx = this.position.x - this.previousPoint.x;
-        //var dy = this.position.y - this.previousPoint.y;
-        var dx = this.newPoint.x - this.previousPoint.x;
-        var dy = this.newPoint.y - this.previousPoint.y;
-
-
-        for (var i = 0; i < this.childs.length; i++) {
-            var childNewPositionX = this.childs[i].position.x + dx;
-            var childNewPositionY = this.childs[i].position.y + dy;
-            var childNewPositionVector = new SCg.Vector3(childNewPositionX, childNewPositionY, 0)
-            this.childs[i].setPosition(childNewPositionVector);
-        }
-
-        for (var i = 0; i < this.verticies.length; i++) {
-            this.verticies[i].x += dx;
-            this.verticies[i].y += dy;
-        }
-
-        var contourNewPositionX = this.position.x + dx;
-        var contourNewPositionY = this.position.y + dy;
-        var contourNewPositionVector = new SCg.Vector3(contourNewPositionX, contourNewPositionY, 0)
-        this.setPosition(contourNewPositionVector);
-
-        //this.previousPoint = this.position;
-        this.previousPoint = this.newPoint;
-    }
-
+    SCg.ModelObject.prototype.update.call(this);
 };
 
 /**
@@ -1764,7 +1745,7 @@ SCg.ModelContour.prototype.removeChild = function(child) {
 };
 
 SCg.ModelContour.prototype.isNodeInPolygon = function (node) {
-    return SCg.Algorithms.isPointInPolygon(node.position, this.verticies);
+    return SCg.Algorithms.isPointInPolygon(node.position, this.points);
 };
 
 /**
@@ -1781,7 +1762,7 @@ SCg.ModelContour.prototype.addNodesWhichAreInContourPolygon = function (nodes) {
 };
 
 SCg.ModelContour.prototype.getConnectionPos = function (from, dotPos) {
-    var points = SCg.Algorithms.polyclip(this.verticies, from, this.position);
+    var points = SCg.Algorithms.polyclip(this.points, from, this.position);
     var nearestIntersectionPoint = new SCg.Vector3(points[0].x, points[0].y, 0);
     for (var i = 1; i < points.length; i++) {
         var nextPoint = new SCg.Vector3(points[i].x, points[i].y, 0);
@@ -1923,6 +1904,7 @@ SCg.ModelBus.prototype.destroy = function() {
     if (this.source)
         this.source.removeBus(this);
 };
+
 
 /* --- src/scg-alphabet.js --- */
 var SCgAlphabet = {
@@ -2316,6 +2298,26 @@ SCg.Render.prototype = {
         this.d3_drag_line = this.d3_container.append('svg:path')
                 .attr('class', 'dragline hidden')
                 .attr('d', 'M0,0L0,0');
+
+        this.d3_accept_point = this.d3_container.append('svg:use')
+                    .attr('class', 'SCgAcceptPoint hidden')
+                    .attr('xlink:href', '#acceptPoint')
+                    .on('mouseover', function(d) {
+                        d3.select(this).classed('SCgAcceptPointHighlighted', true);
+                    })
+                    .on('mouseout', function(d) {
+                        d3.select(this).classed('SCgAcceptPointHighlighted', false);
+                    })
+                    .on('mousedown', function(d) {
+                        if (self.scene.edit_mode == SCgEditMode.SCgModeBus) 
+                            self.scene.finishBusCreation();
+                        else if (self.scene.edit_mode == SCgEditMode.SCgModeContour)
+                            self.scene.finishContourCreation();
+                        else
+                            SCgDebug.error('Invalid edit mode ' + self.scene.edit_mode);
+
+                        d3.event.stopPropagation();
+                    });
                 
         this.d3_contour_line = d3.svg.line().interpolate("cardinal-closed");
                         
@@ -2351,19 +2353,8 @@ SCg.Render.prototype = {
             .attr('stop-color', 'rgb(245,245,245)')
             .attr('stop-opacity', '1')
             
-        // drag line point control
-        var p = defs.append('svg:g')
-                .attr('id', 'dragPoint')
-                p.append('svg:circle')
-                    .attr('cx', 0)
-                    .attr('cy', 0)
-                    .attr('r', 10)
-
-                p.append('svg:path')
-                    .attr('d', 'M-5,-5L5,5M-5,5L5,-5');
-                    
         // line point control
-        p = defs.append('svg:g')
+        var p = defs.append('svg:g')
                 .attr('id', 'linePoint')
                 p.append('svg:circle')
                     .attr('cx', 0)
@@ -2371,13 +2362,22 @@ SCg.Render.prototype = {
                     .attr('r', 10);
 
         p = defs.append('svg:g')
-            .attr('id', 'contourAcceptPoint')
+            .attr('id', 'acceptPoint')
             p.append('svg:circle')
                 .attr('cx', 0)
                 .attr('cy', 0)
                 .attr('r', 10)
             p.append('svg:path')
                 .attr('d', 'M-5,-5 L0,5 5,-5');
+        p = defs.append('svg:g')
+            .attr('id', 'removePoint')
+            p.append('svg:circle')
+                .attr('cx', 0)
+                .attr('cy', 0)
+                .attr('r', 10)
+
+            p.append('svg:path')
+                .attr('d', 'M-5,-5L5,5M-5,5L5,-5');
     },
     
     // -------------- draw -----------------------
@@ -2456,12 +2456,12 @@ SCg.Render.prototype = {
         g = this.d3_contours.enter().append('svg:polygon')
             .attr('class', 'SCgContour')
             .attr('points', function(d) {
-                var verteciesString = "";
-                for (var i = 0; i < d.verticies.length; i++) {
-                    var vertex = d.verticies[i].x + ', ' + d.verticies[i].y + ' ';
-                    verteciesString = verteciesString.concat(vertex);
+                var verticiesString = "";
+                for (var i = 0; i < d.points.length; i++) {
+                    var vertex = d.points[i].x + ', ' + d.points[i].y + ' ';
+                    verticiesString = verticiesString.concat(vertex);
                 }
-                return verteciesString;
+                return verticiesString;
             })
             .on('mouseover', function(d) {
                 d3.select(this).classed('SCgStateHighlighted', true);
@@ -2560,18 +2560,18 @@ SCg.Render.prototype = {
                 });
 
                 d3_contour.attr('points', function(d) {
-                    var verteciesString = "";
-                    for (var i = 0; i < d.verticies.length; i++) {
-                        var vertex = d.verticies[i].x + ', ' + d.verticies[i].y + ' ';
-                        verteciesString = verteciesString.concat(vertex);
+                    var verticiesString = "";
+                    for (var i = 0; i < d.points.length; i++) {
+                        var vertex = d.points[i].x + ', ' + d.points[i].y + ' ';
+                        verticiesString = verticiesString.concat(vertex);
                     }
-                    return verteciesString;
+                    return verticiesString;
                 });
 
                 d.need_update = false;
                 d.need_observer_sync = false;
 
-                return self.d3_contour_line(d.verticies) + 'Z';
+                return self.d3_contour_line(d.points) + 'Z';
             });
         });
 
@@ -2597,108 +2597,69 @@ SCg.Render.prototype = {
     updateDragLine: function() {
         var self = this;
         
+
+        this.d3_drag_line.classed('SCgBus', this.scene.edit_mode == SCgEditMode.SCgModeBus)
+                    .classed('dragline', true)
+                    .classed('draglineBus', this.scene.edit_mode == SCgEditMode.SCgModeBus);
+
         // remove old points
-        drag_line_points = this.d3_dragline.selectAll('use.SCgDragLinePoint');
+        drag_line_points = this.d3_dragline.selectAll('use.SCgRemovePoint');
         points = drag_line_points.data(this.scene.drag_line_points, function(d) { return d.idx; })
         points.exit().remove();
-        
-        if (this.scene.edit_mode == SCgEditMode.SCgModeBus) {
-            this.d3_drag_line.classed('dragline', false);   
-            this.d3_drag_line.classed('draglineBus', true); 
 
-            var bus_points = this.d3_dragline.selectAll('use.SCgBusEndPoint');
-            if (this.scene.bus_data.end != null) {
-                //if (bus_points.length < 2) d3.select(self.d3_drag_line[0][0]).classed('SCgBus', false);
-                
-                var end_point = bus_points.data([this.scene.bus_data.end], function(d) { return d.idx; });
-                end_point.exit().remove();
-                end_point.enter().append('scg:use')
-                    .classed('SCgBusEndPoint', true)
-                    .attr('xlink:href', '#dragPoint')
-                    .attr('transform', function(d) {
-                        return 'translate(' + (d.x + 20) + ',' + d.y + ')';
-                    })
-                    .on('mouseover', function(d) {
-                        d3.select(this).classed('SCgBusEndPointHighlighted', true);
-                        d3.select(self.d3_drag_line[0][0]).classed('SCgBus', true);
-                    })
-                    .on('mouseout', function(d) {
-                        d3.select(this).classed('SCgBusEndPointHighlighted', false);
-                        d3.select(self.d3_drag_line[0][0]).classed('SCgBus', false);
-                    })
-                    .on('mousedown', function(d) {
-                        self.scene.finishBusCreation(d.idx);
-                        d3.select(self.d3_drag_line[0][0]).classed('SCgBus', false);
-                        d3.event.stopPropagation();
-                    });
-            } 
-            else bus_points.remove();
-        }
-        else if (this.scene.edit_mode == SCgEditMode.SCgModeEdge) {
-            this.d3_drag_line.classed('SCgBus', false)
-            this.d3_drag_line.classed('dragline', true);    
-            this.d3_drag_line.classed('draglineBus', false);        
-        }
-        
-        if (this.scene.drag_line_points.length < 1) {
-            this.d3_drag_line.classed('hidden', true);
-            return;
-        }        
-        
         points.enter().append('svg:use')
-            .attr('class', function(d) {
-                if  (d.idx == 0 && self.scene.edit_mode == SCgEditMode.SCgModeContour) {
-                    return 'SCgContourAcceptPoint';
-                }
-                else {
-                    return 'SCgDragLinePoint';
-                }
-            })
-            .attr('xlink:href', function(d) {
-                if  (d.idx == 0 && self.scene.edit_mode == SCgEditMode.SCgModeContour) {
-                    return '#contourAcceptPoint';
-                }
-                else {
-                    return '#dragPoint';
-                }
-            })
+            .attr('class', 'SCgRemovePoint')
+            .attr('xlink:href', '#removePoint')
             .attr('transform', function(d) {
                 return 'translate(' + d.x + ',' + d.y + ')';
             })
             .on('mouseover', function(d) {
-                d3.select(this).classed('SCgDragLinePointHighlighted', true);
+                d3.select(this).classed('SCgRemovePointHighlighted', true);
             })
             .on('mouseout', function(d) {
-                d3.select(this).classed('SCgDragLinePointHighlighted', false);
+                d3.select(this).classed('SCgRemovePointHighlighted', false);
             })
             .on('mousedown', function(d) {
-                if (d.idx == 0 && self.scene.edit_mode == SCgEditMode.SCgModeContour) {
-                    self.scene.createCurrentContour();
-                }
-                else {
-                    self.scene.revertDragPoint(d.idx);
-                    d3.event.stopPropagation();
-                }
+                self.scene.revertDragPoint(d.idx);
+                d3.event.stopPropagation();
             });
-            
-        this.d3_drag_line.classed('hidden', false);        
         
-        var d_str = '';
-        // create path description
-        for (idx in this.scene.drag_line_points) {
-            var pt = this.scene.drag_line_points[idx];
-            
-            if (idx == 0) 
-                d_str += 'M';
-            else
-                d_str += 'L';
-            d_str += pt.x + ',' + pt.y;
+
+        if (this.scene.edit_mode == SCgEditMode.SCgModeBus || this.scene.edit_mode == SCgEditMode.SCgModeContour) {
+            this.d3_accept_point.classed('hidden', this.scene.drag_line_points.length == 0);
+            if (this.scene.drag_line_points.length > 0) {
+                var pos = this.scene.drag_line_points[0];
+                if (this.scene.edit_mode == SCgEditMode.SCgModeBus)
+                    pos = this.scene.drag_line_points[this.scene.drag_line_points.length - 1];
+                this.d3_accept_point.attr('transform', 'translate(' + (pos.x + 24) + ',' + pos.y + ')');
+            }
+        } else {
+            this.d3_accept_point.classed('hidden', true);
         }
-    
-        d_str += 'L' + this.scene.mouse_pos.x + ',' + this.scene.mouse_pos.y;
+
+        if (this.scene.drag_line_points.length < 1) {
+            this.d3_drag_line.classed('hidden', true);
+        } else {
+
+            this.d3_drag_line.classed('hidden', false);
+            
+            var d_str = '';
+            // create path description
+            for (idx in this.scene.drag_line_points) {
+                var pt = this.scene.drag_line_points[idx];
+                
+                if (idx == 0) 
+                    d_str += 'M';
+                else
+                    d_str += 'L';
+                d_str += pt.x + ',' + pt.y;
+            }
         
-        // update drag line
-        this.d3_drag_line.attr('d', d_str);
+            d_str += 'L' + this.scene.mouse_pos.x + ',' + this.scene.mouse_pos.y;
+            
+            // update drag line
+            this.d3_drag_line.attr('d', d_str);
+        }
     },
     
     updateLinePoints: function() {
@@ -3149,7 +3110,7 @@ SCg.Scene.prototype = {
         if (this.selected_objects.length == 1) {
             var obj = this.selected_objects[0];
             
-            if (obj instanceof SCg.ModelEdge || obj instanceof SCg.ModelBus) { /* @todo add contour and bus */
+            if (obj instanceof SCg.ModelEdge || obj instanceof SCg.ModelBus || obj instanceof SCg.ModelContour) { /* @todo add contour and bus */
                 for (idx in obj.points) {
                     this.line_points.push({pos: obj.points[idx], idx: idx});
                 }
@@ -3165,19 +3126,18 @@ SCg.Scene.prototype = {
         
         if (this.modal != SCgModalMode.SCgModalNone) return; // do nothing
         
+        var offset = new SCg.Vector3(x - this.mouse_pos.x, y - this.mouse_pos.y, 0);
+
         this.mouse_pos.x = x;
         this.mouse_pos.y = y;
         
         if ((this.edit_mode == SCgEditMode.SCgModeSelect) && this.focused_object) {
-           if (this.focused_object instanceof SCg.ModelBus) {            
-                this.focused_object.changePosition(new SCg.Vector3(x, y, 0));
-            } else  if (this.focused_object.sc_type & sc_type_node) {
-                this.focused_object.setPosition(new SCg.Vector3(x, y, 0));
-            } else if (this.focused_object.sc_type & sc_type_contour) {
-                this.focused_object.setNewPoint(new SCg.Vector3(x, y, 0));
-            }            
+            if (this.focused_object.sc_type & sc_type_node) {
+                this.focused_object.setPosition(this.focused_object.position.clone().add(offset));
+            }
             
             this.updateObjectsVisual();
+            this.render.updateLinePoints();
         }
         
         if (this.edit_mode == SCgEditMode.SCgModeEdge || this.edit_mode == SCgEditMode.SCgModeBus 
@@ -3386,7 +3346,7 @@ SCg.Scene.prototype = {
             SCgDebug.error('Work with drag point in incorrect edit mode');
             return;
         }
-        
+       
         this.drag_line_points.splice(idx, this.drag_line_points.length - idx);
         
         if (this.drag_line_points.length >= 2)
@@ -3411,8 +3371,8 @@ SCg.Scene.prototype = {
         }
         
         var edge = this.selected_objects[0];
-        if (!(edge instanceof SCg.ModelEdge) && !(edge instanceof SCg.ModelBus)) {
-            SCgDebug.error("Selected object isn't an edge");
+        if (!(edge instanceof SCg.ModelEdge) && !(edge instanceof SCg.ModelBus) && !(edge instanceof SCg.ModelContour)) {
+            SCgDebug.error("Unknown type of selected object");
             return;
         }
         
@@ -3451,7 +3411,7 @@ SCg.Scene.prototype = {
         this.render.updateDragLine();
      },
 
-    createCurrentContour: function() {
+    finishContourCreation: function() {
         if (this.drag_line_points.length < 3) {
             SCgDebug.error('Set at least 3 points for contour');
             return;
@@ -3697,7 +3657,6 @@ SCgComponent = {
         return new scgViewerWindow(sandbox);
     }
 };
-
 
 /**
  * scgViewerWindow

@@ -8,7 +8,8 @@ SCWeb.core.ComponentManager = {
     _listener: null,
     _initialize_queue: [],
     _componentCount: 0,
-    _factories: {},
+    _factories_fmt: {},
+    _factories_ext_lang: {},
     _ext_langs: {},
     _keynodes: [],      // array of keynodes that requested by components
     
@@ -42,12 +43,14 @@ SCWeb.core.ComponentManager = {
                 if (lang_addr) {
                     formats = [];
                 }
+
+                self._factories_ext_lang[comp_def.ext_lang_addr] = comp_def;
                 
                 for (var j = 0; j < comp_def.formats.length; j++) {
                     var fmt = addrs[comp_def.formats[j]];
                     
                     if (fmt) {
-                        self.registerFactory(fmt, comp_def.factory);
+                        self.registerFactory(fmt, comp_def);
                         if (formats) {
                             formats.push(fmt);
                         }
@@ -82,7 +85,7 @@ SCWeb.core.ComponentManager = {
      * - sandbox - component sandbox object, that will be used to communicate with component instance
      */
     registerFactory: function(format_addr, func) {
-        this._factories[format_addr] = func;
+        this._factories_fmt[format_addr] = func;
     },
     
     /**
@@ -96,11 +99,11 @@ SCWeb.core.ComponentManager = {
      */
     createWindowSandbox: function(format_addr, link_addr, container, callback) {
         var dfd = new jQuery.Deferred();
-        var factory = this._factories[format_addr];
+        var comp_def = this._factories_fmt[format_addr];
         
-        if (factory) {
+        if (comp_def) {
             var sandbox = new SCWeb.core.ComponentSandbox(container, link_addr, this._keynodes);
-            if (factory(sandbox)) {
+            if (comp_def.factory(sandbox)) {
                 dfd.resolve();
                 
             } else throw "Can't create viewer properly"

@@ -64,15 +64,16 @@ SCs.Viewer = function() {
 
 SCs.Viewer.prototype = {
 
-    init: function(container, keynode_func) {
-        this.containerId = '#' + container;
+    init: function(sandbox, keynode_func) {
+        this.sandbox = sandbox;
+        this.containerId = '#' + sandbox.container;
         this.getKeynode = keynode_func;
 
         this.tree = new SCs.SCnTree();
         this.tree.init(null, keynode_func);
         
         this.output = new SCs.SCnOutput();
-        this.output.init(this.tree, container, this.getKeynode);
+        this.output.init(this.tree, sandbox.container, this.getKeynode, this.sandbox.generateWindowContainer);
     },
     
     /*! Append new scs-data to visualize
@@ -113,12 +114,13 @@ SCs.SCnOutput = function() {
 
 SCs.SCnOutput.prototype = {
     
-    init: function(tree, container, keynode_func) {
+    init: function(tree, container, keynode_func, gen_window_func) {
         this.tree = tree;
         this.container = container;
         this.sc_links = [];
         this.linkCounter = 0;
         this.getKeynode = keynode_func;
+        this.generateWindow = gen_window_func;
         new SCs.Highlighter(container).init();
     },
 
@@ -232,7 +234,8 @@ SCs.SCnOutput.prototype = {
             var containerId = this.container + '_' + this.linkCounter;
             this.linkCounter++;
             this.sc_links[containerId] = treeNode.element.addr;
-            return '<div class="scs-scn-element sc-content scs-scn-field scs-scn-highlighted" id="' + containerId + '" sc_addr="' + treeNode.element.addr + '">' + '</div>';
+            return this.generateWindow(containerId, "scs-scn-element scs-scn-field scs-scn-highlighted", treeNode.element.addr);
+            //return '<div class="scs-scn-element sc-content scs-scn-field scs-scn-highlighted" id="' + containerId + '" sc_addr="' + treeNode.element.addr + '">' + '</div>';
         }
         
         return '<a href="#" class="scs-scn-element scs-scn-field scs-scn-highlighted" sc_addr="' + treeNode.element.addr + '">' + treeNode.element.addr + '</a>';
@@ -242,6 +245,7 @@ SCs.SCnOutput.prototype = {
         var scnOutput = new SCs.SCnOutput();
         scnOutput.init(subtree, this.container, this.getKeynode);
         scnOutput.linkCounter = this.linkCounter;
+        scnOutput.generateWindow = this.generateWindow;
 
         var res = scnOutput.toHtml();
         this.linkCounter = scnOutput.linkCounter;
@@ -896,7 +900,7 @@ SCsViewer.prototype = {
         this.sandbox.eventApplyTranslation = $.proxy(this.updateTranslation, this);
         
         this.viewer = new SCs.Viewer();
-        this.viewer.init(sandbox.container, $.proxy(sandbox.getKeynode, sandbox));
+        this.viewer.init(sandbox, $.proxy(sandbox.getKeynode, sandbox));
         
         this.sandbox.updateContent();
     },

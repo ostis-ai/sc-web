@@ -199,6 +199,33 @@ html.drag {
     content: url("../images/scn/content_corner.png");
 }
 
+.sc-content-wrap {
+    position: relative;
+    display: inline-block;
+}
+
+.sc-content-data {
+    width: 100%;
+    height: 100%;
+}
+
+.sc-content-controls {
+    clear: both;
+    position: absolute;
+    top: -1px;
+    right: -12px;
+    width: 12px;
+    height: 12px;
+}
+
+.sc-content-controls .button-menu {
+    opacity: 0.3;
+}
+
+.sc-content-controls .button-menu:hover {
+    opacity: 1;
+}
+
 .sc-contour {
     border: solid 1px #96a399;
     background-color: #fdfdfd;

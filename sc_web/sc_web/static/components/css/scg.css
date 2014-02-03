@@ -127,19 +127,25 @@
     opacity: 0.9;
 }
 
-.SCgDragLinePoint {
+.SCgRemovePoint {
     stroke: #FBF4F2;
     stroke-width: 3px;
     fill: #D60011;
 }
 
-.SCgContourAcceptPoint {
+.SCgAcceptPoint {
     stroke: #FBF4F2;
     stroke-width: 3px;
     fill: #33BB33;
 }
 
-.SCgDragLinePointHighlighted {
+.SCgAcceptPointHighlighted {
+    stroke: #FcF5F3;
+    stroke-width: 3px;
+    fill: #44cc44;
+}
+
+.SCgRemovePointHighlighted {
     fill: #FF3300;
     stroke: #FFBE52;
 }
