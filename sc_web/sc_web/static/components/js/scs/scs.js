@@ -242,10 +242,10 @@ SCs.SCnOutput.prototype = {
             var einfo = this.tree.getEdgeInfo(treeNode.element.addr);
             if (einfo) {
                 var marker = SCs.SCnConnectors[treeNode.element.type];
-                return '<a href="#" class="scs-scn-element scs-scn-field scs-scn-highlighted" sc_addr="' + einfo.source.addr + '">' + einfo.source.addr + '</a>\
-                        <div class="scs-scn-field-marker scs-scn-element"><a href="#" class="scs-scn-element scs-scn-field scs-scn-highlighted" sc_addr="' + treeNode.element.addr + '">'
-                        + marker + '</a></div>\
-                        <a href="#" class="scs-scn-element scs-scn-field scs-scn-highlighted" sc_addr="' + einfo.target.addr + '">' + einfo.target.addr + '</a>';
+                return '(<a href="#" class="scs-scn-element scs-scn-field scs-scn-highlighted" sc_addr="' + einfo.source.addr + '">' + einfo.source.addr + '</a>\
+                        <a href="#" class="scs-scn-element scs-scn-field scs-scn-highlighted scs-scn-connector" sc_addr="' + treeNode.element.addr + '">'
+                        + marker.f + '</a>\
+                        <a href="#" class="scs-scn-element scs-scn-field scs-scn-highlighted" sc_addr="' + einfo.target.addr + '">' + einfo.target.addr + '</a>)';
             }
         }
         
@@ -697,6 +697,11 @@ SCs.SCnTree.prototype = {
                 var tpl = triples[idx];
                 var found = false;
                 var backward = false;
+
+                // collect all sc-addrs
+                this._appendAddr(tpl[0]);
+                this._appendAddr(tpl[1]);
+                this._appendAddr(tpl[2]);
                 
                 if (!tpl.output && !tpl.ignore) {
                     // arc attributes
@@ -707,7 +712,7 @@ SCs.SCnTree.prototype = {
                             node.attrs.push({n: tpl[0], a: tpl[1], triple: tpl});
                             tpl.output = true;
                             
-                            this._appendAddr(tpl[0]);
+                            //this._appendAddr(tpl[0]);
                         }
                     }
                     
@@ -741,10 +746,6 @@ SCs.SCnTree.prototype = {
                         tpl.output = true;
                         
                         queue.push(nd);
-                        
-                        this._appendAddr(tpl[0]);
-                        this._appendAddr(tpl[1]);
-                        this._appendAddr(tpl[2]);
                     }
                 }
                 
@@ -955,7 +956,7 @@ SCsViewer.prototype = {
             if(namesMap[addr]) {
                 $(element).text(namesMap[addr]);
             } else {
-                if (!$(element).hasClass('sc-content') && !$(element).hasClass('sc-contour'))
+                if (!$(element).hasClass('sc-content') && !$(element).hasClass('sc-contour') && !$(element).hasClass('scs-scn-connector'))
                     $(element).html('<b>ⵔ</b>');
             }
         });
