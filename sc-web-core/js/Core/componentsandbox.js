@@ -4,12 +4,15 @@ SCWeb.core.scAddrsDict = {};
  * Create new instance of component sandbox.
  * @param {String} container Id of dom object, that will contain component
  * @param {String} link_addr sc-addr of link, that edit or viewed with sandbox
+ * @param {String} format_addr sc-addr of window format
+ * @param {String} ext_lang_addr sc-addr of external language
  * @param {Object} keynodes Dictionary that contains keynode addr by system identifiers
  */
-SCWeb.core.ComponentSandbox = function(container, link_addr, keynodes) {
+SCWeb.core.ComponentSandbox = function(container, link_addr, format_addr, keynodes) {
     this.container = container;
     this.wrap_selector = '#' + this.container + '_wrap';
     this.link_addr = link_addr;
+    this.format_addr = format_addr;
 
     this.eventGetObjectsToTranslate = null;
     this.eventApplyTranslation = null;
@@ -58,16 +61,15 @@ SCWeb.core.ComponentSandbox.prototype.destroy = function() {
  * Create controls for window
  */
 SCWeb.core.ComponentSandbox.prototype.createWindowControls = function() {
-    var html = '<button type="button" class="button-menu btn btn-default btn-xs" data-toggle="button"><span class="caret"></span></button>\
+    /*var html = '<button type="button" class="button-menu btn btn-default btn-xs" data-toggle="button"><span class="caret"></span></button>\
                 <div class="btn-group-vertical btn-group-xs hidden"> \
                     <button type="button" class="btn btn-success"><span class="glyphicon glyphicon-tags"></span></button> \
-                    <button type="button" class="btn btn-success">2</button> \
                 </div>';
     var self = this;
     var controls = $(this.wrap_selector + ' > .sc-content-controls');
     controls.append(html).find('.button-menu').on('click', function() {
         controls.find('.btn-group-vertical').toggleClass('hidden');
-    });
+    });*/
     
 };
 

@@ -102,7 +102,7 @@ SCWeb.core.ComponentManager = {
         var comp_def = this._factories_fmt[format_addr];
         
         if (comp_def) {
-            var sandbox = new SCWeb.core.ComponentSandbox(container, link_addr, this._keynodes);
+            var sandbox = new SCWeb.core.ComponentSandbox(container, link_addr, format_addr, this._keynodes);
             if (comp_def.factory(sandbox)) {
                 dfd.resolve();
                 

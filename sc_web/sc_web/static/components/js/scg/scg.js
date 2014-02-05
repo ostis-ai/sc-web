@@ -875,7 +875,7 @@ SCg.Editor.prototype = {
 /* --- src/scg-debug.js --- */
 var SCgDebug = {
     
-    enabled: false,
+    enabled: true,
     
     error: function(message) {
         if (!this.enabled) return; // do nothing
@@ -3649,6 +3649,77 @@ SCg.LayoutManager.prototype.onTickUpdate = function() {
 };
 
 
+/* --- src/scg-tree.js --- */
+SCg.Tree = function() {
+};
+
+SCg.Tree.prototype = {
+    constructor: SCg.Tree,
+
+    init: function() {
+        this.triples = [];
+        this.root = new SCg.TreeNode();
+    },
+
+    build: function(triples) {
+        
+        this.triples = [];
+        this.triples = this.triples.concat(triples);
+
+        // determine possible contours
+        var contours = {};
+        for (t in this.triples) {
+            var tpl = this.triples[t];
+            
+            if (tpl[0].type & sc_type_node_struct)
+                contours[tpl[0].addr] = [];
+        }
+        
+        // collect contour elements
+        for (t in triples) {
+            
+        }
+        
+    }
+};
+
+
+// ----------------------------------
+SCg.TreeNode = function() {
+    this.childs = [];
+    this.parent = null;
+};
+
+SCg.TreeNode.prototype = {
+
+    appendChild: function(child) {
+        if (child.parent)
+            child.parent.removeChild(child);
+        
+        if (SCgDebug.eanbled && this.hasChild(child))
+            SCgDebug.error("Duplicate child item");
+        
+        this.childs.push(child);
+    },
+
+    removeChild: function(child) {
+        if (child.parent != this)
+            SCgDebug.error("Item not found");
+
+        var idx = this.childs.indexOf(child);
+        if (idx >= 0)
+            this.childs.splice(idx, 1);
+
+        child.parent = null;
+    },
+
+    hasChild: function(child) {
+        return this.childs.indexOf(child);
+    }
+
+};
+
+
 /* --- src/scg-component.js --- */
 SCgComponent = {
     ext_lang: 'scg_code',
@@ -3682,6 +3753,9 @@ scgViewerWindow.prototype = {
          */
         this.domContainer = sandbox.container;
         this.sandbox = sandbox;
+        
+        this.tree = new SCg.Tree();
+        this.tree.init();
 
         this.editor = new SCg.Editor();
         this.editor.init({containerId: sandbox.container});
@@ -3700,11 +3774,51 @@ scgViewerWindow.prototype = {
      */
     receiveData : function(data) {
         var dfd = new jQuery.Deferred();
-
-        this._buildGraph(data);
+    
+        this.collectTriples(data);
+        this.tree.build(this.triples);
+        //this._buildGraph(data);
 
         dfd.resolve();
         return dfd.promise();
+    },
+
+    /** Collect triples
+     */
+    collectTriples: function(data) {
+
+        this.triples = [];
+        
+        var elements = {};
+        var edges = [];
+        for (var i = 0; i < data.length; i++) {
+            var el = data[i];
+
+            elements[el.id] = el;
+            if (el.el_type & sc_type_arc_mask) {
+                edges.push(el);
+            }
+        }
+
+        var founded = true;
+        while (edges.length > 0 && founded) {
+            founded = false;
+            for (idx in edges) {
+                var obj = edges[idx];
+                var beginEl = elements[obj.begin];
+                var endEl = elements[obj.end];
+
+                // try to get begin and end object for arc
+                if (beginEl && endEl) {
+                    founded = true;
+                    edges.splice(idx, 1);
+                    
+                    this.triples.push([beginEl, {type: obj.el_type, addr: obj.id}, endEl]);
+                } 
+            }
+        }
+
+        alert(this.triples.length);
     },
 
     /**

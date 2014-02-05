@@ -46,6 +46,10 @@ html.drag {
     
 }
 
+.window-container {
+    width: 95%;
+}
+
 .hidden {
     visibility: hidden;
 }
@@ -219,11 +223,11 @@ html.drag {
 }
 
 .sc-content-controls .button-menu {
-    opacity: 0.3;
+    opacity: 0.1;
 }
 
 .sc-content-controls .button-menu:hover {
-    opacity: 1;
+    opacity: 0.7;
 }
 
 .sc-contour {

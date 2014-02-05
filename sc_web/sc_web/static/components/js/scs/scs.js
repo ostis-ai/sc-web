@@ -157,7 +157,7 @@ SCs.SCnOutput.prototype = {
         }
 
         if (treeNode.type == SCs.SCnTreeNodeType.Keyword) {
-            output = '<div class="scs-scn-field"><div class="scs-scn-keyword"><a href="#" class="scs-scn-element scs-scn-highlighted" sc_addr="' + treeNode.element.addr + '">' + treeNode.element.addr + '</a></div>';
+            output = '<div class="scs-scn-field"><div class="scs-scn-keyword">' + this.treeNodeElementHtml(treeNode, true) + '</div>';
             output += childsToHtml();
 
             var contourTree = this.tree.subtrees[treeNode.element.addr];
@@ -228,14 +228,25 @@ SCs.SCnOutput.prototype = {
         return output;
     },
 
-    treeNodeElementHtml: function(treeNode) {
+    treeNodeElementHtml: function(treeNode, isKeyword) {
 
-        if (treeNode.element.type & sc_type_link) {
+        if (!isKeyword && treeNode.element.type & sc_type_link) {
             var containerId = this.container + '_' + this.linkCounter;
             this.linkCounter++;
             this.sc_links[containerId] = treeNode.element.addr;
             return this.generateWindow(containerId, "scs-scn-element scs-scn-field scs-scn-highlighted", treeNode.element.addr);
             //return '<div class="scs-scn-element sc-content scs-scn-field scs-scn-highlighted" id="' + containerId + '" sc_addr="' + treeNode.element.addr + '">' + '</div>';
+        }
+
+        if (treeNode.element.type & sc_type_arc_mask) {
+            var einfo = this.tree.getEdgeInfo(treeNode.element.addr);
+            if (einfo) {
+                var marker = SCs.SCnConnectors[treeNode.element.type];
+                return '<a href="#" class="scs-scn-element scs-scn-field scs-scn-highlighted" sc_addr="' + einfo.source.addr + '">' + einfo.source.addr + '</a>\
+                        <div class="scs-scn-field-marker scs-scn-element"><a href="#" class="scs-scn-element scs-scn-field scs-scn-highlighted" sc_addr="' + treeNode.element.addr + '">'
+                        + marker + '</a></div>\
+                        <a href="#" class="scs-scn-element scs-scn-field scs-scn-highlighted" sc_addr="' + einfo.target.addr + '">' + einfo.target.addr + '</a>';
+            }
         }
         
         return '<a href="#" class="scs-scn-element scs-scn-field scs-scn-highlighted" sc_addr="' + treeNode.element.addr + '">' + treeNode.element.addr + '</a>';
@@ -524,7 +535,6 @@ SCs.SCnTree.prototype = {
     /** Determine all subtrees in triples
      */
     determineSubTrees: function() {
-        
         // collect subtree elements
         var subtrees = {};
         var idx = 0;
@@ -778,6 +788,22 @@ SCs.SCnTree.prototype = {
             }
             node.childs.splice(0, node.childs.length);
         }
+    },
+    
+    /*! Returns information about specified edge.
+     * Returned object has such properties:
+     * - source - source element
+     * - target - target element
+     * - edge - edge element
+     * If there are no info about specified edge, then returns null
+     */
+    getEdgeInfo: function(addr) {
+        for (i in this.triples) {
+            var tpl = this.triples[i];
+            if (tpl[1].addr == addr)
+                return {edge: tpl[1], source: tpl[0], target: tpl[2]};
+        }
+        return null;
     }
     
 };

@@ -166,16 +166,9 @@ SCWeb.ui.WindowManager = {
      * @param {String} fmt_addr sc-addr of window format
      */
     appendWindow: function(addr, fmt_addr) {
-        /*<div class="panel panel-primary">
-            <div class="panel-heading">Panel heading without title</div>
-            <div class="panel-body">
-                Panel content
-            </div>
-        </div>*/
         
         var window_id = 'window_' + addr;
         var window_html =   '<div class="panel panel-default sc-window" sc_addr="' + addr + '" sc-addr-fmt="' + fmt_addr + '">' +
-                                /*'<div class="panel-heading">' + addr + '</div>' +*/
                                 '<div class="panel-body" id="' + window_id + '"></div>'
                             '</div>';
         this.window_container.prepend(window_html);
