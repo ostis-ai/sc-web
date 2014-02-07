@@ -45,7 +45,7 @@ def parse_menu_command(cmd_addr, sctp_client, keys):
     """
     keynode_ui_user_command_atom = keys[KeynodeSysIdentifiers.ui_user_command_atom]
     keynode_ui_user_command_noatom = keys[KeynodeSysIdentifiers.ui_user_command_noatom]
-    keynode_nrel_decomposition = keys[KeynodeSysIdentifiers.nrel_decomposition]
+    keynode_nrel_ui_commands_decomposition = keys[KeynodeSysIdentifiers.nrel_ui_commands_decomposition]
 
     # try to find command type
     cmd_type = 'unknown'
@@ -71,7 +71,7 @@ def parse_menu_command(cmd_addr, sctp_client, keys):
         ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
         cmd_addr,
         ScElementType.sc_type_arc_pos_const_perm,
-        keynode_nrel_decomposition
+        keynode_nrel_ui_commands_decomposition
     )
     if decomp is not None:
 

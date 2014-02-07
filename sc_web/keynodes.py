@@ -50,6 +50,8 @@ class KeynodeSysIdentifiers:
     nrel_format = 'nrel_format'
     nrel_mimetype = 'nrel_mimetype'
     
+    nrel_ui_commands_decomposition = 'nrel_ui_commands_decomposition'
+    
     question = 'question'
     question_nrel_answer = 'nrel_answer'
     question_initiated = 'question_initiated'

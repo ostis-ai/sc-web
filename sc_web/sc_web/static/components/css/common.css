@@ -206,6 +206,7 @@ html.drag {
 .sc-content-wrap {
     position: relative;
     display: inline-block;
+    padding-bottom: 3px;
 }
 
 .sc-content-data {
