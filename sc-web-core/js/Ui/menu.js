@@ -58,10 +58,10 @@ SCWeb.ui.Menu = {
 
         var itemHtml = '';
         if(item.cmd_type == 'cmd_noatom') {
-            itemHtml = '<li class="dropdown"><a sc_addr="' + item.id + '" id="' + item.id + '" class="menu_item ' + item.cmd_type + ' dropdown-toggle" data-toggle="dropdown" href="#" ><span clas="text">' + item.id + '</span><b class="caret"></b></a>';
+            itemHtml = '<li class="dropdown"><a sc_addr="' + item.id + '" id="' + item.id + '" class="menu-item menu-cmd-noatom dropdown-toggle" data-toggle="dropdown" href="#" ><span clas="text">' + item.id + '</span><b class="caret"></b></a>';
             
         } else {
-            itemHtml = '<li><a id="' + item.id + '"sc_addr="' + item.id + '" class="menu_item ' + item.cmd_type + '" >' + item.id + '</a>';
+            itemHtml = '<li><a id="' + item.id + '"sc_addr="' + item.id + '" class="menu-item menu-cmd-atom" >' + item.id + '</a>';
         }
 
         if(item.hasOwnProperty('childs')) {
@@ -80,10 +80,10 @@ SCWeb.ui.Menu = {
 
     _registerMenuHandler: function() {
                 
-        $('.menu_item').click(function() {
+        $('.menu-item').click(function() {
             
             var sc_addr = $(this).attr('sc_addr');
-            if ($(this).hasClass('cmd_atom')) {
+            if ($(this).hasClass('menu-cmd-atom')) {
                 SCWeb.core.Main.doCommand(sc_addr, SCWeb.core.Arguments._arguments);
             }
         });

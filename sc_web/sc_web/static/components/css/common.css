@@ -177,6 +177,23 @@ html.drag {
     text-align: center;
 }
 
+/* --- menu --- */
+.menu-cmd-noatom:before {
+    position: absolute;
+    content: url("../images/menu-noatom.png");
+    left: 3px;
+}
+
+.menu-cmd-atom:before {
+    position: absolute;
+    content: url("../images/menu-atom.png");
+    left: 3px;
+}
+
+.menu-item {
+    cursor: pointer;
+}
+
 /* --- sc-elements --- */
 .sc-element {
     color: #2a6496;
