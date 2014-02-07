@@ -89,10 +89,7 @@ SCWeb.core.ComponentSandbox.prototype.doDefaultCommand = function(args) {
  */
 SCWeb.core.ComponentSandbox.prototype.generateWindowContainer = function(containerId, classes, addr) {
 
-    return '<div class="sc-content-wrap" id="' + containerId + '_wrap"> \
-                <div class="sc-content-controls"> </div> \
-                <div id="' + containerId + '" class="sc-content ' + classes + '" sc_addr="' + addr + '"> </div> \
-            </div>';
+    return SCWeb.ui.WindowManager.generateWindowContainer(containerId, classes, addr);
 };
 
 /*! Returns keynode by it system identifier
@@ -143,41 +140,7 @@ SCWeb.core.ComponentSandbox.prototype.resolveAddrs = function(idtf_list, callbac
  * @param {Object} containers_map Map of viewer containers (key: sc-link addr, value: id of container)
  */
 SCWeb.core.ComponentSandbox.prototype.createViewersForScLinks = function(containers_map) {
-    var dfd = new jQuery.Deferred();
-
-    var linkAddrs = [];
-    for (var cntId in containers_map)
-            linkAddrs.push(containers_map[cntId]);
-
-    if (linkAddrs.length == 0) {
-        dfd.resolve();
-        return dfd.promise();
-    }
-                
-    SCWeb.core.Server.getLinksFormat(linkAddrs,
-        function(formats) {
-            
-            var result = {};
-
-            for (var cntId in containers_map) {
-                var addr = containers_map[cntId];
-                var fmt = formats[addr];
-                if (fmt) {
-                    var sandbox = SCWeb.core.ComponentManager.createWindowSandbox(fmt, addr, cntId);
-                    if (sandbox) {
-                        result[addr] = sandbox;
-                    }
-                }
-            }
-            
-            dfd.resolve();
-        },
-        function() {
-            dfd.reject();
-        }
-    );
-    
-    return dfd.promise();
+    return SCWeb.ui.WindowManager.createViewersForScLinks(containers_map);
 };
 
 /*! Function takes content of sc-link from server and call onDataAppend function with it

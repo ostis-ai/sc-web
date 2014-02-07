@@ -41,6 +41,9 @@ html.drag {
     margin-left: 23px;
 }
 
+.loading {
+    background: #CCC url("../images/loading-cog.gif") no-repeat center center;
+}
 
 .main-container {
     
@@ -194,8 +197,14 @@ html.drag {
     cursor: pointer;
 }
 
+/* --- help --- */
+#help-modal-body {
+    padding: 7px;
+}
+
 /* --- sc-elements --- */
 .sc-element {
+    font-style: italic;
     color: #2a6496;
     cursor: pointer !important;
 }

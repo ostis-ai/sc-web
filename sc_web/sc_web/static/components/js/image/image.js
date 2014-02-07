@@ -26,7 +26,7 @@ ImageViewer.prototype = {
         var dfd = new jQuery.Deferred();
 
         $(this.container).empty();
-        $(this.container).append('<img src="' + data + '"></img>');
+        $(this.container).append('<img src="' + data + '" style="width: 100%; height: 100%;"></img>');
 
         dfd.resolve();
         return dfd.promise();

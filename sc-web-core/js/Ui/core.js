@@ -12,10 +12,30 @@ SCWeb.ui.Core = {
             ).done(function() {
 
                 // listen clicks on sc-elements
-                $('#window-container').delegate('[sc_addr]:not(.sc-window)', 'click', function(e) {
+                $('#window-container,#help-modal').delegate('[sc_addr]:not(.sc-window)', 'click', function(e) {
                     SCWeb.core.Main.doDefaultCommand([$(e.currentTarget).attr('sc_addr')]);
                     e.stopPropagation();
                 });
+                
+                $('#help-modal').on('shown.bs.modal', function() {
+                    var body = $('#help-modal-body');
+                    if (body.hasClass('modal-empty')) {
+                        body.addClass('loading');
+                        // try to find content
+                        SCWeb.core.Server.resolveScAddr(['ui_start_help'], function(addrs) {
+                            var a = addrs['ui_start_help'];
+                            if (a) {
+                                body.html('<div id="help-modal-content" class="sc-content sc-window" sc_addr="' + a + '"> </div>');
+                                $.when(SCWeb.ui.WindowManager.createViewersForScLinks({'help-modal-content': a}))
+                                .done(function() {
+                                    body.removeClass('loading');
+                                    body.removeClass('modal-empty');
+                                });
+                            }
+                        });
+                    }
+                });
+
                 dfd.resolve();
             });
         return dfd.promise();

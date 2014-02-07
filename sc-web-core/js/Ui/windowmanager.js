@@ -85,10 +85,10 @@ SCWeb.ui.WindowManager = {
     appendHistoryItem: function(question_addr) {
         
         // @todo check if tab exist        
-        var tab_html = '<li class="list-group-item history-item" sc_addr="' + question_addr + '">' +
+        var tab_html = '<a class="list-group-item history-item" sc_addr="' + question_addr + '">' +
                             '<h5 class="history-item-name list-group-item-heading">' + question_addr + '</h5>' +
                             '<p class="list-group-item-text"> description </p>' +
-                        '</li>';
+                        '</a>';
 
         this.history_tabs.prepend(tab_html);
                 
@@ -214,6 +214,62 @@ SCWeb.ui.WindowManager = {
         if (this.active_window_addr) {
             this.window_container.find("[sc_addr='" + this.active_window_addr + "']").removeClass('hidden'); 
         }
+    },
+
+    /*!
+     * Genarate html for new window container
+     * @param {String} containerId ID that will be set to container
+     * @param {String} classes Classes that will be added to container
+     * @param {String} addr sc-addr of window
+     */
+    generateWindowContainer: function(containerId, classes, addr) {
+
+        return '<div class="sc-content-wrap" id="' + containerId + '_wrap"> \
+                    <div class="sc-content-controls"> </div> \
+                    <div id="' + containerId + '" class="sc-content ' + classes + '" sc_addr="' + addr + '"> </div> \
+                </div>';
+    },
+
+    /**
+     * Create viewers for specified sc-links
+     * @param {Object} containers_map Map of viewer containers (key: sc-link addr, value: id of container)
+     */
+    createViewersForScLinks: function(containers_map) {
+        var dfd = new jQuery.Deferred();
+
+        var linkAddrs = [];
+        for (var cntId in containers_map)
+                linkAddrs.push(containers_map[cntId]);
+
+        if (linkAddrs.length == 0) {
+            dfd.resolve();
+            return dfd.promise();
+        }
+                    
+        SCWeb.core.Server.getLinksFormat(linkAddrs,
+            function(formats) {
+                
+                var result = {};
+
+                for (var cntId in containers_map) {
+                    var addr = containers_map[cntId];
+                    var fmt = formats[addr];
+                    if (fmt) {
+                        var sandbox = SCWeb.core.ComponentManager.createWindowSandbox(fmt, addr, cntId);
+                        if (sandbox) {
+                            result[addr] = sandbox;
+                        }
+                    }
+                }
+                
+                dfd.resolve();
+            },
+            function() {
+                dfd.reject();
+            }
+        );
+        
+        return dfd.promise();
     },
 
     // ---------- Translation listener interface ------------

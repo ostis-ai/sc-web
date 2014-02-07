@@ -34,7 +34,7 @@
             <a class="navbar-brand" href="#">OSTIS</a>
             <!-- Help button -->
             <div id="help_button" class="help_button navbar-form pull-left">
-                <a data-toggle="modal" href="{{ STATIC_URL }}components/html/help.html" data-target="#helpModal"><img src="{{ STATIC_URL }}components/images/help-red.png" class="help_button"/></a>
+                <a data-toggle="modal" data-target="#help-modal"><img src="{{ STATIC_URL }}components/images/help-red.png" class="help-button"/></a>
             </div>
         </div>
 
@@ -140,11 +140,9 @@
 
 
     <!-- Modal -->
-    <div id="helpModal" class="modal" tabindex="-1" role="dialog" aria-labelledby="Help" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-body" id="helpModalBody">
-                </div>
+    <div id="help-modal" class="modal fade bs-modal-lg" tabindex="-1" role="dialog" aria-labelledby="Help" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div id="help-modal-body" class="modal-content modal-empty">
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div>
