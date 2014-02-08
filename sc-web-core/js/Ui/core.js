@@ -112,7 +112,7 @@ SCWeb.ui.Core = {
                 // cursor icon for all sc-elements
                 function setCursorIconPos(x, y) {
                     self.sc_icon.offset({
-                        top: y - 20,
+                        top: y + 10,
                         left: x + 10
                     });
                 }

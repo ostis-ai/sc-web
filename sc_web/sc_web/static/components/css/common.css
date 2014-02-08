@@ -238,10 +238,10 @@ html.drag {
 .sc-cursor-icon {
     position: fixed;
     z-index: 10000;
-    font-size: 11px;
-    color: #000;
-    border: solid 1px #ccc;
-    background-color: #fafafa;
+    font-size: 8px;
+    color: #888;
+    /*border: solid 1px #ccc;
+    background-color: #fafafa;*/
     padding: 3px;
 }
 
