@@ -15,8 +15,28 @@ SCWeb.ui.Core = {
                 // listen clicks on sc-elements
                 var sc_elements_selector = '[sc_addr]:not(.sc-window)';
                 $('#window-container,#help-modal').delegate(sc_elements_selector, 'click', function(e) {
-                    SCWeb.core.Main.doDefaultCommand([$(e.currentTarget).attr('sc_addr')]);
-                    e.stopPropagation();
+                    if (!SCWeb.ui.ArgumentsPanel.isArgumentAddState()) {
+                        SCWeb.core.Main.doDefaultCommand([$(e.currentTarget).attr('sc_addr')]);
+                        e.stopPropagation();
+                    }
+                });
+
+                $('body')
+                .delegate(sc_elements_selector, 'mouseover', function(e) {
+                    self.sc_icon.removeClass('hidden');
+                    setCursorIconPos(e.pageX, e.pageY);
+                })  
+                .delegate(sc_elements_selector, 'mouseout', function(e) {
+                    self.sc_icon.addClass('hidden');
+                    setCursorIconPos(e.pageX, e.pageY);
+                })
+                .delegate(sc_elements_selector, 'mousemove', function(e) {
+                    setCursorIconPos(e.pageX, e.pageY);
+                }).delegate(sc_elements_selector, 'click', function(e) {
+                    if (SCWeb.ui.ArgumentsPanel.isArgumentAddState()) {
+                        SCWeb.core.Arguments.appendArgument($(this).attr('sc_addr'));
+                        e.stopPropagation();
+                    }
                 });
                 
                 $('#help-modal').on('shown.bs.modal', function() {
@@ -46,18 +66,7 @@ SCWeb.ui.Core = {
                         left: x + 10
                     });
                 }
-                $('body')
-                .delegate(sc_elements_selector, 'mouseover', function(e) {
-                    self.sc_icon.removeClass('hidden');
-                    setCursorIconPos(e.pageX, e.pageY);
-                })  
-                .delegate(sc_elements_selector, 'mouseout', function(e) {
-                    self.sc_icon.addClass('hidden');
-                    setCursorIconPos(e.pageX, e.pageY);
-                })
-                .delegate(sc_elements_selector, 'mousemove', function(e) {
-                    setCursorIconPos(e.pageX, e.pageY);
-                });
+                
 
                 dfd.resolve();
             });

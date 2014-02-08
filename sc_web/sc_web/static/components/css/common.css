@@ -90,6 +90,11 @@ html.drag {
     cursor: help;
 }
 
+/* --- Arguments --- */
+.argument-wait {
+    background: #5cb85c url("../images/argument-cog.gif") no-repeat center center;
+}
+
 .argument-container {
     min-height: 38px;
 }
@@ -101,6 +106,19 @@ html.drag {
 .argument-buttons {
     margin-top: 2px;
 }
+
+.argument-translate-state {
+    width: 32px;
+    height: 32px;
+    background: #3276B1 url("../images/arg-translate-cog.gif") no-repeat center center;
+}
+
+.argument-item {
+    /*max-width: 250px;*/
+    max-height: 32px;
+}
+
+/* --- main --- */
 
 .main-container {
     height: 100%;

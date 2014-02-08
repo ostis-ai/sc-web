@@ -2,6 +2,7 @@ SCWeb.ui.ArgumentsPanel = {
     _container : '#arguments_buttons',
 
     init : function() {
+        this.argument_add_state = false;
         var dfd = new jQuery.Deferred();
 
         var self = this;
@@ -20,126 +21,63 @@ SCWeb.ui.ArgumentsPanel = {
             }
         });
         
-
         $('#arguments_clear_button').click(function() {
-
             SCWeb.core.Arguments.clear();
         });
+        $('#arguments_add_button').click(function() {
+            self.argument_add_state = !self.argument_add_state;
+            self.updateArgumentAddState();
+        });
 
-        $(document).on("click", ".arguments_item", function(event) {
-
+        $(document).on("click", ".argument-item", function(event) {
             var idx = $(this).attr('arg_idx');
             SCWeb.core.Arguments.removeArgumentByIndex(parseInt(idx));
         });
-            
-        
-        this.initDrag();
         
         dfd.resolve();
         return dfd.promise();
     },
-    
-    initDrag: function() {
-        var self = this;
-        // initialize sc-elements drag and drop
-        this.dragEl = null;
-        this.dragging = false;
-        this.dragPos = {x: 0, y: 0};
-        
-        $('body').append('<div class="drag-value hidden"></div>');
-        this.dragElValue = $('.drag-value');
-        
-        function stopDrag() {
-            if (self.dragEl) {
-                self.dragElValue.addClass('hidden');
-                self.dragEl = null;
-            }
-            if (self.dragging) {
-                self.dragging = false;
-                $('html').removeClass('drag');
-                $('#arguments_container').removeClass('over');
-            }
+
+    isArgumentAddState: function() {
+        return this.argument_add_state;
+    },
+
+    updateArgumentAddState: function() {
+        var add_button = $("#arguments_add_button");
+        if (this.argument_add_state) {
+            add_button.addClass('argument-wait');
+        } else {
+            add_button.removeClass('argument-wait');
         }
-        
-        $(document).delegate('[sc_addr]:not(:has([sc_addr]))', "mousedown", function(e) {
-            self.dragEl = $(this);
-            e.preventDefault();
-            
-            self.dragging = false;
-            self.dragPos = {x: e.pageX, y: e.pageY};
-        })
-        .mousemove(function(e) {
-            
-            if (!self.dragging && self.dragEl) {
-                var dx = self.dragPos.x - e.pageX;
-                var dy = self.dragPos.y - e.pageY;
-                if (Math.sqrt(dx * dx + dy * dy) > 30) {
-                    self.dragging = true;
-                    $('html').addClass('drag');
-                    
-                    if (self.dragEl) {
-                        self.dragElValue.removeClass('hidden');
-                        self.dragElValue.empty();
-                        self.dragElValue.append(self.dragEl.clone());
-                    }
-                }
-                
-            } else {
-                
-                if (self.dragElValue) {
-                    self.dragElValue.offset({
-                        top: e.pageY + 10,
-                        left: e.pageX + 10
-                    });
-                }
-            }
-        })
-        .mouseup(function(e) {
-            stopDrag();
-        });
-        
-        $('#arguments_container').mouseup(function(e) {
-            if (!self.dragEl || !self.dragging) return;
-        
-            SCWeb.core.Arguments.appendArgument(self.dragEl.attr('sc_addr'));
-            stopDrag();
-        })
-        .mouseenter(function(e) {
-            if (self.dragging) {
-                $(this).addClass('over');
-            }
-        })
-        .mouseleave(function(e) {
-            if (self.dragging) {
-                $(this).removeClass('over');
-            }
-        });
     },
 
     // ------- Arguments listener interface -----------
     onArgumentAppended : function(argument, idx) {
 
+        this.argument_add_state = false;
+        this.updateArgumentAddState();
+
         var idx_str = idx.toString();
         var self = this;
 
+        var new_button = '<button class="btn btn-primary argument-item argument-translate-state" sc_addr="'
+                    + argument
+                    + '" arg_idx="'
+                    + idx_str
+                    + '" id="argument_'
+                    + idx_str
+                    + '"></button>';
+        $(this._container).append(new_button);
+
         // translate added argument
-        $.when(SCWeb.core.Translation.translate([ argument ])).done(
-            function(namesMap) {
+        $.when(SCWeb.core.Translation.translate([ argument ])).done(function(namesMap) {
 
             var value = argument;
             if (namesMap[argument]) {
                 value = namesMap[argument];
             }
 
-            var new_button = '<button class="btn btn-primary arguments_item" sc_addr="'
-                    + argument
-                    + '" arg_idx="'
-                    + idx_str
-                    + '" id="argument_'
-                    + idx_str
-                    + '">'
-                    + value + '</button>';
-            $(self._container).append(new_button);
+            $(self._container + " [sc_addr='" + argument + "']").text(value).removeClass('argument-translate-state');
         });
 
     },
