@@ -4,6 +4,23 @@ SCWeb.ui.Core = {
         var self = this;
         var dfd = new jQuery.Deferred();
 
+        this.tooltip_interval = null;
+        this.tooltip_element = null;
+
+        function clearTooltipInterval() {
+            if (self.tooltip_interval) {
+                clearInterval(self.tooltip_interval);
+                self.tooltip_interval = null;
+            }
+        }
+
+        function destroyTooltip() {
+            if (self.tooltip_element) {
+                self.tooltip_element.tooltip('destroy');
+                self.tooltip_element = null;
+            }
+        }
+
         $.when(SCWeb.ui.Menu.init(data),
                SCWeb.ui.ArgumentsPanel.init(),
                SCWeb.ui.UserPanel.init(data),
@@ -25,10 +42,41 @@ SCWeb.ui.Core = {
                 .delegate(sc_elements_selector, 'mouseover', function(e) {
                     self.sc_icon.removeClass('hidden');
                     setCursorIconPos(e.pageX, e.pageY);
+
+                    clearTooltipInterval();
+                    self.tooltip_element = $(this);
+                    self.tooltip_interval = setInterval(function() {
+                        clearInterval(self.tooltip_interval);
+                        self.tooltip_interval = null;
+
+                        self.tooltip_element.tooltip({
+                            html: true,
+                            placement: 'auto',
+                            trigger: 'manual',
+                            title: '<div class="tooltip-empty"></div>',
+                            animation: false
+                        }).tooltip('show');
+                        var addr = self.tooltip_element.attr('sc_addr');
+                        if (addr) {
+                            SCWeb.core.Server.getTooltips([addr], function(tips) {
+                                var value = tips[addr];
+                                if (value) {
+                                    self.tooltip_element.tooltip('hide')
+                                                .attr('data-original-title', value).tooltip('show');
+                                } else
+                                    destroyTooltip();
+                            }, function() {
+                                destroyTooltip();
+                            });
+                        }
+                    }, 2000);
                 })  
                 .delegate(sc_elements_selector, 'mouseout', function(e) {
                     self.sc_icon.addClass('hidden');
                     setCursorIconPos(e.pageX, e.pageY);
+
+                    clearTooltipInterval();
+                    destroyTooltip();
                 })
                 .delegate(sc_elements_selector, 'mousemove', function(e) {
                     setCursorIconPos(e.pageX, e.pageY);
@@ -66,8 +114,7 @@ SCWeb.ui.Core = {
                         left: x + 10
                     });
                 }
-                
-
+            
                 dfd.resolve();
             });
         return dfd.promise();

@@ -215,9 +215,17 @@ html.drag {
     cursor: pointer;
 }
 
+/* --- tooltips --- */
+.tooltip-empty {
+    width: 32px;
+    height: 32px;
+    background: #000 url("../images/tooltip-cog.gif") no-repeat center center;
+}
+
 /* --- help --- */
 #help-modal-body {
     padding: 7px;
+    min-height: 200px;
 }
 
 /* --- sc-elements --- */

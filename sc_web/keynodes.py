@@ -50,6 +50,10 @@ class KeynodeSysIdentifiers:
     nrel_format = 'nrel_format'
     nrel_mimetype = 'nrel_mimetype'
     
+    rrel_key_sc_element = 'rrel_key_sc_element'
+    sc_explanation = 'sc_explanation'
+    
+    nrel_sc_text_translation = 'nrel_sc_text_translation'
     nrel_ui_commands_decomposition = 'nrel_ui_commands_decomposition'
     
     question = 'question'

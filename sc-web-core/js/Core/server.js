@@ -319,6 +319,25 @@ SCWeb.core.Server = {
             type: "GET",
             success: callback
         });
+    },
+
+    /**
+     * Request tooltip content for specified sc-elements
+     */
+    getTooltips: function(addrs, success, error) {
+        var arguments = '';
+        for (i = 0; i < addrs.length; i++){
+            var arg = addrs[i];
+            arguments += i.toString() + '_=' + arg + '&';
+        }
+        
+         $.ajax({
+            type: "POST",
+            url: "api/info/tooltip/",
+            data: arguments,
+            success: success,
+            error: error
+        });
     }
 };
 

@@ -19,5 +19,6 @@ urlpatterns = patterns('api.views',
     url(r'^link/content/$', 'link_content', name='link_content'),
     
     url(r'^addr/resolve/$', 'sc_addrs', name='sc_addrs'),
+    url(r'^info/tooltip/$', 'info_tooltip', name='info_tooltip'),
         
 )

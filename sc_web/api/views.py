@@ -38,7 +38,8 @@ from sctp.types import ScAddr, SctpIteratorType, ScElementType
 from api.logic import (
     parse_menu_command, find_answer, find_translation,
     check_command_finished, append_to_system_elements,
-    find_translation_with_format, get_link_mime, get_languages_list
+    find_translation_with_format, get_link_mime, get_languages_list,
+    find_tooltip
 )
 import api.logic as logic
 
@@ -125,7 +126,7 @@ def idtf_resolve(request):
             idx += 1
 
         sctp_client = new_sctp_client()
-        keys = Keynodes(sctp_client)    
+        keys = Keynodes(sctp_client)
         keynode_nrel_main_idtf = keys[KeynodeSysIdentifiers.nrel_main_idtf]
         keynode_nrel_system_identifier = keys[KeynodeSysIdentifiers.nrel_system_identifier]
         
@@ -604,3 +605,33 @@ def set_language(request):
     
     return HttpResponse(result, 'application/json')
     
+@csrf_exempt
+def info_tooltip(request):
+    result = '[]'
+    if request.is_ajax():
+        sctp_client = new_sctp_client()
+
+        # parse arguments
+        first = True
+        arg = None
+        arguments = []
+        idx = 0
+        while first or (arg is not None):
+            arg_str = u'%d_' % idx
+            arg = request.POST.get(arg_str, None)
+            if arg is not None:
+                arguments.append(arg)
+            first = False
+            idx += 1
+            
+        keys = Keynodes(sctp_client)
+        sc_session = logic.ScSession(request.user, request.session, sctp_client, keys)
+
+        res = {}
+        for addr in arguments:
+            tooltip = find_tooltip(ScAddr.parse_from_string(addr), sctp_client, keys, sc_session.get_used_language())
+            res[addr] = tooltip
+
+        result = json.dumps(res)
+
+    return HttpResponse(result, 'application/json')

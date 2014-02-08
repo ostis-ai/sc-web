@@ -91,6 +91,61 @@ def parse_menu_command(cmd_addr, sctp_client, keys):
 
     return attrs
 
+def find_tooltip(addr, sctp_client, keys, lang):
+    
+    # try to find structure, where addr is key sc-element
+    key_struct = sctp_client.iterate_elements(
+        SctpIteratorType.SCTP_ITERATOR_5_A_A_F_A_F,
+        ScElementType.sc_type_node | ScElementType.sc_type_const,
+        ScElementType.sc_type_arc_pos_const_perm,
+        addr,
+        ScElementType.sc_type_arc_pos_const_perm,
+        keys[KeynodeSysIdentifiers.rrel_key_sc_element]
+    )
+    
+    if key_struct:
+        for res in key_struct:
+            node = res[0]
+            # check if it's an sc explanation
+            check = sctp_client.iterate_elements(
+                SctpIteratorType.SCTP_ITERATOR_3F_A_F,
+                keys[KeynodeSysIdentifiers.sc_explanation],
+                ScElementType.sc_type_arc_pos_const_perm,
+                node
+            )
+            if check:
+                # find all translations
+                translations = sctp_client.iterate_elements(
+                    SctpIteratorType.SCTP_ITERATOR_5_A_A_F_A_F,
+                    ScElementType.sc_type_node | ScElementType.sc_type_const,
+                    ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
+                    node,
+                    ScElementType.sc_type_arc_pos_const_perm,
+                    keys[KeynodeSysIdentifiers.nrel_sc_text_translation]
+                )
+                if translations:
+                    for t in translations:
+                        # find translation to current language
+                        items = sctp_client.iterate_elements(
+                            SctpIteratorType.SCTP_ITERATOR_3F_A_A,
+                            t[0],
+                            ScElementType.sc_type_arc_pos_const_perm,
+                            ScElementType.sc_type_link
+                        )
+                        if items:
+                            for i in items:
+                                check2 = sctp_client.iterate_elements(
+                                    SctpIteratorType.SCTP_ITERATOR_3F_A_F,
+                                    lang,
+                                    ScElementType.sc_type_arc_pos_const_perm,
+                                    i[2]
+                                )
+                                if check2:
+                                    return sctp_client.get_link_content(i[2])
+        
+    
+    return None
+
 
 def find_cmd_result(command_addr, keynode_ui_nrel_command_result, sctp_client):
     return sctp_client.iterate_elements(
