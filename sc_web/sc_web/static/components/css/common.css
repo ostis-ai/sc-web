@@ -334,3 +334,7 @@ ul.typeahead {
 
 }
 
+/* --- bootstrap --- */
+div[class="tooltip-inner"] {
+    max-width: 350px;
+}

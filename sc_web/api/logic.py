@@ -104,16 +104,32 @@ def find_tooltip(addr, sctp_client, keys, lang):
     )
     
     if key_struct:
+        found_map = {}
+        order_list = [keys[KeynodeSysIdentifiers.sc_definition], 
+                      keys[KeynodeSysIdentifiers.sc_explanation],
+                      keys[KeynodeSysIdentifiers.sc_note]]
+        
+        for t in order_list:
+            found_map[str(t)] = []
+        
         for res in key_struct:
             node = res[0]
             # check if it's an sc explanation
             check = sctp_client.iterate_elements(
-                SctpIteratorType.SCTP_ITERATOR_3F_A_F,
-                keys[KeynodeSysIdentifiers.sc_explanation],
+                SctpIteratorType.SCTP_ITERATOR_3A_A_F,
+                ScElementType.sc_type_node | ScElementType.sc_type_const,
                 ScElementType.sc_type_arc_pos_const_perm,
                 node
             )
-            if check:
+            
+            for c in check:
+                for t in order_list:
+                    if c[0] == t:
+                        found_map[str(t)].append(node)
+                
+        for o in order_list:
+            found_list = found_map[str(o)]
+            for node in found_list:
                 # find all translations
                 translations = sctp_client.iterate_elements(
                     SctpIteratorType.SCTP_ITERATOR_5_A_A_F_A_F,

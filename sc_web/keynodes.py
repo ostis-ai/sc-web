@@ -51,7 +51,9 @@ class KeynodeSysIdentifiers:
     nrel_mimetype = 'nrel_mimetype'
     
     rrel_key_sc_element = 'rrel_key_sc_element'
+    sc_definition = 'sc_definition'
     sc_explanation = 'sc_explanation'
+    sc_note = 'sc_note'
     
     nrel_sc_text_translation = 'nrel_sc_text_translation'
     nrel_ui_commands_decomposition = 'nrel_ui_commands_decomposition'

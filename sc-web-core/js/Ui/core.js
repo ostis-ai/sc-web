@@ -54,15 +54,17 @@ SCWeb.ui.Core = {
                             placement: 'auto',
                             trigger: 'manual',
                             title: '<div class="tooltip-empty"></div>',
-                            animation: false
+                            animation: false,
+                            container: 'body'
                         }).tooltip('show');
+
                         var addr = self.tooltip_element.attr('sc_addr');
                         if (addr) {
                             SCWeb.core.Server.getTooltips([addr], function(tips) {
                                 var value = tips[addr];
                                 if (value) {
                                     self.tooltip_element.tooltip('hide')
-                                                .attr('data-original-title', value).tooltip('show');
+                                                .attr('data-original-title', value).tooltip('fixTitle').tooltip('show');
                                 } else
                                     destroyTooltip();
                             }, function() {
@@ -110,7 +112,7 @@ SCWeb.ui.Core = {
                 // cursor icon for all sc-elements
                 function setCursorIconPos(x, y) {
                     self.sc_icon.offset({
-                        top: y + 10,
+                        top: y - 20,
                         left: x + 10
                     });
                 }
