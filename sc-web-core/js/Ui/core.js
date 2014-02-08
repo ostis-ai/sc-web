@@ -1,6 +1,7 @@
 SCWeb.ui.Core = {
     
     init: function(data, callback) {
+        var self = this;
         var dfd = new jQuery.Deferred();
 
         $.when(SCWeb.ui.Menu.init(data),
@@ -12,7 +13,8 @@ SCWeb.ui.Core = {
             ).done(function() {
 
                 // listen clicks on sc-elements
-                $('#window-container,#help-modal').delegate('[sc_addr]:not(.sc-window)', 'click', function(e) {
+                var sc_elements_selector = '[sc_addr]:not(.sc-window)';
+                $('#window-container,#help-modal').delegate(sc_elements_selector, 'click', function(e) {
                     SCWeb.core.Main.doDefaultCommand([$(e.currentTarget).attr('sc_addr')]);
                     e.stopPropagation();
                 });
@@ -25,7 +27,7 @@ SCWeb.ui.Core = {
                         SCWeb.core.Server.resolveScAddr(['ui_start_help'], function(addrs) {
                             var a = addrs['ui_start_help'];
                             if (a) {
-                                body.html('<div id="help-modal-content" class="sc-content sc-window" sc_addr="' + a + '"> </div>');
+                                body.html('<div id="help-modal-content" class="sc-window" sc_addr="' + a + '"> </div>');
                                 $.when(SCWeb.ui.WindowManager.createViewersForScLinks({'help-modal-content': a}))
                                 .done(function() {
                                     body.removeClass('loading');
@@ -34,6 +36,27 @@ SCWeb.ui.Core = {
                             }
                         });
                     }
+                });
+
+                self.sc_icon = $(".sc-cursor-icon");
+                // cursor icon for all sc-elements
+                function setCursorIconPos(x, y) {
+                    self.sc_icon.offset({
+                        top: y + 10,
+                        left: x + 10
+                    });
+                }
+                $('body')
+                .delegate(sc_elements_selector, 'mouseover', function(e) {
+                    self.sc_icon.removeClass('hidden');
+                    setCursorIconPos(e.pageX, e.pageY);
+                })  
+                .delegate(sc_elements_selector, 'mouseout', function(e) {
+                    self.sc_icon.addClass('hidden');
+                    setCursorIconPos(e.pageX, e.pageY);
+                })
+                .delegate(sc_elements_selector, 'mousemove', function(e) {
+                    setCursorIconPos(e.pageX, e.pageY);
                 });
 
                 dfd.resolve();

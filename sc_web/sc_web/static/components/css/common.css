@@ -1,6 +1,6 @@
 html, body {
     margin-top: 30px;
-   margin-bottom: 45px;
+    margin-bottom: 45px;
 }
 
 html.drag {
@@ -207,6 +207,16 @@ html.drag {
     font-style: italic;
     color: #2a6496;
     cursor: pointer !important;
+}
+
+.sc-cursor-icon {
+    position: fixed;
+    z-index: 10000;
+    font-size: 11px;
+    color: #000;
+    border: solid 1px #ccc;
+    background-color: #fafafa;
+    padding: 3px;
 }
 
 .sc-not-exist {
