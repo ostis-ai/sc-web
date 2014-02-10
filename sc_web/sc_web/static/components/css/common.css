@@ -246,7 +246,11 @@ html.drag {
 }
 
 .sc-not-exist {
-    color: #ff0000;
+    color: #aa0000;
+}
+
+.sc-not-exist-control {
+    border: dotted 1px #aa0000 !important;
 }
 
 .sc-content {

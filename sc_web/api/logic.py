@@ -43,19 +43,19 @@ def parse_menu_command(cmd_addr, sctp_client, keys):
     @param sctp_client: sctp client object to work with sc-memory
     @param keys: keynodes object. Used just to prevent new instance creation
     """
-    keynode_ui_user_command_atom = keys[KeynodeSysIdentifiers.ui_user_command_atom]
-    keynode_ui_user_command_noatom = keys[KeynodeSysIdentifiers.ui_user_command_noatom]
+    keynode_ui_user_command_class_atom = keys[KeynodeSysIdentifiers.ui_user_command_class_atom]
+    keynode_ui_user_command_class_noatom = keys[KeynodeSysIdentifiers.ui_user_command_class_noatom]
     keynode_nrel_ui_commands_decomposition = keys[KeynodeSysIdentifiers.nrel_ui_commands_decomposition]
 
     # try to find command type
     cmd_type = 'unknown'
     if sctp_client.iterate_elements(SctpIteratorType.SCTP_ITERATOR_3F_A_F,
-                                    keynode_ui_user_command_atom,
+                                    keynode_ui_user_command_class_atom,
                                     ScElementType.sc_type_arc_pos_const_perm,
                                     cmd_addr) is not None:
         cmd_type = 'cmd_atom'
     elif sctp_client.iterate_elements(SctpIteratorType.SCTP_ITERATOR_3F_A_F,
-                                      keynode_ui_user_command_noatom,
+                                      keynode_ui_user_command_class_noatom,
                                       ScElementType.sc_type_arc_pos_const_perm,
                                       cmd_addr) is not None:
         cmd_type = 'cmd_noatom'

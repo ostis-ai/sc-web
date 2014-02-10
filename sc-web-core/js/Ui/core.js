@@ -26,7 +26,8 @@ SCWeb.ui.Core = {
                SCWeb.ui.UserPanel.init(data),
                SCWeb.ui.LanguagePanel.init(data),
                SCWeb.ui.WindowManager.init(data),
-               SCWeb.ui.SearchPanel.init()
+               SCWeb.ui.SearchPanel.init(),
+               self.resolveElementsAddr('body')
             ).done(function() {
 
                 // listen clicks on sc-elements
@@ -127,5 +128,35 @@ SCWeb.ui.Core = {
      */
     selectorWindowScAddr: function(windowId) {
         return windowId + ' [sc_addr]:not(' + windowId + ' .sc-content [sc_addr])';
+    },
+
+    /*! Resolve sc-addrs for elements, that has sc_control_sys_idtf attribute in specified container
+     * @param {String} parentSelector String that contains selector for parent element
+     */
+    resolveElementsAddr: function(parentSelector) {
+        var dfd = new jQuery.Deferred();
+
+        var attr_name = 'sc_control_sys_idtf';
+        var identifiers = [];
+        var elements = [];
+        $(parentSelector + ' [' + attr_name + ']').each(function() {
+            identifiers.push($(this).attr(attr_name));
+            elements.push($(this));
+        });
+
+        SCWeb.core.Server.resolveScAddr(identifiers, function(addrs) {
+            for (e in elements) {
+                var el = elements[e];
+                var addr = addrs[el.attr(attr_name)];
+                if (addr) {
+                    el.attr('sc_addr', addr);
+                } else {
+                    el.addClass('sc-not-exist-control');
+                }
+            }
+            dfd.resolve();
+        });
+
+        return dfd.promise();
     }
 };

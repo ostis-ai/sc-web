@@ -381,10 +381,10 @@ SCs.SCnOutput.prototype = {
             }
 
             if (treeNode.mergePrev || treeNode.mergeNext) {
-                output += '<div style="padding-left: 15px"><div class="scs-scn-field-marker scs-scn-element">' + SCs.SCnBallMarker + '</div></div>';
-                output += '<div style="padding-left: 30px">';
+                output += '<div style="padding-left: 20px"><div class="scs-scn-field-marker scs-scn-element">' + SCs.SCnBallMarker + '</div></div>';
+                output += '<div style="padding-left: 40px">';
             } else {
-                output += '<div style="padding-left: 15px">';
+                output += '<div style="padding-left: 20px">';
             }
 
             if (!treeNode.isSet) {

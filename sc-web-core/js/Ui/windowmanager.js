@@ -33,6 +33,9 @@ SCWeb.ui.WindowManager = {
             ext_langs_items += '<li><a href="#" sc_addr="' + addr + '">' + addr + '</a></li>';
         }
         $('#history-item-langs').html(ext_langs_items).find('[sc_addr]').click(function(event) {
+
+            if (SCWeb.ui.ArgumentsPanel.isArgumentAddState()) return;
+
             var question_addr = self.active_history_addr;
             var lang_addr = $(this).attr('sc_addr');
             var fmt_addr = SCWeb.core.ComponentManager.getPrimaryFormatForExtLang(lang_addr);
@@ -46,7 +49,9 @@ SCWeb.ui.WindowManager = {
             
         });
     
-        $('#history-item-print').click(function (){
+        $('#history-item-print').click(function () {
+            if (SCWeb.ui.ArgumentsPanel.isArgumentAddState()) return;
+
             // get ctive window data
             var data = self.window_container.find("[sc_addr='" + self.active_window_addr + "']").html();
             

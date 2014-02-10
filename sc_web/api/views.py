@@ -266,7 +266,7 @@ def cmd_do(request):
             keynode_ui_rrel_commnad = keys[KeynodeSysIdentifiers.ui_rrel_commnad]
             keynode_ui_rrel_command_arguments = keys[KeynodeSysIdentifiers.ui_rrel_command_arguments]
             keynode_ui_nrel_command_result = keys[KeynodeSysIdentifiers.ui_nrel_command_result]
-            keynode_ui_user_command_question = keys[KeynodeSysIdentifiers.ui_user_command_question]
+            #keynode_ui_user_command_question = keys[KeynodeSysIdentifiers.ui_user_command_question]
             keynode_ui_command_generate_instance = keys[KeynodeSysIdentifiers.ui_command_generate_instance]
             keynode_ui_command_initiated = keys[KeynodeSysIdentifiers.ui_command_initiated]
             keynode_ui_command_finished = keys[KeynodeSysIdentifiers.ui_command_finished]

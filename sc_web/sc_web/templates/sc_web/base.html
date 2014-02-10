@@ -41,11 +41,9 @@
         <div id="menu_container">
             <!-- there will be placed menu items -->
         </div>
-        <div id="task_panel" class="task_icon navbar-form pull-right">
+        <div id="task_panel" class="task_icon navbar-form pull-right" sc_control_sys_idtf="ui_control_task_panel">
             <div id="task_num" class="task_text">0</div>
         </div>
-
-        
 
         <div id="auth-user-panel" class="pull-right">
             {% if user.is_authenticated %}
@@ -76,7 +74,7 @@
         </div>
         
         <div id="language-panel" class="pull-right">
-            <form class="navbar-form navbar-right" role="search">
+            <form class="navbar-form navbar-right" sc_control_sys_idtf="ui_control_select_idtf_mode">
                 <select id="language-select" class="form-control" style="width: 150px;">
                 </select>
             </form>
@@ -85,7 +83,7 @@
         <div id="search-panel">
             <form class="navbar-form navbar-right" role="search">
               <div class="form-group">
-                <input id="search-input" type="text" class="typeahead form-control" placeholder="Search" data-provide="typeahead" autocomplete="off">
+                <input id="search-input" type="text" class="typeahead form-control" sc_control_sys_idtf="ui_control_search_idtf_edit" placeholder="Search" data-provide="typeahead" autocomplete="off">
               </div>
               {# <button type="button" class="btn btn-success"><span class="glyphicon glyphicon-search"></span></button> #}
             </form>
@@ -98,11 +96,11 @@
             <div id="history-container" class="panel panel-default">
                 <div class="btn-group">
                     
-                    <button type="button" class="histoy-item-btn btn btn-success " data-toggle="dropdown">
+                    <button type="button" class="histoy-item-btn btn btn-success " data-toggle="dropdown" sc_control_sys_idtf="ui_control_select_window_type">
                         <span class="glyphicon glyphicon-list-alt"></span>
                     </button>
                     <ul id="history-item-langs" class="dropdown-menu" role="menu">{# languages will be added #}</ul>
-                    <button type="button" class="btn btn-success" id="history-item-print">
+                    <button type="button" class="btn btn-success" id="history-item-print" sc_control_sys_idtf="ui_control_print_window_content">
                         <span class="glyphicon glyphicon-print"></span>
                     </button>
                     
@@ -120,8 +118,8 @@
         <div class="navbar-inner">
             <div id="arguments_container" class="argument-container">
                 <div class="btn-group">
-                    <button id="arguments_clear_button" class="btn btn-danger"><span class="glyphicon glyphicon-remove-sign"></span></button>
-                    <button id="arguments_add_button" class="btn btn-success"><span class="glyphicon glyphicon-plus-sign"></span></button>
+                    <button id="arguments_clear_button" class="btn btn-danger" sc_control_sys_idtf="ui_control_argument_button_clear"><span class="glyphicon glyphicon-remove-sign"></span></button>
+                    <button id="arguments_add_button" class="btn btn-success" {#sc_control_sys_idtf="ui_control_argument_button_add"#}><span class="glyphicon glyphicon-plus-sign"></span></button>
                 </div>
                 
                 <div id="arguments_buttons" class="btn-group argument-buttons">
