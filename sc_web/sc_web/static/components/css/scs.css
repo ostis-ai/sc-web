@@ -60,6 +60,10 @@
     clear: both;
 }
 
+.sc-contour > .scs-scn-field-root {
+    margin-bottom: 24px;
+}
+
 .scs-scn-keyword {
     padding: 2px 2px 0px 2px;
     font-weight: bold;
