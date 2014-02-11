@@ -1,5 +1,5 @@
 ImageComponent = {
-    formats: ['format_png', 'format_jpg'],
+    formats: ['format_png', 'format_jpg', 'format_gif'],
     factory: function(sandbox) {
         return new ImageViewer(sandbox);
     }

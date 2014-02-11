@@ -45,6 +45,9 @@ class HomeView(TemplateView):
 
         if hasattr(settings, 'GOOGLE_ANALITYCS_ID'):
             context['google_analitycs_id'] = settings.GOOGLE_ANALITYCS_ID
+        context['has_entered'] = self.request.session.get('has_entered', False)
+        self.request.session['has_entered'] = True
+        self.request.session.save()
         
         return context
     

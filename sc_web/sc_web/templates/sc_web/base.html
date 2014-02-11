@@ -157,14 +157,12 @@
                     var argumentAddr = addrs['doc_technology_ostis'];
                     //var window = SCWeb.core.ui.Windows.createWindow(outputAddr);
                     SCWeb.core.Main.doDefaultCommand([argumentAddr]);
+                    {% if not has_entered %}$('#help-modal').modal({"keyboard": true});{% endif %}
                 });
                 SCWeb.ui.Locker.hide();
             });
         });
 
-        $('#help_button').click(function() {
-            $('#helpModal').modal({"keyboard": true});
-        });
         
     </script>
 
