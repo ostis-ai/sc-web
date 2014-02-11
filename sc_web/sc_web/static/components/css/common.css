@@ -211,6 +211,12 @@ html.drag {
     left: 3px;
 }
 
+.menu-cmd-keynode:before {
+    position: absolute;
+    content: url("../images/menu-keynode.png");
+    left: 3px;
+}
+
 .menu-item {
     cursor: pointer;
 }

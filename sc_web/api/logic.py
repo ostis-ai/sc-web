@@ -80,7 +80,7 @@ def parse_menu_command(cmd_addr, sctp_client, keys):
             SctpIteratorType.SCTP_ITERATOR_3F_A_A,
             decomp[0][0],
             ScElementType.sc_type_arc_pos_const_perm,
-            ScElementType.sc_type_node | ScElementType.sc_type_const
+            0
         )
         if childs is not None:
             child_commands = []

@@ -38,9 +38,8 @@ SCWeb.ui.Menu = {
 
         //TODO: change to children, remove intermediate 'childs'
         if(menuData.hasOwnProperty('childs')) {
-            var id, subMenu;
             for(i in menuData.childs) {
-                subMenu = menuData.childs[i];
+                var subMenu = menuData.childs[i];
                 menuHtml += this._parseMenuItem(subMenu);
             }
         }
@@ -57,20 +56,18 @@ SCWeb.ui.Menu = {
         this._items.push(item.id);
 
         var itemHtml = '';
-        if(item.cmd_type == 'cmd_noatom') {
+        if (item.cmd_type == 'cmd_noatom') {
             itemHtml = '<li class="dropdown"><a sc_addr="' + item.id + '" id="' + item.id + '" class="menu-item menu-cmd-noatom dropdown-toggle" data-toggle="dropdown" href="#" ><span clas="text">' + item.id + '</span><b class="caret"></b></a>';
-            
-        } else {
+        } else if (item.cmd_type == 'cmd_atom') {
             itemHtml = '<li><a id="' + item.id + '"sc_addr="' + item.id + '" class="menu-item menu-cmd-atom" >' + item.id + '</a>';
+        } else {
+            itemHtml = '<li><a id="' + item.id + '"sc_addr="' + item.id + '" class="menu-item menu-cmd-keynode" >' + item.id + '</a>';
         }
 
-        if(item.hasOwnProperty('childs')) {
+        if (item.hasOwnProperty('childs')) {
             itemHtml += '<ul class="dropdown-menu">';
-            var id;
-            var subMenu;
-            var i;
-            for(i = 0; i < item.childs.length; i++) {
-                subMenu = item.childs[i];
+            for(i in item.childs) {
+                var subMenu = item.childs[i];
                 itemHtml += this._parseMenuItem(subMenu);
             }
             itemHtml += '</ul>';
@@ -81,10 +78,11 @@ SCWeb.ui.Menu = {
     _registerMenuHandler: function() {
                 
         $('.menu-item').click(function() {
-            
             var sc_addr = $(this).attr('sc_addr');
             if ($(this).hasClass('menu-cmd-atom')) {
                 SCWeb.core.Main.doCommand(sc_addr, SCWeb.core.Arguments._arguments);
+            } else if ($(this).hasClass('menu-cmd-keynode')) {
+                SCWeb.core.Main.doDefaultCommand([sc_addr]);
             }
         });
     },
