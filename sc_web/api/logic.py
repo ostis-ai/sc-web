@@ -288,6 +288,9 @@ class ScSession:
         self.keynodes = keynodes
         self.sc_addr = None
         
+        self.session.modified = True
+        self.session.save()
+        
     def get_sc_addr(self):
         """Resolve sc-addr of session
         """

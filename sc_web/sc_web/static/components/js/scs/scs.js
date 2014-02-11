@@ -153,9 +153,7 @@ SCs.TripleUtils.prototype = {
                     for (l2 in list2) {
                         var edge2 = list2[l2];
                         if (this._compareType(type4, this._getType(edge2.edge)) && (edge2.src == addr5)) {
-                            if (!res) {
-                                res = [];
-                            }
+                            if (!res) res = [];
                             res.push([
                                 { addr: addr1, type: this._getType(addr1) },
                                 { addr: edge.edge, type: this._getType(edge.edge) },
@@ -168,6 +166,54 @@ SCs.TripleUtils.prototype = {
                 }
             }
         }
+        return res;
+    },
+
+    find5_f_a_f_a_f: function(addr1, type2, addr3, type4, addr5) {
+        var list = this.inputEdges[addr3];
+        if (!list) return null;
+
+        var res = null;
+        for (l in list) {
+            var edge = list[l];
+            if (this._compareType(type2, this._getType(edge.edge)) && (addr1 === edge.src)) {
+                var list2 = this.inputEdges[addr5];
+                if (!list2) continue;
+
+                for (l2 in list2) {
+                    var edge2 = list2[l2];
+                    if (this._compareType(type4, this._getType(edge2.edge)) && (addr3 === edge.src)) {
+                        if (!res) res = [];
+                        res.push([
+                            { addr: addr1, type: this._getType(addr1) },
+                            { addr: edge.edge, type: this._getType(edge.edge) },
+                            { addr: addr3, type: this._getType(addr3) },
+                            { addr: edge2.edge, type: this._getType(edge2.edge) },
+                            { addr: addr5, type: this._getType(addr5) }
+                        ]);
+                    }
+                }
+            }
+        }
+    },
+
+    find3_f_a_f: function(addr1, type2, addr3) {
+        var list = this.inputEdges[addr3];
+        if (!list) return null;
+
+        var res = null;
+        for (l in list) {
+            var edge = list[l];
+            if (this._compareType(type2, edge.edge) && (addr1 === edge.src)) {
+                if (!res) res = [];
+                res.push([
+                    { addr: addr1, type: this._getType(addr1) },
+                    { addr: edge.edge, type: this._getType(edge.edge) },
+                    { addr: addr3, type: this._getType(addr3) }
+                ]);
+            }
+        }
+
         return res;
     },
 
@@ -813,16 +859,64 @@ SCs.SCnTree.prototype = {
             tree.init(subtree.el.addr, this.getKeynode);
 
             // now we need to find keynodes for subtree
+            var key_key = this.getKeynode('rrel_key_sc_element');
             var keywordsList = [];
-            keywords = tu.find5_f_a_a_a_f(addr, 
+            var keywords = tu.find5_f_a_a_a_f(addr, 
                 sc_type_arc_pos_const_perm,
                 0,
                 sc_type_arc_pos_const_perm,
-                this.getKeynode('rrel_key_sc_element'));
+                key_key);
             if (keywords) {
+                // try to find order
+                var klist = [];
+                var elements = {};
+                var orderMap = {};
+                var orderMapReverse = {};
                 for (k in keywords) {
-                    var res = keywords[k];
-                    keywordsList.push(res[2]);
+                    var a = keywords[k][1].addr;
+                    klist.push(a);
+                    elements[a] = keywords[k][2];
+                }
+                
+                var order_key = this.getKeynode('nrel_key_sc_element_base_order');
+                for (var i = 0; i < klist.length; i++) {
+                    for (var j = 0; j < klist.length; j++) {
+
+                        if (i === j) continue;
+
+                        var result = tu.find5_f_a_f_a_f(klist[i],
+                            sc_type_arc_common | sc_type_const,
+                            klist[j],
+                            sc_type_arc_pos_const_perm,
+                            order_key);
+                        if (result) {
+                            orderMap[klist[i]] = klist[j];
+                            orderMapReverse[klist[j]] = klist[i];
+                        }
+                    }
+                }
+
+                // now we need to apply order if it exist
+                var ordered = {};
+                var order_start = null;
+                for (o in orderMap) {
+                    var v = orderMap[o];
+                    if (!orderMapReverse[v]) {
+                        order_start = v;
+                        break;
+                    }
+                }
+                
+                // fill keywords list
+                while (order_start) {
+                    keywordsList.push(elements[order_start]);
+                    order_start = orderMap[order_start];
+                }
+
+                for (var i = 0; i < klist.length; i++) {
+                    if (keywordsList.indexOf(klist[i]) < 0) {
+                        keywordsList.push(elements[klist[i]]);
+                    }
                 }
             }
             
@@ -1124,7 +1218,7 @@ SCsComponent = {
         return new SCsViewer(sandbox);
     },
     getRequestKeynodes: function() {
-        var keynodes = ['nrel_section_base_order', 'rrel_key_sc_element'];
+        var keynodes = ['nrel_section_base_order', 'rrel_key_sc_element', 'nrel_key_sc_element_base_order'];
         return keynodes.concat(SCs.SCnSortOrder);
     }
 };

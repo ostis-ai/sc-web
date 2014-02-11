@@ -56,7 +56,7 @@ SCWeb.core.Translation = {
     setLanguage: function(lang_addr, callback) {
         var self = this;
         SCWeb.core.Server.setLanguage(lang_addr, function() { 
-            self.translate(self.collectObjects(), function (namesMap) {
+            $.when(self.translate(self.collectObjects())).done(function (namesMap) {
                 self.fireUpdate(namesMap);
                 callback();
             });

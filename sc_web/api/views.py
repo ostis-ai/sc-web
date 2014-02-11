@@ -597,7 +597,7 @@ def set_language(request):
         
         sctp_client = new_sctp_client()
         keys = Keynodes(sctp_client)
-        
+        print request.session.session_key
         sc_session = logic.ScSession(request.user, request.session, sctp_client, keys)
         sc_session.set_current_lang_mode(lang_addr)
         
