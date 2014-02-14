@@ -84,8 +84,8 @@ html.drag {
     color:  #aaa;
 }
 
-.help_button {
-    margin-top: 3px;
+.help-button {
+    margin-top: 4px;
     vertical-align: middle;
     cursor: help;
 }
@@ -202,7 +202,13 @@ html.drag {
 .menu-cmd-noatom:before {
     position: absolute;
     content: url("../images/menu-noatom.png");
-    left: 3px;
+    left: 0px;
+}
+
+.dropdown-menu .menu-cmd-noatom:before {
+    position: absolute;
+    content: url("../images/menu-noatom.png");
+    left: 5px;
 }
 
 .menu-cmd-atom:before {

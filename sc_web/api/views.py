@@ -202,9 +202,11 @@ def idtf_find(request):
         result = {}
         sys = []
         main = []
+        common = []
+        
         # first of all need to find system identifiers
         cursor = 0
-        while len(sys) < settings.IDTF_SEARCH_LIMIT or len(main) < settings.IDTF_SEARCH_LIMIT:
+        while True:
             reply = r.scan(cursor, u"idtf:*%s*" % substr, 200)
             if not reply or len(reply) == 0:
                 break
@@ -212,7 +214,7 @@ def idtf_find(request):
             if cursor == 0:
                 break
             for idtf in reply[1]:
-                if len(sys) == settings.IDTF_SEARCH_LIMIT and len(main) == settings.IDTF_SEARCH_LIMIT:
+                if len(sys) == settings.IDTF_SEARCH_LIMIT and len(main) == settings.IDTF_SEARCH_LIMIT and len(common) == settings.IDTF_SEARCH_LIMIT:
                     break
                 
                 rep = r.get(idtf)
@@ -221,15 +223,20 @@ def idtf_find(request):
                 if utf.startswith(u"idtf:sys:") and len(sys) < settings.IDTF_SEARCH_LIMIT:
                     sys.append([addr.to_id(), utf[9:]])
                 elif utf.startswith(u"idtf:main:") and len(main) < settings.IDTF_SEARCH_LIMIT:
-                    main.append([addr.to_id(), utf[10:]])        
+                    main.append([addr.to_id(), utf[10:]])   
+                elif utf.startswith(u"idtf:common:") and len(common) < settings.IDTF_SEARCH_LIMIT:
+                    common.append([addr.to_id(), utf[12:]])          
+                    
 
         sctp_client = new_sctp_client()
         keys = Keynodes(sctp_client)    
         keynode_nrel_main_idtf = keys[KeynodeSysIdentifiers.nrel_main_idtf]
         keynode_nrel_system_identifier = keys[KeynodeSysIdentifiers.nrel_system_identifier]
+        keynode_nrel_idtf = keys[KeynodeSysIdentifiers.nrel_idtf]
                     
         result[keynode_nrel_system_identifier.to_id()] = sys
         result[keynode_nrel_main_idtf.to_id()] = main
+        result[keynode_nrel_idtf.to_id()] = common
         
         result = json.dumps(result)
 
@@ -266,17 +273,12 @@ def cmd_do(request):
             keynode_ui_rrel_commnad = keys[KeynodeSysIdentifiers.ui_rrel_commnad]
             keynode_ui_rrel_command_arguments = keys[KeynodeSysIdentifiers.ui_rrel_command_arguments]
             keynode_ui_nrel_command_result = keys[KeynodeSysIdentifiers.ui_nrel_command_result]
-            #keynode_ui_user_command_question = keys[KeynodeSysIdentifiers.ui_user_command_question]
             keynode_ui_command_generate_instance = keys[KeynodeSysIdentifiers.ui_command_generate_instance]
             keynode_ui_command_initiated = keys[KeynodeSysIdentifiers.ui_command_initiated]
             keynode_ui_command_finished = keys[KeynodeSysIdentifiers.ui_command_finished]
             keynode_ui_nrel_command_result = keys[KeynodeSysIdentifiers.ui_nrel_command_result]
             keynode_ui_user = keys[KeynodeSysIdentifiers.ui_user]
-            #keynode_ui_displayed_answer = keys[KeynodeSysIdentifiers.ui_displayed_answer]
             keynode_nrel_authors = keys[KeynodeSysIdentifiers.nrel_authors]
-            #keynode_ui_nrel_user_answer_formats = keys[KeynodeSysIdentifiers.ui_nrel_user_answer_formats]
-            #keynode_nrel_translation = keys[KeynodeSysIdentifiers.nrel_translation]
-            #keynode_nrel_answer = keys[KeynodeSysIdentifiers.question_nrel_answer]
             keynode_question_initiated = keys[KeynodeSysIdentifiers.question_initiated]
             keynode_question = keys[KeynodeSysIdentifiers.question]
             keynode_system_element = keys[KeynodeSysIdentifiers.system_element]

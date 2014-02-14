@@ -1008,10 +1008,11 @@ SCs.SCnTree.prototype = {
             var node = queue.shift();
 
             // stop tree building after input sc_type_arc_pos_const_perm to sc_type_link
-            if (node.parent 
+            if ((node.parent)
                 && (node.parent.element.type & sc_type_link) 
-                && (node.predicate.type & sc_type_arc_pos_const_perm)
-                && node.backward) {
+                && (node.predicate.type == sc_type_arc_pos_const_perm)
+                && (node.backward)
+                ) {
                 continue;
             }
             

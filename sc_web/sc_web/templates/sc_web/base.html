@@ -29,11 +29,11 @@
     <!--<div class="page-header">
         <h1>IMS<small>OSTIS</small></h1>
     </div>-->
-    <nav class="navbar navbar-inverse navbar-fixed-top" role="banner">
+    <nav class="navbar navbar-default navbar-fixed-top" role="banner">
         <div class="navbar-header">
             <a class="navbar-brand" href="#">OSTIS</a>
             <!-- Help button -->
-            <div id="help_button" class="help_button navbar-form pull-left">
+            <div id="help_button" class="help-button navbar-form pull-left">
                 <a data-toggle="modal" data-target="#help-modal"><img src="{{ STATIC_URL }}components/images/help-red.png" class="help-button"/></a>
             </div>
         </div>
@@ -83,7 +83,7 @@
         <div id="search-panel">
             <form class="navbar-form navbar-right" role="search">
               <div class="form-group">
-                <input id="search-input" type="text" class="typeahead form-control" sc_control_sys_idtf="ui_control_search_idtf_edit" placeholder="Search" data-provide="typeahead" autocomplete="off">
+                <input id="search-input" type="text" class="typeahead form-control" sc_control_sys_idtf="ui_control_search_idtf_edit" style="width: 150px;" placeholder="Search" data-provide="typeahead" autocomplete="off">
               </div>
               {# <button type="button" class="btn btn-success"><span class="glyphicon glyphicon-search"></span></button> #}
             </form>
@@ -114,7 +114,7 @@
         {% block content %}{% endblock %}
     </div>
 
-    <div id="footer" class="navbar navbar-inverse navbar-fixed-bottom">
+    <div id="footer" class="navbar navbar-default navbar-fixed-bottom">
         <div class="navbar-inner">
             <div id="arguments_container" class="argument-container">
                 <div class="btn-group">
