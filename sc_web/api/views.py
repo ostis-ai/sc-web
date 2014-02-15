@@ -363,16 +363,16 @@ def cmd_do(request):
                                     if not generated.has_key(str(l)) and arc[0] == l:
                                         lang_idtfs = identifiers[str(l)]
                                         # get content of link
-                                        data = sctp_client.get_link_content(t[2])
+                                        data = sctp_client.get_link_content(t[2]).decode('utf-8')
                                         if data:
                                             for idx in xrange(len(arguments)):
                                                 
                                                 if lang_idtfs.has_key(str(arguments[idx])):
-                                                    data = data.replace('$ui_arg_%d' % (idx + 1), lang_idtfs[str(arguments[idx])])
+                                                    data = data.replace(u'$ui_arg_%d' % (idx + 1), lang_idtfs[str(arguments[idx])])
                                             
                                             # generate identifier
                                             idtf_link = sctp_client.create_link()
-                                            sctp_client.set_link_content(idtf_link, str(data))
+                                            sctp_client.set_link_content(idtf_link, str(data.encode('utf-8')))
                                             sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, l, idtf_link)
                                             
                                             bin_arc = sctp_client.create_arc(ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
