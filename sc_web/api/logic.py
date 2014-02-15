@@ -216,6 +216,52 @@ def find_translation_with_format(construction_addr, format_addr, keynode_nrel_fo
 
     return None
 
+def get_identifier_translated(addr, used_lang, keys, sctp_client):
+    keynode_nrel_main_idtf = keys[KeynodeSysIdentifiers.nrel_main_idtf]
+    keynode_nrel_system_identifier = keys[KeynodeSysIdentifiers.nrel_system_identifier]
+        
+    identifier = sctp_client.iterate_elements(
+                                              SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
+                                              addr,
+                                              ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
+                                              ScElementType.sc_type_link,
+                                              ScElementType.sc_type_arc_pos_const_perm,
+                                              keynode_nrel_main_idtf
+                                              )
+    idtf_value = None
+    if identifier is not None:
+        for res in identifier:
+            idtf_addr = res[2]
+            
+            # check if founded main identifier is for used language
+            langs = sctp_client.iterate_elements(
+                                                 SctpIteratorType.SCTP_ITERATOR_3F_A_F,
+                                                 used_lang,
+                                                 ScElementType.sc_type_arc_pos_const_perm,
+                                                 idtf_addr
+                                                 )
+            if langs is not None:
+                # get identifier value
+                idtf_value = sctp_client.get_link_content(idtf_addr)
+                idtf_value = idtf_value.decode('utf-8')
+                return idtf_value
+
+    # if identifier not found, then get system identifier
+    identifier = sctp_client.iterate_elements(
+                                              SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
+                                              addr,
+                                              ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
+                                              ScElementType.sc_type_link,
+                                              ScElementType.sc_type_arc_pos_const_perm,
+                                              keynode_nrel_system_identifier
+                                              )
+    if identifier is not None:
+        idtf_value = sctp_client.get_link_content(identifier[0][2])
+        idtf_value = idtf_value.decode('utf-8')
+        return idtf_value
+        
+    return None
+    
 
 def check_command_finished(command_addr, keynode_command_finished, sctp_client):
     return sctp_client.iterate_elements(
@@ -272,7 +318,7 @@ def get_languages_list(keynode_languages, sctp_client):
     langs = []
     if (res_langs is not None):
         for items in res_langs:
-            langs.append(items[2].to_id())
+            langs.append(items[2])
                 
     return langs
 

@@ -39,7 +39,7 @@ from api.logic import (
     parse_menu_command, find_answer, find_translation,
     check_command_finished, append_to_system_elements,
     find_translation_with_format, get_link_mime, get_languages_list,
-    find_tooltip
+    find_tooltip, get_identifier_translated
 )
 import api.logic as logic
 
@@ -89,12 +89,15 @@ def init(request):
 
         # try to find available output natural languages
         langs = get_languages_list(keynode_languages, sctp_client)
+        langs_str = []
+        for l in langs:
+            langs_str.append(l.to_id())
         
         # get user sc-addr
         sc_session = logic.ScSession(request.user, request.session, sctp_client, keys)
         user_addr = sc_session.get_sc_addr()
         result = {'menu_commands': cmds,
-                  'languages': langs,
+                  'languages': langs_str,
                   'external_languages': out_langs,
                   'user': {
                             'sc_addr': user_addr.to_id(),
@@ -127,12 +130,9 @@ def idtf_resolve(request):
 
         sctp_client = new_sctp_client()
         keys = Keynodes(sctp_client)
-        keynode_nrel_main_idtf = keys[KeynodeSysIdentifiers.nrel_main_idtf]
-        keynode_nrel_system_identifier = keys[KeynodeSysIdentifiers.nrel_system_identifier]
         
         sc_session = logic.ScSession(request.user, request.session, sctp_client, keys)
         used_lang = sc_session.get_used_language()
-        
         
 
         result = {}
@@ -144,48 +144,9 @@ def idtf_resolve(request):
                 return serialize_error(404, 'Can\'t parse sc-addr from argument: %s' % addr_str)
             found = False
 
-            identifier = sctp_client.iterate_elements(
-                                                      SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
-                                                      addr,
-                                                      ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
-                                                      ScElementType.sc_type_link,
-                                                      ScElementType.sc_type_arc_pos_const_perm,
-                                                      keynode_nrel_main_idtf
-                                                      )
-            idtf_value = None
-            if identifier is not None:
-                for res in identifier:
-                    idtf_addr = res[2]
-                    
-                    # check if founded main identifier is for used language
-                    langs = sctp_client.iterate_elements(
-                                                         SctpIteratorType.SCTP_ITERATOR_3F_A_F,
-                                                         used_lang,
-                                                         ScElementType.sc_type_arc_pos_const_perm,
-                                                         idtf_addr
-                                                         )
-                    if langs is not None:
-                        # get identifier value
-                        idtf_value = sctp_client.get_link_content(idtf_addr)
-                        idtf_value = idtf_value.decode('utf-8')
-                        found = True
-                        result[addr_str] = idtf_value
-
-            # if identifier not found, then get system identifier
-            if not found:
-                identifier = sctp_client.iterate_elements(
-                                                          SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
-                                                          addr,
-                                                          ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
-                                                          ScElementType.sc_type_link,
-                                                          ScElementType.sc_type_arc_pos_const_perm,
-                                                          keynode_nrel_system_identifier
-                                                          )
-                if identifier is not None:
-                    idtf_value = sctp_client.get_link_content(identifier[0][2])
-                    idtf_value = idtf_value.decode('utf-8')
-            
-                    result[addr_str] = idtf_value
+            idtf_value = get_identifier_translated(addr, used_lang, keys, sctp_client)
+            if idtf_value:
+                result[addr_str] = idtf_value
             
         result = json.dumps(result)
 
@@ -282,6 +243,9 @@ def cmd_do(request):
             keynode_question_initiated = keys[KeynodeSysIdentifiers.question_initiated]
             keynode_question = keys[KeynodeSysIdentifiers.question]
             keynode_system_element = keys[KeynodeSysIdentifiers.system_element]
+            keynode_nrel_ui_nrel_command_lang_template = keys[KeynodeSysIdentifiers.nrel_ui_nrel_command_lang_template]
+            keynode_languages = keys[KeynodeSysIdentifiers.languages]
+            keynode_nrel_main_idtf = keys[KeynodeSysIdentifiers.nrel_main_idtf]
 
             # create command in sc-memory
             inst_cmd_addr = sctp_client.create_node(ScElementType.sc_type_node | ScElementType.sc_type_const)
@@ -362,6 +326,61 @@ def cmd_do(request):
             question = question[0][2]
 
             append_to_system_elements(sctp_client, keynode_system_element, question)
+            
+            # generate main identifiers
+            langs = get_languages_list(keynode_languages, sctp_client)
+            if langs:
+                templates = sctp_client.iterate_elements(
+                    SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
+                    cmd_addr,
+                    ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
+                    ScElementType.sc_type_link,
+                    ScElementType.sc_type_arc_pos_const_perm,
+                    keynode_nrel_ui_nrel_command_lang_template
+                )
+                if templates:
+                    generated = {}
+                    identifiers = {}
+                    
+                    # get identifiers
+                    for l in langs:
+                        identifiers[str(l)] = {}
+                        for a in arguments:
+                            idtf_value = get_identifier_translated(a, l, keys, sctp_client)
+                            if idtf_value:
+                                identifiers[str(l)][str(a)] = idtf_value
+                                
+                    
+                    for t in templates:
+                        input_arcs = sctp_client.iterate_elements(
+                                            SctpIteratorType.SCTP_ITERATOR_3A_A_F,
+                                            ScElementType.sc_type_node | ScElementType.sc_type_const | ScElementType.sc_type_node_class,
+                                            ScElementType.sc_type_arc_pos_const_perm,
+                                            t[2])
+                        if input_arcs:
+                            for arc in input_arcs:
+                                for l in langs:
+                                    if not generated.has_key(str(l)) and arc[0] == l:
+                                        lang_idtfs = identifiers[str(l)]
+                                        # get content of link
+                                        data = sctp_client.get_link_content(t[2])
+                                        if data:
+                                            for idx in xrange(len(arguments)):
+                                                
+                                                if lang_idtfs.has_key(str(arguments[idx])):
+                                                    data = data.replace('$ui_arg_%d' % (idx + 1), lang_idtfs[str(arguments[idx])])
+                                            
+                                            # generate identifier
+                                            idtf_link = sctp_client.create_link()
+                                            sctp_client.set_link_content(idtf_link, str(data))
+                                            sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, l, idtf_link)
+                                            
+                                            bin_arc = sctp_client.create_arc(ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
+                                                                             question, idtf_link)
+                                            sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm,
+                                                                   keynode_nrel_main_idtf, bin_arc)
+                                            
+                                            generated[str(l)] = True
 
             # create author
             sc_session = logic.ScSession(request.user, request.session, sctp_client, keys)

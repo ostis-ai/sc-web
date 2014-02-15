@@ -73,7 +73,7 @@ SCWeb.ui.WindowManager = {
         // listen translation events
         SCWeb.core.EventManager.subscribe("translation/update", this, this.updateTranslation);
         SCWeb.core.EventManager.subscribe("translation/get", this, function(objects) {
-            $(this.history_tabs_id + ' [sc_addr], #history-item-langs [sc_addr]').each(function(index, element) {
+            $('#history-container [sc_addr]').each(function(index, element) {
                 objects.push($(element).attr('sc_addr'));
             });
         });
@@ -91,8 +91,7 @@ SCWeb.ui.WindowManager = {
         
         // @todo check if tab exist        
         var tab_html = '<a class="list-group-item history-item" sc_addr="' + question_addr + '">' +
-                            '<h5 class="history-item-name list-group-item-heading">' + question_addr + '</h5>' +
-                            '<p class="list-group-item-text"> description </p>' +
+                            '<p>' + question_addr + '</p>' +
                         '</a>';
 
         this.history_tabs.prepend(tab_html);
@@ -116,6 +115,14 @@ SCWeb.ui.WindowManager = {
             self.setHistoryItemActive(question_addr);
             self.setWindowActive(self.windows[self.hash_addr(question_addr, self.window_active_formats[question_addr])]);
             
+        });
+
+        // translate added item
+        $.when(SCWeb.core.Translation.translate([ question_addr ])).done(function(namesMap) {
+            value = namesMap[question_addr];
+            if (value) {
+                $(self.history_tabs_id + " [sc_addr='" + question_addr + "']").text(value);
+            }
         });
     },
     
@@ -280,7 +287,7 @@ SCWeb.ui.WindowManager = {
     // ---------- Translation listener interface ------------
     updateTranslation: function(namesMap) {
         // apply translation
-        $(this.history_tabs_id + '[sc_addr] , #history-item-langs [sc_addr]').each(function(index, element) {
+        $('#history-container [sc_addr]:not(.btn)').each(function(index, element) {
             var addr = $(element).attr('sc_addr');
             if(namesMap[addr]) {
                 $(element).text(namesMap[addr]);

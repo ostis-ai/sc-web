@@ -58,6 +58,7 @@ class KeynodeSysIdentifiers:
     
     nrel_sc_text_translation = 'nrel_sc_text_translation'
     nrel_ui_commands_decomposition = 'nrel_ui_commands_decomposition'
+    nrel_ui_nrel_command_lang_template = 'ui_nrel_command_lang_template'
     
     question = 'question'
     question_nrel_answer = 'nrel_answer'
