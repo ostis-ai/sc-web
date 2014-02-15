@@ -6,25 +6,12 @@ TextComponent = {
 };
 
 var TextViewer = function(sandbox){
-    this._initWindow(sandbox);
-};
 
-TextViewer.prototype = {
-    
-    _container: null,
-    _config: null,
-    
-    _initWindow: function(sandbox) {
-        this.sandbox = sandbox;
-        this.container = '#' + sandbox.container;
-        
-        this.sandbox.eventDataAppend = $.proxy(this.receiveData, this);
-        
-        this.sandbox.updateContent();
-    },
+    this.sandbox = sandbox;
+    this.container = '#' + sandbox.container;
     
     // ---- window interface -----
-    receiveData: function(data) {
+    this.receiveData = function(data) {
         var dfd = new jQuery.Deferred();
         
         $(this.container).empty();
@@ -33,7 +20,11 @@ TextViewer.prototype = {
 
         return dfd.promise();
     },
-    
+
+    this.sandbox.eventDataAppend = $.proxy(this.receiveData, this);
+    this.sandbox.updateContent();
 };
+
+
 
 SCWeb.core.ComponentManager.appendComponentInitialize(TextComponent);

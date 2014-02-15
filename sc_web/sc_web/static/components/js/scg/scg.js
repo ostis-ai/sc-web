@@ -3651,14 +3651,15 @@ SCg.LayoutManager.prototype.onTickUpdate = function() {
 
 /* --- src/scg-tree.js --- */
 SCg.Tree = function() {
+    this.triples = [];
+    this.root = new SCg.TreeNode();
 };
 
 SCg.Tree.prototype = {
     constructor: SCg.Tree,
 
     init: function() {
-        this.triples = [];
-        this.root = new SCg.TreeNode();
+        
     },
 
     build: function(triples) {
@@ -3672,13 +3673,31 @@ SCg.Tree.prototype = {
             var tpl = this.triples[t];
             
             if (tpl[0].type & sc_type_node_struct)
-                contours[tpl[0].addr] = [];
+                contours[tpl[0].addr] = {el: tpl[0], childs: []};
         }
         
         // collect contour elements
-        for (t in triples) {
-            
+        var parentsDict = {};
+        for (t in this.triples) {
+            var tpl = this.triples[t];
+
+            if (tpl.ignore) continue;
+
+            for (c in contours) {
+                if ((c == tpl[0].addr) && (tpl[1].type & sc_type_arc_pos_const_perm)) {
+                    contours[c].childs.push(tpl[2]);
+                    tpl.ignore = true;
+                    parentsDict[tpl[2].addr] = c;
+                    break;
+                }
+            }
         }
+    },
+
+    /*!
+     * Build construction in \p scene
+     */
+    output: function(scene) {
         
     }
 };
@@ -3735,44 +3754,15 @@ SCgComponent = {
  * @constructor
  */
 var scgViewerWindow = function(sandbox){
-    this._initWindow(sandbox);
-};
 
-scgViewerWindow.prototype = {
+    this.domContainer = sandbox.container;
+    this.sandbox = sandbox;
+    this.tree = new SCg.Tree();
+    this.tree.init();
+    this.editor = new SCg.Editor();
+    this.editor.init({containerId: sandbox.container});
 
-    /**
-     * scgViewer Window init
-     * @param config
-     * @private
-     */
-    _initWindow : function(sandbox){
-
-        /**
-         * Container for render graph
-         * @type {String}
-         */
-        this.domContainer = sandbox.container;
-        this.sandbox = sandbox;
-        
-        this.tree = new SCg.Tree();
-        this.tree.init();
-
-        this.editor = new SCg.Editor();
-        this.editor.init({containerId: sandbox.container});
-        
-        // delegate event handlers
-        this.sandbox.eventDataAppend = $.proxy(this.receiveData, this);
-        this.sandbox.eventGetObjectsToTranslate = $.proxy(this.getObjectsToTranslate, this);
-        this.sandbox.eventApplyTranslation = $.proxy(this.applyTranslation, this);
-
-        this.sandbox.updateContent();
-    },
-
-    /**
-     * Set new data in viewer
-     * @param {Object} data
-     */
-    receiveData : function(data) {
+    this.receiveData = function(data) {
         var dfd = new jQuery.Deferred();
     
         this.collectTriples(data);
@@ -3781,11 +3771,9 @@ scgViewerWindow.prototype = {
 
         dfd.resolve();
         return dfd.promise();
-    },
+    };
 
-    /** Collect triples
-     */
-    collectTriples: function(data) {
+    this.collectTriples = function(data) {
 
         this.triples = [];
         
@@ -3819,15 +3807,9 @@ scgViewerWindow.prototype = {
         }
 
         alert(this.triples.length);
-    },
+    };
 
-    /**
-     * Build scGraph from JSON
-     * @param {Object} data
-     * @return {scGraph}
-     * @private
-     */
-    _buildGraph : function(data){
+    this._buildGraph = function(data) {
         
         var elements = {};
         var edges = new Array();
@@ -3881,22 +3863,18 @@ scgViewerWindow.prototype = {
         
         this.editor.render.update();
         this.editor.scene.layout();
-    },
+    };
 
-    /**
-     * Destroy window
-     * @return {Boolean}
-     */
-    destroy : function(){
+    this.destroy = function(){
         delete this.editor;
         return true;
-    },
+    };
 
-    getObjectsToTranslate : function(){      
+    this.getObjectsToTranslate = function() {
         return this.editor.scene.getScAddrs();
-    },
+    };
 
-    applyTranslation: function(namesMap){
+    this.applyTranslation = function(namesMap) {
         for (addr in namesMap) {
             var obj = this.editor.scene.getObjectByScAddr(addr);
             if (obj) {
@@ -3905,9 +3883,16 @@ scgViewerWindow.prototype = {
         }
             
         this.editor.render.updateTexts();
-    }
+    };
 
+    // delegate event handlers
+    this.sandbox.eventDataAppend = $.proxy(this.receiveData, this);
+    this.sandbox.eventGetObjectsToTranslate = $.proxy(this.getObjectsToTranslate, this);
+    this.sandbox.eventApplyTranslation = $.proxy(this.applyTranslation, this);
+
+    this.sandbox.updateContent();
 };
+
 
 
 SCWeb.core.ComponentManager.appendComponentInitialize(SCgComponent);

@@ -11,31 +11,13 @@ HtmlComponent = {
 };
 
 var HtmlViewer = function(sandbox) {
-    this.init(sandbox);
-    return this;
-};
+    this.data = null;
+    this.addrs = new Array();
+    this.container = '#' + sandbox.container;
+    this.sandbox = sandbox;
+    $(this.container).addClass("html-window");
 
-
-HtmlViewer.prototype = {
-    
-    container: null,
-    data: null,
-    sandbox: null,
-    addrs: [],
-    
-    init: function(sandbox) {
-        this.container = '#' + sandbox.container;
-        this.sandbox = sandbox;
-        $(this.container).addClass("html-window");
-        
-        this.sandbox.eventGetObjectsToTranslate = $.proxy(this.getObjectsToTranslate, this);
-        this.sandbox.eventApplyTranslation = $.proxy(this.updateTranslation, this);
-        this.sandbox.eventDataAppend = $.proxy(this.receiveData, this);
-        
-        this.sandbox.updateContent();
-    },
-
-    receiveData: function(data) {
+    this.receiveData = function(data) {
         var dfd = new jQuery.Deferred();
 
         $(this.container).html(data);
@@ -60,13 +42,12 @@ HtmlViewer.prototype = {
         }
 
         // resolve addrs
-        var self = this;
-        SCWeb.core.Server.resolveScAddr(idtfList.concat(scLinksList), function(addrs) {
+        SCWeb.core.Server.resolveScAddr(idtfList.concat(scLinksList), $.proxy(function(addrs) {
             for (idtf in addrs) {
-                self.addrs.push(addrs[idtf]);
+                this.addrs.push(addrs[idtf]);
             }
     
-            var sc_elements = $(self.container + ' sc_element');
+            var sc_elements = $(this.container + ' sc_element');
             for (var i = 0; i < sc_elements.length; ++i) {
                 var addr = addrs[ $(sc_elements[i]).attr('sys_idtf')];
                 if (addr) {
@@ -76,29 +57,29 @@ HtmlViewer.prototype = {
                 }
             }
 
-            var sc_links_el = $(self.container + ' sc_link');
+            var sc_links_el = $(this.container + ' sc_link');
             for (var i = 0; i < sc_links_el.length; ++i) {
                 var addr = addrs[ $(sc_links_el[i]).attr('sys_idtf')];
                 if (addr) {
-                    var containerId = self.sandbox.container + '_' + i;
+                    var containerId = this.sandbox.container + '_' + i;
                     sc_links[containerId] = addr;
                     $(sc_links_el[i]).html('<div class="sc-content" sc_addr="' + addr + '" id="' + containerId + '"></div>');
                 }
             }
             
             
-            $.when(self.sandbox.createViewersForScLinks(sc_links)).done(
+            $.when(this.sandbox.createViewersForScLinks(sc_links)).done(
                 function() {
                     dfd.resolve();
                 });
             //dfd.resolve();
-        });
+        }, this));
 
         return dfd.promise();
     },
 
     // ---- window interface -----
-    updateTranslation: function(namesMap) {
+    this.updateTranslation = function(namesMap) {
         // apply translation
         $(this.container + ' [sc_addr]:not(.sc-content)').each(function(index, element) {
             var addr = $(element).attr('sc_addr');
@@ -108,12 +89,17 @@ HtmlViewer.prototype = {
         });
     },
     
-    getObjectsToTranslate: function() {
+    this.getObjectsToTranslate = function() {
         return this.addrs;
     }
-    
 
+    this.sandbox.eventGetObjectsToTranslate = $.proxy(this.getObjectsToTranslate, this);
+    this.sandbox.eventApplyTranslation = $.proxy(this.updateTranslation, this);
+    this.sandbox.eventDataAppend = $.proxy(this.receiveData, this);
+    
+    this.sandbox.updateContent();
 };
+
 
 SCWeb.core.ComponentManager.appendComponentInitialize(HtmlComponent);
 

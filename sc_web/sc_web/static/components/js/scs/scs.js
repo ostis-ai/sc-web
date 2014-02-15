@@ -59,12 +59,15 @@ $(document).ready(function() {
 
 /* --- src/scs-viewer.js --- */
 SCs.Viewer = function() {
+    
+    this.sandbox = null;
+    this.containerId = null;
+    this.getKeynode = null;
+    this.tree = null;
+    this.output = null;
 
-};
 
-SCs.Viewer.prototype = {
-
-    init: function(sandbox, keynode_func) {
+    this.init = function(sandbox, keynode_func) {
         this.sandbox = sandbox;
         this.containerId = '#' + sandbox.container;
         this.getKeynode = keynode_func;
@@ -74,25 +77,24 @@ SCs.Viewer.prototype = {
         
         this.output = new SCs.SCnOutput();
         this.output.init(this.tree, sandbox.container, this.getKeynode, this.sandbox.generateWindowContainer);
-    },
+    };
     
-    /*! Append new scs-data to visualize
-     */
-    appendData: function(data) {
+    this.appendData = function(data) {
         var self = this;
         this.tree.build(data.keywords, data.triples);
         $(self.containerId).html($(self.containerId).html() + self.output.toHtml());
-    },
+    };
 
-    getAddrs: function() {
+    this.getAddrs = function() {
         return this.tree.addrs;
-    },
+    };
 
-    getLinks: function() {
+    this.getLinks = function() {
         return this.output.sc_links;
-    }
+    };
 
 };
+
 
 
 /* --- src/scs-output.js --- */
@@ -1225,8 +1227,59 @@ SCsComponent = {
 };
 
 var SCsViewer = function(sandbox) {
-    this.init(sandbox);
-    return this;
+    this.objects = new Array();
+    this.addrs = new Array();
+    this.sc_links = {}; // map of sc-link objects key:addr, value: object
+    this.data = null
+    
+    this.container = '#' + sandbox.container;
+    this.sandbox = sandbox;
+    
+    // ---- window interface -----
+    this.receiveData = function(data) {
+        this.data = data;
+        this.viewer.appendData(data);
+        
+        var dfd = new jQuery.Deferred();
+        
+        $.when(this.sandbox.createViewersForScLinks(this.viewer.getLinks())).then(
+                            function() {
+                                dfd.resolve();
+                            }, 
+                            function() {
+                                dfd.reject();
+                            });
+        return dfd.promise();
+    };
+    
+    this.updateTranslation = function(namesMap) {
+        // apply translation
+        $(SCWeb.ui.Core.selectorWindowScAddr(this.container)).each(function(index, element) {
+            var addr = $(element).attr('sc_addr');
+            if (!$(element).hasClass('sc-content') && !$(element).hasClass('sc-contour') && !$(element).hasClass('scs-scn-connector')) {
+                if(namesMap[addr]) {
+                    $(element).text(namesMap[addr]);
+                } else {
+                    
+                        $(element).html('<b>...</b>');
+                }
+            }
+        });
+    };
+    
+    this.getObjectsToTranslate = function() {
+        return this.viewer.getAddrs();
+    };
+
+
+    this.sandbox.eventDataAppend = $.proxy(this.receiveData, this);
+    this.sandbox.eventGetObjectsToTranslate = $.proxy(this.getObjectsToTranslate, this);
+    this.sandbox.eventApplyTranslation = $.proxy(this.updateTranslation, this);
+    
+    this.viewer = new SCs.Viewer();
+    this.viewer.init(sandbox, $.proxy(sandbox.getKeynode, sandbox));
+    
+    this.sandbox.updateContent();
 };
 
 var SCsConnectors = {};
@@ -1241,67 +1294,6 @@ $(document).ready(function() {
     SCsConnectors[sc_type_arc_access | sc_type_var | sc_type_arc_pos | sc_type_arc_perm] = "_->";
 });
 
-SCsViewer.prototype = {
-    
-    container: null,
-    objects: [],
-    addrs: [],
-    sc_links: {}, // map of sc-link objects key:addr, value: object
-    data: null,
-    sandbox: null,
-    
-    init: function(sandbox) {
-        this.container = '#' + sandbox.container;
-        this.sandbox = sandbox;
-        
-        this.sandbox.eventDataAppend = $.proxy(this.receiveData, this);
-        this.sandbox.eventGetObjectsToTranslate = $.proxy(this.getObjectsToTranslate, this);
-        this.sandbox.eventApplyTranslation = $.proxy(this.updateTranslation, this);
-        
-        this.viewer = new SCs.Viewer();
-        this.viewer.init(sandbox, $.proxy(sandbox.getKeynode, sandbox));
-        
-        this.sandbox.updateContent();
-    },
-    
-    // ---- window interface -----
-    receiveData: function(data) {
-        this.data = data;
-        this.viewer.appendData(data);
-        
-        var dfd = new jQuery.Deferred();
-        
-        $.when(this.sandbox.createViewersForScLinks(this.viewer.getLinks())).then(
-                            function() {
-                                dfd.resolve();
-                            }, 
-                            function() {
-                                dfd.reject();
-                            });
-        return dfd.promise();
-    },
-    
-    updateTranslation: function(namesMap) {
-        // apply translation
-        $(SCWeb.ui.Core.selectorWindowScAddr(this.container)).each(function(index, element) {
-            var addr = $(element).attr('sc_addr');
-            if (!$(element).hasClass('sc-content') && !$(element).hasClass('sc-contour') && !$(element).hasClass('scs-scn-connector')) {
-                if(namesMap[addr]) {
-                    $(element).text(namesMap[addr]);
-                } else {
-                    
-                        $(element).html('<b>...</b>');
-                }
-            }
-        });
-    },
-    
-    getObjectsToTranslate: function() {
-        return this.viewer.getAddrs();
-    }
-    
-
-};
 
 SCWeb.core.ComponentManager.appendComponentInitialize(SCsComponent);
 

@@ -6,23 +6,11 @@ ImageComponent = {
 };
 
 var ImageViewer = function(sandbox){
-    this._initWindow(sandbox);
-};
+    this.container = '#' + sandbox.container;
+    this.sandbox = sandbox;
 
-ImageViewer.prototype = {
-    
-    
-    _initWindow: function(sandbox) {
-        this.container = '#' + sandbox.container;
-        this.sandbox = sandbox;
-        
-        if (this.sandbox.link_addr) {
-            this.receiveData('api/link/content/?addr=' + this.sandbox.link_addr);
-        }
-    },
-    
     // ---- window interface -----
-    receiveData: function(data) {
+    this.receiveData = function(data) {
         var dfd = new jQuery.Deferred();
 
         $(this.container).empty();
@@ -30,8 +18,12 @@ ImageViewer.prototype = {
 
         dfd.resolve();
         return dfd.promise();
-    },
-
+    };
+    
+    if (this.sandbox.link_addr) {
+        this.receiveData('api/link/content/?addr=' + this.sandbox.link_addr);
+    }
 };
+
 
 SCWeb.core.ComponentManager.appendComponentInitialize(ImageComponent);
