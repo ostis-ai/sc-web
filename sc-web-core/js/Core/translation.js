@@ -3,16 +3,19 @@
  * It can fires next events:
  * - "translation/update" - this event emits on mode changed. Parameter: dictionary, that contains new translation
  * - "translation/get" - this event emits to collect all objects for translate. Parameter: array, that need to be filled by listener 
+ * - "translation/changed_language" - this event emits, when current language changed. Parameter: sc-addr of current language
+ * - "translation/change_language_start" - this event emits on language change start. Parameter: empty
  * (this array couldn't be cleared, listener just append new elements).
  */
 SCWeb.core.Translation = {
     
     listeners: [],
-       
+    current_lang: null,
+
     /** Updates all translations
      */
     update: function() {
-         var dfd = new jQuery.Deferred();
+        var dfd = new jQuery.Deferred();
 
         // collect objects, that need to be translated
         var objects = this.collectObjects();
@@ -55,7 +58,8 @@ SCWeb.core.Translation = {
      */
     setLanguage: function(lang_addr, callback) {
         var self = this;
-        SCWeb.core.Server.setLanguage(lang_addr, function() { 
+        SCWeb.core.Server.setLanguage(lang_addr, function() {
+            self.fireLanguageChanged(lang_addr);
             $.when(self.translate(self.collectObjects())).done(function (namesMap) {
                 self.fireUpdate(namesMap);
                 callback();
@@ -70,7 +74,11 @@ SCWeb.core.Translation = {
         // notify listeners for new translations
         SCWeb.core.EventManager.emit("translation/update", namesMap);
     },
-    
+
+    fireLanguageChanged: function(lang_addr) {
+        SCWeb.core.EventManager.emit("translation/changed_language", lang_addr);
+    },
+
     /** Collect objects for translation
      */
     collectObjects: function() {

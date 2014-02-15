@@ -23,7 +23,9 @@ SCWeb.ui.LanguagePanel = {
             .change(function() {
                 SCWeb.ui.Locker.show();
                 var addr = $('#language-select option:selected').attr("sc_addr");
+                $('#language-select').attr('disabled', true);
                 SCWeb.core.Translation.setLanguage(addr, function() {
+                    $('#language-select').removeAttr('disabled', true);
                     SCWeb.ui.Locker.hide();
                 });
             });

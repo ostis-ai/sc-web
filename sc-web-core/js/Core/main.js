@@ -17,6 +17,8 @@ SCWeb.core.Main = {
         var self = this;
         //SCWeb.ui.Locker.show();
 
+        SCWeb.core.Server._initialize();
+
         $.when(SCWeb.ui.TaskPanel.init()).done(function() {
             SCWeb.core.Server.init(function(data) {
                 self.window_types = data.window_types;
@@ -25,6 +27,8 @@ SCWeb.core.Main = {
                 self.user = data.user;
                 
                 data.menu_container_id = params.menu_container_id;
+
+                SCWeb.core.Translation.fireLanguageChanged(self.user.current_lang);
 
                 $.when(SCWeb.ui.Core.init(data),
                     SCWeb.core.ComponentManager.init(),

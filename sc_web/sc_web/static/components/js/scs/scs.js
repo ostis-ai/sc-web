@@ -1026,9 +1026,8 @@ SCs.SCnTree.prototype = {
                 var found = false;
                 var backward = false;
 
-                // collect all sc-addrs
+                // collect all sc-addrs (do not collect addrs of edges in triples, because addrs used to resolve identifiers)
                 this._appendAddr(tpl[0]);
-                this._appendAddr(tpl[1]);
                 this._appendAddr(tpl[2]);
                 
                 if (!tpl.output && !tpl.ignore) {

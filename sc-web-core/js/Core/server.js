@@ -10,7 +10,28 @@ SCWeb.core.Server = {
     _task_max_active_num: 10, // maximum number of active tasks
     _task_timeout: 0, // timer id for tasks queue
     _task_frequency: 100,   // task timer frequency
-    
+
+    _current_language: null,
+    _identifiers_cache: null,
+    _sys_identifiers_cache: null,
+
+    _initialize: function() {
+        var expire = 1000 * 60 * 5; // five minutes expire
+        this._identifiers_cache = new AppCache({
+                expire: expire,
+                max: 3000
+        });
+
+        this._sys_identifiers_cache = new AppCache({
+                expire: expire,
+                max: 3000
+        });
+
+        SCWeb.core.EventManager.subscribe("translation/changed_language", this, function(lang_addr) {
+            SCWeb.core.Server._current_language = lang_addr;
+        });
+    },
+
     /*!
      * Append new listener to server tasks
      * @param {Object} listener Listener object.
@@ -140,29 +161,60 @@ SCWeb.core.Server = {
             callback();
             return; // do nothing
         }
-        
-        var data = '', id, index;
-        var idx = 1;
-        var used = {};
-        for(var i = 1; i <= objects.length; i++) {
-            id = objects[i - 1];
+
+        var self = this;
+        function getKey(addr) {
+            return self._current_language + '/' + addr;
+        }
+
+        var result = {},
+            data = '', id, index;
+            idx = 1, used = {}, need_resolve = [];
+
+        for(var i = 0; i < objects.length; i++) {
+            id = objects[i];
             
             if (used[id]) continue; // skip objects, that was processed
             used[id] = true;
             
+            var cached = this._identifiers_cache.get(getKey(id));
+            if (cached) {
+                if (cached !== '.') {
+                    result[id] = cached;
+                }
+                continue;
+            }
+            
             index = idx + '_';
             idx += 1;
-            if (i != 1) data += '&';
+            if (i != 0) data += '&';
             data += index + '=' + id;
+
+            need_resolve.push(id);
         }
 
-        //TODO: change to POST because the data may reach the limit of GET parameters string
-        this._push_task({
-            type: 'POST',
-            url: 'api/idtf/resolve/',
-            data: data,
-            success: callback
-        });
+        if (need_resolve.length == 0) { // all results cached
+            callback(result);
+        } else {
+            //TODO: change to POST because the data may reach the limit of GET parameters string
+            this._push_task({
+                type: 'POST',
+                url: 'api/idtf/resolve/',
+                data: data,
+                success: function(names) {
+                    for (i in need_resolve) {
+                        var addr = need_resolve[i],
+                            v = names[addr];
+
+                        if (v) {
+                            result[addr] = v;
+                        }
+                        self._identifiers_cache.set(getKey(addr), v ? v : '.');
+                    }
+                    callback(result);
+                }
+            });
+        }
     },
     
     /*! Function to initiate user command on server
@@ -228,19 +280,41 @@ SCWeb.core.Server = {
      * @param {callback} Callback function that calls, when sc-addrs resovled. It
      * takes object that contains map of resolved sc-addrs as parameter
      */
-    resolveScAddr: function(idtfList, callback){
-        var arguments = '';
-        for (i = 0; i < idtfList.length; i++){
+    resolveScAddr: function(idtfList, callback) {
+        var self = this, arguments = '', need_resolve = [], result = {};
+
+        for (i = 0; i < idtfList.length; i++) {
             var arg = idtfList[i];
+            
+            var cached = this._sys_identifiers_cache.get(arg);
+            if (cached) {
+                result[arg] = cached;
+                continue;
+            }
+            need_resolve.push(arg);
             arguments += i.toString() + '_=' + arg + '&';
         }
-        
-        this._push_task({
-            type: "POST",
-            url: "api/addr/resolve/",
-            data: arguments,
-            success: callback
-        });
+
+        if (need_resolve.length == 0) {
+            callback(result);
+        } else {
+            this._push_task({
+                type: "POST",
+                url: "api/addr/resolve/",
+                data: arguments,
+                success: function(addrs) {
+                    for (i in need_resolve) {
+                        var key = need_resolve[i];
+                        var addr = addrs[key];
+                        if (addr) {
+                            self._sys_identifiers_cache.set(key, addr);
+                            result[key] = addr;
+                        }
+                    }
+                    callback(result);
+                }
+            });
+        }
     },
     
     /*!
@@ -272,7 +346,6 @@ SCWeb.core.Server = {
      * @param {Function} error Callback function, that calls on error
      */
     getLinkContent: function(addr, success, error) {
-        
         this._push_task({
                 url: "api/link/content/",
                 type: "GET",
