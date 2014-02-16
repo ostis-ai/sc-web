@@ -30,6 +30,7 @@ from django.conf import settings
 from django.http import HttpResponse
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.gzip import gzip_page 
 
 from keynodes import KeynodeSysIdentifiers, Keynodes
 from sctp.logic import new_sctp_client
@@ -114,6 +115,7 @@ def init(request):
 
 
 # -----------------------------------------
+@gzip_page
 @csrf_exempt
 def idtf_resolve(request):
     result = None
@@ -152,6 +154,7 @@ def idtf_resolve(request):
 
     return HttpResponse(result, 'application/json')
 
+@gzip_page
 def idtf_find(request):
     result = None
     if request.is_ajax():
@@ -578,6 +581,7 @@ def link_format(request):
 
     return HttpResponse(result, 'application/json')
 
+@gzip_page
 def link_content(request):
     result = '{}'
 
