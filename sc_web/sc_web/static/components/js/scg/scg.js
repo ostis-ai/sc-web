@@ -3658,10 +3658,6 @@ SCg.Tree = function() {
 SCg.Tree.prototype = {
     constructor: SCg.Tree,
 
-    init: function() {
-        
-    },
-
     build: function(triples) {
         
         this.triples = [];
@@ -3758,16 +3754,15 @@ var scgViewerWindow = function(sandbox){
     this.domContainer = sandbox.container;
     this.sandbox = sandbox;
     this.tree = new SCg.Tree();
-    this.tree.init();
     this.editor = new SCg.Editor();
     this.editor.init({containerId: sandbox.container});
 
     this.receiveData = function(data) {
         var dfd = new jQuery.Deferred();
     
-        this.collectTriples(data);
-        this.tree.build(this.triples);
-        //this._buildGraph(data);
+        /*this.collectTriples(data);
+        this.tree.build(this.triples);*/
+        this._buildGraph(data);
 
         dfd.resolve();
         return dfd.promise();
@@ -3827,6 +3822,7 @@ var scgViewerWindow = function(sandbox){
             if (el.el_type & sc_type_node || el.el_type & sc_type_link) {
                 var model_node = this.editor.scene.createNode(el.el_type, new SCg.Vector3(10 * Math.random(), 10 * Math.random(), 0), '');
                 model_node.setScAddr(el.id);
+                model_node.setObjectState(SCgObjectState.FromMemory);
                 
                 elements[el.id] = model_node;
             } else if (el.el_type & sc_type_arc_mask) {
@@ -3852,6 +3848,7 @@ var scgViewerWindow = function(sandbox){
                     
                     var model_edge = this.editor.scene.createEdge(beginNode, endNode, obj.el_type);
                     model_edge.setScAddr(obj.id);
+                    model_edge.setObjectState(SCgObjectState.FromMemory);
                     
                     elements[obj.id] = model_edge;
                 } 
