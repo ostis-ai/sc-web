@@ -257,29 +257,31 @@ SCWeb.ui.WindowManager = {
             dfd.resolve();
             return dfd.promise();
         }
+        
+        (function(containers_map) {
+            SCWeb.core.Server.getLinksFormat(linkAddrs,
+                function(formats) {
                     
-        SCWeb.core.Server.getLinksFormat(linkAddrs,
-            function(formats) {
-                
-                var result = {};
+                    var result = {};
 
-                for (var cntId in containers_map) {
-                    var addr = containers_map[cntId];
-                    var fmt = formats[addr];
-                    if (fmt) {
-                        var sandbox = SCWeb.core.ComponentManager.createWindowSandbox(fmt, addr, cntId);
-                        if (sandbox) {
-                            result[addr] = sandbox;
+                    for (var cntId in containers_map) {
+                        var addr = containers_map[cntId];
+                        var fmt = formats[addr];
+                        if (fmt) {
+                            var sandbox = SCWeb.core.ComponentManager.createWindowSandbox(fmt, addr, cntId);
+                            if (sandbox) {
+                                result[addr] = sandbox;
+                            }
                         }
                     }
+                    
+                    dfd.resolve();
+                },
+                function() {
+                    dfd.reject();
                 }
-                
-                dfd.resolve();
-            },
-            function() {
-                dfd.reject();
-            }
-        );
+            );
+        })(containers_map);
         
         return dfd.promise();
     },

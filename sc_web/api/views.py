@@ -366,9 +366,11 @@ def cmd_do(request):
                                         data = sctp_client.get_link_content(t[2]).decode('utf-8')
                                         if data:
                                             for idx in xrange(len(arguments)):
-                                                
+                                                value = arguments[idx].to_id()
                                                 if lang_idtfs.has_key(str(arguments[idx])):
-                                                    data = data.replace(u'$ui_arg_%d' % (idx + 1), lang_idtfs[str(arguments[idx])])
+                                                    value = lang_idtfs[str(arguments[idx])]
+                                                data = data.replace(u'$ui_arg_%d' % (idx + 1), value)
+                                                
                                             
                                             # generate identifier
                                             idtf_link = sctp_client.create_link()

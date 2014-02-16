@@ -12,7 +12,7 @@ HtmlComponent = {
 
 var HtmlViewer = function(sandbox) {
     this.data = null;
-    this.addrs = new Array();
+    this.addrs = [];
     this.container = '#' + sandbox.container;
     this.sandbox = sandbox;
     $(this.container).addClass("html-window");
@@ -43,17 +43,16 @@ var HtmlViewer = function(sandbox) {
 
         // resolve addrs
         SCWeb.core.Server.resolveScAddr(idtfList.concat(scLinksList), $.proxy(function(addrs) {
-            for (idtf in addrs) {
-                this.addrs.push(addrs[idtf]);
-            }
     
             var sc_elements = $(this.container + ' sc_element');
             for (var i = 0; i < sc_elements.length; ++i) {
-                var addr = addrs[ $(sc_elements[i]).attr('sys_idtf')];
+                var element = $(sc_elements[i]);
+                var addr = addrs[ element.attr('sys_idtf')];
                 if (addr) {
-                    $(sc_elements[i]).html('<a href="#" class="sc-element" sc_addr="' + addr + '">' + $(sc_elements[i]).html() + "</a>");
+                    this.addrs.push(addr);
+                    element.html('<a href="#" class="sc-element" sc_addr="' + addr + '">' + element.html() + "</a>");
                 } else {
-                    $(sc_elements[i]).addClass('sc-not-exist');
+                    element.addClass('sc-not-exist');
                 }
             }
 

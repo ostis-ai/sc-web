@@ -158,7 +158,7 @@ SCWeb.core.Server = {
     resolveIdentifiers: function(objects, callback) {
         
         if (objects.length == 0) {
-            callback();
+            callback({});
             return; // do nothing
         }
 
@@ -171,7 +171,7 @@ SCWeb.core.Server = {
             data = '', id, index;
             idx = 1, used = {}, need_resolve = [];
 
-        for(var i = 0; i < objects.length; i++) {
+        for(i in objects) {
             id = objects[i];
             
             if (used[id]) continue; // skip objects, that was processed
@@ -196,24 +196,25 @@ SCWeb.core.Server = {
         if (need_resolve.length == 0) { // all results cached
             callback(result);
         } else {
-            //TODO: change to POST because the data may reach the limit of GET parameters string
-            this._push_task({
-                type: 'POST',
-                url: 'api/idtf/resolve/',
-                data: data,
-                success: function(names) {
-                    for (i in need_resolve) {
-                        var addr = need_resolve[i],
-                            v = names[addr];
+            (function(result, data, need_resolve, callback) {
+                self._push_task({
+                    type: 'POST',
+                    url: 'api/idtf/resolve/',
+                    data: data,
+                    success: function(names) {
+                        for (j in need_resolve) {
+                            var addr = need_resolve[j],
+                                v = names[addr];
 
-                        if (v) {
-                            result[addr] = v;
+                            if (v) {
+                                result[addr] = v;
+                            }
+                            self._identifiers_cache.set(getKey(addr), v ? v : '.');
                         }
-                        self._identifiers_cache.set(getKey(addr), v ? v : '.');
+                        callback(result);
                     }
-                    callback(result);
-                }
-            });
+                });
+            })(result, data, need_resolve, callback);
         }
     },
     
@@ -255,24 +256,6 @@ SCWeb.core.Server = {
         });
     },
 
-    /*!
-     * Gets semantic neighbourhood for the specified node.
-     *
-     * @param {String} scAddr The SC address of node
-     * @param {String} outputLanguage The output language SC address
-     * @param {Function} callback
-     */
-    getSemanticNeighbourhood: function(scAddr, outputLanguage, callback) {
-        if(this._semanticNeighborhood.commandAddr) {
-            this.doCommand(this._semanticNeighborhood.commandAddr, outputLanguage, [scAddr], callback);
-        } else {
-            var me = this;
-            this.resolveScAddr([this._semanticNeighborhood.commandId], function(addressMap) {
-                me._semanticNeighborhood.commandAddr = addressMap[me._semanticNeighborhood.commandId];
-                me.doCommand(me._semanticNeighborhood.commandAddr, outputLanguage, [scAddr], callback);
-            });
-        }
-    },
     
     /*!
      * Function that resolve sc-addrs for specified sc-elements by their system identifiers
@@ -298,22 +281,24 @@ SCWeb.core.Server = {
         if (need_resolve.length == 0) {
             callback(result);
         } else {
-            this._push_task({
-                type: "POST",
-                url: "api/addr/resolve/",
-                data: arguments,
-                success: function(addrs) {
-                    for (i in need_resolve) {
-                        var key = need_resolve[i];
-                        var addr = addrs[key];
-                        if (addr) {
-                            self._sys_identifiers_cache.set(key, addr);
-                            result[key] = addr;
+            (function(result, arguments, need_resolve, callback) {
+                self._push_task({
+                    type: "POST",
+                    url: "api/addr/resolve/",
+                    data: arguments,
+                    success: function(addrs) {
+                        for (i in need_resolve) {
+                            var key = need_resolve[i];
+                            var addr = addrs[key];
+                            if (addr) {
+                                self._sys_identifiers_cache.set(key, addr);
+                                result[key] = addr;
+                            }
                         }
+                        callback(result);
                     }
-                    callback(result);
-                }
-            });
+                });
+            })(result, arguments, need_resolve, callback);
         }
     },
     
