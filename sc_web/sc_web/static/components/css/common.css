@@ -46,11 +46,11 @@ html.drag {
 }
 
 .main-container {
-    
+    width: 100%;
 }
 
 .window-container {
-    width: 95%;
+    width: 100%;
 }
 
 .hidden {
