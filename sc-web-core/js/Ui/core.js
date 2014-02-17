@@ -50,29 +50,28 @@ SCWeb.ui.Core = {
                         clearInterval(self.tooltip_interval);
                         self.tooltip_interval = null;
 
-                        self.tooltip_element.tooltip({
-                            html: true,
-                            placement: 'auto',
-                            trigger: 'manual',
-                            title: '<div class="tooltip-empty"></div>',
-                            animation: false,
-                            container: 'body'
-                        }).tooltip('show');
+                        
 
                         var addr = self.tooltip_element.attr('sc_addr');
                         if (addr) {
                             SCWeb.core.Server.getTooltips([addr], function(tips) {
                                 var value = tips[addr];
                                 if (value) {
-                                    self.tooltip_element.tooltip('hide')
-                                                .attr('data-original-title', value).tooltip('fixTitle').tooltip('show');
+                                    self.tooltip_element.tooltip({
+                                        html: true,
+                                        placement: 'auto',
+                                        trigger: 'manual',
+                                        title: value,
+                                        animation: true,
+                                        container: 'body'
+                                    }).tooltip('show');
                                 } else
                                     destroyTooltip();
                             }, function() {
                                 destroyTooltip();
                             });
                         }
-                    }, 2000);
+                    }, 1000);
                 })  
                 .delegate(sc_elements_selector, 'mouseout', function(e) {
                     self.sc_icon.addClass('hidden');
