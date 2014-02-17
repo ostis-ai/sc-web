@@ -50,8 +50,6 @@ SCWeb.ui.Core = {
                         clearInterval(self.tooltip_interval);
                         self.tooltip_interval = null;
 
-                        
-
                         var addr = self.tooltip_element.attr('sc_addr');
                         if (addr) {
                             SCWeb.core.Server.getTooltips([addr], function(tips) {
