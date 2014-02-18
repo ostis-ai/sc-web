@@ -167,7 +167,7 @@ SCs.SCnOutput.prototype = {
             output = '<div class="scs-scn-field scs-scn-field-root"><div class="scs-scn-keyword">' + this.treeNodeElementHtml(treeNode, true) + '</div>';
 
             if (treeNode.element.type & sc_type_link) {
-                output += '<div class="scs-scn-element scs-scn-field"><div class="scs-scn-field-marker scs-scn-element">=</div>'
+                output += '<div class="scs-scn-field"><div class="scs-scn-field-marker scs-scn-element">=</div>'
                         //+ '' //sc_addr="' + treeNode.element.addr + '">'
                         + this.treeNodeElementHtml(treeNode);
                         + '</div>';
