@@ -12,7 +12,7 @@ HtmlComponent = {
 
 var HtmlViewer = function(sandbox) {
     this.data = null;
-    this.addrs = [];
+    this.addrs = new Array();
     this.container = '#' + sandbox.container;
     this.sandbox = sandbox;
     $(this.container).addClass("html-window");
@@ -43,16 +43,17 @@ var HtmlViewer = function(sandbox) {
 
         // resolve addrs
         SCWeb.core.Server.resolveScAddr(idtfList.concat(scLinksList), $.proxy(function(addrs) {
+            for (idtf in addrs) {
+                this.addrs.push(addrs[idtf]);
+            }
     
             var sc_elements = $(this.container + ' sc_element');
             for (var i = 0; i < sc_elements.length; ++i) {
-                var element = $(sc_elements[i]);
-                var addr = addrs[ element.attr('sys_idtf')];
+                var addr = addrs[ $(sc_elements[i]).attr('sys_idtf')];
                 if (addr) {
-                    this.addrs.push(addr);
-                    element.html('<a href="#" class="sc-element" sc_addr="' + addr + '">' + element.html() + "</a>");
+                    $(sc_elements[i]).html('<a href="#" class="sc-element" sc_addr="' + addr + '">' + $(sc_elements[i]).html() + "</a>");
                 } else {
-                    element.addClass('sc-not-exist');
+                    $(sc_elements[i]).addClass('sc-not-exist');
                 }
             }
 
@@ -66,11 +67,13 @@ var HtmlViewer = function(sandbox) {
                 }
             }
             
-            
             $.when(this.sandbox.createViewersForScLinks(sc_links)).done(
                 function() {
                     dfd.resolve();
                 });
+                
+            $(this.container + ' a:not(.sc-element)').attr('target', '_blank');
+                
             //dfd.resolve();
         }, this));
 
