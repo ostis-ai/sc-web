@@ -231,14 +231,15 @@ SCWeb.ui.WindowManager = {
     /*!
      * Genarate html for new window container
      * @param {String} containerId ID that will be set to container
-     * @param {String} classes Classes that will be added to container
+     * @param {String} controlClasses Classes that will be added to controls
+     * @param {String} containerClasses Classes that will be added to container
      * @param {String} addr sc-addr of window
      */
-    generateWindowContainer: function(containerId, classes, addr) {
+    generateWindowContainer: function(containerId, containerClasses, controlClasses, addr) {
 
         return '<div class="sc-content-wrap" id="' + containerId + '_wrap"> \
-                    <div class="sc-content-controls"> </div> \
-                    <div id="' + containerId + '" class="sc-content ' + classes + '" sc_addr="' + addr + '"> </div> \
+                    <div class="sc-content-controls ' + controlClasses + '" sc_addr="' + addr + '"> </div> \
+                    <div id="' + containerId + '" class="sc-content ' + containerClasses + '"> </div> \
                 </div>';
     },
 

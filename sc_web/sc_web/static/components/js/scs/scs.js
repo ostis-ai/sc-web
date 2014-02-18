@@ -249,7 +249,7 @@ SCs.SCnOutput.prototype = {
             var containerId = this.container + '_' + this.linkCounter;
             this.linkCounter++;
             this.sc_links[containerId] = treeNode.element.addr;
-            return this.generateWindow(containerId, "scs-scn-element scs-scn-field scs-scn-highlighted", treeNode.element.addr);
+            return this.generateWindow(containerId, "scs-scn-field", "scs-scn-highlighted scs-scn-element", treeNode.element.addr);
             //return '<div class="scs-scn-element sc-content scs-scn-field scs-scn-highlighted" id="' + containerId + '" sc_addr="' + treeNode.element.addr + '">' + '</div>';
         }
 

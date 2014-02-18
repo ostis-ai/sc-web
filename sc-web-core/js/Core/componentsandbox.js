@@ -87,9 +87,9 @@ SCWeb.core.ComponentSandbox.prototype.doDefaultCommand = function(args) {
  * @param {String} classes Classes that will be added to container
  * @param {String} addr sc-addr of window
  */
-SCWeb.core.ComponentSandbox.prototype.generateWindowContainer = function(containerId, classes, addr) {
+SCWeb.core.ComponentSandbox.prototype.generateWindowContainer = function(containerId, containerClasses, controlClasses, addr) {
 
-    return SCWeb.ui.WindowManager.generateWindowContainer(containerId, classes, addr);
+    return SCWeb.ui.WindowManager.generateWindowContainer(containerId, containerClasses, controlClasses, addr);
 };
 
 /*! Returns keynode by it system identifier
