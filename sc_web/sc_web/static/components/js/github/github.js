@@ -16,7 +16,8 @@ var GithubViewer = function(sandbox) {
     this.data = {};
     this.container = '#' + sandbox.container;
     this.sandbox = sandbox;
-    this.languages = {'m': 'objectivec'};
+    this.languages = {'m': 'objectivec',
+						'h': 'cpp'};
 };
 
 GithubViewer.prototype.init = function() {
@@ -48,18 +49,20 @@ GithubViewer.prototype.receiveData = function(data) {
         $.ajax({
             url: 'https://api.github.com/repos/' + this.data['owner'] + '/' + this.data['repo'] + '/contents/' + this.data['path'],
             success: $.proxy(function(info) {
-                // get file extension
-                var path = this.data['path'];
-                var i = path.lastIndexOf('.');
-                var ext = '';
-                if (i >= 0) {
-                    ext = path.substr(i + 1);
-                }
-                var lang = this.languages[ext];
-                if (!lang) {
-                    lang = ext;
-                }
-
+				var lang = this.data['syntax'];
+				if (!lang) {
+					// get file extension
+					var path = this.data['path'];
+					var i = path.lastIndexOf('.');
+					var ext = '';
+					if (i >= 0) {
+						ext = path.substr(i + 1);
+					}
+					var lang = this.languages[ext];
+					if (!lang) {
+						lang = ext;
+					}
+				}
                 var result = hljs.highlight(lang, Base64.decode(info.content));
                 $(this.container).html('<pre>' + result.value + '</pre>');
             }, this),
