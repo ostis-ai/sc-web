@@ -42,9 +42,9 @@ html.drag {
 }
 
 .loading {
-    background: #CCC url("../images/loading-cog.gif") no-repeat center center;
-    min-width: 64px;
-    min-height: 64px;
+    background: #CCC url("../images/load-content-cog.gif") no-repeat center center;
+    min-width: 36px;
+    min-height: 36px;
 }
 
 .main-container {
