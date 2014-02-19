@@ -121,11 +121,11 @@ def find_tooltip(addr, sctp_client, keys, lang):
                 ScElementType.sc_type_arc_pos_const_perm,
                 node
             )
-            
-            for c in check:
-                for t in order_list:
-                    if c[0] == t:
-                        found_map[str(t)].append(node)
+            if check:
+                for c in check:
+                    for t in order_list:
+                        if c[0] == t:
+                            found_map[str(t)].append(node)
                 
         for o in order_list:
             found_list = found_map[str(o)]

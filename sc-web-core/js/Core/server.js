@@ -264,7 +264,7 @@ SCWeb.core.Server = {
      * takes object that contains map of resolved sc-addrs as parameter
      */
     resolveScAddr: function(idtfList, callback) {
-        var self = this, arguments = '', need_resolve = [], result = {};
+        var self = this, arguments = '', need_resolve = [], result = {}, used = {};
 
         for (i = 0; i < idtfList.length; i++) {
             var arg = idtfList[i];
@@ -274,8 +274,12 @@ SCWeb.core.Server = {
                 result[arg] = cached;
                 continue;
             }
-            need_resolve.push(arg);
-            arguments += i.toString() + '_=' + arg + '&';
+            
+            if (used[arg]) continue;
+			used[arg] = true;
+            
+            arguments += need_resolve.length.toString() + '_=' + arg + '&';
+			need_resolve.push(arg);
         }
 
         if (need_resolve.length == 0) {
