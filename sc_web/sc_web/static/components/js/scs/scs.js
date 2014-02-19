@@ -4,11 +4,14 @@ var SCs = SCs || { version: "0.1.0" };
 SCs.Connectors = {};
 SCs.SCnConnectors = {};
 SCs.SCnSortOrder = [,
+				'nrel_section_base_order',
                 'nrel_main_idtf',
                 'nrel_system_identifier',
                 'nrel_idtf',
-                'nrel_section_base_order',
-                'nrel_section_decomposition'
+				'nrel_section_decomposition',
+				'rrel_key_sc_element',
+				'nrel_logo',
+				'nrel_location'                
                 ];
 
 SCs.SCnBallMarker = '●';
@@ -291,11 +294,12 @@ SCs.SCnOutput.prototype = {
 
         // prepare order map
         var orderMap = {}; 
-        for (idx in SCs.SCnSortOrder) {
+        for (var idx = 0; idx < SCs.SCnSortOrder.length; ++idx) {
             var addr = this.getKeynode(SCs.SCnSortOrder[idx]);
             if (addr)
-                orderMap[addr] = idx;
+                orderMap[addr] = idx + 1;
         }
+        
 
         function sortCompare(a, b) {
             // determine order by attributes
@@ -310,11 +314,17 @@ SCs.SCnOutput.prototype = {
                 var res = null;
                 for (i in attrs) {
                     var v = orderMap[attrs[i].n.addr];
+                    if (!v) {
+						v = SCs.SCnSortOrder.length;
+					}
+					if (attrs[i].n.type & sc_type_node_role) {
+						v += 10;
+					}
                     if (!res || (v && v < res)) {
                         res = v;
                     }
                 }
-                return res + 1;
+                return (res === null) ? ((attrs.length > 0) ? (SCs.SCnSortOrder.length + 1) : null) : (res + 1);
             }
             
             if (a.parent && b.parent) {
@@ -326,8 +336,12 @@ SCs.SCnOutput.prototype = {
                     if (oA && oB) {
                         return oA - oB;
                     } else {
-                        if (!oA && oB) return 1;
-                        if (!oB && oA) return -1;
+                        if (!oA && oB) {
+							return 1;
+						}
+                        if (!oB && oA) {
+							return -1;
+						}
                     }
                     
                     return 0;
@@ -340,8 +354,12 @@ SCs.SCnOutput.prototype = {
             if (orderA && orderB) {
                 return orderA - orderB;
             } else {
-                if (!orderA && orderB) return 1;
-                if (!orderB && orderA) return -1;
+                if (!orderA && orderB) {
+					return 1;
+				}
+                if (!orderB && orderA) {
+					return -1;
+				}
             }
 
             // order by attribute addrs (simple compare, without semantic)
