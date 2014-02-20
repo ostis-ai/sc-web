@@ -3855,8 +3855,8 @@ var scgViewerWindow = function(sandbox){
             }
         }
         
-        if (edges.length > 0)
-            alert("error");
+        /*if (edges.length > 0)
+            alert("error");*/
         
         this.editor.render.update();
         this.editor.scene.layout();

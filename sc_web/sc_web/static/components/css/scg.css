@@ -181,34 +181,48 @@ path.SCgEdge.hidden {
 }
 
 .SCgBusEndPoint {
-	stroke: #FBF4F2;
+    stroke: #FBF4F2;
     stroke-width: 0;
-    fill: #D60011;	
+    fill: #D60011;  
 }
 
 .SCgBusEndPointHighlighted {
-	stroke: #FFBE52;
+    stroke: #FFBE52;
     stroke-width: 0;
-    fill: #FF3300;	
+    fill: #FF3300;  
 }
 
 
 path.SCgBus {
     fill:   none;
-	stroke: black;
+    stroke: black;
     stroke-dasharray: none;
     stroke-width: 5px;
 }
 
 path.SCgBusPath {
     fill:   none;
-    stroke-width: 5px;	
+    stroke-width: 5px;  
 }
 
 /* ----- States ----- */
 .SCgStateNormal {
     stroke: #000;
     cursor: pointer;
+}
+
+.SCgStateMergedWithMemory {
+    stroke: #123A65;
+    cursor: pointer;
+}
+
+.SCgStateNewInMemory {
+    stroke: #5E7027;
+    cursor: pointer;
+}
+
+.SCgStateFromMemory {
+    
 }
 
 .SCgStateHighlighted {
