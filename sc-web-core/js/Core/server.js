@@ -276,10 +276,10 @@ SCWeb.core.Server = {
             }
             
             if (used[arg]) continue;
-			used[arg] = true;
+            used[arg] = true;
             
             arguments += need_resolve.length.toString() + '_=' + arg + '&';
-			need_resolve.push(arg);
+            need_resolve.push(arg);
         }
 
         if (need_resolve.length == 0) {
@@ -376,7 +376,7 @@ SCWeb.core.Server = {
     findIdentifiersSubStr: function(str, callback) {
 
         $.ajax({
-            url: "api/idtf/find",
+            url: "api/idtf/find/",
             data: {"substr": str},
             type: "GET",
             success: callback
