@@ -40,6 +40,21 @@ SCWeb.core.Main = {
             });
         });
         
+        // test
+        var ws = new WebSocket('ws://' + window.location.hostname + ":" + window.location.port + '/ws');
+        ws.onopen = function() {
+            ws.send("Hello");
+        }
+        ws.onmessage = function(ev) {
+            alert(ev.data);
+        }
+        
+        ws.onclose = function(ev) {
+        }
+        
+        ws.onerror = function(ev) {
+        }
+        
         return dfd.promise();
     },
 

@@ -54,8 +54,7 @@ class SctpClient:
         try:
             self.sock.connect((host, port))
         except Exception, e:
-            print "can't connect to %s:%d. Exception type is %s" % (host, port, `e`)
-                
+            print "can't connect to %s:%d. Exception type is %s" % (host, port, `e`)                
 
     def shutdown(self):
         """Close network session

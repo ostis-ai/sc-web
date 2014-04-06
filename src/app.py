@@ -5,6 +5,7 @@ import secret
 
 from handlers.main import MainHandler
 import handlers.api as api
+import ws
 
 def main():
     
@@ -23,6 +24,8 @@ def main():
     
     application = tornado.web.Application([
         (r"/", MainHandler),
+        
+        # api
         (r"/api/init/", api.Init),
         (r"/api/cmd/do/", api.CmdDo),
         
@@ -39,7 +42,10 @@ def main():
         
         (r"/api/addr/resolve/", api.AddrResolve),
         
-        (r"/api/info/tooltip/", api.InfoTooltip)
+        (r"/api/info/tooltip/", api.InfoTooltip),
+        
+        # web socket
+        (r"/ws", ws.SocketHandler)
     ],
         cookie_secret = secret.get_secret(),
         login_url = "/auth/login",
