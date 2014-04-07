@@ -2,6 +2,7 @@ import tornado.ioloop
 import tornado.web
 import tornado.options
 import secret
+import sockjs.tornado
 
 from handlers.main import MainHandler
 import handlers.api as api
@@ -22,31 +23,38 @@ def main():
     tornado.options.parse_command_line()
     tornado.options.parse_config_file("server.conf")
     
-    application = tornado.web.Application([
-        (r"/", MainHandler),
+    socketRouter = sockjs.tornado.SockJSRouter(ws.SocketHandler, '/sctp')
+    
+    rules = [
+            (r"/", MainHandler),
         
-        # api
-        (r"/api/init/", api.Init),
-        (r"/api/cmd/do/", api.CmdDo),
-        
-        (r"/api/question/answer/translate/", api.QuestionAnswerTranslate),
-        
-        (r"/api/link/content/", api.LinkContent),
-        (r"/api/link/format/", api.LinkFormat),
-        
-        (r"/api/languages/", api.Languages),
-        (r"/api/languages/set/", api.LanguageSet),
-        
-        (r"/api/idtf/find/", api.IdtfFind),
-        (r"/api/idtf/resolve/", api.IdtfResolve),
-        
-        (r"/api/addr/resolve/", api.AddrResolve),
-        
-        (r"/api/info/tooltip/", api.InfoTooltip),
-        
-        # web socket
-        (r"/ws", ws.SocketHandler)
-    ],
+            # api
+            (r"/api/init/", api.Init),
+            (r"/api/cmd/do/", api.CmdDo),
+            
+            (r"/api/question/answer/translate/", api.QuestionAnswerTranslate),
+            
+            (r"/api/link/content/", api.LinkContent),
+            (r"/api/link/format/", api.LinkFormat),
+            
+            (r"/api/languages/", api.Languages),
+            (r"/api/languages/set/", api.LanguageSet),
+            
+            (r"/api/idtf/find/", api.IdtfFind),
+            (r"/api/idtf/resolve/", api.IdtfResolve),
+            
+            (r"/api/addr/resolve/", api.AddrResolve),
+            
+            (r"/api/info/tooltip/", api.InfoTooltip)
+            ]
+    
+    print rules.extend(socketRouter.urls)
+    
+    for r in rules:
+        print r
+    
+    application = tornado.web.Application(
+        rules,                                          
         cookie_secret = secret.get_secret(),
         login_url = "/auth/login",
         template_path = tornado.options.options.templates_path,

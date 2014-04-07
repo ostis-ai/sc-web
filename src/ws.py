@@ -5,6 +5,7 @@ import socket
 import time
 import sctp.types
 import sctp.logic
+import sockjs.tornado
 
 clients = []
 
@@ -48,7 +49,7 @@ class SocketProxy:
         
         return res
 
-class SocketHandler(tornado.websocket.WebSocketHandler):
+class SocketHandler(sockjs.tornado.SockJSConnection):
 
     header_size= 10
     edit_commands = [sctp.types.SctpCommandType.SCTP_CMD_CREATE_ARC,

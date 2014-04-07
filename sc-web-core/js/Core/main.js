@@ -40,20 +40,9 @@ SCWeb.core.Main = {
             });
         });
         
-        // test
-        var ws = new WebSocket('ws://' + window.location.hostname + ":" + window.location.port + '/ws');
-        ws.onopen = function() {
-            ws.send("Hello");
-        }
-        ws.onmessage = function(ev) {
-            alert(ev.data);
-        }
-        
-        ws.onclose = function(ev) {
-        }
-        
-        ws.onerror = function(ev) {
-        }
+        var client = new SctpClient();
+        client.connect('/sctp'); //window.location.protocol + "://" + window.location.hostname + ":" + window.location.port);
+        alert(client.check_element(sc_addr_from_id("0_1")));
         
         return dfd.promise();
     },
