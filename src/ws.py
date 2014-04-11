@@ -3,6 +3,7 @@ import tornado.websocket
 import struct
 import socket
 import time
+import json
 import sctp.types
 import sctp.logic
 import sockjs.tornado
@@ -16,28 +17,32 @@ class SocketProxy:
     
     def __init__(self, on_message):
         self.on_message = on_message
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        
-        host = tornado.options.options['sctp_host']
-        port = tornado.options.options['sctp_port']
-        try:
-            self.sock.connect((host, port))
-        except Exception, e:
-            print "can't connect to %s:%d. Exception type is %s" % (host, port, `e`)
-            self.sock = None
+        self.sctp_client = sctp.logic.new_sctp_client()
         
     def destroy(self):
         self.sock.close()
          
     def send(self, message):
-        self.sock.sendall(message)
         
-        # now we need to read header of request
-        header = self.receiveData(struct.calcsize(self.result_header_fmt))
-        cmdCode, cmdId, resCode, resSize = struct.unpack(self.result_header_fmt, header)
+        cmd = json.loads(message)
         
-        data = self.receiveData(resSize)
-        self.on_message(header + data)        
+        cmdCode = cmd['cmdCode']
+        
+        if cmdCode == sctp.types.SctpCommandType.SCTP_CMD_CHECK_ELEMENT:
+            resCode = sctp.types.SctpResultCode.SCTP_RESULT_FAIL
+            if self.sctp_client.check_element(sctp.types.ScAddr.parse_from_string(cmd['args'][0])):
+                resCode = sctp.types.SctpResultCode.SCTP_RESULT_OK
+                           
+            self.on_message(json.dumps({"resCode": resCode}))
+            
+        elif cmdCode == sctp.types.SctpCommandType.SCTP_CMD_FIND_ELEMENT_BY_SYSITDF:
+            res = self.sctp_client.find_element_by_system_identifier(str(cmd['args'][0]))
+            resCode = sctp.types.SctpResultCode.SCTP_RESULT_FAIL
+            if res is not None:
+                resCode = sctp.types.SctpResultCode.SCTP_RESULT_OK
+                
+            self.on_message(json.dumps({'resCode': resCode, 'result': res.to_id()}))
+        
         
     def receiveData(self, dataSize):
         res = ''
@@ -60,30 +65,20 @@ class SocketHandler(sockjs.tornado.SockJSConnection):
                      sctp.types.SctpCommandType.SCTP_CMD_SET_SYSIDTF,
                      sctp.types.SctpCommandType.SCTP_CMD_SHUTDOWN]
 
-    def open(self):
+    def on_open(self, info):
         if self not in clients:
             clients.append(self)
             
         self.buffer = None
-        self.proxy = SocketProxy(self.on_message)
+        self.proxy = SocketProxy(self.socket_write)
 
     def on_close(self):
         if self in clients:
             clients.remove(self)
             
     def on_message(self, message):
+        self.proxy.send(message)
         
-        if self.buffer is None:
-            self.buffer = message
-        else:
-            self.buffer = self.buffer + message
-                
-        # need to read header, and skip command that are trying to write data to sctp server
-        cmdCode, flags, cmdId, size = struct.unpack(self.command_header_fmt, self.buffer)
-        if cmdCode in self.edit_commands:
-            self.write(struct.pack(self.result_header_fmt, cmdCode, cmdId, sctp.types.SctpResultCode.SCTP_RESULT_FAIL, 0))
-            self.buffer = self.buffer[struct.calcsize(self.command_header_fmt) + size:]
-        else:
-            pass
-            
-        self.flush()
+    def socket_write(self, message):
+        self.send(message)
+        

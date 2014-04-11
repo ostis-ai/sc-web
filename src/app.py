@@ -48,10 +48,7 @@ def main():
             (r"/api/info/tooltip/", api.InfoTooltip)
             ]
     
-    print rules.extend(socketRouter.urls)
-    
-    for r in rules:
-        print r
+    rules.extend(socketRouter.urls)
     
     application = tornado.web.Application(
         rules,                                          

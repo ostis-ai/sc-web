@@ -1,3 +1,9 @@
+var sctp_client = new SctpClient();
+sctp_client.connect('/sctp', function() {
+    sctp_client.check_element("1_1");
+    sctp_client.find_element_by_system_identifier('nrel_main_idtf');
+});
+
 SCWeb.core.Main = {
     
     window_types: [],
@@ -39,10 +45,6 @@ SCWeb.core.Main = {
                     });
             });
         });
-        
-        var client = new SctpClient();
-        client.connect('/sctp'); //window.location.protocol + "://" + window.location.hostname + ":" + window.location.port);
-        alert(client.check_element(sc_addr_from_id("0_1")));
         
         return dfd.promise();
     },
