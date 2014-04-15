@@ -1,19 +1,5 @@
-var sctp_client = new SctpClient();
-sctp_client.connect('/sctp', function() {
-    
-    var helper = new ScHelper(sctp_client);
-    helper.init();
-    var keys = new ScKeynodes(helper);
-    keys.init();
-    
-    //sctp_client.check_element("1_1");
-    sctp_client.find_element_by_system_identifier('nrel_main_idtf').done(function(data) {
-        console.log(data);
-        sctp_client.check_element(data.result).done(function(data) {
-            console.log(data);
-        });
-    });
-});
+var scHelper = null;
+var scKeynodes = null; 
 
 
 SCWeb.core.Main = {
@@ -37,26 +23,42 @@ SCWeb.core.Main = {
 
         SCWeb.core.Server._initialize();
 
-        $.when(SCWeb.ui.TaskPanel.init()).done(function() {
-            SCWeb.core.Server.init(function(data) {
-                self.window_types = data.window_types;
-                self.lang_modes = data.lang_modes;
-                self.menu_commands = data.menu_commands;
-                self.user = data.user;
-                
-                data.menu_container_id = params.menu_container_id;
+        this.sctp_client = new SctpClient();
+        this.sctp_client.connect('/sctp', function() {
+        
+            scHelper = new ScHelper(self.sctp_client);
+            scKeynodes = new ScKeynodes(scHelper);
+            
+            scKeynodes.init().done(function() {
+                scHelper.init().done(function() {
 
-                SCWeb.core.Translation.fireLanguageChanged(self.user.current_lang);
+                     $.when(SCWeb.ui.TaskPanel.init()).done(function() {
+                        SCWeb.core.Server.init(function(data) {
+                            self.window_types = data.window_types;
+                            self.lang_modes = data.lang_modes;
+                            self.menu_commands = data.menu_commands;
+                            self.user = data.user;
 
-                $.when(SCWeb.ui.Core.init(data),
-                    SCWeb.core.ComponentManager.init(),
-                    SCWeb.core.DialogHistory.init(),
-                    SCWeb.core.Translation.update()
-                    ).done(function() {
-                        dfd.resolve();
+                            data.menu_container_id = params.menu_container_id;
+
+                            SCWeb.core.Translation.fireLanguageChanged(self.user.current_lang);
+
+                            $.when(SCWeb.ui.Core.init(data),
+                                SCWeb.core.ComponentManager.init(),
+                                SCWeb.core.DialogHistory.init(),
+                                SCWeb.core.Translation.update()
+                                ).done(function() {
+                                    dfd.resolve();
+                                });
+                        });
                     });
+
+                });
             });
+            
         });
+        
+       
         
         return dfd.promise();
     },

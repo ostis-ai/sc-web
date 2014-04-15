@@ -12,6 +12,6 @@ ScHelper.prototype.init = function() {
 
 /*! Function resolve commands hierarchy for main menu
  */
-ScHelper.prototype.getMainMenuCommands() {
+ScHelper.prototype.getMainMenuCommands = function() {
     
 };
