@@ -1,8 +1,20 @@
 var sctp_client = new SctpClient();
 sctp_client.connect('/sctp', function() {
-    sctp_client.check_element("1_1");
-    sctp_client.find_element_by_system_identifier('nrel_main_idtf');
+    
+    var helper = new ScHelper(sctp_client);
+    helper.init();
+    var keys = new ScKeynodes(helper);
+    keys.init();
+    
+    //sctp_client.check_element("1_1");
+    sctp_client.find_element_by_system_identifier('nrel_main_idtf').done(function(data) {
+        console.log(data);
+        sctp_client.check_element(data.result).done(function(data) {
+            console.log(data);
+        });
+    });
 });
+
 
 SCWeb.core.Main = {
     

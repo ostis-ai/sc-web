@@ -28,12 +28,18 @@ class SocketProxy:
         
         cmdCode = cmd['cmdCode']
         
+        def response_message(resCode, res):
+            if res is not None:
+                self.on_message(json.dumps({'resCode': resCode, 'result': res}))
+            else:
+                self.on_message(json.dumps({'resCode': resCode}))
+        
         if cmdCode == sctp.types.SctpCommandType.SCTP_CMD_CHECK_ELEMENT:
             resCode = sctp.types.SctpResultCode.SCTP_RESULT_FAIL
             if self.sctp_client.check_element(sctp.types.ScAddr.parse_from_string(cmd['args'][0])):
                 resCode = sctp.types.SctpResultCode.SCTP_RESULT_OK
                            
-            self.on_message(json.dumps({"resCode": resCode}))
+            response_message(resCode, None)
             
         elif cmdCode == sctp.types.SctpCommandType.SCTP_CMD_FIND_ELEMENT_BY_SYSITDF:
             res = self.sctp_client.find_element_by_system_identifier(str(cmd['args'][0]))
@@ -41,7 +47,23 @@ class SocketProxy:
             if res is not None:
                 resCode = sctp.types.SctpResultCode.SCTP_RESULT_OK
                 
-            self.on_message(json.dumps({'resCode': resCode, 'result': res.to_id()}))
+            response_message(resCode, res.to_id())
+            
+        elif cmdCode == sctp.types.SctpCommandType.SCTP_CMD_GET_ELEMENT_TYPE:
+            res = self.sctp_client.get_element_type(sctp.types.ScAddr.parse_from_string(cmd['args'][0]))
+            resCode = sctp.types.SctpResultCode.SCTP_RESULT_FAIL
+            if res is not None:
+                resCode = sctp.types.SctpResultCode.SCTP_RESULT_OK
+            
+            response_message(resCode, res)
+            
+        elif cmdCode == sctp.types.SctpCommandType.SCTP_CMD_GET_LINK_CONTENT:
+            res = self.sctp_client.get_link_content(sctp.types.ScAddr.parse_from_string(cmd['args'][0]))
+            resCode = sctp.types.SctpResultCode.SCTP_RESULT_FAIL
+            if res is not None:
+                resCode = sctp.types.SctpResultCode.SCTP_RESULT_OK
+                
+            response_message(resCode, res)
         
         
     def receiveData(self, dataSize):
