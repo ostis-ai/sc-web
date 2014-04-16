@@ -23,6 +23,8 @@ ScKeynodes.prototype.init = function() {
         this.resolveKeynode('ui_nrel_command_result'),
         this.resolveKeynode('ui_nrel_user_answer_formats'),
         
+        this.resolveKeynode('nrel_ui_commands_decomposition'),
+        
         this.resolveKeynode('ui_command_initiated'),
         this.resolveKeynode('ui_command_finished'),
         this.resolveKeynode('ui_nrel_user_used_language'),

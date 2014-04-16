@@ -32,24 +32,27 @@ SCWeb.core.Main = {
             scKeynodes.init().done(function() {
                 scHelper.init().done(function() {
 
-                     $.when(SCWeb.ui.TaskPanel.init()).done(function() {
-                        SCWeb.core.Server.init(function(data) {
-                            self.window_types = data.window_types;
-                            self.lang_modes = data.lang_modes;
-                            self.menu_commands = data.menu_commands;
-                            self.user = data.user;
+                    scHelper.getMainMenuCommands().done(function(main_menu) {
+                        
+                        $.when(SCWeb.ui.TaskPanel.init()).done(function() {
+                            SCWeb.core.Server.init(function(data) {
+                                self.window_types = data.window_types;
+                                self.lang_modes = data.lang_modes;
+                                self.menu_commands = main_menu;
+                                self.user = data.user;
 
-                            data.menu_container_id = params.menu_container_id;
+                                data.menu_container_id = params.menu_container_id;
 
-                            SCWeb.core.Translation.fireLanguageChanged(self.user.current_lang);
+                                SCWeb.core.Translation.fireLanguageChanged(self.user.current_lang);
 
-                            $.when(SCWeb.ui.Core.init(data),
-                                SCWeb.core.ComponentManager.init(),
-                                SCWeb.core.DialogHistory.init(),
-                                SCWeb.core.Translation.update()
-                                ).done(function() {
-                                    dfd.resolve();
-                                });
+                                $.when(SCWeb.ui.Core.init(data),
+                                    SCWeb.core.ComponentManager.init(),
+                                    SCWeb.core.DialogHistory.init(),
+                                    SCWeb.core.Translation.update()
+                                    ).done(function() {
+                                        dfd.resolve();
+                                    });
+                            });
                         });
                     });
 

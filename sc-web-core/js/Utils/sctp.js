@@ -85,7 +85,11 @@ SctpClient.prototype._push_task = function(task) {
             var obj = !(/[^,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t]/.test(
                         str.replace(/"(\\.|[^"\\])*"/g, ''))) &&
                         eval('(' + str + ')');
-            t.dfd.resolve(obj);
+            
+            if (obj.resCode == SctpResultCode.SCTP_RESULT_OK) {
+                t.dfd.resolve(obj);
+            } else
+                t.dfd.reject(obj);
             
             if (self.task_queue.length > 0)
                 self.task_timeout = window.setTimeout(process, this.task_frequency)
@@ -169,7 +173,10 @@ SctpClient.prototype.find_links_with_content = function(data) {
 
 
 SctpClient.prototype.iterate_elements = function(iterator_type, args) {
-    throw "Not implemented";
+    return this.new_request({
+        cmdCode: SctpCommandType.SCTP_CMD_ITERATE_ELEMENTS,
+        args: [iterator_type].concat(args)
+    });
 };
 
 
