@@ -1,6 +1,7 @@
 import tornado.web
+import base
 
-class MainHandler(tornado.web.RequestHandler):
+class MainHandler(base.BaseHandler):
     @tornado.web.asynchronous
     def get(self):
         first_time = self.get_cookie("first_time", "1")

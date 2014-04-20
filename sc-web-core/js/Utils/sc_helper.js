@@ -34,6 +34,36 @@ ScHelper.prototype.checkEdge = function(addr1, type, addr2 ) {
     return dfd.promise();
 };
 
+/*! Function to get elements of specified set
+ * @param addr {String} sc-addr of set to get elements
+ * @returns Returns promise objects, that resolved with a list of set elements. If 
+ * failed, that promise object rejects
+ */
+ScHelper.prototype.getSetElements = function(addr) {
+    var dfd = new jQuery.Deferred();
+    
+    this.sctp_client.iterate_elements(SctpIteratorType.SCTP_ITERATOR_3F_A_A,
+                                      [
+                                          addr,
+                                          sc_type_arc_pos_const_perm,
+                                          sc_type_node | sc_type_const
+                                      ])
+    .done(function (res) {
+        var langs = [];
+        
+        for (r in res.result) {
+            langs.push(res.result[r][2]);
+        }
+        
+        dfd.resolve(langs);
+        
+    }).fail(function () {
+        dfd.reject();
+    });
+    
+    return dfd.promise();
+};
+
 /*! Function resolve commands hierarchy for main menu.
  * It returns main menu command object, that contains whole hierarchy as a child objects
  */
@@ -124,4 +154,20 @@ ScHelper.prototype.getMainMenuCommands = function() {
     
     
     return parseCommand(scKeynodes.ui_main_menu, null);
+};
+
+/*! Function to get available native user languages
+ * @returns Returns promise object. It will be resolved with one argument - list of 
+ * available user native languages. If funtion failed, then promise object rejects.
+ */
+ScHelper.prototype.getLanguages = function() {
+    return scHelper.getSetElements(scKeynodes.languages);
+};
+
+/*! Function to get list of available output languages
+ * @returns Returns promise objects, that resolved with a list of available output languages. If 
+ * failed, that promise object rejects
+ */
+ScHelper.prototype.getOutputLanguages = function() {
+    return scHelper.getSetElements(scKeynodes.ui_external_languages);
 };

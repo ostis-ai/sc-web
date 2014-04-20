@@ -57,7 +57,7 @@ ScKeynodes.prototype.resolveKeynode = function(sys_idtf, property) {
             self[sys_idtf] = res.result;
         }
         
-        dfd.resolve();
+        dfd.resolve(res.result);
     });
     
     return dfd.promise();

@@ -18,7 +18,8 @@ def main():
     tornado.options.define("idtf_serach_limit", default = 30, help = "number of maximum results for searching by identifier", type = str)
     tornado.options.define("redis_host", default = "localhost", help = "host of redis server", type = str)
     tornado.options.define("redis_port", default = 6379, help = "port of redis server", type = int)
-    tornado.options.define("redis_db", default = 0, help = "number of redis database", type = int)
+    tornado.options.define("redis_db_idtf", default = 0, help = "number of redis database to store identifiers", type = int)
+    tornado.options.define("redis_db_user", default = 1, help = "number of redis database to store user info", type = int)
     
     tornado.options.parse_command_line()
     tornado.options.parse_config_file("server.conf")
@@ -45,7 +46,9 @@ def main():
             
             (r"/api/addr/resolve/", api.AddrResolve),
             
-            (r"/api/info/tooltip/", api.InfoTooltip)
+            (r"/api/info/tooltip/", api.InfoTooltip),
+            
+            (r"/api/user/", api.User),
             ]
     
     rules.extend(socketRouter.urls)

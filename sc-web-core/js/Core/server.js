@@ -142,12 +142,27 @@ SCWeb.core.Server = {
      * get recieved data from server as a parameter
      */
     init: function(callback) {
-        this._push_task({
-                type: 'GET',
-                url: 'api/init/',
+        $.ajax({
+                url: '/api/user/',
                 data: null,
-                success: callback
-            });
+                type: 'GET',
+                success: function(user) {
+                    scHelper.getMainMenuCommands(scKeynodes.ui_main_menu).done(function(menu_commands) {
+                        var data = {};
+                        data['menu_commands'] = menu_commands;
+                        data['user'] = user;
+                        
+                        scHelper.getLanguages().done(function(langs) {
+                            data['languages'] = langs;
+                            
+                            scHelper.getOutputLanguages().done(function(out_langs) {
+                                data['external_languages'] = out_langs;
+                                callback(data);
+                            });
+                        });
+                    });
+                }
+        });        
     },
 
     /*!

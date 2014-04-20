@@ -8,6 +8,7 @@ from sctp.types import ScAddr, SctpIteratorType, ScElementType
 
 import api_logic as logic
 import time
+import base
 
 
 def serialize_error(handler, code, message):
@@ -16,7 +17,7 @@ def serialize_error(handler, code, message):
         handler.finish(message)
 # -------------------------------------------        
 
-class Init(tornado.web.RequestHandler):
+class Init(base.BaseHandler):
     @tornado.web.asynchronous
     def get(self):
         result = '{}'
@@ -69,7 +70,7 @@ class Init(tornado.web.RequestHandler):
         self.finish(json.dumps(result))
         
         
-class CmdDo(tornado.web.RequestHandler):
+class CmdDo(base.BaseHandler):
     
     @tornado.web.asynchronous
     def post(self):
@@ -279,7 +280,7 @@ class CmdDo(tornado.web.RequestHandler):
         self.finish(json.dumps(result))
         
         
-class QuestionAnswerTranslate(tornado.web.RequestHandler):
+class QuestionAnswerTranslate(base.BaseHandler):
     
     @tornado.web.asynchronous
     def post(self):
@@ -362,7 +363,7 @@ class QuestionAnswerTranslate(tornado.web.RequestHandler):
         self.finish(result) 
         
         
-class LinkContent(tornado.web.RequestHandler):
+class LinkContent(base.BaseHandler):
     
     @tornado.web.asynchronous
     def get(self):
@@ -386,7 +387,7 @@ class LinkContent(tornado.web.RequestHandler):
         self.finish(result)
         
         
-class LinkFormat(tornado.web.RequestHandler):
+class LinkFormat(base.BaseHandler):
     
     @tornado.web.asynchronous
     def post(self):
@@ -432,7 +433,7 @@ class LinkFormat(tornado.web.RequestHandler):
         
         
         
-class Languages(tornado.web.RequestHandler):
+class Languages(base.BaseHandler):
     
     @tornado.web.asynchronous
     def get(self):
@@ -446,7 +447,7 @@ class Languages(tornado.web.RequestHandler):
         self.finish(json.dumps(langs))
     
     
-class LanguageSet(tornado.web.RequestHandler):
+class LanguageSet(base.BaseHandler):
     
     @tornado.web.asynchronous
     def post(self):
@@ -461,7 +462,7 @@ class LanguageSet(tornado.web.RequestHandler):
         self.set_header("Content-Type", "application/json")
         self.finish()
     
-class IdtfFind(tornado.web.RequestHandler):
+class IdtfFind(base.BaseHandler):
     
     @tornado.web.asynchronous
     def get(self):
@@ -518,7 +519,7 @@ class IdtfFind(tornado.web.RequestHandler):
         self.set_header("Content-Type", "application/json")
         self.finish(json.dumps(result))
         
-class IdtfResolve(tornado.web.RequestHandler):
+class IdtfResolve(base.BaseHandler):
     
     @tornado.web.asynchronous
     def post(self):
@@ -560,7 +561,7 @@ class IdtfResolve(tornado.web.RequestHandler):
         self.finish(json.dumps(result))
         
         
-class AddrResolve(tornado.web.RequestHandler):
+class AddrResolve(base.BaseHandler):
     
     @tornado.web.asynchronous
     def post(self):
@@ -590,7 +591,7 @@ class AddrResolve(tornado.web.RequestHandler):
         self.finish(json.dumps(res))
         
         
-class InfoTooltip(tornado.web.RequestHandler):
+class InfoTooltip(base.BaseHandler):
     
     @tornado.web.asynchronous
     def post(self):
@@ -622,3 +623,25 @@ class InfoTooltip(tornado.web.RequestHandler):
         self.finish(json.dumps(res))
 
     
+    
+class User(base.BaseHandler):
+    
+    @tornado.web.asynchronous
+    def get(self):
+        result = '{}'
+    
+        sctp_client = new_sctp_client()
+        keys = Keynodes(sctp_client)
+        
+        # get user sc-addr
+        sc_session = logic.ScSession(self, sctp_client, keys)
+        user_addr = sc_session.get_sc_addr()
+        result = {
+                    'sc_addr': user_addr.to_id(),
+                    'is_authenticated': False,
+                    'current_lang': sc_session.get_used_language().to_id(),
+                    'default_ext_lang': sc_session.get_default_ext_lang().to_id()
+        }
+    
+        self.set_header("Content-Type", "application/json")
+        self.finish(json.dumps(result))

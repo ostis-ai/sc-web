@@ -26,40 +26,35 @@ SCWeb.core.Main = {
         this.sctp_client = new SctpClient();
         this.sctp_client.connect('/sctp', function() {
         
-            scHelper = new ScHelper(self.sctp_client);
-            scKeynodes = new ScKeynodes(scHelper);
-            
-            scKeynodes.init().done(function() {
-                scHelper.init().done(function() {
+        scHelper = new ScHelper(self.sctp_client);
+        scKeynodes = new ScKeynodes(scHelper);
 
-                    scHelper.getMainMenuCommands().done(function(main_menu) {
-                        
-                        $.when(SCWeb.ui.TaskPanel.init()).done(function() {
-                            SCWeb.core.Server.init(function(data) {
-                                self.window_types = data.window_types;
-                                self.lang_modes = data.lang_modes;
-                                self.menu_commands = main_menu;
-                                self.user = data.user;
+        scKeynodes.init().done(function() {
+            scHelper.init().done(function() {
 
-                                data.menu_container_id = params.menu_container_id;
+                    $.when(SCWeb.ui.TaskPanel.init()).done(function() {
+                        SCWeb.core.Server.init(function(data) {
+                            self.menu_commands = data.menu_commands;
+                            self.user = data.user;
 
-                                SCWeb.core.Translation.fireLanguageChanged(self.user.current_lang);
+                            data.menu_container_id = params.menu_container_id;
 
-                                $.when(SCWeb.ui.Core.init(data),
-                                    SCWeb.core.ComponentManager.init(),
-                                    SCWeb.core.DialogHistory.init(),
-                                    SCWeb.core.Translation.update()
-                                    ).done(function() {
-                                        dfd.resolve();
-                                    });
+                            SCWeb.core.Translation.fireLanguageChanged(self.user.current_lang);
+
+                            $.when(SCWeb.ui.Core.init(data),
+                                SCWeb.core.ComponentManager.init(),
+                                SCWeb.core.DialogHistory.init(),
+                                SCWeb.core.Translation.update()
+                                ).done(function() {
+                                    dfd.resolve();
                             });
                         });
                     });
-
                 });
+
             });
-            
         });
+            
         
        
         
