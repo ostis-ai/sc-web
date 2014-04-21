@@ -105,9 +105,11 @@ ScHelper.prototype.getMainMenuCommands = function() {
                 var res = {};
                 res['cmd_type'] = type;
                 res['id'] = cmd_addr;
-                res['childs'] = [];
                 
                 if (parent_cmd) {
+                    if (!parent_cmd.hasOwnProperty('childs'))
+                        parent_cmd['childs'] = [];
+
                     parent_cmd.childs.push(res);
                 }
                 
