@@ -43,9 +43,15 @@ class SctpCommandType:
     SCTP_CMD_GET_ARC_BEGIN      = 0x07 # return begin element of sc-arc
     SCTP_CMD_GET_ARC_END        = 0x08 # return end element of sc-arc
     SCTP_CMD_GET_LINK_CONTENT   = 0x09 # return content of sc-link
-    SCTP_CMD_FIND_LINKS         = 0x0A # return sc-links with specified content
+    SCTP_CMD_FIND_LINKS         = 0x0a # return sc-links with specified content
     SCTP_CMD_SET_LINK_CONTENT   = 0x0b # setup new content for the link
-    SCTP_CMD_ITERATE_ELEMENTS   = 0x0C # return base template iteration result
+    SCTP_CMD_ITERATE_ELEMENTS   = 0x0c # return base template iteration result
+    
+    SCTP_CMD_ITERATE_CONSTRUCTION = 0x0d # return advanced template iteration results
+    SCTP_CMD_EVENT_CREATE       = 0x0e # create subscription to specified event
+    SCTP_CMD_EVENT_DESTROY      = 0x0f # destroys specified event subscription
+    SCTP_CMD_EVENT_EMIT         = 0x10 # emits specified event to client
+
 
     SCTP_CMD_FIND_ELEMENT_BY_SYSITDF = 0xa0 # return sc-element by it system identifier
     SCTP_CMD_SET_SYSIDTF        = 0xa1   # setup new system identifier for sc-element
@@ -111,6 +117,14 @@ class ScElementType:
     sc_type_permanency_mask =   (sc_type_arc_perm | sc_type_arc_temp)
     sc_type_node_struct_mask=   (sc_type_node_tuple | sc_type_node_struct | sc_type_node_role | sc_type_node_norole | sc_type_node_class | sc_type_node_abstract | sc_type_node_material)
     sc_type_arc_mask        =   (sc_type_arc_access | sc_type_arc_common | sc_type_edge_common)
+    
+class ScEventType:
+        
+    SC_EVENT_ADD_OUTPUT_ARC = 0
+    SC_EVENT_ADD_INPUT_ARC = 1
+    SC_EVENT_REMOVE_OUTPUT_ARC = 2
+    SC_EVENT_REMOVE_INPUT_ARC = 3
+    SC_EVENT_REMOVE_ELEMENT = 4
 
 
 class ScAddr:
