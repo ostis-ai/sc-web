@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    {% block extrameta %}{% end %}
+    <title>{% block title %}OSTIS{% end %}</title>
+
+    <link rel="stylesheet" type="text/css" href="{{ static_url("common/bootstrap/css/bootstrap.min.css") }}" />
+    <link rel="stylesheet" type="text/css" href="{{ static_url("common/bootstrap/css/bootstrap-multilevel.css") }}" />
+    <link rel="stylesheet" type="text/css" href="{{ static_url("components/css/common.css") }}" />
+    {% block extrastyles %}{% end %}
+
+    {% include 'common.html' %}
+    {% block extrapluginscripts %}{% end %}
+
+    {% include 'components.html' %}
+    {% block extrascripts %}{% end %}
+
+    {% block head %}{% end %}
+</head>
+
+{% block body %}
+<body id="body">
+
+    <!-- header -->
+    <!--<div class="page-header">
+        <h1>IMS<small>OSTIS</small></h1>
+    </div>-->
+    <nav class="navbar navbar-default navbar-fixed-top" role="banner">
+        <div class="navbar-header">
+            {#<a class="navbar-brand" href="#">OSTIS</a>#}
+            <!-- Help button -->
+            <div id="help_button" class="help-button navbar-form pull-left">
+                <a data-toggle="modal" data-target="#help-modal"><img src="{{ static_url("components/images/help-red.png") }}" class="help-button"/></a>
+            </div>
+        </div>
+
+        <div id="menu_container">
+            <!-- there will be placed menu items -->
+        </div>
+        <div id="task_panel" class="task_icon navbar-form pull-right" sc_control_sys_idtf="ui_control_task_panel">
+            <span id="task_num" class="task_text">0</span>
+        </div>
+
+        <div id="auth-user-panel" class="pull-right">
+            {% if user['loggedin'] %}
+            <div id="auth-user-registered">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <div class="auth-user-image pull-left" ></div>
+                            <div class="pull-left"><span id="auth-user-name" >{# name will be placed later #}</span></div>
+                            <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a id="auth-user-ext-lang"></a>
+                            </li>
+                            <li class="divider"></li>
+                            {# <li><a href="{% url accounts:logout %}">Logout</a></li> #}
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            {% else %}
+            <ul class="nav navbar-nav">
+                <li><a href="#js-accounts-login-modal" data-toggle="modal">Login</a></li>
+                {# <li><a href="{% url accounts:registration %}">Register</a></li> #}
+            </ul>
+            {% end %}
+        </div>
+        
+        <div id="language-panel" class="pull-right">
+            <form class="navbar-form navbar-right" sc_control_sys_idtf="ui_control_select_idtf_mode">
+                <select id="language-select" class="form-control" style="width: 150px;">
+                </select>
+            </form>
+        </div>
+        
+        <div id="search-panel">
+            <form class="navbar-form navbar-right" role="search">
+              <div class="form-group">
+                <input id="search-input" type="text" class="typeahead form-control" x-webkit-speech sc_control_sys_idtf="ui_control_search_idtf_edit" style="width: 250px;" placeholder="Search" data-provide="typeahead" autocomplete="off">
+              </div>
+              {# <button type="button" class="btn btn-success"><span class="glyphicon glyphicon-search"></span></button> #}
+            </form>
+        </div>
+    </nav>
+
+    <!-- main content -->
+    <div id="main-container" class="main-container row">
+        <div class="col-xs-2 col-sm-2 col-md-2">
+            <div id="history-container" class="panel panel-default">
+                <div class="btn-group">
+                    
+                    <button type="button" class="histoy-item-btn btn btn-success " data-toggle="dropdown" sc_control_sys_idtf="ui_control_select_window_type">
+                        <span class="glyphicon glyphicon-list-alt"></span>
+                    </button>
+                    <ul id="history-item-langs" class="dropdown-menu" role="menu">{# languages will be added #}</ul>
+                    <button type="button" class="btn btn-success" id="history-item-print" sc_control_sys_idtf="ui_control_print_window_content">
+                        <span class="glyphicon glyphicon-print"></span>
+                    </button>
+                    
+                </div>
+                <div>
+                    <ul id="history-items" class="list-group">{# Tabs will be added later #}</ul>
+                </div>
+            </div>
+        </div>
+        <div id="window-container" class="col-xs-10 col-sm-10 col-md-10">{# Windows will be added later #}</div>
+    </div>
+
+    <div id="footer" class="navbar navbar-default navbar-fixed-bottom">
+        <div class="navbar-inner">
+            <div id="arguments_container" class="argument-container">
+                <div class="btn-group">
+                    <button id="arguments_clear_button" class="btn btn-danger" sc_control_sys_idtf="ui_control_argument_button_clear"><span class="glyphicon glyphicon-remove-sign"></span></button>
+                    <button id="arguments_add_button" class="btn btn-success" {#sc_control_sys_idtf="ui_control_argument_button_add"#}><span class="glyphicon glyphicon-plus-sign"></span></button>
+                </div>
+                
+                <div id="arguments_buttons" class="btn-group argument-buttons">
+                    <!-- Buttons will be inserted on arguments append -->
+                </div>
+            </div>
+            <span class="copyright">Copyright © 2012 - 2014 <a href="#">OSTIS</a> </span>
+        </div>
+    </div>
+
+
+    <!-- Modal -->
+    <div id="help-modal" class="modal fade bs-modal-lg" tabindex="-1" role="dialog" aria-labelledby="Help" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div id="help-modal-body" class="modal-content modal-empty">
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+
+    <div class="sc-cursor-icon hidden">SC</div>
+
+
+    <script type="text/javascript">
+
+        $(document).ready(function() {
+            SCWeb.ui.Locker.show();
+            var params = {
+                        menu_container_id: 'menu_container'
+                    };
+            $.when(SCWeb.core.Main.init(params)).done(function() {
+                SCWeb.core.Server.resolveScAddr(['doc_technology_ostis'], function(addrs) {
+                    var argumentAddr = addrs['doc_technology_ostis'];
+                    //var window = SCWeb.core.ui.Windows.createWindow(outputAddr);
+                    SCWeb.core.Main.doDefaultCommand([argumentAddr]);
+                    {% if user['first_time'] %}$('#help-modal').modal({"keyboard": true});{% end %}
+                });
+                SCWeb.ui.Locker.hide();
+            });
+        });
+
+        
+    </script>
+
+
+<div id="sc-ui-locker">
+    <div id="sc-ui-locker-text">Loading...</div>
+    <div id="sc-ui-locker-icon"></div>   
+</div>
+
+
+</body>
+{% end %}
+
+</html>
