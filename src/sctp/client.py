@@ -24,6 +24,7 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 import socket
 import struct
 import time
+import thread, threading
 
 from sctp.types import ScAddr, SctpIteratorType, ScStatItem, SctpCommandType, SctpResultCode
 
@@ -31,11 +32,74 @@ __all__ = (
     'SctpClient',
 )
 
+def locked(method_to_decorate):
+    def wrapper(self, *args, **kwargs):
+        with self.lock:
+            return method_to_decorate(self, *args, **kwargs)
+    return wrapper
 
+class EventStruct:
+    
+    def __init__(self, event_id, event_type, addr, callback):
+        self.event_id = event_id
+        self.addr = addr
+        self._event_type = event_type
+        self.callback = callback
+    
+    
 class SctpClient:
+    
     def __init__(self):
         self.sock = None
+        self.events = {}
+        self.lock = thread.allocate_lock()
+        
+    def __del__(self):
+        self.shutdown()    
+    
+    def check_events(self):
+        
+        self.lock.acquire()
+        running = self.running
+        self.lock.release()
+        
+        while running:
+        
+            with self.lock:
+                running = self.running
 
+                # send request
+                data = struct.pack('=BBII', SctpCommandType.SCTP_CMD_EVENT_EMIT, 0, 0, 0)
+                self.sock.send(data)
+
+                # receive response
+                data = self.receiveData(10)
+                cmdCode, cmdId, resCode, resSize = struct.unpack('=BIBI', data)
+
+                if resCode == SctpResultCode.SCTP_RESULT_OK:
+                    data = self.receiveData(4)
+                    count = struct.unpack('=I', data)[0]
+                    
+                    for idx in xrange(count):
+                        addr = ScAddr(0, 0)
+                        arg = ScAddr(0, 0)
+                        
+                        data = self.receiveData(12)
+                        event_id, addr.seg, addr.offset, arg.seg, arg.offset = struct.unpack('=IHHHH', data)
+
+                        evt = None
+                        try:                        
+                            evt = self.events[event_id]
+                        except KeyError:
+                            print "Can't find callback for event with id %d" % event_id
+                            continue
+                        
+                        evt.callback(event_id, addr, arg)
+            
+            time.sleep(0.1)
+            
+        return None
+            
     def receiveData(self, dataSize):
         res = ''
         while (len(res) < dataSize):
@@ -43,7 +107,8 @@ class SctpClient:
             res += data
             time.sleep(0.001)
         assert len(res) == dataSize
-        return res
+        
+        return res 
 
     def initialize(self, host, port):
         """Initialize network session with server
@@ -54,13 +119,27 @@ class SctpClient:
         try:
             self.sock.connect((host, port))
         except Exception, e:
-            print "can't connect to %s:%d. Exception type is %s" % (host, port, `e`)                
+            print "can't connect to %s:%d. Exception type is %s" % (host, port, `e`)
+        
+        self.running = True    
+        self.server_thread = threading.Thread(target=self.check_events, args=( ))
+        self.server_thread.start()                
 
     def shutdown(self):
         """Close network session
         """
-        pass
+        
+        for event_id in self.events.keys():
+            self.event_destroy(event_id)
+        self.events = {}
+        
+        self.lock.acquire()
+        self.running = False
+        self.lock.release()
+        
+        self.server_thread.join(None)
     
+    @locked
     def erase_element(self, el_addr):
         """Erase element with specified sc-addr
         @param el_addr sc-addr of sc-element to remove
@@ -79,6 +158,7 @@ class SctpClient:
 
         return resCode == SctpResultCode.SCTP_RESULT_OK
 
+    @locked
     def get_link_content(self, link_addr):
         """Get content of sc-link with specified sc-addr
         @param link_addr: sc-addr of sc-link to get content
@@ -106,6 +186,7 @@ class SctpClient:
 
         return content_data
 
+    @locked
     def check_element(self, el_addr):
         """Check if sc-element with specified sc-addr exist
         @param el_addr: sc-addr of element to check
@@ -125,6 +206,7 @@ class SctpClient:
 
         return resCode == SctpResultCode.SCTP_RESULT_OK
 
+    @locked
     def get_element_type(self, el_addr):
         """Returns type of specified sc-element
         @param el_addr: sc-addr of element to get type
@@ -149,6 +231,7 @@ class SctpClient:
 
         return elType
 
+    @locked
     def create_node(self, el_type):
         """Create new sc-node in memory with specified type
         @param el_type: Type of node that would be created
@@ -174,6 +257,7 @@ class SctpClient:
 
         return addr
 
+    @locked
     def create_link(self):
         """Create new sc-link in memory
         @return: If sc-link was created, then returns it sc-addr; otherwise return None
@@ -196,6 +280,7 @@ class SctpClient:
 
         return addr
 
+    @locked
     def create_arc(self, arc_type, begin_addr, end_addr):
         """Create new arc in sc-memory with specified type and begin, end elements
         @param arc_type: Type of sc-arc
@@ -222,6 +307,7 @@ class SctpClient:
 
         return addr
 
+    @locked
     def find_links_with_content(self, data):
         """Find sc-links with specified content
         @param data: Content data for search
@@ -251,6 +337,7 @@ class SctpClient:
 
         return res
     
+    @locked
     def set_link_content(self, addr, data):
         """Find sc-links with specified content
         @param addr: sc-addr of sc-link
@@ -272,6 +359,7 @@ class SctpClient:
 
         return False
 
+    @locked
     def iterate_elements(self, iterator_type, *args):
         """Iterate element by specified template and return results
         """
@@ -338,6 +426,7 @@ class SctpClient:
 
         return results
 
+    @locked
     def find_element_by_system_identifier(self, idtf_data):
         """Find sc-element by it system identifier
         @param idtf_data: Identifier data for search
@@ -363,6 +452,7 @@ class SctpClient:
 
         return addr
     
+    @locked
     def set_system_identifier(self, addr, idtf_data):
         """Set new system identifier for sc-element
         @param idtf_data: Identifier data 
@@ -380,11 +470,65 @@ class SctpClient:
         cmdCode, cmdId, resCode, resSize = struct.unpack('=BIBI', data)
         return resCode == SctpResultCode.SCTP_RESULT_OK
 
+    @locked
+    def event_create(self, event_type, addr, callback):
+        """Creates sc-event listener
+        @param event:_type Type of sc-event
+        @param addr: sc-addr of sc-element to listen events
+        @param callback: Function that will be called on event emit
+        
+        @return: Returns created event id. If event not created, then returns None  
+        """
+        # send request
+        params = struct.pack('=BHH', event_type, addr.seg, addr.offset)
+        data = struct.pack('=BBII', SctpCommandType.SCTP_CMD_EVENT_CREATE, 0, 0, len(params))
+        alldata = data + params
+
+        self.sock.send(alldata)
+
+        # receive response
+        data = self.receiveData(10)
+        cmdCode, cmdId, resCode, resSize = struct.unpack('=BIBI', data)
+        if resCode != SctpResultCode.SCTP_RESULT_OK:
+            return None
+        
+        data = self.receiveData(4)
+        
+        event_id = struct.unpack('=I', data)[0]
+        
+        self.events[event_id] = EventStruct(event_id, event_type, addr, callback)
+        return event_id
+    
+    @locked
+    def event_destroy(self, event_id):
+        """Destroys event listener by id
+        @param event_id: Id of event that should be destroyed
+        @return: If specified event destroyed, then returns True; otherwise returns False
+        """        
+        # send request
+        params = struct.pack('=I', event_id)
+        data = struct.pack('=BBII', SctpCommandType.SCTP_CMD_EVENT_DESTROY, 0, 0, len(params))
+        alldata = data + params
+
+        self.sock.send(alldata)
+
+        # receive response
+        data = self.receiveData(10)
+        cmdCode, cmdId, resCode, resSize = struct.unpack('=BIBI', data)
+        if resCode != SctpResultCode.SCTP_RESULT_OK:
+            return False
+        
+        data = self.receiveData(4)
+        
+        self.events.pop(event_id, None)
+        return True
+        
+    @locked
     def get_statistics(self, beg_time, end_time):
         """Returns statistics from sctp server, for a specified time range.
         (http://docs.python.org/2/library/time.html)
-        @param beg_time Time structure, that contains range begin
-        @param end_time Time structure, that contains range end
+        @param beg_time: Time structure, that contains range begin
+        @param end_time: Time structure, that contains range end
         @return: Returns sorted list of statistics info
         """
         # send request

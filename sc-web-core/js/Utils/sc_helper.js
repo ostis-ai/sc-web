@@ -173,3 +173,6 @@ ScHelper.prototype.getLanguages = function() {
 ScHelper.prototype.getOutputLanguages = function() {
     return scHelper.getSetElements(scKeynodes.ui_external_languages);
 };
+
+/*!
+ */

@@ -66,8 +66,10 @@ class Init(base.BaseHandler):
                            }
         }
     
+        sctp_client.shutdown()
         self.set_header("Content-Type", "application/json")
         self.finish(json.dumps(result))
+        
         
         
 class CmdDo(base.BaseHandler):
@@ -276,6 +278,7 @@ class CmdDo(base.BaseHandler):
             
             result = { 'question': question.to_id() }
             
+        sctp_client.shutdown()
         self.set_header("Content-Type", "application/json")
         self.finish(json.dumps(result))
         
@@ -359,6 +362,7 @@ class QuestionAnswerTranslate(base.BaseHandler):
         if result_link_addr is not None:
             result = json.dumps({"link": result_link_addr.to_id()})
     
+        sctp_client.shutdown()
         self.set_header("Content-Type", "application/json")
         self.finish(result) 
         
@@ -383,6 +387,7 @@ class LinkContent(base.BaseHandler):
         if result is None:
             return serialize_error(self, 404, 'Content not found')
     
+        sctp_client.shutdown()
         self.set_header("Content-Type", logic.get_link_mime(addr, keynode_nrel_format, keynode_nrel_mimetype, sctp_client))
         self.finish(result)
         
@@ -428,6 +433,7 @@ class LinkFormat(base.BaseHandler):
             else:
                 result[arg.to_id()] = keynode_format_txt.to_id()
 
+        sctp_client.shutdown()
         self.set_header("Content-Type", "application/json")
         self.finish(json.dumps(result))
         
@@ -443,6 +449,7 @@ class Languages(base.BaseHandler):
         
         langs = logic.get_languages_list(keys[KeynodeSysIdentifiers.languages], sctp_client)
         
+        sctp_client.shutdown()
         self.set_header("Content-Type", "application/json")
         self.finish(json.dumps(langs))
     
@@ -459,6 +466,7 @@ class LanguageSet(base.BaseHandler):
         sc_session = logic.ScSession(self, sctp_client, keys)
         sc_session.set_current_lang_mode(lang_addr)
         
+        sctp_client.shutdown()
         self.set_header("Content-Type", "application/json")
         self.finish()
     
@@ -475,7 +483,7 @@ class IdtfFind(base.BaseHandler):
         # connect to redis an try to find identifiers
         r = redis.StrictRedis(host = tornado.options.options.redis_host, 
                               port = tornado.options.options.redis_port,
-                              db = tornado.options.options.redis_db)
+                              db = tornado.options.options.redis_db_idtf)
         result = {}
         sys = []
         main = []
@@ -516,6 +524,7 @@ class IdtfFind(base.BaseHandler):
         result[keynode_nrel_main_idtf.to_id()] = main
         result[keynode_nrel_idtf.to_id()] = common
         
+        sctp_client.shutdown()
         self.set_header("Content-Type", "application/json")
         self.finish(json.dumps(result))
         
@@ -556,7 +565,8 @@ class IdtfResolve(base.BaseHandler):
             idtf_value = logic.get_identifier_translated(addr, used_lang, keys, sctp_client)
             if idtf_value:
                 result[addr_str] = idtf_value
-            
+        
+        sctp_client.shutdown()
         self.set_header("Content-Type", "application/json")
         self.finish(json.dumps(result))
         
@@ -587,6 +597,7 @@ class AddrResolve(base.BaseHandler):
             if addr is not None:
                 res[idtf] = addr.to_id()
 
+        sctp_client.shutdown()
         self.set_header("Content-Type", "application/json")
         self.finish(json.dumps(res))
         
@@ -619,6 +630,7 @@ class InfoTooltip(base.BaseHandler):
             tooltip = logic.find_tooltip(ScAddr.parse_from_string(addr), sctp_client, keys, sc_session.get_used_language())
             res[addr] = tooltip
 
+        sctp_client.shutdown()
         self.set_header("Content-Type", "application/json")
         self.finish(json.dumps(res))
 
@@ -643,5 +655,6 @@ class User(base.BaseHandler):
                     'default_ext_lang': sc_session.get_default_ext_lang().to_id()
         }
     
+        sctp_client.shutdown()
         self.set_header("Content-Type", "application/json")
         self.finish(json.dumps(result))
