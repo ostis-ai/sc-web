@@ -1,0 +1,11 @@
+.html-window {
+
+}
+
+.html-window a:not(.sc-element) {
+}
+
+.html-window a:not(.sc-element):after {
+    padding-left: 3px;
+    content: url("../images/html/url-ext.png");
+}

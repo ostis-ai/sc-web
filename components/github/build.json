@@ -1,0 +1,10 @@
+{
+	"sources": 
+	[
+	"src/github.js"
+	],
+	
+	"component": "src/github-component.js",
+
+	"target": "static/components/js/github/github.js"
+}

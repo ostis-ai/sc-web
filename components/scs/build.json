@@ -1,0 +1,16 @@
+{
+	"sources": 
+	[
+	"src/scs.js",
+	"src/scs-viewer.js",
+	"src/scs-output.js",
+	"src/scs-types.js",
+	"src/scn-output.js",
+	"src/scn-tree.js",
+	"src/scn-highlighter.js"    
+        ],
+	
+	"component": "src/scs-component.js",
+
+	"target": "static/components/js/scs/scs.js"
+}
