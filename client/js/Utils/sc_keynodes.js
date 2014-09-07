@@ -33,7 +33,6 @@ ScKeynodes.prototype.init = function() {
         this.resolveKeynode('languages')
         
     ).done(function() {
-        console.log(self);
         dfd.resolve();
     });
     

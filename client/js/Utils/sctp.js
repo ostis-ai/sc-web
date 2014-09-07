@@ -10,9 +10,13 @@ var SctpCommandType = {
     SCTP_CMD_GET_ARC_BEGIN:     0x07, // return begin element of sc-arc
     SCTP_CMD_GET_ARC_END:       0x08, // return end element of sc-arc
     SCTP_CMD_GET_LINK_CONTENT:  0x09, // return content of sc-link
-    SCTP_CMD_FIND_LINKS:        0x0A, // return sc-links with specified content
+    SCTP_CMD_FIND_LINKS:        0x0a, // return sc-links with specified content
     SCTP_CMD_SET_LINK_CONTENT:  0x0b, // setup new content for the link
-    SCTP_CMD_ITERATE_ELEMENTS:  0x0C, // return base template iteration result
+    SCTP_CMD_ITERATE_ELEMENTS:  0x0c, // return base template iteration result
+    
+    SCTP_CMD_EVENT_CREATE:      0x0e, // create subscription to specified event
+    SCTP_CMD_EVENT_DESTROY:     0x0f, // destroys specified event subscription
+    SCTP_CMD_EVENT_EMIT:        0x10, // emits events to client
 
     SCTP_CMD_FIND_ELEMENT_BY_SYSITDF:   0xa0, // return sc-element by it system identifier
     SCTP_CMD_SET_SYSIDTF:       0xa1, // setup new system identifier for sc-element
@@ -55,6 +59,7 @@ SctpClient = function() {
     this.task_queue = [];
     this.task_timeout = 0;
     this.task_frequency = 1;
+    this.events = {};
 }
 
 SctpClient.prototype.connect = function(url, success) {
@@ -192,7 +197,68 @@ SctpClient.prototype.set_system_identifier = function(addr, idtf) {
     throw "Not supported";
 };
 
+SctpClient.prototype.event_create = function(evt_type, addr, callback) {
+    var dfd = new jQuery.Deferred();
+    var self = this;
+    this.new_request({
+        cmdCode: SctpCommandType.SCTP_CMD_EVENT_CREATE,
+        args: [evt_type, addr]
+    }).done(function(data) {
+        self.events[data] = callback;
+        dfd.resolve(data);
+    }).fail(function(data) {
+        dfd.reject(data);
+    });
+    
+    return dfd.promise();
+};
+
+SctpClient.prototype.event_destroy = function(evt_id) {
+    var dfd = new jQuery.Deferred();
+    var self = this;
+    this.new_request({
+        cmdCode: SctpCommandType.SCTP_CMD_EVENT_DESTROY,
+        args: [evt_id]
+    }).done(function(data) {
+        delete self.event_emit[evt_id];
+        dfd.promise(data);
+    }).fail(function(data){ 
+        dfd.reject(data);
+    });
+    
+    return dfd.promise();
+};
+
+SctpClient.prototype.event_emit = function() {
+    var dfd = new jQuery.Deferred();
+    var self = this;
+    this.new_request({
+        cmdCode: SctpCommandType.SCTP_CMD_EVENT_EMIT
+    }).done(function (data) {
+        for (evt in data) {
+            evt_id = evt[0];
+            addr = evt[1];
+            arg = evt[2];
+            
+            self.events[evt_id](addr, arg);
+        }
+    }).fail(function(data) {
+        dfd.reject();
+    });
+    return dfd.promise();
+};
 
 SctpClient.prototype.get_statistics = function() {
     throw "Not implemented";
+};
+
+SctpClientCreate = function() {
+    var dfd = jQuery.Deferred();
+    
+    var sctp_client = new SctpClient();
+    sctp_client.connect('/sctp', function() {
+        dfd.resolve(sctp_client);
+    });
+    
+    return dfd.promise();
 };

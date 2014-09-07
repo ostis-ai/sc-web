@@ -22,10 +22,9 @@ SCWeb.core.Main = {
         //SCWeb.ui.Locker.show();
 
         SCWeb.core.Server._initialize();
-
-        this.sctp_client = new SctpClient();
-        this.sctp_client.connect('/sctp', function() {
+        SctpClientCreate().done(function(client) {
         
+        self.sctp_client = client;
         scHelper = new ScHelper(self.sctp_client);
         scKeynodes = new ScKeynodes(scHelper);
 
@@ -47,6 +46,9 @@ SCWeb.core.Main = {
                                 SCWeb.core.Translation.update()
                                 ).done(function() {
                                     dfd.resolve();
+                                
+                                // test
+                                
                             });
                         });
                     });
