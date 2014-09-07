@@ -39,6 +39,7 @@ nosetests.xml
 settings_local.py
 .DS_Store
 *db
+repo
 sc-web-core.js
 sc_web/media/
 sc_web/secret.txt
