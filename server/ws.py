@@ -7,6 +7,7 @@ import json
 import sctp.types
 import sctp.logic
 import sockjs.tornado
+import thread
 
 clients = []
 
@@ -20,12 +21,15 @@ class SocketProxy:
         self.sctp_client = sctp.logic.new_sctp_client()
         self.registered_events = []
         self.recieved_events = []
+        self.events_lock = thread.allocate_lock()
                 
     def destroy(self):
         self.sock.close()
         
     def events_callback(self, event_id, addr, arg):
+        self.events_lock.acquire()
         self.recieved_events.append((event_id, addr, arg))
+        self.events_lock.release()
          
     def send(self, message):
         
@@ -172,12 +176,18 @@ class SocketProxy:
             response_message(res, None)
         
         elif cmdCode == sctp.types.SctpCommandType.SCTP_CMD_EVENT_EMIT:
+            self.events_lock.acquire()
+            events = self.recieved_events
+            self.recieved_events = []
+            self.events_lock.release()
+            
             result = []
-            for evt in self.recieved_events:
+            for evt in events:
                 if evt[0] in self.registered_events:
                     result.append(evt)
             
-            response_message(sctp.types.SctpResultCode.SCTP_RESULT_OK, result)                 
+            response_message(sctp.types.SctpResultCode.SCTP_RESULT_OK, result)        
+            
         
         
     def receiveData(self, dataSize):
