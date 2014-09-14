@@ -63,18 +63,33 @@ SctpClient = function() {
 }
 
 SctpClient.prototype.connect = function(url, success) {
-   this.socket = new SockJS(url);
-    
-   this.socket.onopen = function() {
-       success();
-       console.log('open');
-   };
-   this.socket.onmessage = function(e) {
-       console.log('message', e.data);
-   };
-   this.socket.onclose = function() {
-       console.log('close');
-   };
+    this.socket = new SockJS(url);
+
+    var self = this;
+    this.socket.onopen = function() {
+        success();
+        console.log('open');
+        
+        var emit_events = function() {
+            if (self.event_timeout != 0)
+            {
+                window.clearTimeout(self.event_timeout);
+                self.event_timeout = 0;
+            }
+            
+            self.event_emit();
+            
+            window.setTimeout(emit_events, 5000);
+        };
+        
+        emit_events();
+    };
+    this.socket.onmessage = function(e) {
+        console.log('message', e.data);
+    };
+    this.socket.onclose = function() {
+        console.log('close');
+    };
     
 }
 
@@ -235,7 +250,7 @@ SctpClient.prototype.event_emit = function() {
     this.new_request({
         cmdCode: SctpCommandType.SCTP_CMD_EVENT_EMIT
     }).done(function (data) {
-        for (evt in data) {
+        for (evt in data.result) {
             evt_id = evt[0];
             addr = evt[1];
             arg = evt[2];
