@@ -230,6 +230,37 @@ class SctpClient:
         elType = struct.unpack("=H", data)[0]
 
         return elType
+    
+    @locked
+    def get_arc(self, arc):
+        """Returns sc-addr of arc element begin
+        @param arc sc-addr of arc to get beign
+        @return If there are no any errors, then returns sc-addr of arc begin; 
+        otherwise returns None
+        """
+        # send request
+        params = struct.pack('=HH', arc.seg, arc.offset)
+        data = struct.pack('=BBII', SctpCommandType.SCTP_CMD_GET_ARC, 0, 0, len(params))
+        alldata = data + params
+
+        self.sock.send(alldata)
+
+        # receive response
+        data = self.receiveData(10)
+        cmdCode, cmdId, resCode, resSize = struct.unpack('=BIBI', data)
+        if resCode != SctpResultCode.SCTP_RESULT_OK:
+            return None
+
+        addr = ScAddr(0, 0)
+        data = self.receiveData(4)
+        addr.seg, addr.offset = struct.unpack('=HH', data)
+        
+        addr2 = ScAddr(0, 0)
+        data = self.receiveData(4)
+        addr2.seg, addr2.offset = struct.unpack('=HH', data)
+
+        return (addr, addr2)
+    
 
     @locked
     def create_node(self, el_type):

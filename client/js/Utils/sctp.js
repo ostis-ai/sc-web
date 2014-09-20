@@ -7,8 +7,8 @@ var SctpCommandType = {
     SCTP_CMD_CREATE_NODE:       0x04, // create new sc-node
     SCTP_CMD_CREATE_LINK:       0x05, // create new sc-link
     SCTP_CMD_CREATE_ARC:        0x06, // create new sc-arc
-    SCTP_CMD_GET_ARC_BEGIN:     0x07, // return begin element of sc-arc
-    SCTP_CMD_GET_ARC_END:       0x08, // return end element of sc-arc
+    SCTP_CMD_GET_ARC:           0x07, // return begin element of sc-arc
+
     SCTP_CMD_GET_LINK_CONTENT:  0x09, // return content of sc-link
     SCTP_CMD_FIND_LINKS:        0x0a, // return sc-links with specified content
     SCTP_CMD_SET_LINK_CONTENT:  0x0b, // setup new content for the link
@@ -45,6 +45,14 @@ var SctpIteratorType = {
     SCTP_ITERATOR_5_A_A_F_A_A:  8
 }
 
+var SctpEventType = {
+    SC_EVENT_UNKNOWN:           -1,
+    SC_EVENT_ADD_OUTPUT_ARC:     0,
+    SC_EVENT_ADD_INPUT_ARC:      1,
+    SC_EVENT_REMOVE_OUTPUT_ARC:  2,
+    SC_EVENT_REMOVE_INPUT_ARC:   3,
+    SC_EVENT_REMOVE_ELEMENT:     4
+}
 
 sc_addr_from_id = function(sc_id) {
     var a = sc_id.split("_");
@@ -58,7 +66,7 @@ SctpClient = function() {
     this.socket = null;
     this.task_queue = [];
     this.task_timeout = 0;
-    this.task_frequency = 1;
+    this.task_frequency = 10;
     this.events = {};
 }
 
@@ -158,6 +166,12 @@ SctpClient.prototype.get_element_type = function(addr) {
     });
 };
 
+SctpClient.prototype.get_arc = function(addr) {
+    return this.new_request({
+        cmdCode: SctpCommandType.SCTP_CMD_GET_ARC,
+        args: [addr]
+    });
+};
 
 SctpClient.prototype.create_node = function(type) {
     throw "Not supported";
@@ -231,11 +245,12 @@ SctpClient.prototype.event_create = function(evt_type, addr, callback) {
 SctpClient.prototype.event_destroy = function(evt_id) {
     var dfd = new jQuery.Deferred();
     var self = this;
+    
     this.new_request({
         cmdCode: SctpCommandType.SCTP_CMD_EVENT_DESTROY,
         args: [evt_id]
     }).done(function(data) {
-        delete self.event_emit[evt_id];
+        delete self.events[evt_id];
         dfd.promise(data);
     }).fail(function(data){ 
         dfd.reject(data);

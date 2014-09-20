@@ -28,7 +28,7 @@ class SocketProxy:
         
     def events_callback(self, event_id, addr, arg):
         self.events_lock.acquire()
-        self.recieved_events.append((event_id, addr, arg))
+        self.recieved_events.append((event_id, addr.to_id(), arg.to_id()))
         self.events_lock.release()
          
     def send(self, message):
@@ -42,37 +42,35 @@ class SocketProxy:
                 self.on_message(json.dumps({'resCode': resCode, 'result': res}))
             else:
                 self.on_message(json.dumps({'resCode': resCode}))
+                
+        def res_code(res):
+            if res is not None:
+                return sctp.types.SctpResultCode.SCTP_RESULT_OK
+            
+            return sctp.types.SctpResultCode.SCTP_RESULT_FAIL
         
         if cmdCode == sctp.types.SctpCommandType.SCTP_CMD_CHECK_ELEMENT:
-            resCode = sctp.types.SctpResultCode.SCTP_RESULT_FAIL
-            if self.sctp_client.check_element(sctp.types.ScAddr.parse_from_string(cmd['args'][0])):
-                resCode = sctp.types.SctpResultCode.SCTP_RESULT_OK
-                           
-            response_message(resCode, None)
+            response_message(res_code(sctp.types.ScAddr.parse_from_string(cmd['args'][0])), None)
             
         elif cmdCode == sctp.types.SctpCommandType.SCTP_CMD_FIND_ELEMENT_BY_SYSITDF:
             res = self.sctp_client.find_element_by_system_identifier(str(cmd['args'][0]))
-            resCode = sctp.types.SctpResultCode.SCTP_RESULT_FAIL
-            if res is not None:
-                resCode = sctp.types.SctpResultCode.SCTP_RESULT_OK
                 
-            response_message(resCode, res.to_id())
+            response_message(res_code(res), res.to_id())
             
         elif cmdCode == sctp.types.SctpCommandType.SCTP_CMD_GET_ELEMENT_TYPE:
             res = self.sctp_client.get_element_type(sctp.types.ScAddr.parse_from_string(cmd['args'][0]))
-            resCode = sctp.types.SctpResultCode.SCTP_RESULT_FAIL
-            if res is not None:
-                resCode = sctp.types.SctpResultCode.SCTP_RESULT_OK
             
-            response_message(resCode, res)
+            response_message(res_code(res), res)
             
+        elif cmdCode == sctp.types.SctpCommandType.SCTP_CMD_GET_ARC:
+            res = self.sctp_client.get_arc(sctp.types.ScAddr.parse_from_string(cmd['args'][0]))
+            
+            response_message(res_code(res), [res[0].to_id(), res[1].to_id()])
+                
         elif cmdCode == sctp.types.SctpCommandType.SCTP_CMD_GET_LINK_CONTENT:
             res = self.sctp_client.get_link_content(sctp.types.ScAddr.parse_from_string(cmd['args'][0]))
-            resCode = sctp.types.SctpResultCode.SCTP_RESULT_FAIL
-            if res is not None:
-                resCode = sctp.types.SctpResultCode.SCTP_RESULT_OK
                 
-            response_message(resCode, res)
+            response_message(res_code(res), res)
             
         elif cmdCode == sctp.types.SctpCommandType.SCTP_CMD_ITERATE_ELEMENTS:
             resCode = sctp.types.SctpResultCode.SCTP_RESULT_FAIL
@@ -158,7 +156,7 @@ class SocketProxy:
             
         elif cmdCode == sctp.types.SctpCommandType.SCTP_CMD_EVENT_CREATE:
             eventType = cmd['args'][0]
-            addr = cmd['args'][1]
+            addr = sctp.types.ScAddr.parse_from_string(cmd['args'][1])
             
             eventId = self.sctp_client.event_create(eventType, addr, self.events_callback)
             if eventId == None:
