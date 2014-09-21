@@ -38,15 +38,7 @@ SCWeb.ui.WindowManager = {
 
             var question_addr = self.active_history_addr;
             var lang_addr = $(this).attr('sc_addr');
-            var fmt_addr = SCWeb.core.ComponentManager.getPrimaryFormatForExtLang(lang_addr);
-            
-            if (fmt_addr) {
-                self.window_active_formats[question_addr] = fmt_addr;
-                self.requestTranslation(question_addr, fmt_addr);
-            } else {
-                // TODO: process error
-            }
-            
+              
         });
     
         $('#history-item-print').click(function () {
@@ -100,11 +92,25 @@ SCWeb.ui.WindowManager = {
         var ext_lang_addr = SCWeb.core.Main.getDefaultExternalLang();
         var fmt_addr = SCWeb.core.ComponentManager.getPrimaryFormatForExtLang(ext_lang_addr);
         if (fmt_addr) {
-            this.requestTranslation(question_addr, fmt_addr);
-        } else
-        {
-            // error
+            var self = this;
+            var wnd = self.windows[self.hash_addr(question_addr, fmt_addr)];
+            if (wnd) {
+                self.setWindowActive(wnd);
+            } else {
+                
+                var dfd = new jQuery.Deferred();
+                
+                // determine answer structure
+                window.scHelper.getAnswer(question_addr).done(function (addr) {
+                    self.appendWindow(addr, fmt_addr);
+                    self.window_active_formats[question_addr] = fmt_addr;
+                    self.windows[self.hash_addr(question_addr, fmt_addr)] = question_addr;
+                }).fail(function(v) {
+                    /// @todo process fail
+                });
+            }
         }
+
         
         this.setHistoryItemActive(question_addr);
         
@@ -114,7 +120,6 @@ SCWeb.ui.WindowManager = {
             var question_addr = $(this).attr('sc_addr');
             self.setHistoryItemActive(question_addr);
             self.setWindowActive(self.windows[self.hash_addr(question_addr, self.window_active_formats[question_addr])]);
-            
         });
 
         // translate added item
@@ -147,34 +152,11 @@ SCWeb.ui.WindowManager = {
         this.history_tabs.find("[sc_addr='" + this.active_history_addr + "']").addClass('active').find('.histoy-item-btn').removeClass('hidden');
     },
     
-    /**
-     * Get translation of question to external language and append new window for it
-     * @param {String} question_addr sc-addr of question to translate
-     * @param {String} fmt_addt sc-addr of output format
-     */
-    requestTranslation: function(question_addr, fmt_addr) {
-        var self = this;
-        var window = self.windows[self.hash_addr(question_addr, fmt_addr)];
-        if (window) {
-            self.setWindowActive(window);
-        } else {
-            
-            SCWeb.ui.Locker.show();
-            // scroll window to the top
-            //$("html, body").animate({ scrollTop: 0}, "slow");
-            SCWeb.core.Server.getAnswerTranslated(question_addr, fmt_addr, function(data) {
-                self.appendWindow(data.link, fmt_addr);
-                self.window_active_formats[question_addr] = fmt_addr;
-                self.windows[self.hash_addr(question_addr, fmt_addr)] = data.link;
-                SCWeb.ui.Locker.hide();
-            });
-        }
-    },
-    
+
     // ------------ Windows ------------
     /**
      * Append new window
-     * @param {String} addr sc-addr of question
+     * @param {String} addr sc-addr of sc-structure
      * @param {String} fmt_addr sc-addr of window format
      */
     appendWindow: function(addr, fmt_addr) {
@@ -186,7 +168,7 @@ SCWeb.ui.WindowManager = {
         this.window_container.prepend(window_html);
         
         this.hideActiveWindow();
-        var sandbox = SCWeb.core.ComponentManager.createWindowSandbox(fmt_addr, addr, window_id);
+        var sandbox = SCWeb.core.ComponentManager.createWindowSandbox(fmt_addr, addr, true, window_id);
         if (sandbox) {
             this.sandboxes[addr] = sandbox;
             this.setWindowActive(addr);
@@ -269,7 +251,7 @@ SCWeb.ui.WindowManager = {
                         var addr = containers_map[cntId];
                         var fmt = formats[addr];
                         if (fmt) {
-                            var sandbox = SCWeb.core.ComponentManager.createWindowSandbox(fmt, addr, cntId);
+                            var sandbox = SCWeb.core.ComponentManager.createWindowSandbox(fmt, addr, false, cntId);
                             if (sandbox) {
                                 result[addr] = sandbox;
                             }

@@ -11,6 +11,7 @@ ScKeynodes.prototype.init = function() {
         this.resolveKeynode('nrel_system_identifier'),
         this.resolveKeynode('nrel_main_idtf'),
         this.resolveKeynode('nrel_idtf'),
+        this.resolveKeynode('nrel_answer'),
         
         this.resolveKeynode('ui_user'),
         this.resolveKeynode('ui_user_registered'),
@@ -29,6 +30,7 @@ ScKeynodes.prototype.init = function() {
         this.resolveKeynode('ui_command_finished'),
         this.resolveKeynode('ui_nrel_user_used_language'),
         this.resolveKeynode('ui_nrel_user_default_ext_language'),
+        
         
         this.resolveKeynode('languages')
         

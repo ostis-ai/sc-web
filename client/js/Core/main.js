@@ -24,12 +24,12 @@ SCWeb.core.Main = {
         SCWeb.core.Server._initialize();
         SctpClientCreate().done(function(client) {
         
-        self.sctp_client = client;
-        scHelper = new ScHelper(self.sctp_client);
-        scKeynodes = new ScKeynodes(scHelper);
+        window.sctpClient = client;
+        window.scHelper = new ScHelper(window.sctpClient);
+        window.scKeynodes = new ScKeynodes(window.scHelper);
 
-        scKeynodes.init().done(function() {
-            scHelper.init().done(function() {
+        window.scKeynodes.init().done(function() {
+            window.scHelper.init().done(function() {
 
                     $.when(SCWeb.ui.TaskPanel.init()).done(function() {
                         SCWeb.core.Server.init(function(data) {

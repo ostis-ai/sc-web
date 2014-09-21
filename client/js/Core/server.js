@@ -147,15 +147,15 @@ SCWeb.core.Server = {
                 data: null,
                 type: 'GET',
                 success: function(user) {
-                    scHelper.getMainMenuCommands(scKeynodes.ui_main_menu).done(function(menu_commands) {
+                    window.scHelper.getMainMenuCommands(window.scKeynodes.ui_main_menu).done(function(menu_commands) {
                         var data = {};
                         data['menu_commands'] = menu_commands;
                         data['user'] = user;
                         
-                        scHelper.getLanguages().done(function(langs) {
+                        window.scHelper.getLanguages().done(function(langs) {
                             data['languages'] = langs;
                             
-                            scHelper.getOutputLanguages().done(function(out_langs) {
+                            window.scHelper.getOutputLanguages().done(function(out_langs) {
                                 data['external_languages'] = out_langs;
                                 callback(data);
                             });
@@ -182,12 +182,10 @@ SCWeb.core.Server = {
             return self._current_language + '/' + addr;
         }
 
-        var result = {},
-            data = '', id, index;
-            idx = 1, used = {}, need_resolve = [];
+        var result = {}, used = {}, need_resolve = [];
 
         for(i in objects) {
-            id = objects[i];
+            var id = objects[i];
             
             if (used[id]) continue; // skip objects, that was processed
             used[id] = true;
@@ -200,36 +198,37 @@ SCWeb.core.Server = {
                 continue;
             }
             
-            index = idx + '_';
-            idx += 1;
-            if (i != 0) data += '&';
-            data += index + '=' + id;
-
             need_resolve.push(id);
         }
-
+        
         if (need_resolve.length == 0) { // all results cached
             callback(result);
         } else {
-            (function(result, data, need_resolve, callback) {
-                self._push_task({
-                    type: 'POST',
-                    url: 'api/idtf/resolve/',
-                    data: data,
-                    success: function(names) {
-                        for (j in need_resolve) {
-                            var addr = need_resolve[j],
-                                v = names[addr];
-
-                            if (v) {
-                                result[addr] = v;
-                            }
-                            self._identifiers_cache.set(getKey(addr), v ? v : '.');
-                        }
+            (function(result, need_resolve, callback) {
+                
+                var resolve_idtf = function() {
+                    if (need_resolve.length == 0) {
                         callback(result);
+                    } else {
+                        var addr = need_resolve.shift();
+                        window.scHelper.getIdentifier(addr, self._current_language)
+                            .done(function (v) {
+                                if (v) {
+                                    result[addr] = v;
+                                    self._identifiers_cache.set(getKey(addr), v ? v : '.');
+                                }
+
+                                resolve_idtf();
+                            })
+                            .fail(function() {
+                                resolve_idtf();
+                            });
                     }
-                });
-            })(result, data, need_resolve, callback);
+                }
+                
+                resolve_idtf();
+                
+            })(result, need_resolve, callback);
         }
     },
     

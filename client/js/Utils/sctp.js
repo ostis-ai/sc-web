@@ -250,7 +250,7 @@ SctpClient.prototype.event_destroy = function(evt_id) {
         cmdCode: SctpCommandType.SCTP_CMD_EVENT_DESTROY,
         args: [evt_id]
     }).done(function(data) {
-        delete self.events[evt_id];
+        delete self.event_emit[evt_id];
         dfd.promise(data);
     }).fail(function(data){ 
         dfd.reject(data);

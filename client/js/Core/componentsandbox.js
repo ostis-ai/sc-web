@@ -3,15 +3,17 @@ SCWeb.core.scAddrsDict = {};
 /**
  * Create new instance of component sandbox.
  * @param {String} container Id of dom object, that will contain component
- * @param {String} link_addr sc-addr of link, that edit or viewed with sandbox
+ * @param {String} addr sc-addr of sc-link or sc-structure, that edit or viewed with sandbox
+ * @param {Boolean} is_struct If that value is true, then addr is a sc-addr to viewed structure; otherwise the last one is a sc-link
  * @param {String} format_addr sc-addr of window format
  * @param {String} ext_lang_addr sc-addr of external language
  * @param {Object} keynodes Dictionary that contains keynode addr by system identifiers
  */
-SCWeb.core.ComponentSandbox = function(container, link_addr, format_addr, keynodes) {
+SCWeb.core.ComponentSandbox = function(container, addr, is_struct, format_addr, keynodes) {
     this.container = container;
     this.wrap_selector = '#' + this.container + '_wrap';
-    this.link_addr = link_addr;
+    this.addr = addr;
+    this.is_struct = is_struct;
     this.format_addr = format_addr;
 
     this.eventGetObjectsToTranslate = null;
@@ -19,6 +21,15 @@ SCWeb.core.ComponentSandbox = function(container, link_addr, format_addr, keynod
     this.eventArgumentsUpdate = null;
     this.eventWindowActiveChanged = null;
     this.eventDataAppend = null;
+    /* function (added, element, arc)
+     * - added - true, when element added; false - element removed
+     * - element - sc-addr of added(removed) sc-element
+     * - arc - sc-addr of arc that connect struct with element
+     */
+    this.eventStructUpdate = null;  
+    
+    this.event_add_element = null;
+    this.event_remove_element = null;
     
     this.listeners = [];
     this.keynodes = keynodes;
@@ -41,6 +52,25 @@ SCWeb.core.ComponentSandbox = function(container, link_addr, format_addr, keynod
             objects.push(items[i]);
         }
     }));
+    
+    // listen struct changes
+    /// @todo possible need to wait event creation
+    if (this.is_struct) {
+        window.sctpClient.event_create(SctpEventType.SC_EVENT_ADD_OUTPUT_ARC, this.addr, function(addr, arg) {
+            if (self.eventStructUpdate) {
+                self.eventStructUpdate(true, addr, arg);
+            }
+        }).done(function(id) {
+            self.event_add_element = id;
+        });
+        window.sctpClient.event_create(SctpEventType.SC_EVENT_REMOVE_OUTPUT_ARC, this.addr, function(addr, arg) {
+            if (self.eventStructUpdate) {
+                self.eventStructUpdate(false, addr, arg);
+            }
+        }).done(function(id) {
+            self.event_remove_element = id;
+        });
+    }
 };
 
 SCWeb.core.ComponentSandbox.prototype = {
@@ -55,6 +85,12 @@ SCWeb.core.ComponentSandbox.prototype.destroy = function() {
     for (var l in this.listeners) {
         SCWeb.core.EventManager.unsubscribe(this.listeners[l]);
     }
+    
+    /// @todo possible need to wait event destroy
+    if (this.event_add_element)
+        window.sctpClient.event_destroy(this.event_add_element);
+    if (this.event_remove_element)
+        window.sctpClient.event_destroy(this.event_remove_element);
 };
 
 /**
@@ -108,6 +144,12 @@ SCWeb.core.ComponentSandbox.prototype.getIdentifiers = function(addr_list, callb
     SCWeb.core.Server.resolveIdentifiers(addr_list, callback);
 };
 
+SCWeb.core.ComponentSandbox.prototype.getIdentifier = function(addr, callback) {
+    SCWeb.core.Server.resolveIdentifiers([addr], function(idtfs) {
+        callback(idtfs[addr]);
+    });
+};
+
 SCWeb.core.ComponentSandbox.prototype.getLinkContent = function(addr, callback_success, callback_error) {
     SCWeb.core.Server.getLinkContent(addr, callback_success, callback_error);
 };
@@ -143,27 +185,42 @@ SCWeb.core.ComponentSandbox.prototype.createViewersForScLinks = function(contain
     return SCWeb.ui.WindowManager.createViewersForScLinks(containers_map);
 };
 
-/*! Function takes content of sc-link from server and call onDataAppend function with it
+/*! Function takes content of sc-link or sctructure from server and call event handlers
  */
 SCWeb.core.ComponentSandbox.prototype.updateContent = function() {
     var dfd = new jQuery.Deferred();
     var self = this;
 
-    this.getLinkContent(this.link_addr,
-        function (data) {
-            $.when(self.onDataAppend(data)).then(
-                function() {
-                    dfd.resolve();
-                },
-                function() {
-                    dfd.reject();
-                }
-            );
-        },
-        function () {
-            dfd.reject();
+    if (this.is_struct && this.eventStructUpdate) {
+        window.sctpClient.iterate_elements(SctpIteratorType.SCTP_ITERATOR_3F_A_A,
+                                           [
+                                                this.addr,
+                                                sc_type_arc_pos_const_perm,
+                                                0
+                                            ])
+        .done(function (res) {
+            for (idx in res.result)
+                self.eventStructUpdate(true, res.result[idx][2], res.result[idx][1]);
+            dfd.resolve();
         });
-
+    } else
+    {
+        this.getLinkContent(this.addr,
+            function (data) {
+                $.when(self.onDataAppend(data)).then(
+                    function() {
+                        dfd.resolve();
+                    },
+                    function() {
+                        dfd.reject();
+                    }
+                );
+            },
+            function () {
+                dfd.reject();
+            });
+    }
+    
     return dfd.promise();
 };
 

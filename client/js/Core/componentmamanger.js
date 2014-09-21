@@ -91,18 +91,20 @@ SCWeb.core.ComponentManager = {
     /**
      * Create new instance of component window
      * @param {String} format_addr sc-addr of window format
-     * @param {String} link_addr sc-addr of link, that edit or viewed with sandbox
+     * @param {String} sc-addr of sc-link or sc-structure, that edit or viewed with sandbox
+     * @param {Boolean} is_struct if that paramater is true, then addr is an sc-addr of struct;
+     * otherwise the last one a sc-addr of sc-link
      * @param {String} container Id of dom object, that will contain window
      * @param {Function} callback Callback function that calls on creation finished
      * @return Return component sandbox object for created window instance.
      * If window doesn't created, then returns null
      */
-    createWindowSandbox: function(format_addr, link_addr, container, callback) {
+    createWindowSandbox: function(format_addr, addr, is_struct, container, callback) {
         var dfd = new jQuery.Deferred();
         var comp_def = this._factories_fmt[format_addr];
         
         if (comp_def) {
-            var sandbox = new SCWeb.core.ComponentSandbox(container, link_addr, format_addr, this._keynodes);
+            var sandbox = new SCWeb.core.ComponentSandbox(container, addr, is_struct, format_addr, this._keynodes);
             if (comp_def.factory(sandbox)) {
                 dfd.resolve();
                 
