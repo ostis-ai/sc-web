@@ -11,7 +11,7 @@ SCgComponent = {
  * @param config
  * @constructor
  */
-var scgViewerWindow = function(sandbox){
+var scgViewerWindow = function(sandbox) {
 
     this.domContainer = sandbox.container;
     this.sandbox = sandbox;
@@ -191,11 +191,118 @@ var scgViewerWindow = function(sandbox){
             
         this.editor.render.updateTexts();
     };
+    
+    var self = this;
+    this.updateQueue = [];
+    this.elementsQueue = [];
+    
+    this.requestUpdate = function() {
+        if (!self.updateTimeOut && (self.updateQueue.length > 0 || self.elementsQueue.length > 0))
+        {
+            self.updateTimeOut = window.setTimeout(self.processUpdateQueue, 1000);
+            self.editor.render.update();
+            self.editor.scene.layout();
+        }
+    }
+    
+    this.processUpdateQueue = function() {
+        
+        window.clearTimeout(self.updateTimeOut);
+        delete self.updateTimeOut;
+        
+        var tasks = []
+        for (var i = 0; i < Math.min(50, self.updateQueue.length); ++i)
+            tasks.push(self.updateQueue.shift());
+            
+        (function (tasks) {
+                
+            var processTaskFn = function() {
+                if (tasks.length == 0) {
+                    self.requestUpdate();
+                } else {
+                    var task = tasks.shift();
+                    
+                    (function(added, element, arc, addr) {
+                        var obj = self.editor.scene.getObjectByScAddr(element);
+                        if (obj) {
+                            if (!added) {
+                                self.editor.scene.deleteObjects([obj]);
+                                processTaskFn();
+                            }
+                        } else {
+                            window.sctpClient.get_element_type(element).done(function (res) {
+                                
+                                self.sandbox.getIdentifier(element, function(idtf) {
+
+                                    var type = res.result;
+                                    if (type & sc_type_node || type & sc_type_link) {
+                                        self.elementsQueue.push([element, type, idtf]);
+                                        processTaskFn();
+                                    } else if (type & sc_type_arc_mask) {
+                                        window.sctpClient.get_arc(element).done(function (res) {
+                                            self.elementsQueue.push([element, type, idtf, res.result[0], res.result[1]]);
+                                            processTaskFn();
+                                        });
+                                    }
+                                });
+                            });
+                        }
+                    })(task[0], task[1], task[2]);
+                }
+            };
+            
+            processTaskFn();
+            
+            // append edges
+            var elements = [];
+            for (var i = 0; i < Math.min(50, self.elementsQueue.length); ++i) 
+                elements.push(self.elementsQueue.shift());
+            
+            while (elements.length > 0) {
+                var el = elements.shift();
+                var addr = el[0];
+                var type = el[1];
+                
+                if (type & sc_type_node || type & sc_type_link) {
+                    var model_node = self.editor.scene.createNode(type, new SCg.Vector3(10 * Math.random(), 10 * Math.random(), 0), '');
+                    model_node.setScAddr(addr);
+                    model_node.setObjectState(SCgObjectState.FromMemory);
+                    model_node.setText(el[2]);
+                } else if (type & sc_type_arc_mask) {
+                
+                    var bObj = self.editor.scene.getObjectByScAddr(el[3]);
+                    var eObj = self.editor.scene.getObjectByScAddr(el[4]);
+
+                    if (!bObj || !eObj) {
+                        self.elementsQueue.push(el);
+                        continue;
+                    }
+
+                    var model_edge = self.editor.scene.createEdge(bObj, eObj, type);
+                    model_edge.setScAddr(addr);
+                    model_edge.setObjectState(SCgObjectState.FromMemory);
+                    model_edge.setText(el[2]);
+                }
+            }
+            
+            self.requestUpdate();
+                            
+        })(tasks);
+        
+
+        self.requestUpdate();
+    };
+    
+    this.eventStructUpdate = function(added, element, arc) {
+        self.updateQueue.push([added, element, arc]);
+        self.requestUpdate();
+    };
 
     // delegate event handlers
     this.sandbox.eventDataAppend = $.proxy(this.receiveData, this);
     this.sandbox.eventGetObjectsToTranslate = $.proxy(this.getObjectsToTranslate, this);
     this.sandbox.eventApplyTranslation = $.proxy(this.applyTranslation, this);
+    this.sandbox.eventStructUpdate = $.proxy(this.eventStructUpdate, this);
 
     this.sandbox.updateContent();
 };

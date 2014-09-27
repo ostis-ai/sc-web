@@ -23,11 +23,6 @@ var KeyCode = {
     Enter: 13
 };
 
-var ScrollingSettings = {
-    Speed: 0.5,
-    IsInverse: true
-};
-
 SCg.Scene = function(options) {
 
     this.render = options.render;
@@ -72,8 +67,6 @@ SCg.Scene = function(options) {
      */
     this.modal = SCgModalMode.SCgModalNone;
 
-    // for drag scrolling
-    this.previousMouseMovePoint = null;
 };
 
 SCg.Scene.prototype = {
@@ -361,48 +354,11 @@ SCg.Scene.prototype = {
         this.updateObjectsVisual();
     },
     
-    isCursorOverWorkspace: function(x, y) {
-        var scgViewer = $('#scg-viewer');
-        var svg = $('#scg-viewer svg');
-        var WORKSPACE_OFFSET = 30;
-
-        return x < scgViewer.scrollLeft() + scgViewer.width() - WORKSPACE_OFFSET
-            && y < scgViewer.scrollTop() + scgViewer.height() - WORKSPACE_OFFSET
-            && x > scgViewer.scrollLeft() + $('.scg-tools-panel').width() + WORKSPACE_OFFSET
-            && y > scgViewer.scrollTop() + WORKSPACE_OFFSET;
-    },
-
-    scrollTo: function(x, y) {
-        var scgViewer = $('#scg-viewer');
-        var newPosition = new SCg.Vector2(x, y);
-        var currentScroll = new SCg.Vector2(scgViewer.scrollLeft(), scgViewer.scrollTop());
-
-        var positionDifference = this.previousMouseMovePoint.sub(newPosition);
-        positionDifference.multiplyScalar(ScrollingSettings.Speed);
-
-        currentScroll = ScrollingSettings.IsInverse
-            ? currentScroll.add(positionDifference)
-            : currentScroll.sub(positionDifference);
-
-        scgViewer.scrollTop(currentScroll.y);
-        scgViewer.scrollLeft(currentScroll.x);
-
-        this.previousMouseMovePoint = newPosition;
-    },
-
     // -------- input processing -----------
     onMouseMove: function(x, y) {
         
         if (this.modal != SCgModalMode.SCgModalNone) return; // do nothing
         
-        if (!this.isCursorOverWorkspace(x, y)) {
-            // disable drag scrolling
-            this.previousMouseMovePoint = null;
-        }
-        else if (this.previousMouseMovePoint && !this.focused_object) {
-            this.scrollTo(x, y);    // execute drag scrolling
-        }
-
         var offset = new SCg.Vector3(x - this.mouse_pos.x, y - this.mouse_pos.y, 0);
 
         this.mouse_pos.x = x;
@@ -411,16 +367,6 @@ SCg.Scene.prototype = {
         if ((this.edit_mode == SCgEditMode.SCgModeSelect) && this.focused_object) {
             if (this.focused_object.sc_type & sc_type_node) {
                 this.focused_object.setPosition(this.focused_object.position.clone().add(offset));
-            }
-            
-            // extend workspace
-            var SPACE_FOR_SCROLLING = 200;
-            var workspace = d3.select('#' + this.render.containerId + " svg");
-            if (x + SPACE_FOR_SCROLLING > workspace.attr('width')) {
-                workspace.attr('width', x + SPACE_FOR_SCROLLING);
-            }
-            if (y + SPACE_FOR_SCROLLING > workspace.attr('height')) {
-                workspace.attr('height', y + SPACE_FOR_SCROLLING);
             }
             
             this.updateObjectsVisual();
@@ -439,15 +385,10 @@ SCg.Scene.prototype = {
 
         // append new line point
         if (!this.pointed_object) {
-            var isModeSelect = this.edit_mode == SCgEditMode.SCgModeSelect;
             var isModeEdge = this.edit_mode == SCgEditMode.SCgModeEdge;
             var isModeContour = this.edit_mode == SCgEditMode.SCgModeContour;
             if (isModeContour || (isModeEdge && this.edge_data.source)) {
                 this.drag_line_points.push({x: x, y: y, idx: this.drag_line_points.length});
-            }
-            else if (isModeSelect) {
-                // enable drag scrolling
-                this.previousMouseMovePoint = new SCg.Vector2(x, y);
             }
         }
         
@@ -458,9 +399,7 @@ SCg.Scene.prototype = {
     },
     
     onMouseUp: function(x, y) {
-        
-        this.previousMouseMovePoint = null; // disable drag scrolling
-        
+                
         if (this.modal != SCgModalMode.SCgModalNone) return; // do nothing
         
         if (!this.pointed_object)

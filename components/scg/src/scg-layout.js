@@ -32,7 +32,23 @@ SCg.LayoutAlgorithmForceBased = function(nodes, edges, contours, onTickUpdate, r
 
 SCg.LayoutAlgorithmForceBased.prototype = Object.create( SCg.LayoutAlgorithm );
 
+SCg.LayoutAlgorithmForceBased.prototype.destroy = function() {
+    this.stop();
+};
+
+SCg.LayoutAlgorithmForceBased.prototype.stop = function() {
+      if (this.force) {
+        this.force.stop();
+        delete this.force;
+        this.force = null;
+    }
+  
+};
+
 SCg.LayoutAlgorithmForceBased.prototype.start = function() {
+    
+    this.stop();
+    
     // init D3 force layout
     var self = this;
     this.force = d3.layout.force()
@@ -186,7 +202,11 @@ SCg.LayoutManager.prototype.prepareObjects = function() {
  * Starts layout in scene
  */
 SCg.LayoutManager.prototype.doLayout = function() {
-    var self = this;
+    
+    if (this.algorithm) {
+        this.algorithm.stop();
+        delete this.algorithm;
+    }
     
     this.prepareObjects();
     this.algorithm = new SCg.LayoutAlgorithmForceBased(this.nodes, this.edges, null, 
