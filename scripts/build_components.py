@@ -1,12 +1,25 @@
 import sys, os
 from optparse import OptionParser
-import json
+import json, shutil
 
 
 BUILD_FILE = "build.json"
 COMPONENTS_PATH = "../components"
 CLIENT_PATH = "../client/"
 
+
+def copy_replace(src, dst):
+    for src_dir, dirs, files in os.walk(src):
+        dst_dir = src_dir.replace(src, dst)
+        if not os.path.exists(dst_dir):
+            os.mkdir(dst_dir)
+    
+        for file_ in files:
+            src_file = os.path.join(src_dir, file_)
+            dst_file = os.path.join(dst_dir, file_)
+            if os.path.exists(dst_file):
+                os.remove(dst_file)
+            shutil.copy2(src_file, dst_dir)
 
 def create_file(build_file, integrated):
     path, fn = os.path.split(build_file)
@@ -18,7 +31,7 @@ def create_file(build_file, integrated):
     p = CLIENT_PATH
     if not integrated: 
         p = path
-    target_file_path = os.path.join(p, config['target'])
+    target_file_path = os.path.join(path, config['target'])
     if integrated and config.has_key('component'):
         config['sources'].append(config['component'])
 
@@ -45,6 +58,12 @@ def build_component(descr, integrated):
     print "Building %s" % build_file
     create_file(build_file, integrated)
 
+    path, fn = os.path.split(build_file)
+    src = os.path.join(path, 'static')
+    dst = os.path.join(CLIENT_PATH, 'static')
+    print "Copy %s to %s" % (src, dst)
+    copy_replace(src, dst)
+    
 
 def find_components(path):
     

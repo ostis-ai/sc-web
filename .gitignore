@@ -44,4 +44,18 @@ sc-web-core.js
 sc_web/media/
 sc_web/secret.txt
 
-components/*/static/components/js/
+
+# components
+components/*/static/components/js/*
+
+# scg
+client/static/components/*/scg*
+
+# github
+client/static/components/*/github*
+
+# scs
+client/static/components/*/scs*
+
+# html
+client/static/components/*/html*
