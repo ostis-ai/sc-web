@@ -174,12 +174,18 @@ SctpClient.prototype.get_arc = function(addr) {
 };
 
 SctpClient.prototype.create_node = function(type) {
-    throw "Not supported";
+    return this.new_request({
+        cmdCode: SctpCommandType.SCTP_CMD_CREATE_NODE,
+        args: [type]
+    });
 };
 
 
 SctpClient.prototype.create_arc = function(type, src, trg) {
-    throw "Not supported";
+    return this.new_request({
+        cmdCode: SctpCommandType.SCTP_CMD_CREATE_ARC,
+        args: [type, src, trg]
+    });
 };
 
 
@@ -233,7 +239,7 @@ SctpClient.prototype.event_create = function(evt_type, addr, callback) {
         cmdCode: SctpCommandType.SCTP_CMD_EVENT_CREATE,
         args: [evt_type, addr]
     }).done(function(data) {
-        self.events[data] = callback;
+        self.events[data.result] = callback;
         dfd.resolve(data);
     }).fail(function(data) {
         dfd.reject(data);
@@ -251,7 +257,7 @@ SctpClient.prototype.event_destroy = function(evt_id) {
         args: [evt_id]
     }).done(function(data) {
         delete self.event_emit[evt_id];
-        dfd.promise(data);
+        dfd.promise(data.result);
     }).fail(function(data){ 
         dfd.reject(data);
     });
@@ -265,12 +271,17 @@ SctpClient.prototype.event_emit = function() {
     this.new_request({
         cmdCode: SctpCommandType.SCTP_CMD_EVENT_EMIT
     }).done(function (data) {
-        for (evt in data.result) {
+        
+        for (e in data.result) {
+            var evt = data.result[e];
+            
             evt_id = evt[0];
             addr = evt[1];
             arg = evt[2];
+            var func = self.events[evt_id];
             
-            self.events[evt_id](addr, arg);
+            if (func)
+                func(addr, arg);
         }
     }).fail(function(data) {
         dfd.reject();

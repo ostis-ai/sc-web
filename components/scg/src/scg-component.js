@@ -199,7 +199,7 @@ var scgViewerWindow = function(sandbox) {
     this.requestUpdate = function() {
         if (!self.updateTimeOut && (self.updateQueue.length > 0 || self.elementsQueue.length > 0))
         {
-            self.updateTimeOut = window.setTimeout(self.processUpdateQueue, 1000);
+            self.updateTimeOut = window.setTimeout(self.processUpdateQueue, 100);
             self.editor.render.update();
             self.editor.scene.layout();
         }
@@ -222,7 +222,7 @@ var scgViewerWindow = function(sandbox) {
                 } else {
                     var task = tasks.shift();
                     
-                    (function(added, element, arc, addr) {
+                    (function(added, element) {
                         var obj = self.editor.scene.getObjectByScAddr(element);
                         if (obj) {
                             if (!added) {
@@ -247,7 +247,7 @@ var scgViewerWindow = function(sandbox) {
                                 });
                             });
                         }
-                    })(task[0], task[1], task[2]);
+                    })(task[0], task[1]);
                 }
             };
             
@@ -294,8 +294,10 @@ var scgViewerWindow = function(sandbox) {
     };
     
     this.eventStructUpdate = function(added, element, arc) {
-        self.updateQueue.push([added, element, arc]);
-        self.requestUpdate();
+        window.sctpClient.get_arc(arc).done(function (r) {
+            self.updateQueue.push([added, r.result[1]]);
+            self.requestUpdate();
+        });
     };
 
     // delegate event handlers

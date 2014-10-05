@@ -8,6 +8,7 @@ import sctp.types
 import sctp.logic
 import sockjs.tornado
 import thread
+from sctp.types import ScAddr
 
 clients = []
 
@@ -39,7 +40,12 @@ class SocketProxy:
         
         def response_message(resCode, res):
             if res is not None:
-                self.on_message(json.dumps({'resCode': resCode, 'result': res}))
+                
+                r = res
+                if isinstance(res, ScAddr):
+                    r = res.to_id()
+                
+                self.on_message(json.dumps({'resCode': resCode, 'result': r}))
             else:
                 self.on_message(json.dumps({'resCode': resCode}))
                 
@@ -55,7 +61,7 @@ class SocketProxy:
         elif cmdCode == sctp.types.SctpCommandType.SCTP_CMD_FIND_ELEMENT_BY_SYSITDF:
             res = self.sctp_client.find_element_by_system_identifier(str(cmd['args'][0]))
                 
-            response_message(res_code(res), res.to_id())
+            response_message(res_code(res), res)
             
         elif cmdCode == sctp.types.SctpCommandType.SCTP_CMD_GET_ELEMENT_TYPE:
             res = self.sctp_client.get_element_type(sctp.types.ScAddr.parse_from_string(cmd['args'][0]))
@@ -183,9 +189,18 @@ class SocketProxy:
             for evt in events:
                 if evt[0] in self.registered_events:
                     result.append(evt)
-            
+           
             response_message(sctp.types.SctpResultCode.SCTP_RESULT_OK, result)        
             
+        # @todo authorised users only
+        elif cmdCode == sctp.types.SctpCommandType.SCTP_CMD_CREATE_NODE:
+            res = self.sctp_client.create_node(int(cmd['args'][0]))
+            response_message(res_code(res), res)
+
+        elif cmdCode == sctp.types.SctpCommandType.SCTP_CMD_CREATE_ARC:
+            args = cmd['args']
+            res = self.sctp_client.create_arc(int(args[0]), ScAddr.parse_from_string(args[1]), ScAddr.parse_from_string(args[2]))
+            response_message(res_code(res), res)
         
         
     def receiveData(self, dataSize):

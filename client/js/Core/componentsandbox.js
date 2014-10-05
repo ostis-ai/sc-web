@@ -61,14 +61,14 @@ SCWeb.core.ComponentSandbox = function(container, addr, is_struct, format_addr, 
                 self.eventStructUpdate(true, addr, arg);
             }
         }).done(function(id) {
-            self.event_add_element = id;
+            self.event_add_element = id.result;
         });
         window.sctpClient.event_create(SctpEventType.SC_EVENT_REMOVE_OUTPUT_ARC, this.addr, function(addr, arg) {
             if (self.eventStructUpdate) {
                 self.eventStructUpdate(false, addr, arg);
             }
         }).done(function(id) {
-            self.event_remove_element = id;
+            self.event_remove_element = id.result;
         });
     }
 };
@@ -200,7 +200,8 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = function() {
                                             ])
         .done(function (res) {
             for (idx in res.result)
-                self.eventStructUpdate(true, res.result[idx][2], res.result[idx][1]);
+                self.eventStructUpdate(true, res.result[idx][0], res.result[idx][1]);
+
             dfd.resolve();
         });
     } else

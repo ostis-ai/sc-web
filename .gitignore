@@ -43,3 +43,5 @@ repo
 sc-web-core.js
 sc_web/media/
 sc_web/secret.txt
+
+components/*/static/components/js/
