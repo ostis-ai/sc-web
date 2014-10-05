@@ -13,7 +13,7 @@
         "src/scg-render.js",
         "src/scg-scene.js",
         "src/scg-layout.js",
-	"src/scg-tree.js"
+	    "src/scg-tree.js"
         ],
 	
 	"component": "src/scg-component.js",

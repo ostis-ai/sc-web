@@ -135,6 +135,46 @@ SCg.Render.prototype = {
                 .attr('d', 'M-5,-5L5,5M-5,5L5,-5');
     },
     
+    classState: function(obj, base) {
+            
+            var res = 'SCgElement';
+            
+            if (base)
+                res += ' ' + base;
+            
+            if (obj.is_selected)
+                res += ' SCgStateSelected';
+            
+            if (obj.is_highlighted)
+                res += ' SCgStateHighlighted ';
+            
+            switch (obj.state) {
+                case SCgObjectState.FromMemory:
+                    res += ' SCgStateFromMemory';
+                    break;
+                case SCgObjectState.MergedWithMemory:
+                    res += ' SCgStateMergedWithMemory';
+                    break;
+                case SCgObjectState.NewInMemory:
+                    res += ' SCgStateNewInMemory';
+                    break;
+                default:
+                   res += ' SCgStateNormal'; 
+            };
+                        
+            return res;
+    },
+    
+    classToogle: function(o, cl, flag) {
+        
+        var item = d3.select(o);
+        var str = item.attr("class");
+        var res = str.replace(cl, '');
+        if (flag)
+            res += ' ' + cl;
+        item.attr("class", res);
+    },
+    
     // -------------- draw -----------------------
     update: function() {
 
@@ -146,18 +186,17 @@ SCg.Render.prototype = {
         // add nodes that haven't visual
         var g = this.d3_nodes.enter().append('svg:g')
             .attr('class', function(d) {
-                return (d.sc_type & sc_type_constancy_mask) ? 'SCgNode' : 'SCgNodeEmpty';
+                return self.classState(d, (d.sc_type & sc_type_constancy_mask) ? 'SCgNode' : 'SCgNodeEmpty');
             })
             .attr("transform", function(d) {
                 return 'translate(' + d.position.x + ', ' + d.position.y + ')';
             })
             .on('mouseover', function(d) {
-                // enlarge target node
-                d3.select(this).classed('SCgStateHighlighted', true);
+                self.classToogle(this, 'SCgStateHighlighted', true);
                 self.scene.onMouseOverObject(d);
             })
             .on('mouseout', function(d) {
-                d3.select(this).classed('SCgStateHighlighted', false)
+                self.classToogle(this, 'SCgStateHighlighted', false);
                 self.scene.onMouseOutObject(d);
             })
             .on('mousedown', function(d) {
@@ -185,15 +224,16 @@ SCg.Render.prototype = {
         
         // add edges that haven't visual
         this.d3_edges.enter().append('svg:g')
-            .classed('SCgStateNormal', true)
-            .classed('SCgEdge', true)
+            .attr('class', function(d) {
+                return self.classState(d, 'SCgEdge');
+            })
             .attr('pointer-events', 'visibleStroke')
             .on('mouseover', function(d) {
-                d3.select(this).classed('SCgStateHighlighted', true);
+                self.classToogle(this, 'SCgStateHighlighted', true);
                 self.scene.onMouseOverObject(d);
             })
             .on('mouseout', function(d) {
-                d3.select(this).classed('SCgStateHighlighted', false);
+                self.classToogle(this, 'SCgStateHighlighted', false);
                 self.scene.onMouseOutObject(d);
             })
             .on('mousedown', function(d) {
@@ -209,7 +249,9 @@ SCg.Render.prototype = {
         this.d3_contours = this.d3_contours.data(this.scene.contours, function(d) { return d.id; });
 
         g = this.d3_contours.enter().append('svg:polygon')
-            .attr('class', 'SCgContour')
+            .attr('class', function(d) {
+                return self.classState(d, 'SCgContour');
+            })
             .attr('points', function(d) {
                 var verticiesString = "";
                 for (var i = 0; i < d.points.length; i++) {
@@ -219,11 +261,11 @@ SCg.Render.prototype = {
                 return verticiesString;
             })
             .on('mouseover', function(d) {
-                d3.select(this).classed('SCgStateHighlighted', true);
+                self.classToogle(this, 'SCgStateHighlighted', true);
                 self.scene.onMouseOverObject(d);
             })
             .on('mouseout', function(d) {
-                d3.select(this).classed('SCgStateHighlighted', false);
+                self.classToogle(this, 'SCgStateHighlighted', false);
                 self.scene.onMouseOutObject(d);
             })
             .on('mousedown', function(d) {
@@ -239,15 +281,16 @@ SCg.Render.prototype = {
         this.d3_buses = this.d3_buses.data(this.scene.buses, function(d) { return d.id; });
 
         this.d3_buses.enter().append('svg:g')
-            .classed('SCgStateNormal', true)
-            .classed('SCgBus', true)
+            .attr('class', function(d) {
+                return self.classState(d, 'SCgBus');
+            })
             .attr('pointer-events', 'visibleStroke')
             .on('mouseover', function(d) {
-                d3.select(this).classed('SCgStateHighlighted', true);
+                self.classToogle(this, 'SCgStateHighlighted', true);
                 self.scene.onMouseOverObject(d);
             })
             .on('mouseout', function(d) {
-                d3.select(this).classed('SCgStateHighlighted', false);
+                self.classToogle(this, 'SCgStateHighlighted', false);
                 self.scene.onMouseOutObject(d);
             })
             .on('mousedown', function(d) {
@@ -270,10 +313,11 @@ SCg.Render.prototype = {
             
             d.need_observer_sync = false;
             
-            var g = d3.select(this).attr("transform", 'translate(' + d.position.x + ', ' + d.position.y + ')')
-                            .classed('SCgStateSelected', function(d) {
-                                return d.is_selected;
-                            })
+            var g = d3.select(this)
+                        .attr("transform", 'translate(' + d.position.x + ', ' + d.position.y + ')')
+                        .attr('class', function(d) {
+                            return self.classState(d, (d.sc_type & sc_type_constancy_mask) ? 'SCgNode' : 'SCgNodeEmpty');
+                        })
                             
             g.select('use')
                 .attr('xlink:href', function(d) {
@@ -295,10 +339,11 @@ SCg.Render.prototype = {
                 d.update();
             var d3_edge = d3.select(this);
             SCgAlphabet.updateEdge(d, d3_edge);
-            d3_edge.classed('SCgStateSelected', function(d) {
-                return d.is_selected;
+            d3_edge.attr('class', function(d) {
+                return self.classState(d, 'SCgEdge');
             });
         });
+        
         this.d3_contours.each(function(d) {
         
             d3.select(this).attr('d', function(d) { 
@@ -310,8 +355,8 @@ SCg.Render.prototype = {
 
                 var d3_contour = d3.select(this);
 
-                d3_contour.classed('SCgStateSelected', function(d) {
-                    return d.is_selected;
+                d3_contour.attr('class', function(d) {
+                    return self.classState(d, 'SCgContour');
                 });
 
                 d3_contour.attr('points', function(d) {
@@ -339,8 +384,8 @@ SCg.Render.prototype = {
                 d.update();
             var d3_bus = d3.select(this);
             SCgAlphabet.updateBus(d, d3_bus);
-            d3_bus.classed('SCgStateSelected', function(d) {
-                return d.is_selected;
+            d3_bus.attr('class', function(d) {
+                return self.classState(d, 'SCgBus');
             });
         });
     },

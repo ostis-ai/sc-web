@@ -206,28 +206,40 @@ path.SCgBusPath {
 }
 
 /* ----- States ----- */
-.SCgStateNormal {
-    stroke: #000;
+.SCgElement {
     cursor: pointer;
+}
+
+.SCgStateNormal {
+    stroke: #777;
+}
+
+.SCgStateNormal.SCgStateHighlighted {
+    stroke: #BBB;
 }
 
 .SCgStateMergedWithMemory {
     stroke: #123A65;
-    cursor: pointer;
+}
+
+.SCgStateMergedWithMemory.SCgStateHighlighted {\
+    stroke: #7189A3;
 }
 
 .SCgStateNewInMemory {
     stroke: #5E7027;
-    cursor: pointer;
+}
+
+.SCgStateNewInMemory.SCgStateHighlighted {
+    stroke: #AEB893;
 }
 
 .SCgStateFromMemory {
-    
+    stroke: #000;
 }
 
-.SCgStateHighlighted {
-    stroke: #5EB700;
-    cursor: pointer;
+.SCgStateFromMemory.SCgStateHighlighted {
+    stroke: #444;
 }
 
 .SCgStateSelected {
