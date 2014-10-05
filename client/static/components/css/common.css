@@ -1,6 +1,7 @@
 html, body {
     margin-top: 30px;
     margin-bottom: 45px;
+    height: 100%;
 }
 
 html.drag {
@@ -16,7 +17,7 @@ html.drag {
     width: 100px;
     height: 100px;
     display: none;
-​}
+}
 
 #sc-ui-locker.shown {
     display: block;
@@ -118,6 +119,15 @@ html.drag {
 .argument-item {
     /*max-width: 250px;*/
     max-height: 32px;
+}
+
+/* --- window --- */
+.sc-window {
+    height: 100%;
+}
+
+.sc-window .panel-body {
+    height: 100%;
 }
 
 /* --- search --- */
