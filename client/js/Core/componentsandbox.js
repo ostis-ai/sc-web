@@ -110,6 +110,11 @@ SCWeb.core.ComponentSandbox.prototype.createWindowControls = function() {
 };
 
 // ------------------ Functions to call from component --------
+
+SCWeb.core.ComponentSandbox.prototype.canEdit = function() {
+    return true; // @todo: check by user rights
+};
+
 /*!
  * @param {Array} args Array of sc-addrs of commnad arguments.
  */
