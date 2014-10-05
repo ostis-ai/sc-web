@@ -250,7 +250,7 @@ ScHelper.prototype.getSystemIdentifier = function(addr) {
                                       ])
     .done(function (it) {
         self.sctp_client.get_link_content(it.result[0][2])
-        .done(function() {
+        .done(function(res) {
             dfd.resolve(res.result);
         })
         .fail(function() {
