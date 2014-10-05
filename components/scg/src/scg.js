@@ -62,6 +62,7 @@ SCg.Editor.prototype = {
         if(params.autocompletionVariants)
             this.autocompletionVariants = params.autocompletionVariants;
 
+        this.canEdit = params.canEdit ? true : false;
         this.initUI();
         
     },
@@ -101,7 +102,19 @@ SCg.Editor.prototype = {
                             });
                     }
                 });
+            
+            if (!self.canEdit) {
+                self.hideTool(self.toolEdge());
+                self.hideTool(self.toolBus());
+                self.hideTool(self.toolContour());
+                self.hideTool(self.toolChangeIdtf());
+                self.hideTool(self.toolChangeType());
+                self.hideTool(self.toolDelete());
+                self.hideTool(self.toolOpen());
+                self.hideTool(self.toolIntegrate());
+            }
         });
+        
         
         var self = this;
         this.scene.event_selection_changed = function() {
@@ -110,6 +123,54 @@ SCg.Editor.prototype = {
         this.scene.event_modal_changed = function() {
             self.onModalChanged();
         }
+    },
+    
+    hideTool: function(tool) {
+        tool.addClass('hidden');
+    },
+    
+    showTool: function(tool) {
+        tool.removeClass('hidden');
+    },
+    
+    tool: function(name) {
+        return $('#' + this.containerId).find('#scg-tool-' + name);
+    },
+    
+    toolSelect: function() {
+        return this.tool('select');
+    },
+    
+    toolEdge: function() {
+        return this.tool('edge');
+    },
+    
+    toolBus: function() {
+        return this.tool('bus');
+    },
+    
+    toolContour: function() {
+        return this.tool('contour');
+    },
+    
+    toolChangeIdtf: function() {
+        return this.tool('change-idtf');
+    },
+    
+    toolChangeType: function() {
+        return this.tool('change-type');
+    },
+    
+    toolDelete: function() {
+        return this.tool('delete');
+    },
+    
+    toolIntegrate: function() {
+        return this.tool('integrate');
+    },
+    
+    toolOpen: function() {
+        return this.tool('open');
     },
     
     /**
@@ -121,22 +182,23 @@ SCg.Editor.prototype = {
         var container = '#' + this.containerId;
         var cont = $(container);
             
-        cont.find('#scg-tool-select').button('toggle');
+        var select = this.toolSelect();
+        select.button('toggle');
         
         // handle clicks on mode change
-        cont.find('#scg-tool-select').click(function() {
+        select.click(function() {
             self.scene.setEditMode(SCgEditMode.SCgModeSelect);
         });
-        cont.find('#scg-tool-edge').click(function() {
+        this.toolEdge().click(function() {
             self.scene.setEditMode(SCgEditMode.SCgModeEdge);
         });
-        cont.find('#scg-tool-bus').click(function() {
+        this.toolBus().click(function() {
             self.scene.setEditMode(SCgEditMode.SCgModeBus);
         });
-        cont.find('#scg-tool-contour').click(function() {
+        this.toolContour().click(function() {
             self.scene.setEditMode(SCgEditMode.SCgModeContour);
         });
-        cont.find('#scg-tool-change-idtf').click(function() {
+        this.toolChangeIdtf().click(function() {
             self.scene.setModal(SCgModalMode.SCgModalIdtf);
             $(this).popover({container: container});
             $(this).popover('show');
@@ -163,7 +225,7 @@ SCg.Editor.prototype = {
                 
             });
 
-            if(self.autocompletionVariants)
+            if (self.autocompletionVariants)
                 self._enableAutocomplete(input);
             
             // process controls
@@ -177,7 +239,7 @@ SCg.Editor.prototype = {
             
         });
         
-        cont.find('#scg-tool-change-type').click(function() {
+        this.toolChangeType().click(function() {
             self.scene.setModal(SCgModalMode.SCgModalType);
             
             if (self.scene.selected_objects.length != 1) {
@@ -218,14 +280,14 @@ SCg.Editor.prototype = {
             });
         });
         
-        cont.find('#scg-tool-delete').click(function() {
+        this.toolDelete().click(function() {
             self.scene.deleteObjects(self.scene.selected_objects.slice(0, self.scene.selected_objects.length));
             self.scene.clearSelection();
         });
 
 
         //problem with opening the same doc twice
-        cont.find('#scg-tool-open').click(function(){
+        this.toolOpen().click(function(){
             var document = $(this)[0].ownerDocument;
             var open_dialog = document.getElementById("scg-tool-open-dialog");
 
@@ -311,7 +373,7 @@ SCg.Editor.prototype = {
             {
                 name: 'idtf',
                 source: function(str, callback) {
-                    self.autocompletionVariants(str, callback, {editor: self});
+                    self.autocompletionVariants(str, callback, { editor: self });
                 },
                 displayKey: 'name',
                 templates: {
