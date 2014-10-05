@@ -20,8 +20,8 @@ var ImageViewer = function(sandbox){
         return dfd.promise();
     };
     
-    if (this.sandbox.link_addr) {
-        this.receiveData('api/link/content/?addr=' + this.sandbox.link_addr);
+    if (this.sandbox.addr) {
+        this.receiveData('api/link/content/?addr=' + this.sandbox.addr);
     }
 };
 
