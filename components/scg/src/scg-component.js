@@ -17,6 +17,8 @@ var scgViewerWindow = function(sandbox) {
     this.sandbox = sandbox;
     this.tree = new SCg.Tree();
     this.editor = new SCg.Editor();
+    
+    var self = this;
 
     var autocompletionVariants = function(keyword, callback, self) {
 
@@ -32,13 +34,74 @@ var scgViewerWindow = function(sandbox) {
 
             callback(keys);
         });
+    };
+    
+    var translateToSc = function(scene, callback) {
+        if (!self.sandbox.is_struct)
+            throw "Invalid state. Trying translate sc-link into sc-memory";
+        
+        var translateObj = function(obj) {
+            window.sctpClient.create_arc(sc_type_arc_pos_const_perm, self.sandbox.addr, obj.sc_addr);
+        };
+                
+        var dfdNodes = jQuery.Deferred();
+        
+        // translate nodes
+        var nodes = scene.nodes.slice();
+        $.when.apply($, nodes.map(function(node) {
+            var dfd = new jQuery.Deferred();
+            
+            if (!node.sc_addr) {
+                window.sctpClient.create_node(node.sc_type).done(function (r) {
+                    node.setScAddr(r.result);
+                    node.setObjectState(SCgObjectState.NewInMemory);
+                    
+                    translateObj(node);
+                    dfd.resolve();
+                });
+            } else
+                dfd.resolve();
+            
+            return dfd.promise();
+        })).done(function() {
+            
+             // translate edges
+            var edges = scene.edges.slice();
+            $.when.apply($, edges.map(function (edge) {
+                var dfd = new jQuery.Deferred();
 
+                if (!edge.sc_addr) {
+                    var src = edge.source.sc_addr;
+                    var trg = edge.target.sc_addr;
 
-    }
+                    if (src && trg) {
+                        window.sctpClient.create_arc(edge.sc_type, src, trg).done(function(r) {
+                            edge.setScAddr(r.result);
+                            edge.setObjectState(SCgObjectState.NewInMemory);
+
+                            translateObj(edge);
+                            translated = true;
+                            dfd.resolve();
+                        });
+                    } else
+                        dfd.resolve();
+                } else
+                    dfd.resolve();
+
+                return dfd.promise();
+            })).done(function() {
+                scene.updateRender();
+            });
+        });
+        
+       
+    };
+    
     this.editor.init(
         {
             containerId: sandbox.container,
             autocompletionVariants : autocompletionVariants,
+            translateToSc: translateToSc,
             canEdit: this.sandbox.canEdit()
         }
     );

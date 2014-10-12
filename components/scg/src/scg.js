@@ -59,8 +59,10 @@ SCg.Editor.prototype = {
         
         this.containerId = params.containerId;
 
-        if(params.autocompletionVariants)
+        if (params.autocompletionVariants)
             this.autocompletionVariants = params.autocompletionVariants;
+        if (params.translateToSc)
+            this.translateToSc = params.translateToSc;
 
         this.canEdit = params.canEdit ? true : false;
         this.initUI();
@@ -171,6 +173,14 @@ SCg.Editor.prototype = {
     
     toolOpen: function() {
         return this.tool('open');
+    },
+    
+    toolZoomIn: function() {
+        return this.tool('zoomin');
+    },
+    
+    toolZoomOut: function() {
+        return this.tool('zoomout');
     },
     
     /**
@@ -287,7 +297,7 @@ SCg.Editor.prototype = {
 
 
         //problem with opening the same doc twice
-        this.toolOpen().click(function(){
+        this.toolOpen().click(function() {
             var document = $(this)[0].ownerDocument;
             var open_dialog = document.getElementById("scg-tool-open-dialog");
 
@@ -299,6 +309,13 @@ SCg.Editor.prototype = {
             }
             ScgObjectBuilder.scene = self.scene;
             var result = open_dialog.click();
+        });
+        
+        this.toolIntegrate().click(function() {
+            if (self.translateToSc)
+                self.translateToSc(self.scene, function() {
+                    
+                });
         });
 
 
@@ -314,17 +331,20 @@ SCg.Editor.prototype = {
     onSelectionChanged: function() {
         
         if (this.scene.selected_objects.length == 1 && !(this.scene.selected_objects[0] instanceof SCg.ModelContour)) {
-            this._enableTool('#scg-tool-change-idtf');
-            this._enableTool('#scg-tool-change-type');
+
+            if (!this.scene.selected_objects[0].sc_addr) {
+                this._enableTool(this.toolChangeIdtf());
+                this._enableTool(this.toolChangeType());
+            }
         } else {
-            this._disableTool('#scg-tool-change-idtf');
-            this._disableTool('#scg-tool-change-type');
-        }
-        
+            this._disableTool(this.toolChangeIdtf());
+            this._disableTool(this.toolChangeType());
+        } 
+                
         if (this.scene.selected_objects.length > 0) {
-            this._enableTool('#scg-tool-delete');
+            this._enableTool(this.toolDelete());
         } else {
-            this._disableTool('#scg-tool-delete');
+            this._disableTool(this.toolDelete());
         }
     },
     
@@ -333,23 +353,23 @@ SCg.Editor.prototype = {
      */
     onModalChanged: function() {
         var self = this;
-        function update_tool(tool_id) {
+        function update_tool(tool) {
             if (self.scene.modal != SCgModalMode.SCgModalNone)
-                self._disableTool(tool_id);
+                self._disableTool(tool);
             else
-                self._enableTool(tool_id);
+                self._enableTool(tool);
         }
         
-        update_tool('#scg-tool-select');
-        update_tool('#scg-tool-edge');
-        update_tool('#scg-tool-bus');
-        update_tool('#scg-tool-contour');
+        update_tool(this.toolSelect());
+        update_tool(this.toolEdge());
+        update_tool(this.toolBus());
+        update_tool(this.toolContour());
         
-        update_tool('#scg-tool-change-idtf');
-        update_tool('#scg-tool-change-type');
-        update_tool('#scg-tool-delete');
-        update_tool('#scg-tool-zoomin');
-        update_tool('#scg-tool-zoomout');
+        update_tool(this.toolChangeIdtf());
+        update_tool(this.toolChangeType());
+        update_tool(this.toolDelete());
+        update_tool(this.toolZoomIn());
+        update_tool(this.toolZoomOut());
     },
 
     _enableAutocomplete : function (element){
@@ -445,14 +465,14 @@ SCg.Editor.prototype = {
     /**
      * Change specified tool state to disabled
      */
-    _disableTool: function(tool_id) {
-        $('#' + this.containerId).find(tool_id).attr('disabled', 'disabled');
+    _disableTool: function(tool) {
+        tool.attr('disabled', 'disabled');
     },
     
     /**
      * Change specified tool state to enabled
      */
-    _enableTool: function(tool_id) {
-         $('#' + this.containerId).find(tool_id).removeAttr('disabled');
+    _enableTool: function(tool) {
+         tool.removeAttr('disabled');
     }
 };
