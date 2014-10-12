@@ -62,6 +62,10 @@ SCWeb.ui.WindowManager = {
             printDocument.close();
         });
         
+        $('#history-item-link').popover( {
+            content: $.proxy(self.getUrlToCurrentWindow, self)
+        });
+        
         // listen translation events
         SCWeb.core.EventManager.subscribe("translation/update", this, this.updateTranslation);
         SCWeb.core.EventManager.subscribe("translation/get", this, function(objects) {
@@ -72,6 +76,10 @@ SCWeb.ui.WindowManager = {
         
         dfd.resolve();
         return dfd.promise();
+    },
+    
+    getUrlToCurrentWindow: function() {
+        return window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + "/?question=" + this.active_history_addr;
     },
     
     // ----------- History ------------
@@ -110,10 +118,9 @@ SCWeb.ui.WindowManager = {
                 });
             }
         }
-
         
         this.setHistoryItemActive(question_addr);
-        
+                
         // setup input handlers
         var self = this;
         this.history_tabs.find("[sc_addr]").click(function(event) {

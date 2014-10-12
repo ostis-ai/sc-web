@@ -42,12 +42,30 @@ SCWeb.core.Main = {
 
                             $.when(SCWeb.ui.Core.init(data),
                                 SCWeb.core.ComponentManager.init(),
-                                SCWeb.core.DialogHistory.init(),
                                 SCWeb.core.Translation.update()
-                                ).done(function() {
+                                )
+                            .done(function() {
                                     dfd.resolve();
                                 
-                                // test
+                                    var url = parseURL(window.location.href);
+
+                                    if (url.searchObject) {
+                                        var question = url.searchObject['question'];
+                                        if (question) {
+                                            /// @todo Check question is realy a question
+                                            SCWeb.ui.WindowManager.appendHistoryItem(question);
+                                            return;
+                                        }
+                                    }
+
+                                    SCWeb.core.Server.resolveScAddr([params.default_keynode], function(addrs) {
+                                        var argumentAddr = addrs[params.default_keynode];
+                                        //var window = SCWeb.core.ui.Windows.createWindow(outputAddr);
+                                        SCWeb.core.Main.doDefaultCommand([argumentAddr]);
+                                        if (params.first_time)
+                                            $('#help-modal').modal({"keyboard": true});
+                                    });
+                
                                 
                             });
                         });
