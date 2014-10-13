@@ -18,9 +18,14 @@ class SocketProxy:
     def __init__(self, on_message):
         self.on_message = on_message
         self.sctp_client = sctp.logic.new_sctp_client()
-        
+        self.registered_events = []
+        self.recieved_events = []
+                
     def destroy(self):
         self.sock.close()
+        
+    def events_callback(self, event_id, addr, arg):
+        self.recieved_events.append((event_id, addr, arg))
          
     def send(self, message):
         
@@ -146,6 +151,33 @@ class SocketProxy:
                     sres.append(new_data)
                 
             response_message(resCode, sres)
+            
+        elif cmdCode == sctp.types.SctpCommandType.SCTP_CMD_EVENT_CREATE:
+            eventType = cmd['args'][0]
+            addr = cmd['args'][1]
+            
+            eventId = self.sctp_client.event_create(eventType, addr, self.events_callback)
+            if eventId == None:
+                response_message(sctp.types.SctpResultCode.SCTP_RESULT_FAIL, None)
+            else:
+                response_message(sctp.types.SctpResultCode.SCTP_RESULT_OK, eventId)
+                self.registered_events.append(eventId)
+        
+        elif cmdCode == sctp.types.SctpCommandType.SCTP_CMD_EVENT_DESTROY:
+            eventId = cmd['args'][0]
+            res = sctp.types.SctpResultCode.SCTP_RESULT_FAIL
+            if self.sctp_client.event_destroy(eventId):
+                res = sctp.types.SctpResultCode.SCTP_RESULT_OK
+                self.registered_events.remove(eventId)
+            response_message(res, None)
+        
+        elif cmdCode == sctp.types.SctpCommandType.SCTP_CMD_EVENT_EMIT:
+            result = []
+            for evt in self.recieved_events:
+                if evt[0] in self.registered_events:
+                    result.append(evt)
+            
+            response_message(sctp.types.SctpResultCode.SCTP_RESULT_OK, result)                 
         
         
     def receiveData(self, dataSize):
