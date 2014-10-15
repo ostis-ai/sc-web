@@ -38,7 +38,18 @@ SCWeb.ui.WindowManager = {
 
             var question_addr = self.active_history_addr;
             var lang_addr = $(this).attr('sc_addr');
-              
+        
+            var fmt_addr = SCWeb.core.ComponentManager.getPrimaryFormatForExtLang(lang_addr);
+            if (fmt_addr) {
+                var window = self.windows[self.hash_addr(question_addr, fmt_addr)];
+                if (window) {
+                    self.setWindowActive(window);
+                } else {
+                    self.appendWindow(addr, fmt_addr);
+                    self.window_active_formats[question_addr] = fmt_addr;
+                    self.windows[self.hash_addr(question_addr, fmt_addr)] = question_addr;
+                }
+            }
         });
     
         $('#history-item-print').click(function () {
