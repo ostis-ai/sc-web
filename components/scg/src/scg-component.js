@@ -102,7 +102,8 @@ var scgViewerWindow = function(sandbox) {
             containerId: sandbox.container,
             autocompletionVariants : autocompletionVariants,
             translateToSc: translateToSc,
-            canEdit: this.sandbox.canEdit()
+            canEdit: this.sandbox.canEdit(),
+            resolveControls: this.sandbox.resolveElementsAddr,
         }
     );
 

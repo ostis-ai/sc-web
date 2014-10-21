@@ -63,6 +63,8 @@ SCg.Editor.prototype = {
             this.autocompletionVariants = params.autocompletionVariants;
         if (params.translateToSc)
             this.translateToSc = params.translateToSc;
+        if (params.resolveControls)
+            this.resolveControls = params.resolveControls;
 
         this.canEdit = params.canEdit ? true : false;
         this.initUI();
@@ -115,6 +117,9 @@ SCg.Editor.prototype = {
                 self.hideTool(self.toolOpen());
                 self.hideTool(self.toolIntegrate());
             }
+            
+            if (self.resolveControls)
+                self.resolveControls(tools_container);
         });
         
         

@@ -122,6 +122,12 @@ SCWeb.core.ComponentSandbox.prototype.doDefaultCommand = function(args) {
     SCWeb.core.Main.doDefaultCommand(args);
 };
 
+/*! Resolves sc-addr for all elements with attribute sc_control_sys_idtf
+ */
+SCWeb.core.ComponentSandbox.prototype.resolveElementsAddr = function(parentSelector) {
+    SCWeb.ui.Core.resolveElementsAddr(parentSelector);
+};
+
 /*!
  * Genarate html for new window container
  * @param {String} containerId ID that will be set to container

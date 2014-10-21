@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<KBEProject name="kb">
+    <file filter="controls" path="controls/ui_scg_control_tool_select.scs"/>
+    <file filter="controls" path="controls/ui_scg_control_tool_edge.scs"/>
+</KBEProject>
