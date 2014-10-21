@@ -1,17 +1,17 @@
 SCWeb.ui.WindowManager = {
     
     // dictionary that contains information about windows corresponding to history items
-    windows: {},
+    windows: [],
     window_count: 0,
     window_active_formats: {},
     sandboxes: {},
-    active_window_addr: null,
+    active_window_id: null,
     active_history_addr: null,
     
     
     // function to create hash from question addr and format addr
     hash_addr: function(question_addr, fmt_addr) {
-        return question_addr + ':' + fmt_addr;
+        return question_addr + '_' + fmt_addr;
     },
     
     init: function(params) {
@@ -41,11 +41,11 @@ SCWeb.ui.WindowManager = {
         
             var fmt_addr = SCWeb.core.ComponentManager.getPrimaryFormatForExtLang(lang_addr);
             if (fmt_addr) {
-                var window = self.windows[self.hash_addr(question_addr, fmt_addr)];
-                if (window) {
-                    self.setWindowActive(window);
+                var id = self.hash_addr(question_addr, fmt_addr);
+                if (self.windows.indexOf(id) != -1) {
+                    self.setWindowActive(id);
                 } else {
-                    self.appendWindow(addr, fmt_addr);
+                    self.appendWindow(question_addr, fmt_addr);
                     self.window_active_formats[question_addr] = fmt_addr;
                     self.windows[self.hash_addr(question_addr, fmt_addr)] = question_addr;
                 }
@@ -56,7 +56,7 @@ SCWeb.ui.WindowManager = {
             if (SCWeb.ui.ArgumentsPanel.isArgumentAddState()) return;
 
             // get ctive window data
-            var data = self.window_container.find("[sc_addr='" + self.active_window_addr + "']").html();
+            var data = self.window_container.find("#" + self.active_window_id).html();
             
             var html = '<html><head>' + $('head').html() + '</head></html><body>' + data + '</body>';
             var styles = '';
@@ -111,22 +111,12 @@ SCWeb.ui.WindowManager = {
         var ext_lang_addr = SCWeb.core.Main.getDefaultExternalLang();
         var fmt_addr = SCWeb.core.ComponentManager.getPrimaryFormatForExtLang(ext_lang_addr);
         if (fmt_addr) {
-            var self = this;
-            var wnd = self.windows[self.hash_addr(question_addr, fmt_addr)];
-            if (wnd) {
-                self.setWindowActive(wnd);
-            } else {
-                
-                var dfd = new jQuery.Deferred();
-                
-                // determine answer structure
-                window.scHelper.getAnswer(question_addr).done(function (addr) {
-                    self.appendWindow(addr, fmt_addr);
-                    self.window_active_formats[question_addr] = fmt_addr;
-                    self.windows[self.hash_addr(question_addr, fmt_addr)] = question_addr;
-                }).fail(function(v) {
-                    /// @todo process fail
-                });
+            var id = this.hash_addr(question_addr, fmt_addr)
+            if (this.windows.indexOf(id) != -1) {
+                this.setWindowActive(id);
+            } else {            
+                this.appendWindow(question_addr, fmt_addr);
+                this.window_active_formats[question_addr] = fmt_addr;
             }
         }
         
@@ -137,7 +127,7 @@ SCWeb.ui.WindowManager = {
         this.history_tabs.find("[sc_addr]").click(function(event) {
             var question_addr = $(this).attr('sc_addr');
             self.setHistoryItemActive(question_addr);
-            self.setWindowActive(self.windows[self.hash_addr(question_addr, self.window_active_formats[question_addr])]);
+            self.setWindowActive(self.hash_addr(question_addr, self.window_active_formats[question_addr]));
         });
 
         // translate added item
@@ -177,31 +167,52 @@ SCWeb.ui.WindowManager = {
      * @param {String} addr sc-addr of sc-structure
      * @param {String} fmt_addr sc-addr of window format
      */
-    appendWindow: function(addr, fmt_addr) {
+    appendWindow: function(question_addr, fmt_addr) {
+        var self = this;
         
-        var window_id = 'window_' + addr;
-        var window_html =   '<div class="panel panel-default sc-window" sc_addr="' + addr + '" sc-addr-fmt="' + fmt_addr + '">' +
-                                '<div class="panel-body" id="' + window_id + '"></div>'
-                            '</div>';
-        this.window_container.prepend(window_html);
-        
-        this.hideActiveWindow();
-        var sandbox = SCWeb.core.ComponentManager.createWindowSandbox(fmt_addr, addr, true, window_id);
-        if (sandbox) {
-            this.sandboxes[addr] = sandbox;
-            this.setWindowActive(addr);
-        } else {
-            this.showActiveWindow();
-            throw "Error while create window";
+        var f = function(addr, is_struct) {
+            var id = self.hash_addr(question_addr, fmt_addr);
+            var window_id = 'window_' + question_addr;
+            var window_html =   '<div class="panel panel-default sc-window" id="' + id + '" sc_addr="' + question_addr + '" sc-addr-fmt="' + fmt_addr + '">' +
+                                    '<div class="panel-body" id="' + window_id + '"></div>'
+                                '</div>';
+            self.window_container.prepend(window_html);
+
+            self.hideActiveWindow();
+            self.windows.push(id);
+            
+            var sandbox = SCWeb.core.ComponentManager.createWindowSandbox(fmt_addr, addr, is_struct, window_id);
+            if (sandbox) {
+                self.sandboxes[question_addr] = sandbox;
+                self.setWindowActive(id);
+            } else {
+                self.showActiveWindow();
+                throw "Error while create window";
+            };
         };
         
+        var translated = function() {
+            SCWeb.core.Server.getAnswerTranslated(question_addr, fmt_addr, function(d) {
+                f(d.link, true);
+            });
+        };
+        
+        if (SCWeb.core.ComponentManager.isStructSupported(fmt_addr)) {
+            // determine answer structure
+            window.scHelper.getAnswer(question_addr).done(function (addr) {
+                f(addr, true);
+            }).fail(function(v) {
+                translated();
+            });
+        } else
+            translated();
     },
     
     /**
      * Remove specified window
      * @param {String} addr sc-addr of window to remove
      */
-    removeWindow: function(addr) {
+    removeWindow: function(id) {
         this.window_container.find("[sc_addr='" + addr + "']").remove();
     },
     
@@ -209,23 +220,21 @@ SCWeb.ui.WindowManager = {
      * Makes window with specified addr active
      * @param {String} addr sc-addr of window to make active
      */
-    setWindowActive: function(addr) {
+    setWindowActive: function(id) {
         this.hideActiveWindow();
         
-        this.active_window_addr = addr;
+        this.active_window_id = id;
         this.showActiveWindow();
     },
 
     hideActiveWindow: function() {
-        if (this.active_window_addr) {
-            this.window_container.find("[sc_addr='" + this.active_window_addr + "']").addClass('hidden');
-        }
+        if (this.active_window_id)
+            this.window_container.find("#" + this.active_window_id).addClass('hidden');
     },
 
     showActiveWindow: function() {
-        if (this.active_window_addr) {
-            this.window_container.find("[sc_addr='" + this.active_window_addr + "']").removeClass('hidden'); 
-        }
+        if (this.active_window_id)
+            this.window_container.find("#" + this.active_window_id).removeClass('hidden'); 
     },
 
     /*!

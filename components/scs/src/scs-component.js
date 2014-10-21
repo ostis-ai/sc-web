@@ -14,7 +14,7 @@ var SCsViewer = function(sandbox) {
     this.objects = new Array();
     this.addrs = new Array();
     this.sc_links = {}; // map of sc-link objects key:addr, value: object
-    this.data = null
+    this.data = null;
     
     this.container = '#' + sandbox.container;
     this.sandbox = sandbox;
@@ -36,6 +36,7 @@ var SCsViewer = function(sandbox) {
         return dfd.promise();
     };
     
+    
     this.updateTranslation = function(namesMap) {
         // apply translation
         $(SCWeb.ui.Core.selectorWindowScAddr(this.container)).each(function(index, element) {
@@ -54,7 +55,6 @@ var SCsViewer = function(sandbox) {
     this.getObjectsToTranslate = function() {
         return this.viewer.getAddrs();
     };
-
 
     this.sandbox.eventDataAppend = $.proxy(this.receiveData, this);
     this.sandbox.eventGetObjectsToTranslate = $.proxy(this.getObjectsToTranslate, this);

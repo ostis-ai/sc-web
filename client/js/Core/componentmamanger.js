@@ -88,6 +88,16 @@ SCWeb.core.ComponentManager = {
         this._factories_fmt[format_addr] = func;
     },
     
+    /** Check if compoenent for specified format supports structures
+     */
+    isStructSupported: function(format_addr) {
+        var comp_def = this._factories_fmt[format_addr];
+        if (!comp_def)
+            throw "There are no component that supports format: " + format_addr;
+        
+        return comp_def.struct_support;
+    },
+    
     /**
      * Create new instance of component window
      * @param {String} format_addr sc-addr of window format
@@ -105,6 +115,9 @@ SCWeb.core.ComponentManager = {
         
         if (comp_def) {
             var sandbox = new SCWeb.core.ComponentSandbox(container, addr, is_struct, format_addr, this._keynodes);
+            if (!comp_def && is_struct)
+                throw "Component doesn't support structures: " + comp_def;
+            
             if (comp_def.factory(sandbox)) {
                 dfd.resolve();
                 

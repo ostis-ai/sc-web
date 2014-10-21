@@ -1,6 +1,7 @@
 SCgComponent = {
     ext_lang: 'scg_code',
     formats: ['format_scg_json'],
+    struct_support: true,
     factory: function(sandbox) {
         return new scgViewerWindow(sandbox);
     }
