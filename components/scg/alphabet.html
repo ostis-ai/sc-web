@@ -1,0 +1,273 @@
+<html>
+    <head>
+        <link href="static/components/css/scg.css" rel="stylesheet">
+        
+        <style>
+            html, body {
+                background-color: #fff;
+                margin: 0px;
+                overflow: hidden;
+                font-family:Monospace;
+                font-size:13px;
+                text-align:center;
+                font-weight: bold;
+                text-align:center;
+                height: 100%;
+            }
+            
+            .viewer {
+                height: 100%;
+                width: 100%;
+            }
+
+        </style>
+    </head>
+    
+    <body>
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="viewer">
+            <defs>
+                
+                <circle id="scg.node.const.outer" cx="0" cy="0" r="10"/>
+                <rect id="scg.node.var.outer" width="20" height="20" x="-10" y="-10"/>
+                
+                <clip-path id="scg.node.const.clip">
+                    <use xlink:href="#scg.node.const.outer" />
+                </clip-path>
+                
+                <clip-path id="scg.node.var.clip">
+                    <use xlink:href="#scg.node.var.outer" />
+                </clip-path>
+                
+                <!-- define constant nodes -->
+                <g id="scg.node">
+                    <circle cx="0" cy="0" r="5"/>
+                    <text x="7" y="15" class="SCgText">scg.node</text>
+                </g>
+                
+                <g id="scg.node.const">
+                    <use xlink:href="#scg.node.const.outer"/>
+                    <text x="17" y="21" class="SCgText">scg.node.const</text>
+                </g>
+                
+                <g id="scg.node.const.tuple">
+                    <use xlink:href="#scg.node.const.outer"/>
+                    <line x1="-10" x2="10" y1="0" y2="0" stroke-width="3px"/>
+                    <text x="17" y="21" class="SCgText">scg.node.const.tuple</text>
+                </g>
+                
+                <g id="scg.node.const.struct">
+                    <use xlink:href="#scg.node.const.outer"/>
+                    <circle cx="0" cy="0" r="3" stroke="none" fill="#000"/>
+                    <text x="17" y="21" class="SCgText">scg.node.const.struct</text>
+                </g>
+                
+                <g id="scg.node.const.role">
+                    <use xlink:href="#scg.node.const.outer"/>
+                    <line x1="-10" x2="10" y1="0" y2="0" stroke-width="3px"/>
+                    <line x1="0" x2="0" y1="-10" y2="10" stroke-width="3px"/>
+                    <text x="17" y="21" class="SCgText">scg.node.const.role</text>
+                </g>
+                
+                <g id="scg.node.const.norole">
+                    <use xlink:href="#scg.node.const.outer"/>
+                    <line x1="-10" x2="10" y1="0" y2="0" stroke-width="3px" transform="rotate(45, 0, 0)"/>
+                    <line x1="-10" x2="10" y1="0" y2="0" stroke-width="3px" transform="rotate(-45, 0, 0)"/>
+                    <text x="17" y="21" class="SCgText">scg.node.const.norole</text>
+                </g>
+                
+                <g id="scg.node.const.class">
+                    <use xlink:href="#scg.node.const.outer"/>
+                    <line x1="-10" x2="10" y1="0" y2="0" stroke-width="3px" transform="rotate(45, 0, 0)"/>
+                    <line x1="-10" x2="10" y1="0" y2="0" stroke-width="3px" transform="rotate(-45, 0, 0)"/>
+                    <line x1="-10" x2="10" y1="0" y2="0" stroke-width="3px"/>
+                    <text x="17" y="21" class="SCgText">scg.node.const.class</text>
+                </g>
+                
+                <g id="scg.node.const.abstract" ">
+                    <use xlink:href="#scg.node.const.outer"/>
+                    <g stroke-width="1px ">
+                        <line x1="-10" x2="10" y1="-6" y2="-6"/>
+                        <line x1="-10" x2="10" y1="-3" y2="-3"/>
+                        <line x1="-10" x2="10" y1="0" y2="0"/>
+                        <line x1="-10" x2="10" y1="3" y2="3"/>
+                        <line x1="-10" x2="10" y1="6" y2="6"/>
+                    </g>
+                    <text x="17" y="21" class="SCgText">scg.node.const.abstract</text>
+                </g>
+                
+                <g id="scg.node.const.material">
+                    <use xlink:href="#scg.node.const.outer"/>
+                    <g stroke-width="1px" transform="rotate(-45, 0, 0)">
+                        <line x1="-10" x2="10" y1="-6" y2="-6"/>
+                        <line x1="-10" x2="10" y1="-3" y2="-3"/>
+                        <line x1="-10" x2="10" y1="0" y2="0"/>
+                        <line x1="-10" x2="10" y1="3" y2="3"/>
+                        <line x1="-10" x2="10" y1="6" y2="6"/>
+                    </g>
+                    <text x="17" y="21" class="SCgText">scg.node.const.material</text>
+                </g>
+                
+                
+                <!-- define variable nodes -->
+                <g id="scg.node.var">
+                    <use xlink:href="#scg.node.var.outer"/>
+                    <text x="17" y="21" class="SCgText">scg.node.var</text>
+                </g>
+                
+                <g id="scg.node.var.tuple">
+                    <use xlink:href="#scg.node.var.outer"/>
+                    <line x1="-10" x2="10" y1="0" y2="0" stroke-width="3px"/>
+                    <text x="17" y="21" class="SCgText">scg.node.var.tuple</text>
+                </g>
+                
+                <g id="scg.node.var.struct">
+                    <use xlink:href="#scg.node.var.outer"/>
+                    <circle cx="0" cy="0" r="3" stroke="none" fill="#000"/>
+                    <text x="17" y="21" class="SCgText">scg.node.var.struct</text>
+                </g>
+                
+                <g id="scg.node.var.role">
+                    <use xlink:href="#scg.node.var.outer"/>
+                    <line x1="-10" x2="10" y1="0" y2="0" stroke-width="3px"/>
+                    <line x1="0" x2="0" y1="-10" y2="10" stroke-width="3px"/>
+                    <text x="17" y="21" class="SCgText">scg.node.var.role</text>
+                </g>
+                
+                <g id="scg.node.var.norole">
+                    <use xlink:href="#scg.node.var.outer"/>
+                    <line x1="-10" x2="10" y1="0" y2="0" stroke-width="3px" transform="rotate(45, 0, 0)"/>
+                    <line x1="-10" x2="10" y1="0" y2="0" stroke-width="3px" transform="rotate(-45, 0, 0)"/>
+                    <text x="17" y="21" class="SCgText">scg.node.var.norole</text>
+                </g>
+                
+                <g id="scg.node.var.class">
+                    <use xlink:href="#scg.node.var.outer"/>
+                    <line x1="-10" x2="10" y1="0" y2="0" stroke-width="3px" transform="rotate(45, 0, 0)"/>
+                    <line x1="-10" x2="10" y1="0" y2="0" stroke-width="3px" transform="rotate(-45, 0, 0)"/>
+                    <line x1="-10" x2="10" y1="0" y2="0" stroke-width="3px"/>
+                    <text x="17" y="21" class="SCgText">scg.node.var.class</text>
+                </g>
+                
+                <g id="scg.node.var.abstract">
+                    <use xlink:href="#scg.node.var.outer"/>
+                    <g stroke-width="1px">
+                        <line x1="-10" x2="10" y1="-6" y2="-6"/>
+                        <line x1="-10" x2="10" y1="-3" y2="-3"/>
+                        <line x1="-10" x2="10" y1="0" y2="0"/>
+                        <line x1="-10" x2="10" y1="3" y2="3"/>
+                        <line x1="-10" x2="10" y1="6" y2="6"/>
+                    </g>
+                    <text x="17" y="21" class="SCgText">scg.node.var.abstract</text>
+                </g>
+                
+                <g id="scg.node.var.material">
+                    <use xlink:href="#scg.node.var.outer"/>
+                    <g stroke-width="1px" transform="rotate(-45, 0, 0)">
+                        <line x1="-10" x2="10" y1="-6" y2="-6"/>
+                        <line x1="-10" x2="10" y1="-3" y2="-3"/>
+                        <line x1="-10" x2="10" y1="0" y2="0"/>
+                        <line x1="-10" x2="10" y1="3" y2="3"/>
+                        <line x1="-10" x2="10" y1="6" y2="6"/>
+                    </g>
+                    <text x="17" y="21" class="SCgText">scg.node.var.material</text>
+                </g>
+                
+                
+                <!-- arcs -->
+                <marker id="scg.target.arrow" 'viewBox="0 -5 10 10" refX="8" markerWidth="7" markerHeight="10" orient="auto">
+                    <path d="M0,-4L10,0L0,4" fill="#000" />
+                </marker>
+                
+                <marker id="end-arrow-access" viewBox="0 -5 10 10" refX="0"  markerWidth="5" markerHeight="10" orient="auto">
+                    <path d="M0,-4L10,0L0,4"></path>
+                </marker>
+                
+                <marker id="end-arrow-common" viewBox="0 -5 10 10" refX="0"  markerWidth="2" markerHeight="6" orient="auto">
+                    <path d="M0,-4L10,0L0,4"</path>
+                </marker>
+                
+            </defs>
+
+            <!-- constant nodes -->
+            <use xlink:href="#scg.node" x="75" y="25" id="comp1"/>
+            <use xlink:href="#scg.node.const" x="75" y="75" id="comp2" class="SCgNode"/>
+            <use xlink:href="#scg.node.const.tuple" x="75" y="125" id="comp3" class="SCgNode"/>
+            <use xlink:href="#scg.node.const.struct" x="75" y="175" id="comp4" class="SCgNode"/>
+            <use xlink:href="#scg.node.const.role" x="75" y="225" id="comp5" class="SCgNode"/>
+            <use xlink:href="#scg.node.const.norole" x="75" y="275" id="comp6" class="SCgNode"/>
+            <use xlink:href="#scg.node.const.class" x="75" y="325" id="comp7" class="SCgNode"/>
+            <use xlink:href="#scg.node.const.abstract" x="75" y="375" id="comp8" class="SCgNode"/>
+            <use xlink:href="#scg.node.const.material" x="75" y="425" id="comp9" class="SCgNode"/>
+            
+            <!-- variable nodes -->
+            <use xlink:href="#scg.node.var" x="325" y="75" id="comp10" class="SCgNode SCgHighlighted"/>
+            <use xlink:href="#scg.node.var.tuple" x="325" y="125" id="comp11" class="SCgNode"/>
+            <use xlink:href="#scg.node.var.struct" x="325" y="175" id="comp12" class="SCgNode"/>
+            <use xlink:href="#scg.node.var.role" x="325" y="225" id="comp13" class="SCgNode"/>
+            <use xlink:href="#scg.node.var.norole" x="325" y="275" id="comp14" class="SCgNode"/>
+            <use xlink:href="#scg.node.var.class" x="325" y="325" id="comp15" class="SCgNode"/>
+            <use xlink:href="#scg.node.var.abstract" x="325" y="375" id="comp16" class="SCgNode"/>
+            <use xlink:href="#scg.node.var.material" x="325" y="425" id="comp17" class="SCgNode"/>
+            
+            
+            <!-- edges -->
+            
+            
+            
+            <g id="scg.edge.common" id="comp18" class="SCgEdge">
+                <path d="M 555 75 L 655 75" stroke-width="8" stroke="#000"/>
+                <path d="M 555 75 L 655 75" stroke-width="5" stroke="#fff"/>
+                <path d="M 555 75 L 655 75" stroke-width="2" stroke="#000" class="SCgEdgeVarDashAccessPerm"/>
+            </g>
+            
+            <g id="scg.arc.common" id="comp19" class="SCgEdge">
+                <path d="M 555 105 L 655 105" stroke-width="8" stroke="#000" />
+                <path d="M 555 105 L 655 105" stroke-width="5" stroke="#fff"/>
+                <path d="M 555 105 L 655 105" stroke-width="2" stroke="#000" class="SCgEdgeVarDashAccessPerm SCgEdgeEndArrowAccess"/>
+            </g>
+            
+            <g id="scg.arc.const.pos.perm.access" id="comp20" class="SCgEdge">
+                <path d="M 555 135 L 655 135" stroke-width="2" stroke="#000" class="SCgEdge SCgEdgeEndArrowAccess"/>
+                <path d="M 555 135 L 655 135" stroke-width="4" stroke="#000" class="SCgEdgePermDash"/>
+            </g>
+            
+            
+            
+            <g id="scg.edge.const" id="comp21" class="SCgEdge">
+                <path d="M 555 165 L 655 165" stroke-width="8" stroke="#000"/>
+                <path d="M 555 165 L 655 165" stroke-width="5" stroke="#fff"/>
+            </g>
+            
+            <g id="scg.edge.var" id="comp22" class="SCgEdge">
+                <path d="M 555 195 L 655 195" stroke-width="8" stroke="#000"/>
+                <path d="M 555 195 L 655 195" stroke-width="5" stroke="#fff"/>
+                <path d="M 555 195 L 655 195" stroke-width="5" stroke="#000" class="SCgEdgeVarDashCommon"/>
+            </g>
+            
+            
+            <g id="scg.edge.const" id="comp23" class="SCgEdge">
+                <path d="M 555 225 L 655 225" stroke-width="8" stroke="#000"/>
+                <path d="M 555 225 L 655 225" stroke-width="5" stroke="#fff" class="SCgEdgeEndArrowCommon"/>
+            </g>
+            
+            <g id="scg.edge.var" id="comp24" class="SCgEdge" stroke="#f00" fill="#00f">
+                <path d="M 555 255 L 655 255" stroke-width="8"/>
+                <path d="M 555 255 L 655 255" stroke-width="5" stroke="#fff"/>
+                <path d="M 555 255 L 655 255" stroke-width="5" class="SCgEdgeVarDashCommon SCgEdgeEndArrowCommon"/>
+            </g>
+            
+            
+            <g id="scg.arc.var.pos.perm.access" id="comp25" class="SCgEdge">
+                <path d="M 555 285 L 655 285" stroke-width="2" stroke="#000" class="SCgEdge SCgEdgeVarDashAccessPerm SCgEdgeEndArrowAccess"/>
+            </g>
+            
+            <g id="scg.arc.var.pos.perm.access" id="comp25" class="SCgEdge">
+                <path d="M 555 315 L 655 315" stroke-width="2" stroke="#000" class="SCgEdge SCgEdgeEndArrowAccess"/>
+                <path d="M 555 315 L 655 315" stroke-width="10" stroke="#000" class="SCgEdge SCgEdgePermNegDash"/>
+            </g>
+            
+        </svg>
+        
+    </body>
+</html>
+

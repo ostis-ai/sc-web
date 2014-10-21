@@ -39,6 +39,23 @@ nosetests.xml
 settings_local.py
 .DS_Store
 *db
+repo
 sc-web-core.js
 sc_web/media/
 sc_web/secret.txt
+
+
+# components
+components/*/static/components/js/*
+
+# scg
+client/static/components/*/scg*
+
+# github
+client/static/components/*/github*
+
+# scs
+client/static/components/*/scs*
+
+# html
+client/static/components/*/html*

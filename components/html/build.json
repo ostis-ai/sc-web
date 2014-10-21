@@ -1,0 +1,10 @@
+{
+	"sources": 
+	[
+	"src/html.js"
+	],
+	
+	"component": "src/html-component.js",
+
+	"target": "static/components/js/html/html.js"
+}

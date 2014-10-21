@@ -1,0 +1,19 @@
+ui_scg_control_tool_edge
+	<- ui_scg_control; sc_node_not_relation;
+	=> nrel_main_idtf:
+		[Режим создания sc.g-дуг]
+		(* <- lang_ru;; *);
+	<- rrel_key_sc_element:
+    		..e
+		(*
+		<- sc_explanation;;
+   		<= nrel_sc_text_translation:	
+	     ..t1
+	    	(*
+        	-> [Используйте этот режим редактирования для создания sc.g-дуг между sc.g-элементами] (* <- lang_ru;; *);;
+        	*);
+		..t2
+		(*
+		-> [Use this edit mode to create sc.g-edges between sc.g-elements] (* <- lang_en;; *);;
+		*);;
+    *);;

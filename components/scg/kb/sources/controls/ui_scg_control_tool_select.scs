@@ -1,0 +1,22 @@
+ui_scg_control_tool_select 
+	<- ui_scg_control; sc_node_not_relation;
+	=> nrel_main_idtf:
+		[Режим выделение/перемещения sc.g-объектов]
+		(* <- lang_ru;; *);
+	-> nrel_main_idtf:
+		[Mode to select/move sc.g-elements]
+		(* <- lang_en;; *);
+	<- rrel_key_sc_element:
+    		..e
+		(*
+		<- sc_explanation;;
+   		<= nrel_sc_text_translation:	
+	     ..t1
+	    	(*
+        	-> [Используйте этот режим редактирования для выделения и перемещения sc.g-элементов. Также, используя его, можно создать sc.g-узел двойным щелчком левой клавиши мыши] (* <- lang_ru;; *);;
+        	*);
+		..t2
+		(*
+		-> [Use this edit mode to select and move sc.g-elements. Also you can create sc.g-node by double click of left mouse button] (* <- lang_en;; *);;
+		*);;
+    *);;
