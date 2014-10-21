@@ -52,8 +52,8 @@ html.drag {
     width: 100%;
 }
 
-.window-container {
-    width: 100%;
+#window-container {
+    height: 100%;
 }
 
 .hidden {
