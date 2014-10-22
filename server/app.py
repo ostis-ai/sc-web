@@ -8,6 +8,18 @@ from handlers.main import MainHandler
 import handlers.api as api
 import ws
 
+is_closing = False
+
+def signal_handler(signum, frame):
+    global is_closing
+    is_closing = True
+
+def try_exit():
+    global is_closing
+    if is_closing:
+        # clean up here
+        tornado.ioloop.IOLoop.instance().stop()
+
 def main():
     
     tornado.options.define("static_path", default = "../static", help = "path to static files directory", type = str)
@@ -64,6 +76,7 @@ def main():
     )
 
     application.listen(8000)
+    tornado.ioloop.PeriodicCallback(try_exit, 1000).start()
     tornado.ioloop.IOLoop.instance().start()
 
 
