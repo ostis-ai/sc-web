@@ -137,7 +137,7 @@ SCg.Render.prototype = {
     
     classState: function(obj, base) {
             
-            var res = 'SCgElement';
+            var res = 'sc-no-default-cmd SCgElement';
             
             if (base)
                 res += ' ' + base;

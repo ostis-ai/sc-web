@@ -33,7 +33,7 @@ SCWeb.ui.Core = {
                 // listen clicks on sc-elements
                 var sc_elements_selector = '[sc_addr]:not(.sc-window)';
                 $('#window-container,#help-modal').delegate(sc_elements_selector, 'click', function(e) {
-                    if (!SCWeb.ui.ArgumentsPanel.isArgumentAddState()) {
+                    if (!SCWeb.ui.ArgumentsPanel.isArgumentAddState() && !$(e.currentTarget).hasClass('sc-no-default-cmd')) {
                         SCWeb.core.Main.doDefaultCommand([$(e.currentTarget).attr('sc_addr')]);
                         e.stopPropagation();
                     }
