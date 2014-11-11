@@ -195,10 +195,6 @@ html.drag {
 }
 
 /* --- main --- */
-.main-container {
-    height: 100%;
-}
-
 .tabs-data-container{
     height: 100%;
 }
@@ -242,10 +238,12 @@ html.drag {
 /* --- history --- */
 .history-item {
     cursor: pointer;
+    overflow-x: hidden;
 }
 
 .history-item:hover {
     background: #ddd;
+    
 }
 
 .history-item-name {
