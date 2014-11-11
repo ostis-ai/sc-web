@@ -49,7 +49,7 @@ SCs.SCnOutput.prototype = {
             output = '<div class="scs-scn-field scs-scn-field-root"><div class="scs-scn-keyword">' + this.treeNodeElementHtml(treeNode, true) + '</div>';
 
             if (treeNode.element.type & sc_type_link) {
-                output += '<div class="scs-scn-field"><div class="scs-scn-field-marker scs-scn-element">=</div>'
+                output += '<div class="scs-scn-field"><div class="scs-scn-field-marker scs-scn-element resolve-idtf-anim">=</div>'
                         //+ '' //sc_addr="' + treeNode.element.addr + '">'
                         + this.treeNodeElementHtml(treeNode);
                         + '</div>';
@@ -85,7 +85,7 @@ SCs.SCnOutput.prototype = {
                     if (attr.a.type & sc_type_var) {
                         sep = '∷';
                     }
-                    output += '<a href="#" class="scs-scn-element scs-scn-highlighted" sc_addr="' + attr.n.addr + '">' + attr.n.addr + '</a>' + '<span>' + sep + '</span>';
+                    output += '<a href="#" class="scs-scn-element scs-scn-highlighted resolve-idtf-anim" sc_addr="' + attr.n.addr + '"></a>' + '<span>' + sep + '</span>';
                 }
                 output += '</div>';
             }
@@ -139,14 +139,14 @@ SCs.SCnOutput.prototype = {
             var einfo = this.tree.getEdgeInfo(treeNode.element.addr);
             if (einfo) {
                 var marker = SCs.SCnConnectors[treeNode.element.type];
-                return '(<a href="#" class="scs-scn-element scs-scn-field scs-scn-highlighted" sc_addr="' + einfo.source.addr + '">' + einfo.source.addr + '</a>\
+                return '(<a href="#" class="scs-scn-element scs-scn-field scs-scn-highlighted resolve-idtf-anim" sc_addr="' + einfo.source.addr + '"></a>\
                         <a href="#" class="scs-scn-element scs-scn-field scs-scn-highlighted scs-scn-connector" sc_addr="' + treeNode.element.addr + '">'
                         + marker.f + '</a>\
-                        <a href="#" class="scs-scn-element scs-scn-field scs-scn-highlighted" sc_addr="' + einfo.target.addr + '">' + einfo.target.addr + '</a>)';
+                        <a href="#" class="scs-scn-element scs-scn-field scs-scn-highlighted resolve-idtf-anim" sc_addr="' + einfo.target.addr + '"></a>)';
             }
         }
         
-        return '<a href="#" class="scs-scn-element scs-scn-field scs-scn-highlighted" sc_addr="' + treeNode.element.addr + '">' + treeNode.element.addr + '</a>';
+        return '<a href="#" class="scs-scn-element scs-scn-field scs-scn-highlighted resolve-idtf-anim" sc_addr="' + treeNode.element.addr + '"></a>';
     },
 
     subtreeToHtml: function(subtree) {

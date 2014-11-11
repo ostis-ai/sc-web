@@ -42,11 +42,11 @@ var SCsViewer = function(sandbox) {
         $(SCWeb.ui.Core.selectorWindowScAddr(this.container)).each(function(index, element) {
             var addr = $(element).attr('sc_addr');
             if (!$(element).hasClass('sc-content') && !$(element).hasClass('sc-contour') && !$(element).hasClass('scs-scn-connector')) {
-                if(namesMap[addr]) {
+                $(element).removeClass('resolve-idtf-anim');
+                if (namesMap[addr]) {
                     $(element).text(namesMap[addr]);
                 } else {
-                    
-                        $(element).html('<b>...</b>');
+                    $(element).html('<b>...</b>');
                 }
             }
         });

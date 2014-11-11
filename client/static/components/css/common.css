@@ -121,6 +121,16 @@ html.drag {
     max-height: 32px;
 }
 
+.resolve-idtf-anim {
+    
+    height: 6px;
+    width: 18px;
+    max-height: 6px;
+    max-width: 18px;
+    display: inline-block;
+    background: #fff url("../images/resolve-idtf-anim.gif") no-repeat center center;
+}
+
 /* --- window --- */
 .sc-window {
     height: 100%;
