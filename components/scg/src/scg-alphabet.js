@@ -252,6 +252,7 @@ var SCgAlphabet = {
                 var p = d3_group.append('svg:path')
                     .classed(main_style, true)
                     .classed('SCgEdgeEndArrowAccess', true)
+                    .style("marker-end", "url(#end-arrow-access)")
                     .attr('d', position_path);
                     
                 if (edge.sc_type & sc_type_constancy_mask) {
@@ -272,6 +273,7 @@ var SCgAlphabet = {
                 var p = d3_group.append('svg:path')
                     .classed('SCgEdgeCommonBack', true)
                     .classed('SCgEdgeEndArrowCommon', edge.sc_type & sc_type_arc_common)
+                    .style("marker-end", "url(#end-arrow-common)")
                     .attr('d', position_path);
                 
                 d3_group.append('svg:path')

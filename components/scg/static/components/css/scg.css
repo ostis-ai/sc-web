@@ -8,10 +8,6 @@
   user-select: none;
 }
 
-.SCgContainer {
-    fill: #fff;
-}
-
 .SCgText {
     fill: #00a;
     font-family: "Arial";
@@ -21,7 +17,6 @@
     pointer-events: none;
     stroke: none;
 }
-
 
 .SCgNodeEmpty {
 }
@@ -90,12 +85,10 @@
 }
 
 .SCgEdgeEndArrowAccess {
-    marker-end: url(#end-arrow-access);
     fill: none;
 }
 
 .SCgEdgeEndArrowCommon {
-    marker-end: url(#end-arrow-common);
     fill: none;
 }
 
@@ -113,7 +106,6 @@
 }
 
 /* --------- */
-
 .SCgEdgePermDash {
     stroke-dasharray: 4, 10;
 }
@@ -180,19 +172,6 @@ path.SCgEdge.hidden {
     stroke-width: 0;
 }
 
-.SCgBusEndPoint {
-    stroke: #FBF4F2;
-    stroke-width: 0;
-    fill: #D60011;  
-}
-
-.SCgBusEndPointHighlighted {
-    stroke: #FFBE52;
-    stroke-width: 0;
-    fill: #FF3300;  
-}
-
-
 path.SCgBus {
     fill:   none;
     stroke: black;
@@ -202,7 +181,7 @@ path.SCgBus {
 
 path.SCgBusPath {
     fill:   none;
-    stroke-width: 5px;  
+    stroke-width: 5px;
 }
 
 /* ----- States ----- */
@@ -250,21 +229,14 @@ path.SCgBusPath {
     stroke: #FD8E00;
 }
 
-
-
-
 /* ------------- User interface -------------- */
 .scg-tools-panel {
-    position: absolute; 
+    position: absolute;
 }
 
 .scg-type-list {
     max-height: 400px;
     overflow-y: scroll;
-}
-
-.tt-dropdown-menu {
-
 }
 
 .tt-dropdown-menu .tt-dataset-idtf {
@@ -278,6 +250,7 @@ path.SCgBusPath {
     max-width: 450px;
     max-height: 400px;
 }
+
 .tt-dropdown-menu .tt-dataset-idtf .tt-suggestion {
     display: inline-block;
     max-width: 450px !important;
