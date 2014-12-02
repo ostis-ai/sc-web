@@ -54,7 +54,7 @@ var scgViewerWindow = function(sandbox) {
             
             if (!node.sc_addr) {
                 window.sctpClient.create_node(node.sc_type).done(function (r) {
-                    node.setScAddr(r.result);
+                    node.setScAddr(r);
                     node.setObjectState(SCgObjectState.NewInMemory);
                     
                     translateObj(node);
@@ -77,7 +77,7 @@ var scgViewerWindow = function(sandbox) {
 
                     if (src && trg) {
                         window.sctpClient.create_arc(edge.sc_type, src, trg).done(function(r) {
-                            edge.setScAddr(r.result);
+                            edge.setScAddr(r);
                             edge.setObjectState(SCgObjectState.NewInMemory);
 
                             translateObj(edge);
@@ -276,13 +276,13 @@ var scgViewerWindow = function(sandbox) {
                                 
                                 self.sandbox.getIdentifier(element, function(idtf) {
 
-                                    var type = res.result;
+                                    var type = res;
                                     if (type & sc_type_node || type & sc_type_link) {
                                         self.elementsQueue.push([element, type, idtf]);
                                         processTaskFn();
                                     } else if (type & sc_type_arc_mask) {
                                         window.sctpClient.get_arc(element).done(function (res) {
-                                            self.elementsQueue.push([element, type, idtf, res.result[0], res.result[1]]);
+                                            self.elementsQueue.push([element, type, idtf, res[0], res[1]]);
                                             processTaskFn();
                                         });
                                     }
@@ -337,7 +337,7 @@ var scgViewerWindow = function(sandbox) {
     
     this.eventStructUpdate = function(added, element, arc) {
         window.sctpClient.get_arc(arc).done(function (r) {
-            self.updateQueue.push([added, r.result[1]]);
+            self.updateQueue.push([added, r[1]]);
             self.requestUpdate();
         });
     };

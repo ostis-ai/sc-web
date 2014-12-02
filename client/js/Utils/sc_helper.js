@@ -18,20 +18,12 @@ ScHelper.prototype.init = function() {
  * otherwise it would be rejected
  */
 ScHelper.prototype.checkEdge = function(addr1, type, addr2 ) {
-    var dfd = new jQuery.Deferred();
-    
-    this.sctp_client.iterate_elements(SctpIteratorType.SCTP_ITERATOR_3F_A_F, 
+    return this.sctp_client.iterate_elements(SctpIteratorType.SCTP_ITERATOR_3F_A_F,
                                       [
                                           addr1,
                                           type,
                                           addr2
-                                      ]).done(function() {
-        dfd.resolve();
-    }).fail(function() {
-        dfd.reject();
-    });
-    
-    return dfd.promise();
+                                      ]);
 };
 
 /*! Function to get elements of specified set
@@ -51,8 +43,8 @@ ScHelper.prototype.getSetElements = function(addr) {
     .done(function (res) {
         var langs = [];
         
-        for (r in res.result) {
-            langs.push(res.result[r][2]);
+        for (r in res) {
+            langs.push(res[r][2]);
         }
         
         dfd.resolve(langs);
@@ -114,7 +106,7 @@ ScHelper.prototype.getMainMenuCommands = function() {
                 }
                 
                 // try to find decomposition
-                self.sctp_client.iterate_elements(SctpIteratorType.SCTP_ITERATOR_5_A_A_F_A_F,
+                self.sctp_client.iterate_elements(SctpIteratorType.SCTP_ITERATOR_5A_A_F_A_F,
                                                   [
                                                       sc_type_node | sc_type_const,
                                                       sc_type_arc_common | sc_type_const,
@@ -126,14 +118,14 @@ ScHelper.prototype.getMainMenuCommands = function() {
                     // iterate child commands
                     self.sctp_client.iterate_elements(SctpIteratorType.SCTP_ITERATOR_3F_A_A,
                                                       [
-                                                          it1.result[0][0],
+                                                          it1[0][0],
                                                           sc_type_arc_pos_const_perm,
                                                           0
                                                       ])
                     .done(function(it2) {
                         var childsDef = [];
-                        for (idx in it2.result) {
-                            childsDef.push(parseCommand(it2.result[idx][2], res));
+                        for (idx in it2) {
+                            childsDef.push(parseCommand(it2[idx][2], res));
                         }
                         
                         $.when.apply($, childsDef)
@@ -200,13 +192,13 @@ ScHelper.prototype.getAnswer = function(question_addr) {
         _self.sctp_client.event_create(SctpEventType.SC_EVENT_ADD_OUTPUT_ARC, _question_addr, function(addr, arg) {
             _self.checkEdge(window.scKeynodes.nrel_answer, sc_type_arc_pos_const_perm, arg).done(function() {
                 _self.sctp_client.get_arc_end(arg).done(function(res) {
-                    _dfd.resolve(res.result);
+                    _dfd.resolve(res);
                 }).fail(function() {
                     _dfd.reject();
                 });
             });
         }).done(function(res) {
-            fn.event_id = res.result;
+            fn.event_id = res;
             _self.sctp_client.iterate_elements(SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
                                               [
                                                   _question_addr,
@@ -219,7 +211,7 @@ ScHelper.prototype.getAnswer = function(question_addr) {
                 _self.sctp_client.event_destroy(fn.event_id).fail(function() {
                     /// @todo process fail
                 });
-                _dfd.resolve(it.result[0][2]);
+                _dfd.resolve(it[0][2]);
                 
                 window.clearTimeout(fn.timer);
             });
@@ -249,9 +241,9 @@ ScHelper.prototype.getSystemIdentifier = function(addr) {
                                        window.scKeynodes.nrel_system_identifier
                                       ])
     .done(function (it) {
-        self.sctp_client.get_link_content(it.result[0][2])
+        self.sctp_client.get_link_content(it[0][2])
         .done(function(res) {
-            dfd.resolve(res.result);
+            dfd.resolve(res);
         })
         .fail(function() {
             dfd.reject();
@@ -296,16 +288,16 @@ ScHelper.prototype.getIdentifier = function(addr, lang) {
                                           ])
         .done(function (it) {
             var process_result = function() {
-                if (it.result.length == 0) {
+                if (it.length == 0) {
                     get_sys();
                 } else {
-                    var r = it.result.shift();
+                    var r = it.shift();
 
                     self.checkEdge(lang, sc_type_arc_pos_const_perm, r[2])
                         .done(function() {
                             self.sctp_client.get_link_content(r[2])
                                 .done(function(res) {
-                                    dfd.resolve(res.result);
+                                    dfd.resolve(res);
                                 })
                                 .fail(function() {
                                     dfd.reject();

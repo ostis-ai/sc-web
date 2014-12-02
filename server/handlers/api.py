@@ -155,7 +155,6 @@ class CmdDo(base.BaseHandler):
             
             # initialize command
             arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_command_initiated, inst_cmd_addr)
-            logic.append_to_system_elements(sctp_client, keynode_system_element, arc)
 
             cmd_finished = logic.check_command_finished(inst_cmd_addr, keynode_ui_command_finished, sctp_client)
             while cmd_finished is None:

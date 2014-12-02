@@ -2,7 +2,6 @@ import tornado.ioloop
 import tornado.web
 import tornado.options
 import secret
-import sockjs.tornado
 
 from handlers.main import MainHandler
 import handlers.api as api
@@ -35,9 +34,7 @@ def main():
     
     tornado.options.parse_command_line()
     tornado.options.parse_config_file("server.conf")
-    
-    socketRouter = sockjs.tornado.SockJSRouter(ws.SocketHandler, '/sctp')
-    
+
     rules = [
             (r"/", MainHandler),
         
@@ -61,10 +58,10 @@ def main():
             (r"/api/info/tooltip/", api.InfoTooltip),
             
             (r"/api/user/", api.User),
+
+            (r"/sctp", ws.SocketHandler),
             ]
-    
-    rules.extend(socketRouter.urls)
-    
+
     application = tornado.web.Application(
         rules,                                          
         cookie_secret = secret.get_secret(),

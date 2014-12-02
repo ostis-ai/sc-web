@@ -6,9 +6,9 @@ concatenate_js.py C:\js_source_dir C:\concatenated_file.js
 import sys
 import os
 
-def create_file(source_dir, target_file_path):
+def create_file(source_dir, target_file_path, unit_test):
     lines = []
-    os.path.walk(source_dir, add, lines)
+    os.path.walk(source_dir, add, (lines, unit_test))
 
     target_dir = '/'.join(target_file_path.split('/')[:-1])
     if not os.path.isdir(target_dir):
@@ -18,14 +18,20 @@ def create_file(source_dir, target_file_path):
     concatenated_file.writelines(lines)
     concatenated_file.close()
 
-def add(lines, dir, names):
+def add(args, dir, names):
     #sorting for concatenation in correct order:
     #namespace declaration goes first
+    lines, unit_test = args
+
     names.sort(key=lambda file: 0 if file == 'namespace.js' else 1)
     for name in names:
         path = os.path.join(dir, name)
-        print path
+
         if os.path.isfile(path):
+            if not unit_test and (path.count('test/') > 0):
+                continue
+            print path
+
             extension = os.path.splitext(path)[1]
             if extension == '.js':
                 file = open(path, 'r')
@@ -34,4 +40,7 @@ def add(lines, dir, names):
                 file.close()
 
 if __name__ == '__main__':
-    create_file(sys.argv[1], sys.argv[2])
+    unit_test = False
+    if len(sys.argv) > 3:
+        unit_test = sys.argv[3] == '--test'
+    create_file(sys.argv[1], sys.argv[2], unit_test)

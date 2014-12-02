@@ -57,8 +57,6 @@ class SctpCommandType:
     SCTP_CMD_SET_SYSIDTF        = 0xa1   # setup new system identifier for sc-element
     SCTP_CMD_STATISTICS         = 0xa2 # return usage statistics from server
 
-    SCTP_CMD_SHUTDOWN           = 0xfe # disconnect client from server
-
 
 class SctpResultCode:
     SCTP_RESULT_OK              = 0x00 #
@@ -139,7 +137,7 @@ class ScAddr:
         return self.seg == other.seg and self.offset == other.offset
 
     def to_id(self):
-        return "%d_%d" % (self.seg, self.offset)
+        return "%d" % (self.seg | (self.offset << 16))
 
     @staticmethod
     def parse_from_string(addr_str):
@@ -147,8 +145,8 @@ class ScAddr:
         @return: Return parsed sc-addr
         """
         try:
-            seg_str, offset_str = addr_str.split('_')
-            addr = ScAddr(int(seg_str), int(offset_str))
+            a = int(addr_str)
+            addr = ScAddr(a & 0xffff, a >> 16)
         except:
             return None
 

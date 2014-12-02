@@ -24,12 +24,15 @@ SCWeb.core.Main = {
         SCWeb.core.Server._initialize();
         SctpClientCreate().done(function(client) {
         
-        window.sctpClient = client;
-        window.scHelper = new ScHelper(window.sctpClient);
-        window.scKeynodes = new ScKeynodes(window.scHelper);
+            window.sctpClient = client;
+            window.scHelper = new ScHelper(window.sctpClient);
+            window.scKeynodes = new ScKeynodes(window.scHelper);
 
-        window.scKeynodes.init().done(function() {
-            window.scHelper.init().done(function() {
+            window.scKeynodes.init().done(function() {
+                window.scHelper.init().done(function() {
+
+                    if (window._unit_tests)
+                        window._unit_tests();
 
                     $.when(SCWeb.ui.TaskPanel.init()).done(function() {
                         SCWeb.core.Server.init(function(data) {
@@ -46,7 +49,7 @@ SCWeb.core.Main = {
                                 )
                             .done(function() {
                                     dfd.resolve();
-                                
+
                                     var url = parseURL(window.location.href);
 
                                     if (url.searchObject) {
@@ -65,8 +68,6 @@ SCWeb.core.Main = {
                                         if (params.first_time)
                                             $('#help-modal').modal({"keyboard": true});
                                     });
-                
-                                
                             });
                         });
                     });
