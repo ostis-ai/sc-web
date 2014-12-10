@@ -8,9 +8,9 @@
     {% block extrameta %}{% end %}
     <title>{% block title %}OSTIS{% end %}</title>
 
-    <link rel="stylesheet" type="text/css" href="{{ static_url("common/bootstrap/css/bootstrap.min.css") }}" />
-    <link rel="stylesheet" type="text/css" href="{{ static_url("common/bootstrap/css/bootstrap-multilevel.css") }}" />
-    <link rel="stylesheet" type="text/css" href="{{ static_url("components/css/common.css") }}" />
+    <link rel="stylesheet" type="text/css" href="/static/common/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/static/common/bootstrap/css/bootstrap-multilevel.css" />
+    <link rel="stylesheet" type="text/css" href="/static/components/css/common.css" />
     {% block extrastyles %}{% end %}
 
     {% include 'common.html' %}
@@ -34,7 +34,7 @@
             {#<a class="navbar-brand" href="#">OSTIS</a>#}
             <!-- Help button -->
             <div id="help_button" class="help-button navbar-form pull-left">
-                <a data-toggle="modal" data-target="#help-modal"><img src="{{ static_url("components/images/help-red.png") }}" class="help-button"/></a>
+                <a data-toggle="modal" data-target="#help-modal"><img src="/static/components/images/help-red.png" class="help-button"/></a>
             </div>
         </div>
 

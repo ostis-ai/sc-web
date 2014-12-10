@@ -19,6 +19,13 @@ def try_exit():
         # clean up here
         tornado.ioloop.IOLoop.instance().stop()
 
+class NoCacheStaticHandler(tornado.web.StaticFileHandler):
+    """ Request static file handlers for development and debug only.
+        It disables any caching for static file.
+    """
+    def set_extra_headers(self, path):
+        self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+
 def main():
     
     tornado.options.define("static_path", default = "../static", help = "path to static files directory", type = str)
@@ -37,7 +44,9 @@ def main():
 
     rules = [
             (r"/", MainHandler),
-        
+
+            (r"/static/(.*)", NoCacheStaticHandler, {"path": tornado.options.options.static_path}),
+
             # api
             (r"/api/init/", api.Init),
             (r"/api/cmd/do/", api.CmdDo),
@@ -67,7 +76,6 @@ def main():
         cookie_secret = secret.get_secret(),
         login_url = "/auth/login",
         template_path = tornado.options.options.templates_path,
-        static_path = tornado.options.options.static_path,
         xsrf_cookies = False,
         gzip = True
     )
