@@ -242,7 +242,9 @@ function SctpResultBuffer(v) {
             return view.getFloat64(sctp_header_size + offset, true);
         },
         getResBuffer: function(offset, len) {
-            return new Uint8Array(view.buffer, sctp_header_size + offset, len);
+            var o = sctp_header_size + offset;
+            var l = view.buffer.byteLength - o;
+            return new Uint8Array(view.buffer, o, l);
         },
 
     };
