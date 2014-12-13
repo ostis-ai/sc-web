@@ -45,9 +45,10 @@ class SctpCommandType:
     SCTP_CMD_GET_LINK_CONTENT   = 0x09 # return content of sc-link
     SCTP_CMD_FIND_LINKS         = 0x0a # return sc-links with specified content
     SCTP_CMD_SET_LINK_CONTENT   = 0x0b # setup new content for the link
-    SCTP_CMD_ITERATE_ELEMENTS   = 0x0c # return base template iteration result
     
+    SCTP_CMD_ITERATE_ELEMENTS   = 0x0c # return base template iteration result
     SCTP_CMD_ITERATE_CONSTRUCTION = 0x0d # return advanced template iteration results
+    
     SCTP_CMD_EVENT_CREATE       = 0x0e # create subscription to specified event
     SCTP_CMD_EVENT_DESTROY      = 0x0f # destroys specified event subscription
     SCTP_CMD_EVENT_EMIT         = 0x10 # emits specified event to client

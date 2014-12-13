@@ -62,6 +62,7 @@ class SocketProxy:
         cmdCode == sctp.types.SctpCommandType.SCTP_CMD_GET_ARC or \
         cmdCode == sctp.types.SctpCommandType.SCTP_CMD_GET_LINK_CONTENT or \
         cmdCode == sctp.types.SctpCommandType.SCTP_CMD_ITERATE_ELEMENTS or \
+        cmdCode == sctp.types.SctpCommandType.SCTP_CMD_ITERATE_CONSTRUCTION or \
         cmdCode == sctp.types.SctpCommandType.SCTP_CMD_EVENT_CREATE or \
         cmdCode == sctp.types.SctpCommandType.SCTP_CMD_EVENT_DESTROY or \
         cmdCode == sctp.types.SctpCommandType.SCTP_CMD_EVENT_EMIT or \
