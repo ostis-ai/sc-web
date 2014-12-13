@@ -51,7 +51,9 @@ var SctpCommandType = {
     SCTP_CMD_GET_LINK_CONTENT:  0x09, // return content of sc-link
     SCTP_CMD_FIND_LINKS:        0x0a, // return sc-links with specified content
     SCTP_CMD_SET_LINK_CONTENT:  0x0b, // setup new content for the link
+    
     SCTP_CMD_ITERATE_ELEMENTS:  0x0c, // return base template iteration result
+    SCTP_CMD_ITERATE_CONSTRUCTION: 0x0d, // return advanced template iteration (batch of base templates)
     
     SCTP_CMD_EVENT_CREATE:      0x0e, // create subscription to specified event
     SCTP_CMD_EVENT_DESTROY:     0x0f, // destroys specified event subscription
@@ -133,7 +135,7 @@ sc_iterator_type_count = function(it) {
     throw "Unknown iterator type";
 }
 
-sc_iteartor_params_size = function(it) {
+sc_iterator_params_size = function(it) {
     switch (it) {
         case SctpIteratorType.SCTP_ITERATOR_3A_A_F:
         case SctpIteratorType.SCTP_ITERATOR_3F_A_A:
@@ -155,6 +157,73 @@ sc_iteartor_params_size = function(it) {
     };
 
     throw "Unknown iterator type";
+}
+
+sc_iteartor_fixed_count = function(it) {
+    switch (it) {
+        case SctpIteratorType.SCTP_ITERATOR_3A_A_F:
+        case SctpIteratorType.SCTP_ITERATOR_3F_A_A:
+        case SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_A:
+        case SctpIteratorType.SCTP_ITERATOR_5A_A_F_A_A:
+            return 1;
+        case SctpIteratorType.SCTP_ITERATOR_3F_A_F:
+        case SctpIteratorType.SCTP_ITERATOR_5A_A_F_A_F:
+        case SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F:
+        case SctpIteratorType.SCTP_ITERATOR_5F_A_F_A_A:
+            return 2;
+
+        case SctpIteratorType.SCTP_ITERATOR_5F_A_F_A_F:
+            return 3;
+    };
+
+    throw "Unknown iterator type";
+}
+
+sc_iteartor_assign_count = function(it) {
+    return sc_iterator_type_count(it) - sc_iteartor_fixed_count(it);
+}
+
+sc_iterator_is_fixed_arg = function(it, pos) {
+    if (pos >= sc_iterator_type_count(it))
+        throw "Inalid position for iterator";
+    var res = false;
+    switch (it) {
+        case SctpIteratorType.SCTP_ITERATOR_3A_A_F:
+        case SctpIteratorType.SCTP_ITERATOR_5A_A_F_A_A:
+            res = (pos == 2);
+            break;
+        case SctpIteratorType.SCTP_ITERATOR_3F_A_A:
+        case SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_A:
+            res = (pos == 0);
+            break;
+        case SctpIteratorType.SCTP_ITERATOR_3F_A_F:
+        case SctpIteratorType.SCTP_ITERATOR_5F_A_F_A_A:
+            res = (pos == 0 || pos == 2);
+            break;
+            
+        case SctpIteratorType.SCTP_ITERATOR_5A_A_F_A_F:
+            res = (pos == 2 || pos == 4);
+            break;
+        case SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F:
+            res = (pos == 0 || pos == 4);
+            break;
+
+        case SctpIteratorType.SCTP_ITERATOR_5F_A_F_A_F:
+            res = (pos == 0 || pos == 2 || pos == 4);
+            break;
+    };
+    
+    return res;
+}
+
+function SctpConstrIter(iterator_type, args, resMappings)
+{
+    var i;
+    return i = {
+        iterator_type: iterator_type,
+        args: args,
+        mappings: resMappings
+    };
 }
 
 function SctpCommandBuffer(size) {
@@ -200,7 +269,7 @@ function SctpResultBuffer(v) {
     var view = v;
 
     return {
-
+        
         getCmd: function() {
             return v.getUint8(0, true);
         },
@@ -491,14 +560,13 @@ SctpClient.prototype.find_links_with_content = function(data) {
     throw "Not implemented";
 };
 
-
 SctpClient.prototype.iterate_elements = function(iterator_type, args) {
     var itCount = sc_iterator_type_count(iterator_type);
 
     if (args.length != itCount)
         throw "Invalid number of arguments";
 
-    var paramsSize = sc_iteartor_params_size(iterator_type);
+    var paramsSize = sc_iterator_params_size(iterator_type);
     var buffer = new SctpCommandBuffer(1 + paramsSize);
     buffer.setHeader(SctpCommandType.SCTP_CMD_ITERATE_ELEMENTS, 0, 0);
     buffer.writeUint8(iterator_type);
@@ -579,6 +647,149 @@ SctpClient.prototype.iterate_elements = function(iterator_type, args) {
     }, function(data) {
         return data.getResUint32(0) > 0 ? SctpResultCode.SCTP_RESULT_OK : SctpResultCode.SCTP_RESULT_FAIL;
     });
+};
+
+/* You can use that function to iterate advanced constructions
+ * @param iterators Array of iterators description, that would be processed by order.
+ * Each iterator description consist of iterator type, arguments and result mapping object 
+ * (use function SctpConstrIter to create it)
+ * - iterator type - that just one of a value from SctpIteratorType
+ * - arguments - array of arguments. Number of arguments depends on iterator_type (3 or 5).
+ *   For assign argument of iterator (letter 'a' in iterator type name) you need to pass
+ *   type of sc-element (combination of sc_type_... defines) or 0 (any type).
+ *   For fixed arguments of iterator (letter 'f' in iterator type name) you need to pass one 
+ *   of two values:
+ *   - sc-addr - sc-addr of specified sc-element
+ *   - string - name of result from any previous iterator.
+ * - mappings - object that maps iterator result to string name. Where keys - are assigned names to iterator results,
+ *   and values - are iterator value index (in range [0; k), where k - number of arguments). All mapping
+ *   names must to be unique (don't use equal name in different iterators)
+ * 
+ * @returns If there are no any errors, then function returns promise object. Returned prmise object
+ * rejcets on request fail. If request processed, then returned promise object resolves with,
+ * object as argument. The last one has property results - plain array of results. Each item of that 
+ * array is an array of found sc-addrs (result of concatenation of all iterators results in the same order).
+ * Also that object contains method get, that recieve index of result and the name as argument, 
+ * and returns sc-addr by name specified in result mappings for the result with specified index.
+ */
+SctpClient.prototype.iterate_constr = function() {
+    
+    var iterators = Array.prototype.slice.call(arguments, 0);
+    var count = iterators.length;
+
+    // calculate parameters size
+    var paramsSize = 0;
+    var oneResultSize = 0;
+    var resMapping = {};
+    for (var i = 0; i < count; ++i) {
+        var it = iterators[i];
+        var c = sc_iterator_type_count(it.iterator_type);
+        
+        if (c != it.args.length)
+            throw "Invalid number of arguments";
+        
+        // prepare mappings
+        if (it.mappings) {
+            for (var k in it.mappings) {
+                if (!it.mappings.hasOwnProperty(k))
+                    continue;
+                
+                if (resMapping[k])
+                    throw "Duplicate name in iterator results mapping";
+                
+                var m = it.mappings[k];
+                if (m < 0 || m >= c)
+                    throw "Invalid mapping index " + m;
+                
+                resMapping[k] = oneResultSize + m;
+            }
+        }
+        
+        it.repl = [];
+        for (var j = 0; j < it.args.length; ++j) {
+            var a = it.args[j];
+            var isFixed = sc_iterator_is_fixed_arg(it.iterator_type, j);
+            
+            if ((a instanceof String) || (typeof a == "string")) {
+                
+                if (!isFixed)
+                    throw "Invalid argument type, it must be an type";
+                var idx = resMapping[a];
+                if (idx == undefined || idx == null)
+                    throw "Mapping name " + a + " doesn't exists";
+                                
+                it.repl.push(idx);            
+            } else if (isFixed)
+                it.repl.push(null);                
+        }
+        
+        if (sc_iteartor_fixed_count(it.iterator_type) != it.repl.length)
+            throw "Invalid number of replaces";
+        
+        oneResultSize += c;
+        if (i > 0)
+            paramsSize += sc_iteartor_fixed_count(it.iterator_type);
+        paramsSize += sc_iterator_params_size(it.iterator_type);
+    }
+    
+    var buffer = new SctpCommandBuffer(count + 1 + paramsSize);
+    buffer.setHeader(SctpCommandType.SCTP_CMD_ITERATE_CONSTRUCTION, 0, 0);
+    buffer.writeUint8(count);
+    for (var i = 0; i < count; ++i) {
+        var it = iterators[i];
+        
+        buffer.writeUint8(it.iterator_type);
+        if (i > 0)
+        {
+            for (var j = 0; j < it.repl.length; ++j) {
+                var v = it.repl[j];
+                buffer.writeUint8(v == null ? 255 : v);
+            }
+        }
+        
+        // wrtie params
+        var rCount = 0;
+        for (var j = 0; j < it.args.length; ++j) {
+            if (sc_iterator_is_fixed_arg(it.iterator_type, j)) {
+                if (it.repl[rCount] == null)
+                    buffer.writeUint32(it.args[j]);
+                rCount++;
+            } else
+                buffer.writeUint16(it.args[j]);
+        }
+    }
+    
+    return this.new_request(buffer.data, function(data) {
+        
+        var count = data.getResUint32(0);
+        var res = [], r;
+            
+        if (data.getResultSize() != ((1 + oneResultSize * count) * Uint32Array.BYTES_PER_ELEMENT))
+            throw "Invalid result size";
+        
+        for (var i = 0; i < count; ++i) {
+            var item = [];    
+            for (var j = 0; j < oneResultSize; ++j) {
+                item.push(data.getResUint32(Uint32Array.BYTES_PER_ELEMENT *(1 + i * oneResultSize + j)));
+            }
+            res.push(item);            
+        }
+        
+        return r = {
+            results: res,
+            
+            exist: function() {
+                return res.length > 0;
+            },
+            
+            get: function(idx, name) {
+                if (res[idx])
+                    return res[idx][resMapping[name]];
+                return null;
+            }
+        };
+    });
+    
 };
 
 

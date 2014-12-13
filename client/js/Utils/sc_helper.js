@@ -276,44 +276,33 @@ ScHelper.prototype.getIdentifier = function(addr, lang) {
             });
     };
     
+    window.sctpClient.iterate_constr(
+        SctpConstrIter(SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
+                      [addr,
+                       sc_type_arc_common | sc_type_const,
+                       sc_type_link,
+                       sc_type_arc_pos_const_perm,
+                       window.scKeynodes.nrel_main_idtf
+                      ], 
+                      {"x": 2}),
+        SctpConstrIter(SctpIteratorType.SCTP_ITERATOR_3F_A_F,
+                       [lang,
+                        sc_type_arc_pos_const_perm,
+                        "x"
+                       ])
+    ).done(function(results) {
+        var link_addr = results.get(0, "x");
 
-    (function(addr, lang, self, dfd) {
-        self.sctp_client.iterate_elements(SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
-                                          [
-                                           addr,
-                                           sc_type_arc_common | sc_type_const,
-                                           sc_type_link,
-                                           sc_type_arc_pos_const_perm,
-                                           window.scKeynodes.nrel_main_idtf
-                                          ])
-        .done(function (it) {
-            var process_result = function() {
-                if (it.length == 0) {
-                    get_sys();
-                } else {
-                    var r = it.shift();
+        self.sctp_client.get_link_content(link_addr)
+            .done(function(res) {
+                dfd.resolve(res);
+            })
+            .fail(function() {
+                dfd.reject();
+            });
+    }).fail(function() {
+        get_sys();
+    });
 
-                    self.checkEdge(lang, sc_type_arc_pos_const_perm, r[2])
-                        .done(function() {
-                            self.sctp_client.get_link_content(r[2])
-                                .done(function(res) {
-                                    dfd.resolve(res);
-                                })
-                                .fail(function() {
-                                    dfd.reject();
-                                });
-                        }).fail(function() {
-                            process_result();
-                        });
-                }
-            }
-            
-            process_result();
-        })
-        .fail(function() {
-            get_sys();
-        });
-    })(addr, lang, this, dfd);
-    
     return dfd.promise();
 };

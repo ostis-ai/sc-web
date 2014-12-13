@@ -32,7 +32,8 @@ ScKeynodes.prototype.init = function() {
         this.resolveKeynode('ui_nrel_user_default_ext_language'),
         
         
-        this.resolveKeynode('languages')
+        this.resolveKeynode('languages'),
+        this.resolveKeynode('lang_ru')
         
     ).done(function() {
         dfd.resolve();
@@ -46,11 +47,10 @@ ScKeynodes.prototype.init = function() {
 ScKeynodes.prototype.resolveKeynode = function(sys_idtf, property) {
     var dfd = new jQuery.Deferred();
     var self = this;
-    
-    console.log('Resolve keynode: ' + sys_idtf);
 
     this.sctp_client.find_element_by_system_identifier(sys_idtf).done(function(res) {
       
+        console.log('Resolved keynode: ' + sys_idtf + ' = ' + res);
         if (property) {
             self[property] = res;
         } else {

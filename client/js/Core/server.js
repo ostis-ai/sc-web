@@ -28,7 +28,7 @@ SCWeb.core.Server = {
         });
 
         SCWeb.core.EventManager.subscribe("translation/changed_language", this, function(lang_addr) {
-            SCWeb.core.Server._current_language = lang_addr;
+            SCWeb.core.Server._current_language = parseInt(lang_addr);
         });
     },
 
@@ -211,7 +211,7 @@ SCWeb.core.Server = {
                         callback(result);
                     } else {
                         var addr = need_resolve.shift();
-                        window.scHelper.getIdentifier(addr, self._current_language)
+                        window.scHelper.getIdentifier(parseInt(addr), self._current_language)
                             .done(function (v) {
                                 if (v) {
                                     result[addr] = v;
