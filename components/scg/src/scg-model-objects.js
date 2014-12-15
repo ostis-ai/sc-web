@@ -228,8 +228,10 @@ SCg.ModelObject.prototype.removeBus = function(edge) {
 
 /**
  * Setup new sc-addr of object
+ * @param merged Flag that need to be true, when object merged with element in memory.
+ * Automaticaly sets state MergedWithMemory
  */
-SCg.ModelObject.prototype.setScAddr = function(addr) {
+SCg.ModelObject.prototype.setScAddr = function(addr, merged) {
     
     // remove old sc-addr from map
     if (this.sc_addr && this.scene.objects.hasOwnPropery(this.sc_addr)) {
@@ -241,6 +243,9 @@ SCg.ModelObject.prototype.setScAddr = function(addr) {
         this.scene.objects[this.sc_addr] = this;
         
     this.need_observer_sync = true;
+    
+    if (merged == true)
+        this.setObjectState(SCgObjectState.MergedWithMemory);
 }
 
 // -------------- node ---------

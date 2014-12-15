@@ -51,12 +51,13 @@ SCg.LayoutAlgorithmForceBased.prototype.start = function() {
     
     // init D3 force layout
     var self = this;
+    
     this.force = d3.layout.force()
-        .nodes(this.nodes)
-        .links(this.edges)
-        .size(this.rect)
-	.gravity(0.1)
-        .linkDistance(function(edge){
+    .nodes(this.nodes)
+    .links(this.edges)
+    .size(this.rect)
+    .gravity(0.1)
+    .linkDistance(function(edge){
 		if (edge.source.type == SCgLayoutObjectType.DotPoint ||
 			edge.target.type == SCgLayoutObjectType.DotPoint) {
 			return 50;
@@ -72,16 +73,16 @@ SCg.LayoutAlgorithmForceBased.prototype.start = function() {
 
 		return 0.9;
 	})
-        .charge(function(node) {
+    .charge(function(node) {
 		if (node.type == SCgLayoutObjectType.DotPoint) {
 			return 0;
 		}
 		return -1000;
 	})
-        .on('tick', function() {
-            self.onLayoutTick();
-        })
-        .start();
+    .on('tick', function() {
+        self.onLayoutTick();
+    })
+    .start();
 };
 
 SCg.LayoutAlgorithmForceBased.prototype.onLayoutTick = function() {

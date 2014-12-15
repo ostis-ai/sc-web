@@ -226,7 +226,6 @@ SCg.Editor.prototype = {
                 self.scene.updateObjectsVisual();
             }
             
-            
             var input = $(container + ' #scg-change-idtf-input');
             // setup initial value
             input.focus().val(self.scene.selected_objects[0].text);
@@ -240,11 +239,51 @@ SCg.Editor.prototype = {
                 
             });
 
-            if (self.autocompletionVariants)
-                self._enableAutocomplete(input);
+            if (self.autocompletionVariants) {
+                var types = {
+                    local : function(text){
+                        return "[" + text + "]";
+                    },
+                    remote : function(text){
+                        return "<" + text + ">";
+                    }
+
+                };
+
+                input.typeahead({
+                        minLength: 1,
+                        highlight: true
+                    },
+                    {
+                        name: 'idtf',
+                        source: function(str, callback) {
+                            self._idtf_item = null;
+                            self.autocompletionVariants(str, callback, { editor: self });
+                        },
+                        displayKey: 'name',
+                        templates: {
+                            suggestion : function(item){
+                                var decorator = types[item.type];
+                                if(decorator)
+                                    return decorator(item.name);
+
+                                return item.name;
+                            }
+                        }
+                    }
+                ).bind('typeahead:selected', function(evt, item, dataset) {
+                    if (item && item.addr) {
+                        self._idtf_item = item;
+                    }
+                    evt.stopPropagation();
+                    $('.typeahead').val('');
+                });
+            }
             
             // process controls
             $(container + ' #scg-change-idtf-apply').click(function() {
+                if (self._idtf_item)
+                    self.scene.selected_objects[0].setScAddr(self._idtf_item.addr, true);
                 self.scene.selected_objects[0].setText(input.val());
                 stop_modal();
             });
@@ -375,43 +414,6 @@ SCg.Editor.prototype = {
         update_tool(this.toolDelete());
         update_tool(this.toolZoomIn());
         update_tool(this.toolZoomOut());
-    },
-
-    _enableAutocomplete : function (element){
-        var self = this;
-
-        var types = {
-            local : function(text){
-                return "[" + text + "]";
-            },
-            remote : function(text){
-                return "<" + text + ">";
-            }
-
-        };
-
-        element.typeahead({
-                minLength: 1,
-                highlight: true,
-                hint: true
-            },
-            {
-                name: 'idtf',
-                source: function(str, callback) {
-                    self.autocompletionVariants(str, callback, { editor: self });
-                },
-                displayKey: 'name',
-                templates: {
-                    suggestion : function(item){
-                        var decorator = types[item.type];
-                        if(decorator)
-                            return decorator(item.name);
-
-                        return item.name;
-                    }
-                }
-            }
-        );
     },
 
     collectIdtfs : function(keyword){
