@@ -50,6 +50,7 @@ html.drag {
 
 .main-container {
     width: 100%;
+    height: 100%;
 }
 
 #window-container {
@@ -138,6 +139,7 @@ html.drag {
 
 .sc-window .panel-body {
     height: 100%;
+    overflow-y: auto;
 }
 
 /* --- search --- */
@@ -318,16 +320,6 @@ html.drag {
     font-style: italic;
     color: #2a6496;
     cursor: pointer !important;
-}
-
-.sc-cursor-icon {
-    position: fixed;
-    z-index: 10000;
-    font-size: 8px;
-    color: #888;
-    /*border: solid 1px #ccc;
-    background-color: #fafafa;*/
-    padding: 3px;
 }
 
 .sc-not-exist {

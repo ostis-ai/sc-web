@@ -41,9 +41,6 @@ SCWeb.ui.Core = {
 
                 $('body')
                 .delegate(sc_elements_selector, 'mouseover', function(e) {
-                    self.sc_icon.removeClass('hidden');
-                    setCursorIconPos(e.pageX, e.pageY);
-
                     clearTooltipInterval();
                     self.tooltip_element = $(this);
                     self.tooltip_interval = setInterval(function() {
@@ -72,14 +69,11 @@ SCWeb.ui.Core = {
                     }, 1000);
                 })  
                 .delegate(sc_elements_selector, 'mouseout', function(e) {
-                    self.sc_icon.addClass('hidden');
-                    setCursorIconPos(e.pageX, e.pageY);
-
                     clearTooltipInterval();
                     destroyTooltip();
                 })
                 .delegate(sc_elements_selector, 'mousemove', function(e) {
-                    setCursorIconPos(e.pageX, e.pageY);
+                    
                 }).delegate(sc_elements_selector, 'click', function(e) {
                     if (SCWeb.ui.ArgumentsPanel.isArgumentAddState()) {
                         SCWeb.core.Arguments.appendArgument($(this).attr('sc_addr'));
@@ -106,15 +100,6 @@ SCWeb.ui.Core = {
                     }
                 });
 
-                self.sc_icon = $(".sc-cursor-icon");
-                // cursor icon for all sc-elements
-                function setCursorIconPos(x, y) {
-                    self.sc_icon.offset({
-                        top: y + 10,
-                        left: x + 10
-                    });
-                }
-            
                 dfd.resolve();
             });
         return dfd.promise();
