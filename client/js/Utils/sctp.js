@@ -235,17 +235,17 @@ function SctpCommandBuffer(size) {
         data: view.buffer,
 
         writeUint8: function(v) {
-            view.setUint8(pos, v, true);
+            view.setUint8(pos, parseInt(v), true);
             pos += 1;
         },
 
         writeUint16: function(v) {
-            view.setUint16(pos, v, true);
+            view.setUint16(pos, parseInt(v), true);
             pos += 2;
         },
 
         writeUint32: function(v) {
-            view.setUint32(pos, v, true);
+            view.setUint32(pos, parseInt(v), true);
             pos += 4;
         },
 
@@ -822,7 +822,7 @@ SctpClient.prototype.event_create = function(evt_type, addr, callback) {
     this.new_request(buffer.data, function(data) {
         return data.getResUint32(0);
     }).done(function(data) {
-        self.events[data.result] = callback;
+        self.events[data] = callback;
         dfd.resolve(data);
     }).fail(function(data) {
         dfd.reject(data);
@@ -843,7 +843,7 @@ SctpClient.prototype.event_destroy = function(evt_id) {
         return data.getResUint32(0);
     }).done(function(data) {
         delete self.event_emit[evt_id];
-        dfd.promise(data.result);
+        dfd.promise(data);
     }).fail(function(data){ 
         dfd.reject(data);
     });
@@ -861,6 +861,7 @@ SctpClient.prototype.event_emit = function() {
     this.new_request(buffer.data)
     .done(function (data) {
         var n = data.getResUint32(0);
+        
         for (var i = 0; i < n; ++i) {
             evt_id = data.getResUint32(4 + i * 12);
             addr = data.getResUint32(8 + i * 12);
