@@ -7,6 +7,150 @@ SCgComponent = {
     }
 };
 
+function scgTranslateToSc(sandbox, scene, callback) {
+    if (!sandbox.is_struct)
+        throw "Invalid state. Trying translate sc-link into sc-memory";
+
+    var appendToConstruction = function(obj) {
+        window.sctpClient.create_arc(sc_type_arc_pos_const_perm, sandbox.addr, obj.sc_addr);
+    };
+
+    var dfdNodes = jQuery.Deferred();
+
+    // translate nodes
+    var nodes = scene.nodes.slice();
+    $.when.apply($, nodes.map(function(node) {
+        var dfd = new jQuery.Deferred();
+
+        if (!node.sc_addr) {
+            window.sctpClient.create_node(node.sc_type).done(function (r) {
+                node.setScAddr(r);
+                node.setObjectState(SCgObjectState.NewInMemory);
+
+                appendToConstruction(node);
+                dfd.resolve();
+            });
+        } else {
+            dfd.resolve();
+        }
+
+        return dfd.promise();
+    })).done(function() {
+
+         // translate edges
+        var edges = scene.edges.slice();
+        $.when.apply($, edges.map(function (edge) {
+            var dfd = new jQuery.Deferred();
+
+            if (!edge.sc_addr) {
+                var src = edge.source.sc_addr;
+                var trg = edge.target.sc_addr;
+
+                if (src && trg) {
+                    window.sctpClient.create_arc(edge.sc_type, src, trg).done(function(r) {
+                        edge.setScAddr(r);
+                        edge.setObjectState(SCgObjectState.NewInMemory);
+
+                        appendToConstruction(edge);
+                        translated = true;
+                        dfd.resolve();
+                    });
+                } else
+                    dfd.resolve();
+            } else
+                dfd.resolve();
+
+            return dfd.promise();
+        })).done(function() {
+            scene.updateRender();
+        });
+    });
+};
+
+function scgScStructTranslator(_editor, _sandbox) {
+    var r, editor = _editor,
+        sandbox = _sandbox,
+        tasks = [],
+        processBatch = false,
+        taskDoneCount = 0;
+    
+    var processTask = function(task) {
+        var addr = task[0];
+        var type = task[1];
+        
+        function resolveIdtf(addr, obj) {
+            sandbox.getIdentifier(addr, function(idtf) {
+                obj.setText(idtf);
+            });
+        }
+        
+        if (editor.scene.getObjectByScAddr(addr))
+            return;
+        
+        if (type & sc_type_node || type & sc_type_link) {
+            var model_node = editor.scene.createNode(type, new SCg.Vector3(100 * Math.random(), 100 * Math.random(), 0), '');
+            model_node.setScAddr(addr);
+            model_node.setObjectState(SCgObjectState.FromMemory);
+            resolveIdtf(addr, model_node);
+            taskDoneCount++;
+        } else if (type & sc_type_arc_mask) {
+            var bObj = editor.scene.getObjectByScAddr(task[2]);
+            var eObj = editor.scene.getObjectByScAddr(task[3]);
+            if (!bObj || !eObj) {
+                tasks.push(task);
+            } else {
+                var model_edge = editor.scene.createEdge(bObj, eObj, type);
+                model_edge.setScAddr(addr);
+                model_edge.setObjectState(SCgObjectState.FromMemory);
+                resolveIdtf(addr, model_edge);
+                taskDoneCount++;
+            }
+        }
+        
+    };
+    var processTaskBatch = function(batch) {
+        taskDoneCount = 0;
+        for (var i = 0; i < batch.length; ++i)
+            processTask(batch[i]);
+        
+        processBatch = false;
+        editor.render.update();
+        editor.scene.layout();
+        
+        window.setTimeout(update, 100);
+    };
+    var addTask = function() {
+        tasks.push(Array.prototype.slice.call(arguments));
+        update(true);
+    };
+    var update = function(force) {
+        if (!processBatch && tasks.length > 0) {
+            processBatch = true;
+            if (taskDoneCount > 0 || force) {
+                window.setTimeout(function() {
+                    processTaskBatch(tasks.splice(0, Math.max(30, tasks.length)));
+                }, 100);
+            }
+        }
+    };
+    
+    var self = this;
+    
+    return r = {
+        removeElement: function(addr) {
+            var obj = editor.scene.getObjectByScAddr(addr);
+            if (obj)
+                editor.scene.deleteObjects([addr]);
+        },
+        addNode: function(addr, type) {
+            addTask.apply(self, arguments);
+        },
+        addEdge: function(addr, type, src, trg) {
+            addTask.apply(self, arguments);
+        }
+    };
+};
+
 /**
  * scgViewerWindow
  * @param config
@@ -37,72 +181,13 @@ var scgViewerWindow = function(sandbox) {
         });
     };
     
-    var translateToSc = function(scene, callback) {
-        if (!self.sandbox.is_struct)
-            throw "Invalid state. Trying translate sc-link into sc-memory";
-        
-        var translateObj = function(obj) {
-            window.sctpClient.create_arc(sc_type_arc_pos_const_perm, self.sandbox.addr, obj.sc_addr);
-        };
-                
-        var dfdNodes = jQuery.Deferred();
-        
-        // translate nodes
-        var nodes = scene.nodes.slice();
-        $.when.apply($, nodes.map(function(node) {
-            var dfd = new jQuery.Deferred();
-            
-            if (!node.sc_addr) {
-                window.sctpClient.create_node(node.sc_type).done(function (r) {
-                    node.setScAddr(r);
-                    node.setObjectState(SCgObjectState.NewInMemory);
-                    
-                    translateObj(node);
-                    dfd.resolve();
-                });
-            } else
-                dfd.resolve();
-            
-            return dfd.promise();
-        })).done(function() {
-            
-             // translate edges
-            var edges = scene.edges.slice();
-            $.when.apply($, edges.map(function (edge) {
-                var dfd = new jQuery.Deferred();
-
-                if (!edge.sc_addr) {
-                    var src = edge.source.sc_addr;
-                    var trg = edge.target.sc_addr;
-
-                    if (src && trg) {
-                        window.sctpClient.create_arc(edge.sc_type, src, trg).done(function(r) {
-                            edge.setScAddr(r);
-                            edge.setObjectState(SCgObjectState.NewInMemory);
-
-                            translateObj(edge);
-                            translated = true;
-                            dfd.resolve();
-                        });
-                    } else
-                        dfd.resolve();
-                } else
-                    dfd.resolve();
-
-                return dfd.promise();
-            })).done(function() {
-                scene.updateRender();
-            });
-        });
-        
-       
-    };
-    
     this.editor.init(
         {
             containerId: sandbox.container,
             autocompletionVariants : autocompletionVariants,
-            translateToSc: translateToSc,
+            translateToSc: function(scene, callback) {
+                return scgTranslateToSc(self.sandbox, scene, callback);
+            },
             canEdit: this.sandbox.canEdit(),
             resolveControls: this.sandbox.resolveElementsAddr,
         }
@@ -235,110 +320,25 @@ var scgViewerWindow = function(sandbox) {
     };
     
     var self = this;
-    this.updateQueue = [];
-    this.elementsQueue = [];
-    
-    this.requestUpdate = function() {
-        if (!self.updateTimeOut && (self.updateQueue.length > 0 || self.elementsQueue.length > 0))
-        {
-            self.updateTimeOut = window.setTimeout(self.processUpdateQueue, 100);
-            self.editor.render.update();
-            self.editor.scene.layout();
-        }
-    }
-    
-    this.processUpdateQueue = function() {
-        
-        window.clearTimeout(self.updateTimeOut);
-        delete self.updateTimeOut;
-        
-        var tasks = []
-        for (var i = 0; i < Math.min(50, self.updateQueue.length); ++i)
-            tasks.push(self.updateQueue.shift());
-            
-        (function (tasks) {
-                
-            var processTaskFn = function() {
-                if (tasks.length == 0) {
-                    self.requestUpdate();
-                } else {
-                    var task = tasks.shift();
-                    
-                    (function(added, element) {
-                        var obj = self.editor.scene.getObjectByScAddr(element);
-                        if (obj) {
-                            if (!added) {
-                                self.editor.scene.deleteObjects([obj]);
-                                processTaskFn();
-                            }
-                        } else {
-                            window.sctpClient.get_element_type(element).done(function (res) {
-                                
-                                self.sandbox.getIdentifier(element, function(idtf) {
-
-                                    var type = res;
-                                    if (type & sc_type_node || type & sc_type_link) {
-                                        self.elementsQueue.push([element, type, idtf]);
-                                        processTaskFn();
-                                    } else if (type & sc_type_arc_mask) {
-                                        window.sctpClient.get_arc(element).done(function (res) {
-                                            self.elementsQueue.push([element, type, idtf, res[0], res[1]]);
-                                            processTaskFn();
-                                        });
-                                    }
-                                });
-                            });
-                        }
-                    })(task[0], task[1]);
-                }
-            };
-            
-            processTaskFn();
-            
-            // append edges
-            var elements = [];
-            for (var i = 0; i < Math.min(50, self.elementsQueue.length); ++i) 
-                elements.push(self.elementsQueue.shift());
-            
-            while (elements.length > 0) {
-                var el = elements.shift();
-                var addr = el[0];
-                var type = el[1];
-                
-                if (type & sc_type_node || type & sc_type_link) {
-                    var model_node = self.editor.scene.createNode(type, new SCg.Vector3(10 * Math.random(), 10 * Math.random(), 0), '');
-                    model_node.setScAddr(addr);
-                    model_node.setObjectState(SCgObjectState.FromMemory);
-                    model_node.setText(el[2]);
-                } else if (type & sc_type_arc_mask) {
-                
-                    var bObj = self.editor.scene.getObjectByScAddr(el[3]);
-                    var eObj = self.editor.scene.getObjectByScAddr(el[4]);
-
-                    if (!bObj || !eObj) {
-                        self.elementsQueue.push(el);
-                        continue;
-                    }
-
-                    var model_edge = self.editor.scene.createEdge(bObj, eObj, type);
-                    model_edge.setScAddr(addr);
-                    model_edge.setObjectState(SCgObjectState.FromMemory);
-                    model_edge.setText(el[2]);
-                }
-            }
-            
-            self.requestUpdate();
-                            
-        })(tasks);
-        
-
-        self.requestUpdate();
-    };
+    this.scStructTranslator = new scgScStructTranslator(this.editor, this.sandbox);
     
     this.eventStructUpdate = function(added, element, arc) {
         window.sctpClient.get_arc(arc).done(function (r) {
-            self.updateQueue.push([added, r[1]]);
-            self.requestUpdate();
+            var el = r[1];
+            if (!added) {
+                self.scStructTranslator.removeElement(el);
+            } else {
+                window.sctpClient.get_element_type(el).done(function(t) {
+                    if (t & (sc_type_node | sc_type_link)) {
+                        self.scStructTranslator.addNode(el, t);
+                    } else if (t & sc_type_arc_mask) {
+                        window.sctpClient.get_arc(el).done(function(r) {
+                            self.scStructTranslator.addEdge(el, t, r[0], r[1]);
+                        });
+                    } else
+                        throw "Unknown element type " + t;
+                });
+            }
         });
     };
 

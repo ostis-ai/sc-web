@@ -282,10 +282,17 @@ SCg.Editor.prototype = {
             
             // process controls
             $(container + ' #scg-change-idtf-apply').click(function() {
-                if (self._idtf_item)
-                    self.scene.selected_objects[0].setScAddr(self._idtf_item.addr, true);
-                self.scene.selected_objects[0].setText(input.val());
-                stop_modal();
+                var obj = self.scene.selected_objects[0];
+                obj.setText(input.val());
+                
+                if (self._idtf_item) {
+                    obj.setScAddr(self._idtf_item.addr, true);
+                    window.sctpClient.get_element_type(self._idtf_item.addr).done(function (t) {
+                        obj.setScType(t);
+                        stop_modal();
+                    });
+                } else
+                    stop_modal();
             });
             $(container + ' #scg-change-idtf-cancel').click(function() {
                 stop_modal();
