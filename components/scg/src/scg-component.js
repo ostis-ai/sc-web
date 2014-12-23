@@ -84,11 +84,15 @@ function scgScStructTranslator(_editor, _sandbox) {
             });
         }
         
+        function randomPos() {
+            return new SCg.Vector3(100 * Math.random(), 100 * Math.random(), 0);
+        }
+        
         if (editor.scene.getObjectByScAddr(addr))
             return;
         
-        if (type & sc_type_node || type & sc_type_link) {
-            var model_node = editor.scene.createNode(type, new SCg.Vector3(100 * Math.random(), 100 * Math.random(), 0), '');
+        if (type & sc_type_node) {
+            var model_node = editor.scene.createNode(type, randomPos(), '');
             model_node.setScAddr(addr);
             model_node.setObjectState(SCgObjectState.FromMemory);
             resolveIdtf(addr, model_node);
@@ -105,6 +109,11 @@ function scgScStructTranslator(_editor, _sandbox) {
                 resolveIdtf(addr, model_edge);
                 taskDoneCount++;
             }
+        } else if (type & sc_type_link) {
+            var model_link = editor.scene.createLink(randomPos());
+            model_link.setScAddr(addr);
+            model_link.setObjectState(SCgObjectState.FromMemory);
+            taskDoneCount++;
         }
         
     };

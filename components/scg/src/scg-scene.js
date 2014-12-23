@@ -27,6 +27,7 @@ SCg.Scene = function(options) {
 
     this.render = options.render;
     this.nodes = [];
+    this.links = [];
     this.edges = [];
     this.contours = [];
     this.buses = [];
@@ -88,6 +89,13 @@ SCg.Scene.prototype = {
         if (node.sc_addr)
             this.objects[node.sc_addr] = node;
     },
+    
+    appendLink: function(link) {
+        this.links.push(link);
+        link.scene = this;
+        if (link.sc_addr)
+            this.objects[link.sc_addr] = link;
+    },
 
     /**
      * Appends new sc.g-edge to scene
@@ -137,6 +145,8 @@ SCg.Scene.prototype = {
         
         if (obj instanceof SCg.ModelNode) {
             remove_from_list(obj, this.nodes);
+        }else if (obj instanceof SCg.ModelLink) {
+            remove_from_list(obj, this.links);
         } else if (obj instanceof SCg.ModelEdge) {
             remove_from_list(obj, this.edges);
         } else if (obj instanceof SCg.ModelContour) {
@@ -169,6 +179,17 @@ SCg.Scene.prototype = {
         this.appendNode(node);
         
         return node;
+    },
+    
+    createLink: function(pos) {
+        var link = new SCg.ModelLink({
+            position: pos.clone(),
+            scale: new SCg.Vector2(50, 50),
+            sc_type: sc_type_link
+        });
+        this.appendLink(link);
+        
+        return link;
     },
     
     /**
@@ -365,7 +386,7 @@ SCg.Scene.prototype = {
         this.mouse_pos.y = y;
         
         if ((this.edit_mode == SCgEditMode.SCgModeSelect) && this.focused_object) {
-            if (this.focused_object.sc_type & sc_type_node) {
+            if (this.focused_object.sc_type & (sc_type_node | sc_type_link)) {
                 this.focused_object.setPosition(this.focused_object.position.clone().add(offset));
             }
             
@@ -492,7 +513,7 @@ SCg.Scene.prototype = {
             }
 
             // case we moved object into the contour
-            if (!obj.contour && obj instanceof SCg.ModelNode) {
+            if (!obj.contour && (obj instanceof SCg.ModelNode || obj instanceof SCg.ModelLink)) {
                 for (var i = 0; i < this.contours.length; i++) {
                     if (this.contours[i].isNodeInPolygon(obj)) {
                         this.contours[i].addChild(obj);
@@ -659,6 +680,7 @@ SCg.Scene.prototype = {
         });
 
         contour.addNodesWhichAreInContourPolygon(this.nodes);
+        contour.addNodesWhichAreInContourPolygon(this.links);
         this.appendContour(contour);
         this.pointed_object = contour;
         this.drag_line_points.splice(0, this.drag_line_points.length);

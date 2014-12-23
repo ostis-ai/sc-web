@@ -149,7 +149,9 @@ var SCgAlphabet = {
         g2.append('svg:line').attr('x1', '-10').attr('x2', '10').attr('y1', '3').attr('y2', '3');
         g2.append('svg:line').attr('x1', '-10').attr('x2', '10').attr('y1', '6').attr('y2', '6');
         this.appendText(g);
-        
+      
+        g = defs.append('svg:g').attr('id', 'scg.link');
+        g.append('svg:rect').attr('fill', '#aaa').attr('stroke-width', '6');
     },
     
     /**
@@ -195,6 +197,8 @@ var SCgAlphabet = {
         this.scType2Str[sc_type_node | sc_type_var | sc_type_node_norole] = 'scg.node.var.norole';
         this.scType2Str[sc_type_node | sc_type_var | sc_type_node_role] = 'scg.node.var.role';
         this.scType2Str[sc_type_node | sc_type_var | sc_type_node_tuple] = 'scg.node.var.tuple';
+        
+        this.scType2Str[sc_type_link] = 'scg.link';
       },
       
     /**

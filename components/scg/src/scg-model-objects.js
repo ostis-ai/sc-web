@@ -258,7 +258,6 @@ SCg.ModelObject.prototype.setScAddr = function(addr, merged) {
 SCg.ModelNode = function(options) {
 
     SCg.ModelObject.call(this, options);
-    
 };
 
 SCg.ModelNode.prototype = Object.create( SCg.ModelObject.prototype );
@@ -276,6 +275,52 @@ SCg.ModelNode.prototype.getConnectionPos = function(from, dotPos) {
     result.multiplyScalar(radius).add(center);
 
     return result;
+};
+
+
+// ---------------- link ----------
+SCg.ModelLink = function(options) {
+    SCg.ModelObject.call(this, options);
+    
+    this.contentHtml = '<div class="SCgLinkContentLoaderWraper"><div class="SCgLinkContentLoader"></div></div>';
+};
+
+SCg.ModelLink.prototype = Object.create( SCg.ModelObject.prototype );
+
+SCg.ModelLink.prototype.getConnectionPos = function(from, dotPos) {
+    
+    var y2 = this.scale.y * 0.5,
+        x2 = this.scale.x * 0.5;
+    
+    var left = this.position.x - x2 - 5,
+        top = this.position.y - y2 - 5,
+        right = this.position.x + x2 + 5,
+        bottom = this.position.y + y2 + 5;
+    
+    var points = SCg.Algorithms.polyclip([
+        new SCg.Vector2(left, top),
+        new SCg.Vector2(right, top),
+        new SCg.Vector2(right, bottom),
+        new SCg.Vector2(left, bottom)
+        ], from, this.position);
+    
+    if (points.length == 0)
+        throw "There are no intersection";
+    
+    // find shortes
+    var dMin = null,
+        res = null;
+    for (var i = 0; i < points.length; ++i) {
+        var p = points[i];
+        var d = SCg.Math.distanceSquared(p, from);
+        
+        if (dMin === null || dMin > d) {
+            dMin = d;
+            res = p;
+        }
+    }
+    
+    return res ? new SCg.Vector3(res.x, res.y, this.position.z) : this.position;
 };
 
 // --------------- arc -----------

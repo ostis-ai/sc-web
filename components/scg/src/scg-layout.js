@@ -91,13 +91,12 @@ SCg.LayoutAlgorithmForceBased.prototype.onLayoutTick = function() {
     for (idx in this.nodes) {
         var node_layout = this.nodes[idx];
         
-        if (node_layout.type == SCgLayoutObjectType.Node) {
+        if (node_layout.type === SCgLayoutObjectType.Node) {
             node_layout.object.setPosition(new SCg.Vector3(node_layout.x, node_layout.y, 0));
-        } else
-        {
-            if (node_layout.type == SCgLayoutObjectType.DotPoint) {
-                dots.push(node_layout);
-            }
+        } else if (node_layout.type === SCgLayoutObjectType.Link) {
+            node_layout.object.setPosition(new SCg.Vector3(node_layout.x, node_layout.y, 0));
+        } else if (node_layout.type === SCgLayoutObjectType.DotPoint) {
+            dots.push(node_layout);
         }
     }
     
@@ -155,6 +154,19 @@ SCg.LayoutManager.prototype.prepareObjects = function() {
         obj.type = SCgLayoutObjectType.Node;
         
         objDict[node.id] = obj;
+        this.nodes.push(obj);
+    }
+    
+    for (idx in this.scene.links) {
+        var link = this.scene.links[idx];
+        var obj = new Object();
+        
+        obj.x = link.position.x;
+        obj.y = link.position.y;
+        obj.object = link;
+        obj.type = SCgLayoutObjectType.Link;
+        
+        objDict[link.id] = obj;
         this.nodes.push(obj);
     }
     

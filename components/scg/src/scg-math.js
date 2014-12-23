@@ -54,11 +54,28 @@ SCg.Vector2.prototype = {
     },
     
     length: function() {
-        return Math.sqrt(this.x * this.x + this.y * this.y);
+        return Math.sqrt(this.lengthSquared());
     },
     
     lengthSquared: function() {
         return this.x * this.x + this.y * this.y;
+    },
+    
+    distance: function() {
+        return Math.sqrt(this.distanceSquared.apply(this, arguments));
+    },
+    
+    distanceSquared: function() {
+        if (arguments.length === 2) {
+            var x = this.x - arguments[0],
+                y = this.y - arguments[1];
+        
+            return x * x + y * y;
+        }
+        
+        var x = this.x - arguments[0].x,
+            y = this.y - arguments[0].y;
+        return x * x + y * y;
     },
     
     normalize: function() {
@@ -168,8 +185,21 @@ SCg.Vector3.prototype = {
     }
 };
 
+SCg.Math = {};
+
+SCg.Math.distanceSquared = function(p1, p2) {
+    var x = p1.x - p2.x,
+        y = p1.y - p2.y;
+    
+    return x * x + y * y;
+};
+
+
+
+
 SCg.Algorithms = {};
-/**
+
+/*!
  * Check if a point is in polygon
  * http://habrahabr.ru/post/125356/
  * @param point object with 'x' and 'y' fields, {SCg.Vector2} for example
@@ -177,7 +207,7 @@ SCg.Algorithms = {};
  * @return {boolean} true if the point is in the polygon, false otherwise
  */
 SCg.Algorithms.isPointInPolygon = function(point, vertecies) {
-    // create copy of array of vertexies
+    // create copy of array of vertecies
     var polygon =  $.map(vertecies, function (vertex) {
         return $.extend({}, vertex);
     });
@@ -224,7 +254,7 @@ SCg.Algorithms.isPointInPolygon = function(point, vertecies) {
     return w != 0;
 };
 
-/**
+/*!
  * Find intersection points of line and polygon
  * @param pin Array of points, which represents a polygon
  * @param segStart the first point, object with 'x' and 'y' fields, {SCg.Vector2} for example
@@ -244,7 +274,7 @@ SCg.Algorithms.polyclip = function(pin, segStart, segEnd) {
         var t = (0 - d1) / (d2 - d1);
         var x1 = segStart.x + t * (segEnd.x - segStart.x);
         var y1 = segStart.y + t * (segEnd.y - segStart.y);
-        return {x:x1, y:y1};
+        return {x: x1, y: y1};
     };
 
     var plane = [segStart.y - segEnd.y, segEnd.x - segStart.x, 0];
@@ -272,3 +302,4 @@ SCg.Algorithms.polyclip = function(pin, segStart, segEnd) {
 
     return pout;
 };
+
