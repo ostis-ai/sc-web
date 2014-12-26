@@ -33,7 +33,11 @@ def create_file(build_file, integrated):
         p = path
     target_file_path = os.path.join(path, config['target'])
     if integrated and config.has_key('component'):
-        config['sources'].append(config['component'])
+        comp = config['component']
+        if (isinstance(comp, list)):
+            config['sources'].extend(comp)
+        else:
+            config['sources'].append(comp)
 
     lines = []
     for src in config['sources']:
