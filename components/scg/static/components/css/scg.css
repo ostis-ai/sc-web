@@ -36,8 +36,6 @@
 .SCgLinkContainer {
     display: inline-block; 
     padding: 5px;
-    max-height: 320px;
-    max-width: 240px;
     min-width: 25px;
     min-height: 25px;
     overflow-x: auto;

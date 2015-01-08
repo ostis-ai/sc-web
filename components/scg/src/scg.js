@@ -118,6 +118,10 @@ SCg.Editor.prototype = {
                 self.hideTool(self.toolIntegrate());
             }
             
+            // temporary
+            self.hideTool(self.toolBus());
+            self.hideTool(self.toolContour());
+            
             if (self.resolveControls)
                 self.resolveControls(tools_container);
         });

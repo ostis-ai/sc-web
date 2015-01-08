@@ -238,6 +238,7 @@ SCg.ModelObject.prototype.setScAddr = function(addr, merged) {
         delete this.scene.objects[this.sc_addr];
     }
     this.sc_addr = addr;
+   
     //! @todo update state
     if (this.sc_addr)
         this.scene.objects[this.sc_addr] = this;
@@ -282,7 +283,9 @@ SCg.ModelNode.prototype.getConnectionPos = function(from, dotPos) {
 SCg.ModelLink = function(options) {
     SCg.ModelObject.call(this, options);
     
-    this.contentHtml = '<div class="SCgLinkContentLoaderWraper"><div class="SCgLinkContentLoader"></div></div>';
+    this.contentHtml = '';
+    if (options.containerId)
+        this.contentHtml = '<div id="' + options.containerId + '"></div>';
 };
 
 SCg.ModelLink.prototype = Object.create( SCg.ModelObject.prototype );

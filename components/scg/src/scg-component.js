@@ -7,158 +7,6 @@ SCgComponent = {
     }
 };
 
-function scgTranslateToSc(sandbox, scene, callback) {
-    if (!sandbox.is_struct)
-        throw "Invalid state. Trying translate sc-link into sc-memory";
-
-    var appendToConstruction = function(obj) {
-        window.sctpClient.create_arc(sc_type_arc_pos_const_perm, sandbox.addr, obj.sc_addr);
-    };
-
-    var dfdNodes = jQuery.Deferred();
-
-    // translate nodes
-    var nodes = scene.nodes.slice();
-    $.when.apply($, nodes.map(function(node) {
-        var dfd = new jQuery.Deferred();
-
-        if (!node.sc_addr) {
-            window.sctpClient.create_node(node.sc_type).done(function (r) {
-                node.setScAddr(r);
-                node.setObjectState(SCgObjectState.NewInMemory);
-
-                appendToConstruction(node);
-                dfd.resolve();
-            });
-        } else {
-            dfd.resolve();
-        }
-
-        return dfd.promise();
-    })).done(function() {
-
-         // translate edges
-        var edges = scene.edges.slice();
-        $.when.apply($, edges.map(function (edge) {
-            var dfd = new jQuery.Deferred();
-
-            if (!edge.sc_addr) {
-                var src = edge.source.sc_addr;
-                var trg = edge.target.sc_addr;
-
-                if (src && trg) {
-                    window.sctpClient.create_arc(edge.sc_type, src, trg).done(function(r) {
-                        edge.setScAddr(r);
-                        edge.setObjectState(SCgObjectState.NewInMemory);
-
-                        appendToConstruction(edge);
-                        translated = true;
-                        dfd.resolve();
-                    });
-                } else
-                    dfd.resolve();
-            } else
-                dfd.resolve();
-
-            return dfd.promise();
-        })).done(function() {
-            scene.updateRender();
-        });
-    });
-};
-
-function scgScStructTranslator(_editor, _sandbox) {
-    var r, editor = _editor,
-        sandbox = _sandbox,
-        tasks = [],
-        processBatch = false,
-        taskDoneCount = 0;
-    
-    var processTask = function(task) {
-        var addr = task[0];
-        var type = task[1];
-        
-        function resolveIdtf(addr, obj) {
-            sandbox.getIdentifier(addr, function(idtf) {
-                obj.setText(idtf);
-            });
-        }
-        
-        function randomPos() {
-            return new SCg.Vector3(100 * Math.random(), 100 * Math.random(), 0);
-        }
-        
-        if (editor.scene.getObjectByScAddr(addr))
-            return;
-        
-        if (type & sc_type_node) {
-            var model_node = editor.scene.createNode(type, randomPos(), '');
-            model_node.setScAddr(addr);
-            model_node.setObjectState(SCgObjectState.FromMemory);
-            resolveIdtf(addr, model_node);
-            taskDoneCount++;
-        } else if (type & sc_type_arc_mask) {
-            var bObj = editor.scene.getObjectByScAddr(task[2]);
-            var eObj = editor.scene.getObjectByScAddr(task[3]);
-            if (!bObj || !eObj) {
-                tasks.push(task);
-            } else {
-                var model_edge = editor.scene.createEdge(bObj, eObj, type);
-                model_edge.setScAddr(addr);
-                model_edge.setObjectState(SCgObjectState.FromMemory);
-                resolveIdtf(addr, model_edge);
-                taskDoneCount++;
-            }
-        } else if (type & sc_type_link) {
-            var model_link = editor.scene.createLink(randomPos());
-            model_link.setScAddr(addr);
-            model_link.setObjectState(SCgObjectState.FromMemory);
-            taskDoneCount++;
-        }
-        
-    };
-    var processTaskBatch = function(batch) {
-        taskDoneCount = 0;
-        for (var i = 0; i < batch.length; ++i)
-            processTask(batch[i]);
-        
-        processBatch = false;
-        editor.render.update();
-        editor.scene.layout();
-        
-        window.setTimeout(update, 100);
-    };
-    var addTask = function() {
-        tasks.push(Array.prototype.slice.call(arguments));
-        update(true);
-    };
-    var update = function(force) {
-        if (!processBatch && tasks.length > 0) {
-            processBatch = true;
-            if (taskDoneCount > 0 || force) {
-                window.setTimeout(function() {
-                    processTaskBatch(tasks.splice(0, Math.max(30, tasks.length)));
-                }, 100);
-            }
-        }
-    };
-    
-    var self = this;
-    
-    return r = {
-        removeElement: function(addr) {
-            var obj = editor.scene.getObjectByScAddr(addr);
-            if (obj)
-                editor.scene.deleteObjects([addr]);
-        },
-        addNode: function(addr, type) {
-            addTask.apply(self, arguments);
-        },
-        addEdge: function(addr, type, src, trg) {
-            addTask.apply(self, arguments);
-        }
-    };
-};
 
 /**
  * scgViewerWindow
@@ -173,6 +21,9 @@ var scgViewerWindow = function(sandbox) {
     this.editor = new SCg.Editor();
     
     var self = this;
+    if (sandbox.is_struct) {
+        this.scStructTranslator = new scgScStructTranslator(this.editor, this.sandbox);
+    }
 
     var autocompletionVariants = function(keyword, callback, self) {
 
@@ -195,7 +46,7 @@ var scgViewerWindow = function(sandbox) {
             containerId: sandbox.container,
             autocompletionVariants : autocompletionVariants,
             translateToSc: function(scene, callback) {
-                return scgTranslateToSc(self.sandbox, scene, callback);
+                return self.scStructTranslator.translateToSc(callback);
             },
             canEdit: this.sandbox.canEdit(),
             resolveControls: this.sandbox.resolveElementsAddr,
@@ -328,27 +179,9 @@ var scgViewerWindow = function(sandbox) {
         this.editor.render.updateTexts();
     };
     
-    var self = this;
-    this.scStructTranslator = new scgScStructTranslator(this.editor, this.sandbox);
     
-    this.eventStructUpdate = function(added, element, arc) {
-        window.sctpClient.get_arc(arc).done(function (r) {
-            var el = r[1];
-            if (!added) {
-                self.scStructTranslator.removeElement(el);
-            } else {
-                window.sctpClient.get_element_type(el).done(function(t) {
-                    if (t & (sc_type_node | sc_type_link)) {
-                        self.scStructTranslator.addNode(el, t);
-                    } else if (t & sc_type_arc_mask) {
-                        window.sctpClient.get_arc(el).done(function(r) {
-                            self.scStructTranslator.addEdge(el, t, r[0], r[1]);
-                        });
-                    } else
-                        throw "Unknown element type " + t;
-                });
-            }
-        });
+    this.eventStructUpdate = function() {
+        self.scStructTranslator.updateFromSc.apply(self.scStructTranslator, arguments);
     };
 
     // delegate event handlers

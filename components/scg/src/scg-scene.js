@@ -181,11 +181,12 @@ SCg.Scene.prototype = {
         return node;
     },
     
-    createLink: function(pos) {
+    createLink: function(pos, containerId) {
         var link = new SCg.ModelLink({
             position: pos.clone(),
             scale: new SCg.Vector2(50, 50),
-            sc_type: sc_type_link
+            sc_type: sc_type_link,
+            containerId: containerId
         });
         this.appendLink(link);
         

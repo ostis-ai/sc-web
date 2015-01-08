@@ -172,7 +172,7 @@ SCg.Render.prototype = {
         
         var item = d3.select(o);
         var str = item.attr("class");
-        var res = str.replace(cl, '');
+        var res = str ? str.replace(cl, '') : '';
         if (flag)
             res += ' ' + cl;
         item.attr("class", res);
@@ -258,7 +258,6 @@ SCg.Render.prototype = {
 
         
         eventsWrap(g);
-        //appendNodeLinkVisual(g);
         
         this.d3_links.exit().remove();
             

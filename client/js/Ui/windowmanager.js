@@ -261,7 +261,7 @@ SCWeb.ui.WindowManager = {
 
         var linkAddrs = [];
         for (var cntId in containers_map)
-                linkAddrs.push(containers_map[cntId]);
+            linkAddrs.push(containers_map[cntId]);
 
         if (linkAddrs.length == 0) {
             dfd.resolve();
