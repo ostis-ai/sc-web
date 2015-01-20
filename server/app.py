@@ -5,7 +5,9 @@ import secret
 
 from handlers.main import MainHandler
 import handlers.api as api
+import handlers.auth as auth
 import ws
+import db
 
 is_closing = False
 
@@ -28,8 +30,8 @@ class NoCacheStaticHandler(tornado.web.StaticFileHandler):
 
 def main():
     
-    tornado.options.define("static_path", default = "../static", help = "path to static files directory", type = str)
-    tornado.options.define("templates_path", default = "../templates", help = "path to template files directory", type = str)
+    tornado.options.define("static_path", default = "../client/static", help = "path to static files directory", type = str)
+    tornado.options.define("templates_path", default = "../client/templates", help = "path to template files directory", type = str)
     tornado.options.define("sctp_port", default = 55770, help = "port of sctp server", type = int)
     tornado.options.define("sctp_host", default = "localhost", help = "host of sctp server", type = str)
     tornado.options.define("event_wait_timeout", default = 10, help = "time to wait commands processing", type = int)
@@ -38,9 +40,21 @@ def main():
     tornado.options.define("redis_port", default = 6379, help = "port of redis server", type = int)
     tornado.options.define("redis_db_idtf", default = 0, help = "number of redis database to store identifiers", type = int)
     tornado.options.define("redis_db_user", default = 1, help = "number of redis database to store user info", type = int)
+    tornado.options.define("host", default = "localhost:8000", help = "host name", type = str)
+    
+    tornado.options.define("google_client_id", default = "", help = "client id for google auth", type = str)
+    tornado.options.define("google_client_secret", default = "", help = "client secret for google auth", type = str)
+    
+    tornado.options.define("user_key_expire_time", default = 600, help = "user key expire time in seconds", type = int)
+    tornado.options.define("super_emails", default = "", help = "email of site super administrator (maximum rights)", type = list)
+    tornado.options.define("db_path", default = "data.db", help = "path to database file", type = str)
     
     tornado.options.parse_command_line()
     tornado.options.parse_config_file("server.conf")
+
+    # prepare database
+    database = db.DataBase()
+    database.init()
 
     rules = [
             (r"/", MainHandler),
@@ -67,17 +81,24 @@ def main():
             (r"/api/info/tooltip/", api.InfoTooltip),
             
             (r"/api/user/", api.User),
+            
+            (r"/auth/google$", auth.GoogleOAuth2LoginHandler),
+            (r"/auth/logout$", auth.LogOut),
 
             (r"/sctp", ws.SocketHandler),
             ]
 
     application = tornado.web.Application(
-        rules,                                          
+        handlers = rules,                       
         cookie_secret = secret.get_secret(),
-        login_url = "/auth/login",
+        login_url = "/auth/google",
         template_path = tornado.options.options.templates_path,
         xsrf_cookies = False,
-        gzip = True
+        gzip = True,
+        
+        google_oauth = {"key": tornado.options.options.google_client_id, 
+                        "secret": tornado.options.options.google_client_secret
+                        }
     )
 
     application.listen(8000)

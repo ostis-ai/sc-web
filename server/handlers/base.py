@@ -1,16 +1,34 @@
 import tornado
+import db
 
+
+class User:
+    
+    def __init__(self, u, db):
+        self.email = u.email
+        self.name = u.name
+        self.avatar = u.avatar
+        self.rights = db.get_user_rights(u)
+    
+    @staticmethod
+    def _canEdit(rights):
+        return rights >= 0x77 
+        
+    
 class BaseHandler(tornado.web.RequestHandler):
     
-    @property
-    def db(self):
-        self.application.settings
-#         if not hasattr(self, '_db'):
-#             self._db = asyncmongo.Client(
-#                 pool_id='uglyweb',
-#                 host=self.application.settings['db_host'],
-#                 port=self.application.settings['db_port'],
-#                 dbname=self.application.settings['db_name']
-#             )
-#         return self._db
-        return None
+    cookie_user_key = u'user_key'
+    
+    def get_current_user(self):
+        key = self.get_secure_cookie(self.cookie_user_key, None, 1)
+        
+        database = db.DataBase()
+        u = database.get_user_by_key(key)
+        if u:           
+            return User(u, database)
+        
+        return None             
+    
+    def get_user_id(self, email):
+        pass
+    

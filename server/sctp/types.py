@@ -63,6 +63,7 @@ class SctpResultCode:
     SCTP_RESULT_OK              = 0x00 #
     SCTP_RESULT_FAIL            = 0x01 #
     SCTP_RESULT_ERROR_NO_ELEMENT= 0x02 # sc-element wasn't founded
+    SCTP_RESULT_NORIGHTS        = 0x03
 
 
 class SctpIteratorType:

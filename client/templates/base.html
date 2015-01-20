@@ -8,6 +8,7 @@
     {% block extrameta %}{% end %}
     <title>{% block title %}OSTIS{% end %}</title>
 
+    
     <link rel="stylesheet" type="text/css" href="/static/common/bootstrap/css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="/static/common/bootstrap/css/bootstrap-multilevel.css" />
     <link rel="stylesheet" type="text/css" href="/static/components/css/common.css" />
@@ -41,35 +42,28 @@
         <div id="menu_container">
             <!-- there will be placed menu items -->
         </div>
-        <div id="task_panel" class="task_icon navbar-form pull-right" sc_control_sys_idtf="ui_control_task_panel">
-            <span id="task_num" class="task_text">0</span>
-        </div>
 
         <div id="auth-user-panel" class="pull-right">
-            {% if user['loggedin'] %}
+            {% if user %}
             <div id="auth-user-registered">
                 <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                            <div class="auth-user-image pull-left" ></div>
-                            <div class="pull-left"><span id="auth-user-name" >{# name will be placed later #}</span></div>
+                            <div class="auth-user-image pull-left" ><img src="{{ user.avatar }}" alt="{{ escape(user.name) }}"></img></div>
+                            <div class="pull-left"><span id="auth-user-name" >{{ escape(user.name) }}</span></div>
                             <b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu">
-                            <li>
-                                <a id="auth-user-ext-lang"></a>
-                            </li>
-                            <li class="divider"></li>
-                            {# <li><a href="{% url accounts:logout %}">Logout</a></li> #}
+                            {# <li class="divider"></li> #}
+                            <li><a href="/auth/logout">Logout</a></li>
                         </ul>
                     </li>
                 </ul>
             </div>
             {% else %}
-            <ul class="nav navbar-nav">
-                <li><a href="#js-accounts-login-modal" data-toggle="modal">Login</a></li>
-                {# <li><a href="{% url accounts:registration %}">Register</a></li> #}
-            </ul>
+            <a href="/auth/google">
+                <div class="gplus-login-button"></div>
+            </a>
             {% end %}
         </div>
         
@@ -149,7 +143,7 @@
             var params = {
                         menu_container_id: 'menu_container',
                         default_keynode: 'doc_technology_ostis',
-                        {% if user['first_time'] %}first_time: true,{% end %}
+                        {% if first_time == "1" %}first_time: true,{% end %}
                     };
             $.when(SCWeb.core.Main.init(params)).done(function() {
                 SCWeb.ui.Locker.hide();

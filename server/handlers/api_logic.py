@@ -370,7 +370,7 @@ class ScSession:
             return results[0][2]
         
         # setup default language
-        _lang = self.keynodes[KeynodeSysIdentifiers.scs_code]
+        _lang = self.keynodes[KeynodeSysIdentifiers.scg_code]
         self.set_default_ext_lang(_lang)
         
         return _lang
@@ -436,7 +436,7 @@ class ScSession:
         return self._find_user_by_system_idtf("session::" + str(self.session_key))
 
     def _user_new(self):
-        return self._create_user_with_system_idtf("user::" + str(self.user.username))
+        return self._create_user_with_system_idtf("user::" + str(self.user.name))
 
     def _user_get_sc_addr(self):
-        return self._find_user_by_system_idtf("user::" + str(self.user.username))
+        return self._find_user_by_system_idtf("user::" + str(self.user.name))

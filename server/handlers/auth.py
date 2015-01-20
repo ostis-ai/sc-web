@@ -1,35 +1,82 @@
 import tornado.auth
-import tornado.httpserver
-import tornado.ioloop
 import tornado.options
 import tornado.web
+import json
+import base
+import db
 
-import base 
+class GoogleOAuth2LoginHandler(base.BaseHandler,
+                               tornado.auth.GoogleOAuth2Mixin):
+    def _loggedin(self, user):
+               
+        email = user['email']
+        if len(email) == 0:
+            return
+        database = db.DataBase()
+        u = database.get_user_by_email(email)
 
-# class AuthLoginHandler(base.BaseHandler, tornado.auth.GoogleMixin):
-#     @tornado.web.asynchronous
-#     def get(self):
-#         if self.get_argument("openid.mode", None):
-#             self.get_authenticated_user(self.async_callback(self._on_auth))
-#             return
-#         self.authenticate_redirect()
-# 
-#     def _on_auth(self, user):
-#         if not user:
-#             raise tornado.web.HTTPError(500, "Google auth failed")
-#         author = self.db.get("SELECT * FROM authors WHERE email = %s",
-#                              user["email"])
-#         if not author:
-#             # Auto-create first author
-#             any_author = self.db.get("SELECT * FROM authors LIMIT 1")
-#             if not any_author:
-#                 author_id = self.db.execute(
-#                     "INSERT INTO authors (email,name) VALUES (%s,%s)",
-#                     user["email"], user["name"])
-#             else:
-#                 self.redirect("/")
-#                 return
-#         else:
-#             author_id = author["id"]
-#         self.set_secure_cookie("blogdemo_user", str(author_id))
-#         self.redirect(self.get_argument("next", "/"))
+        key = None
+        if u:
+            key = database.create_user_key()
+            u.key = key
+            database.update_user(u)
+        else:
+            role = 0
+            supers = tornado.options.options.super_emails
+            if supers and (email in supers):
+                r = database.get_role_by_name('editor')
+                if r:
+                    role = r.id
+            
+            key = database.add_user(name = user['name'], 
+                                    email = email, 
+                                    addr = 1,
+                                    avatar = user['picture'],
+                                    role = role)
+        print key
+        self.set_secure_cookie(self.cookie_user_key, key, 1)
+        
+            
+    @tornado.gen.coroutine
+    def get(self):
+        self.settings[self._OAUTH_SETTINGS_KEY]['key'] = tornado.options.options.google_client_id
+        self.settings[self._OAUTH_SETTINGS_KEY]['secret'] = tornado.options.options.google_client_secret
+                
+        uri = 'http://' + tornado.options.options.host + '/auth/google'
+        if self.get_argument('code', False):
+            user = yield self.get_authenticated_user(
+                redirect_uri = uri,
+                code = self.get_argument('code'))
+            
+            # Save the user with e.g. set_secure_cookie
+            if not user:
+                self.clear_all_cookies()
+                raise tornado.web.HTTPError(500, 'Google authentication failed')
+            
+            access_token = str(user['access_token'])
+            http_client = self.get_auth_http_client()
+            response = yield http_client.fetch('https://www.googleapis.com/oauth2/v1/userinfo?access_token=' + access_token)
+            
+            if not response:
+                self.clear_all_cookies() 
+                raise tornado.web.HTTPError(500, 'Google authentication failed')
+            user = json.loads(response.body)           
+            
+            self._loggedin(user)
+            
+            self.redirect('/')
+            
+        else:
+            yield self.authorize_redirect(
+                redirect_uri = uri,
+                client_id = self.settings['google_oauth']['key'],
+                scope = ['profile', 'email'],
+                response_type = 'code',
+                extra_params = {'approval_prompt': 'auto'})
+            
+class LogOut(base.BaseHandler):
+    
+    @tornado.web.asynchronous
+    def get(self):
+        self.clear_cookie(self.cookie_user_key)
+        self.redirect('/')

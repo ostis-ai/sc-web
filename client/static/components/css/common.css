@@ -216,21 +216,18 @@ html.drag {
 }
 
 .auth-user-image {
-        border-width: 1px;
-        border-style: solid;
-        border-color: #222;
-        background-color: #333;
 
-        width: 32px;
-        height: 32px;
+    width: 32px;
+    height: 32px;
 
-        margin-top: -5px;
-        margin-right: 5px;
+    margin-top: -5px;
+    margin-right: 5px;
 }
 
-.auth-user-image:hover {
-        border-color: #444;
-        background-color: #444;
+.auth-user-image img {
+    border-radius: 7px;
+    width: 100%;
+    height: 100%;
 }
 
 .auth-user-login {
@@ -408,4 +405,25 @@ html.drag {
 /* --- bootstrap --- */
 div[class="tooltip-inner"] {
     max-width: 350px;
+}
+
+
+/* --- auth --- */
+#auth-user-panel {
+    margin: auto;
+}
+
+.gplus-login-button {
+    background-image: url("../images/gplus/White-signin_Small_base_32dp.png");
+    width: 42px;
+    height: 42px;
+    margin-top: 4px;
+}
+
+.gplus-login-button:hover {
+    background-image: url("../images/gplus/White-signin_Small_hover_32dp.png");
+}
+
+.gplus-login-button:active {
+    background-image: url("../images/gplus/White-signin_Small_press_32dp.png");
 }

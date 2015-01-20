@@ -16,15 +16,15 @@ SCWeb.ui.TaskPanel = {
      * Updates task panel view
      */
     updatePanel: function() {
-        if (this._task_num == 0) {
-            $(this._container).removeClass('active');
-        }else{
-            $(this._container).addClass('active');
-        }
-        var text = ''
-        if (this._task_num > 0)
-            text = this._task_num.toString();
-        $(this._text_container).text(text);
+//        if (this._task_num == 0) {
+//            $(this._container).removeClass('active');
+//        }else{
+//            $(this._container).addClass('active');
+//        }
+//        var text = ''
+//        if (this._task_num > 0)
+//            text = this._task_num.toString();
+//        $(this._text_container).text(text);
     },
     
     // ------- Server listener --------

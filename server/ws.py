@@ -4,9 +4,13 @@ import struct
 import socket
 import time
 import json
+import thread
+
+import db
+import handlers.base as base
 import sctp.types
 import sctp.logic
-import thread
+
 from sctp.types import ScAddr
 
 clients = []
@@ -16,7 +20,7 @@ class SocketProxy:
     result_header_fmt = '=BIBI'
     command_header_fmt = '=BBII'
     
-    def __init__(self, on_message):
+    def __init__(self, on_message, write_rights = False):
         self.on_message = on_message
 
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -30,7 +34,8 @@ class SocketProxy:
         self.registered_events = []
         self.recieved_events = []
         self.events_lock = thread.allocate_lock()
-                
+        self.write_rights = write_rights
+
     def destroy(self):
         self.sock.close()
         
@@ -66,10 +71,10 @@ class SocketProxy:
         cmdCode == sctp.types.SctpCommandType.SCTP_CMD_EVENT_CREATE or \
         cmdCode == sctp.types.SctpCommandType.SCTP_CMD_EVENT_DESTROY or \
         cmdCode == sctp.types.SctpCommandType.SCTP_CMD_EVENT_EMIT or \
-        cmdCode == sctp.types.SctpCommandType.SCTP_CMD_CREATE_NODE or \
+        (self.write_rights and (cmdCode == sctp.types.SctpCommandType.SCTP_CMD_CREATE_NODE or \
         cmdCode == sctp.types.SctpCommandType.SCTP_CMD_CREATE_ARC or \
         cmdCode == sctp.types.SctpCommandType.SCTP_CMD_CREATE_LINK or \
-        cmdCode == sctp.types.SctpCommandType.SCTP_CMD_SET_LINK_CONTENT:
+        cmdCode == sctp.types.SctpCommandType.SCTP_CMD_SET_LINK_CONTENT)):
             # send data to socket
             self.sock.sendall(data)
             # wait answer and send it backward to client
@@ -78,11 +83,14 @@ class SocketProxy:
             resultData = self.receiveData(resSize)
 
             self.on_message(data + resultData)
+        else:
+            resultData = struct.pack('=BIBI', cmdCode, cmdId, sctp.types.SctpResultCode.SCTP_RESULT_NORIGHTS, 0)
+            self.on_message(resultData)
 
 
 class SocketHandler(tornado.websocket.WebSocketHandler):
 
-    header_size= 10
+    header_size = 10
     edit_commands = [sctp.types.SctpCommandType.SCTP_CMD_CREATE_ARC,
                      sctp.types.SctpCommandType.SCTP_CMD_CREATE_LINK,
                      sctp.types.SctpCommandType.SCTP_CMD_CREATE_NODE,
@@ -93,8 +101,16 @@ class SocketHandler(tornado.websocket.WebSocketHandler):
     def open(self):
         if self not in clients:
             clients.append(self)
-            
-        self.proxy = SocketProxy(self.socket_write)
+        
+        key = self.get_secure_cookie(base.BaseHandler.cookie_user_key, None, 1)
+        
+        database = db.DataBase()
+        canEdit = False
+        u = database.get_user_by_key(key)
+        if u:
+            canEdit = base.User._canEdit(database.get_user_rights(u))
+        
+        self.proxy = SocketProxy(self.socket_write, canEdit)
 
     def on_close(self):
         if self in clients:
