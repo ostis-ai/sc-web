@@ -29,6 +29,11 @@ class User(Base):
 
 class DataBase:
     
+    RIGHTS_GUEST = 0x00
+    RIGHTS_EDITOR = 0x77
+    RIGHTS_ADMIN = 0xbb
+    RIGHTS_SUPER = 0xff
+    
     def __init__(self):
         self.engine = create_engine('sqlite:///' + tornado.options.options.db_path)
         self.session = None
@@ -39,7 +44,12 @@ class DataBase:
     def init(self):
         Base.metadata.create_all(self.engine)
         
-        names = {0x00: 'guest', 0x77: 'editor', 0xff: 'super'}
+        names = {
+                 self.RIGHTS_GUEST: 'guest', 
+                 self.RIGHTS_EDITOR: 'editor', 
+                 self.RIGHTS_ADMIN: 'admin', 
+                 self.RIGHTS_SUPER: 'super'
+                }
         
         for i in xrange(256):
             n = None
@@ -72,12 +82,14 @@ class DataBase:
     def get_user_by_key(self, key):
         return self._session().query(User).filter(User.key == key).first()
     
+    def get_user_by_id(self, user_id):
+        return self._session().query(User).filter(User.id == user_id).first()
+    
     def get_user_rights(self, u):
-        res = 0
-        r = self._session().query(Role).filter(Role.id == u.role).first()
-        if r:
-            res = r.rights
-        return res
+        return self._session().query(Role).filter(Role.id == u.role).first()
+    
+    def get_rights_by_id(self, r_id):
+        return self._session().query(Role).filter(Role.id == r_id).first()
     
     def update_user(self, u):
         self._session().merge(u)
@@ -96,4 +108,22 @@ class DataBase:
         
         return key
     
+    def paginate_users(self, start, count):
+        users = self._session().query(User).offset(start).limit(count).all()
+        res = []
+        for u in users:
+            r = self.get_user_rights(u)
+            res.append({ 'name': u.name,
+                         'avatar': u.avatar,
+                         'id': u.id,
+                         'rights': 
+                         {
+                          'value': r.rights,
+                          'name': r.name
+                         }
+                        }) 
+        return res
+     
+    def list_rights(self):
+        return self._session().query(Role).all()
         

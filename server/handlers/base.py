@@ -8,11 +8,15 @@ class User:
         self.email = u.email
         self.name = u.name
         self.avatar = u.avatar
-        self.rights = db.get_user_rights(u)
+        self.rights = db.get_user_rights(u).rights
+    
+    def canAdmin(self):
+        return self.rights >= db.DataBase.RIGHTS_ADMIN
     
     @staticmethod
     def _canEdit(rights):
-        return rights >= 0x77 
+        return rights >= db.DataBase.RIGHTS_EDITOR
+    
         
     
 class BaseHandler(tornado.web.RequestHandler):
@@ -31,4 +35,5 @@ class BaseHandler(tornado.web.RequestHandler):
     
     def get_user_id(self, email):
         pass
+    
     

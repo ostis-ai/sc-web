@@ -6,8 +6,9 @@ import secret
 from handlers.main import MainHandler
 import handlers.api as api
 import handlers.auth as auth
-import ws
-import db
+import admin.main as admin
+import admin.users as admin_users
+import ws, db
 
 is_closing = False
 
@@ -84,6 +85,11 @@ def main():
             
             (r"/auth/google$", auth.GoogleOAuth2LoginHandler),
             (r"/auth/logout$", auth.LogOut),
+            
+            (r"/admin$", admin.MainHandler),
+            (r"/admin/users/get$", admin_users.UsersInfo),
+            (r"/admin/users/set_rights$", admin_users.UserSetRights),
+            (r"/admin/users/list_rights$", admin_users.UserListRights),
 
             (r"/sctp", ws.SocketHandler),
             ]

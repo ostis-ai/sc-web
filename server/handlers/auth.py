@@ -24,7 +24,7 @@ class GoogleOAuth2LoginHandler(base.BaseHandler,
             role = 0
             supers = tornado.options.options.super_emails
             if supers and (email in supers):
-                r = database.get_role_by_name('editor')
+                r = database.get_role_by_name('super')
                 if r:
                     role = r.id
             
