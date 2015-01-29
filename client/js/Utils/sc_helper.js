@@ -191,8 +191,8 @@ ScHelper.prototype.getAnswer = function(question_addr) {
         
         _self.sctp_client.event_create(SctpEventType.SC_EVENT_ADD_OUTPUT_ARC, _question_addr, function(addr, arg) {
             _self.checkEdge(window.scKeynodes.nrel_answer, sc_type_arc_pos_const_perm, arg).done(function() {
-                _self.sctp_client.get_arc_end(arg).done(function(res) {
-                    _dfd.resolve(res);
+                _self.sctp_client.get_arc(arg).done(function(res) {
+                    _dfd.resolve(res[1]);
                 }).fail(function() {
                     _dfd.reject();
                 });
