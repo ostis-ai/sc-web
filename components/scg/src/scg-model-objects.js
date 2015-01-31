@@ -282,10 +282,9 @@ SCg.ModelNode.prototype.getConnectionPos = function(from, dotPos) {
 // ---------------- link ----------
 SCg.ModelLink = function(options) {
     SCg.ModelObject.call(this, options);
-    
-    this.contentHtml = '';
-    if (options.containerId)
-        this.contentHtml = '<div id="' + options.containerId + '"></div>';
+
+    this.contentLoaded = false;
+    this.containerId = options.containerId;
 };
 
 SCg.ModelLink.prototype = Object.create( SCg.ModelObject.prototype );

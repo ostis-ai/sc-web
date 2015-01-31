@@ -372,6 +372,14 @@ SCg.Editor.prototype = {
                     
                 });
         });
+        
+        this.toolZoomIn().click(function() {
+            self.render.changeScale(1.1);
+        });
+        
+        this.toolZoomOut().click(function() {
+            self.render.changeScale(0.9);
+        });
 
 
         // initial update

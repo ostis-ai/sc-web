@@ -43,6 +43,7 @@ var scgViewerWindow = function(sandbox) {
     
     this.editor.init(
         {
+            sandbox: sandbox,
             containerId: sandbox.container,
             autocompletionVariants : autocompletionVariants,
             translateToSc: function(scene, callback) {

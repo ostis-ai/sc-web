@@ -56,6 +56,7 @@ SCg.LayoutAlgorithmForceBased.prototype.start = function() {
     .nodes(this.nodes)
     .links(this.edges)
     .size(this.rect)
+    .friction(0.9)
     .gravity(0.1)
     .linkDistance(function(edge){
 		if (edge.source.type == SCgLayoutObjectType.DotPoint ||

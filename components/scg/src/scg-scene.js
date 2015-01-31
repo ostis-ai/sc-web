@@ -393,12 +393,16 @@ SCg.Scene.prototype = {
             
             this.updateObjectsVisual();
             this.render.updateLinePoints();
+            return true;
         }
         
         if (this.edit_mode == SCgEditMode.SCgModeEdge || this.edit_mode == SCgEditMode.SCgModeBus 
             || this.edit_mode == SCgEditMode.SCgModeContour) {
             this.render.updateDragLine();
+            return true;
         }
+        
+        return false;
     },
     
     onMouseDown: function(x, y) {
@@ -409,30 +413,32 @@ SCg.Scene.prototype = {
         if (!this.pointed_object) {
             var isModeEdge = this.edit_mode == SCgEditMode.SCgModeEdge;
             var isModeContour = this.edit_mode == SCgEditMode.SCgModeContour;
-            if (isModeContour || (isModeEdge && this.edge_data.source)) {
+            var isModeBus = this.edit_mode == SCgEditMode.SCgModeBus;
+            if (isModeContour || (isModeEdge && this.edge_data.source) || (isModeBus && this.bus_data.source)) {
                 this.drag_line_points.push({x: x, y: y, idx: this.drag_line_points.length});
+                if (isModeBus)
+                    this.bus_data.end = {x: x, y: y, idx: this.drag_line_points.length};
+                return true;
             }
         }
         
-        if (!this.pointed_object && this.edit_mode == SCgEditMode.SCgModeBus && this.bus_data.source) {
-            this.drag_line_points.push({x: x, y: y, idx: this.drag_line_points.length});
-            this.bus_data.end = {x: x, y: y, idx: this.drag_line_points.length};
-        }
+        return false;
     },
     
     onMouseUp: function(x, y) {
-                
-        if (this.modal != SCgModalMode.SCgModalNone) return; // do nothing
+        
+        if (this.modal != SCgModalMode.SCgModalNone) return false; // do nothing
         
         if (!this.pointed_object)
             this.clearSelection();
 
         this.focused_object = null;
+        return false;
     },
     
     onMouseDoubleClick: function(x, y) {
         
-        if (this.modal != SCgModalMode.SCgModalNone) return; // do nothing
+        if (this.modal != SCgModalMode.SCgModalNone) return false; // do nothing
         
         if (this.edit_mode == SCgEditMode.SCgModeSelect) {
             if (this.pointed_object)
@@ -440,7 +446,10 @@ SCg.Scene.prototype = {
             
             this.createNode(sc_type_node | sc_type_const, new SCg.Vector3(x, y, 0), '');
             this.updateRender();
+            return true;
         }
+        
+        return false;
     },
     
     
