@@ -2,6 +2,7 @@ import tornado.ioloop
 import tornado.web
 import tornado.options
 import secret
+import os
 
 from handlers.main import MainHandler
 import handlers.api as api
@@ -50,8 +51,11 @@ def main():
     tornado.options.define("super_emails", default = "", help = "email of site super administrator (maximum rights)", type = list)
     tornado.options.define("db_path", default = "data.db", help = "path to database file", type = str)
     
+    tornado.options.define("cfg", default = "server.conf", help = "path to configuration file", type = str)
+
     tornado.options.parse_command_line()
-    tornado.options.parse_config_file("server.conf")
+    if os.path.exists(tornado.options.options.cfg):
+        tornado.options.parse_config_file(tornado.options.options.cfg)
 
     # prepare database
     database = db.DataBase()
