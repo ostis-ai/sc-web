@@ -37,12 +37,13 @@ def main():
     tornado.options.define("sctp_port", default = 55770, help = "port of sctp server", type = int)
     tornado.options.define("sctp_host", default = "localhost", help = "host of sctp server", type = str)
     tornado.options.define("event_wait_timeout", default = 10, help = "time to wait commands processing", type = int)
-    tornado.options.define("idtf_serach_limit", default = 30, help = "number of maximum results for searching by identifier", type = str)
+    tornado.options.define("idtf_serach_limit", default = 30, help = "number of maximum results for searching by identifier", type = int)
     tornado.options.define("redis_host", default = "localhost", help = "host of redis server", type = str)
     tornado.options.define("redis_port", default = 6379, help = "port of redis server", type = int)
     tornado.options.define("redis_db_idtf", default = 0, help = "number of redis database to store identifiers", type = int)
     tornado.options.define("redis_db_user", default = 1, help = "number of redis database to store user info", type = int)
-    tornado.options.define("host", default = "localhost:8000", help = "host name", type = str)
+    tornado.options.define("host", default = "localhost", help = "host name", type = str)
+    tornado.options.define("port", default = 8000, help = "host port", type = int)
     
     tornado.options.define("google_client_id", default = "", help = "client id for google auth", type = str)
     tornado.options.define("google_client_secret", default = "", help = "client secret for google auth", type = str)
@@ -111,7 +112,7 @@ def main():
                         }
     )
 
-    application.listen(8000)
+    application.listen(tornado.options.options.port)
     tornado.ioloop.PeriodicCallback(try_exit, 1000).start()
     tornado.ioloop.IOLoop.instance().start()
 
