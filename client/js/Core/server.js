@@ -182,8 +182,9 @@ SCWeb.core.Server = {
             return self._current_language + '/' + addr;
         }
 
-        var result = {}, used = {}, need_resolve = [];
-
+        var result = {}, used = {};
+        var arguments = '';
+        var idx = 1;
         for(i in objects) {
             var id = objects[i];
             
@@ -198,13 +199,34 @@ SCWeb.core.Server = {
                 continue;
             }
             
-            need_resolve.push(id);
+            if (idx > 1)
+                arguments = arguments + '&';
+            arguments = arguments + idx + '_=' + id;
+            idx++;
         }
         
-        if (need_resolve.length == 0) { // all results cached
+        if (arguments.length === 0) { // all results cached
             callback(result);
         } else {
-            (function(result, need_resolve, callback) {
+                        
+            this._push_task({
+                type: "POST",
+                url: "api/idtf/resolve/",
+                data: arguments,
+                success: function(idtfs) {
+                    for (k in idtfs) {
+                        if (idtfs.hasOwnProperty(k)) {
+                            result[k] = idtfs[k];
+                        }
+                    }
+                    
+                    callback(result);
+                },
+                error: function() {
+                    callback({});
+                }
+            });
+            /*(function(result, need_resolve, callback) {
                 
                 var resolve_idtf = function() {
                     if (need_resolve.length == 0) {
@@ -228,7 +250,7 @@ SCWeb.core.Server = {
                 
                 resolve_idtf();
                 
-            })(result, need_resolve, callback);
+            })(result, need_resolve, callback);*/
         }
     },
     
