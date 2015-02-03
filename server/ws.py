@@ -115,6 +115,7 @@ class SocketHandler(tornado.websocket.WebSocketHandler):
     def on_close(self):
         if self in clients:
             clients.remove(self)
+            self.proxy.destroy()
             
     def on_message(self, message):
         self.proxy.send(message)

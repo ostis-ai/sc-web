@@ -32,3 +32,14 @@ def new_sctp_client():
     sctp_client = SctpClient()
     sctp_client.initialize(tornado.options.options['sctp_host'], tornado.options.options['sctp_port'])
     return sctp_client
+
+class SctpClientInstance:
+    
+    def __enter__(self):
+        self.instance = new_sctp_client()
+        return self.instance
+    
+    def __exit__(self, type, value, traceback):
+        self.instance.shutdown()
+
+

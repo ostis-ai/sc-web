@@ -17,7 +17,7 @@ class User:
     def _canEdit(rights):
         return rights >= db.DataBase.RIGHTS_EDITOR
     
-        
+
     
 class BaseHandler(tornado.web.RequestHandler):
     
