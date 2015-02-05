@@ -1,7 +1,7 @@
-function ScgFromScImpl(_sandbox, _editor) {
+function ScgFromScImpl(_sandbox, _editor, aMapping) {
     
     var self = this,
-        arcMapping = {},
+        arcMapping = aMapping,
         tasks = [],
         timeout = 0, 
         batch = null,
@@ -92,6 +92,8 @@ function ScgFromScImpl(_sandbox, _editor) {
     return {
         update: function(added, element, arc) {
             
+            console.log(added, element, arc);
+            
             if (added) {
                 window.sctpClient.get_arc(arc).done(function (r) {
                     var el = r[1];
@@ -125,13 +127,13 @@ function scgScStructTranslator(_editor, _sandbox) {
         sandbox = _sandbox,
         tasks = [],
         processBatch = false,
-        taskDoneCount = 0/*,
-        sc_links = {};*/
+        taskDoneCount = 0,
+        arcMapping = {};
     
     if (!sandbox.is_struct)
         throw "Snadbox must to work with sc-struct";
     
-    var scgFromSc = new ScgFromScImpl(sandbox, editor);
+    var scgFromSc = new ScgFromScImpl(sandbox, editor, arcMapping);
     
     var appendToConstruction = function(obj) {
         var dfd = new jQuery.Deferred();
