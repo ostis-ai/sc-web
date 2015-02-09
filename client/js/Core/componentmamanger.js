@@ -42,9 +42,8 @@ SCWeb.core.ComponentManager = {
                 var formats = null;
                 if (lang_addr) {
                     formats = [];
-                }
-
-                self._factories_ext_lang[comp_def.ext_lang_addr] = comp_def;
+                    self._factories_ext_lang[lang_addr] = comp_def;
+                }               
                 
                 for (var j = 0; j < comp_def.formats.length; j++) {
                     var fmt = addrs[comp_def.formats[j]];
@@ -57,7 +56,7 @@ SCWeb.core.ComponentManager = {
                     }
                 }
                 
-                if (formats) {
+                if (formats && lang_addr) {
                     self._ext_langs[lang_addr] = formats;
                 }
             }
@@ -100,22 +99,31 @@ SCWeb.core.ComponentManager = {
     
     /**
      * Create new instance of component window
-     * @param {String} format_addr sc-addr of window format
-     * @param {String} sc-addr of sc-link or sc-structure, that edit or viewed with sandbox
-     * @param {Boolean} is_struct if that paramater is true, then addr is an sc-addr of struct;
-     * otherwise the last one a sc-addr of sc-link
-     * @param {String} container Id of dom object, that will contain window
+     * @param {Object} options          Object that contains creation options:
+     *          {String} format_addr    Sc-addr of window format
+     *          {String} addr           Sc-addr of sc-link or sc-structure, that edit or viewed with sandbox
+     *          {Boolean} is_struct     If that paramater is true, then addr is an sc-addr of struct;
+     *                                  otherwise the last one a sc-addr of sc-link
+     *          {String} container      Id of dom object, that will contain window
+     *          {Boolean} canEdit       If that value is true, then request editor creation; otherwise - viewer
      * @param {Function} callback Callback function that calls on creation finished
      * @return Return component sandbox object for created window instance.
      * If window doesn't created, then returns null
      */
-    createWindowSandbox: function(format_addr, addr, is_struct, container, callback) {
+    createWindowSandboxByFormat: function(options, callback) {
         var dfd = new jQuery.Deferred();
-        var comp_def = this._factories_fmt[format_addr];
+        var comp_def = this._factories_fmt[options.format_addr];
         
         if (comp_def) {
-            var sandbox = new SCWeb.core.ComponentSandbox(container, addr, is_struct, format_addr, this._keynodes);
-            if (!comp_def && is_struct)
+            var sandbox = new SCWeb.core.ComponentSandbox({
+                container: options.container,
+                addr: options.addr,
+                is_struct: options.is_struct,
+                format_addr: options.format_addr, 
+                keynodes: this._keynodes,
+                canEdit: options.canEdit
+            });
+            if (!comp_def.struct_support && options.is_struct)
                 throw "Component doesn't support structures: " + comp_def;
             
             if (comp_def.factory(sandbox)) {
@@ -130,6 +138,42 @@ SCWeb.core.ComponentManager = {
     },
     
     /**
+     * Create new instance of component window
+     * @param {Object} options          Object that contains creation options:
+     *          {String} ext_lang_addr  Sc-addr of window external language
+     *          {String} addr           Sc-addr of sc-link or sc-structure, that edit or viewed with sandbox
+     *          {Boolean} is_struct     If that paramater is true, then addr is an sc-addr of struct;
+     *                                  otherwise the last one a sc-addr of sc-link
+     *          {String} container      Id of dom object, that will contain window
+     *          {Boolean} canEdit       If that value is true, then request editor creation; otherwise - viewer
+     * @param {Function} callback Callback function that calls on creation finished
+     * @return Return component sandbox object for created window instance.
+     * If window doesn't created, then returns null
+     */
+    createWindowSandboxByExtLang: function(options, callback) {
+        var comp_def = this._factories_ext_lang[options.ext_lang_addr];
+        
+        if (comp_def) {
+            
+            var sandbox = new SCWeb.core.ComponentSandbox({
+                container: options.container,
+                addr: options.addr,
+                is_struct: options.is_struct,
+                format_addr: null,
+                keynodes: this._keynodes,
+                canEdit: options.canEdit
+            });
+            if (!comp_def.struct_support && is_struct)
+                throw "Component doesn't support structures: " + comp_def;
+            
+            if (comp_def.factory(sandbox))
+                return sandbox;
+        }
+
+        return null;
+    },
+
+    /**
      * Returns sc-addr of primary used format for specified external language
      * @param {String} ext_lang_addr sc-addr of external language
      */
@@ -141,6 +185,20 @@ SCWeb.core.ComponentManager = {
         }
         
         return null;
+    },
+    
+    /* Returns list of external languages, that has components for sc-structure visualization */
+    getScStructSupportExtLangs: function() {
+        var res = [];
+        
+        for (ext_lang in this._factories_ext_lang) {
+            if (this._factories_ext_lang.hasOwnProperty(ext_lang)) {
+                if (this._factories_ext_lang[ext_lang].struct_support)
+                    res.push(ext_lang);
+            }
+        }
+        
+        return res;
     },
     
     /**

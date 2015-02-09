@@ -181,7 +181,13 @@ SCWeb.ui.WindowManager = {
             self.hideActiveWindow();
             self.windows.push(id);
             
-            var sandbox = SCWeb.core.ComponentManager.createWindowSandbox(fmt_addr, addr, is_struct, window_id);
+            var sandbox = SCWeb.core.ComponentManager.createWindowSandboxByFormat({
+                format_addr: fmt_addr, 
+                addr: addr, 
+                is_struct: is_struct, 
+                container: window_id,
+                canEdit: true    //! TODO: check user rights
+            });
             if (sandbox) {
                 self.sandboxes[question_addr] = sandbox;
                 self.setWindowActive(id);
@@ -193,7 +199,7 @@ SCWeb.ui.WindowManager = {
         
         var translated = function() {
             SCWeb.core.Server.getAnswerTranslated(question_addr, fmt_addr, function(d) {
-                f(d.link, true);
+                f(d.link, false);
             });
         };
         
@@ -278,14 +284,20 @@ SCWeb.ui.WindowManager = {
                         var addr = containers_map[cntId];
                         var fmt = formats[addr];
                         if (fmt) {
-                            var sandbox = SCWeb.core.ComponentManager.createWindowSandbox(fmt, addr, false, cntId);
+                            var sandbox = SCWeb.core.ComponentManager.createWindowSandboxByFormat({
+                                format_addr: fmt, 
+                                addr: addr,
+                                is_struct: false,
+                                container: cntId,
+                                canEdit: false
+                            });
                             if (sandbox) {
                                 result[addr] = sandbox;
                             }
                         }
                     }
                     
-                    dfd.resolve();
+                    dfd.resolve(result);
                 },
                 function() {
                     dfd.reject();
@@ -295,6 +307,28 @@ SCWeb.ui.WindowManager = {
         
         return dfd.promise();
     },
+    
+    /** Create viewers for specified sc-structures
+     * @param {Object} containers_map Map of viewer containers (id: id of container, value: {key: sc-struct addr, ext_lang_addr: sc-addr of external language}})
+     */
+    createViewersForScStructs: function(containers_map) {
+        var res = {};
+        for (var cntId in containers_map) {
+            if (!containers_map.hasOwnProperty(cntId))
+                continue;
+            
+            var info = containers_map[cntId];
+            res[cntId] = SCWeb.core.ComponentManager.createWindowSandboxByExtLang({
+                ext_lang_addr: info.ext_lang_addr, 
+                addr: info.addr, 
+                is_struct: true, 
+                container: cntId,
+                canEdit: false
+            });
+        }
+        return res;
+    },
+    
 
     // ---------- Translation listener interface ------------
     updateTranslation: function(namesMap) {

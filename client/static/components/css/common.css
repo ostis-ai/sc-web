@@ -375,9 +375,11 @@ html.drag {
 .sc-contour {
     border: solid 1px #96a399;
     background-color: #fdfdfd;
-    display: inline-block;
+    
     padding: 3px;
     border-radius: 8px;
+    position: relative;
+    display: block !important;
 }
 
 /* --- typeahead fix --- */

@@ -31,12 +31,12 @@ SCWeb.ui.TaskPanel = {
     taskStarted: function() {
         this._task_num++;
         this.updatePanel();
-        SCWeb.ui.Locker.show();
+        //SCWeb.ui.Locker.show();
     },
     
     taskFinished: function() {
         this._task_num--;
         this.updatePanel();
-        SCWeb.ui.Locker.hide();
+        //SCWeb.ui.Locker.hide();
     }
 };

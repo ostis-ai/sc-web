@@ -9,18 +9,21 @@ SCWeb.core.scAddrsDict = {};
  * @param {String} ext_lang_addr sc-addr of external language
  * @param {Object} keynodes Dictionary that contains keynode addr by system identifiers
  */
-SCWeb.core.ComponentSandbox = function(container, addr, is_struct, format_addr, keynodes) {
-    this.container = container;
+SCWeb.core.ComponentSandbox = function(options) {
+        
+    this.container = options.container;
     this.wrap_selector = '#' + this.container + '_wrap';
-    this.addr = addr;
-    this.is_struct = is_struct;
-    this.format_addr = format_addr;
+    this.addr = options.addr;
+    this.is_struct = options.is_struct;
+    this.format_addr = options.format_addr;
+    this.is_editor = options.canEdit;
 
     this.eventGetObjectsToTranslate = null;
     this.eventApplyTranslation = null;
     this.eventArgumentsUpdate = null;
     this.eventWindowActiveChanged = null;
     this.eventDataAppend = null;
+    
     /* function (added, element, arc)
      * - added - true, when element added; false - element removed
      * - element - sc-addr of added(removed) sc-element
@@ -32,10 +35,11 @@ SCWeb.core.ComponentSandbox = function(container, addr, is_struct, format_addr, 
     this.event_remove_element = null;
     
     this.listeners = [];
-    this.keynodes = keynodes;
+    this.keynodes = options.keynodes;
     
     var self = this;
     this.listeners = [];
+    this.childs = {};
 
     this.createWindowControls();
 
@@ -112,7 +116,7 @@ SCWeb.core.ComponentSandbox.prototype.createWindowControls = function() {
 // ------------------ Functions to call from component --------
 
 SCWeb.core.ComponentSandbox.prototype.canEdit = function() {
-    return true; // @todo: check by user rights
+    return this.is_editor;
 };
 
 /*!
@@ -188,12 +192,39 @@ SCWeb.core.ComponentSandbox.prototype.resolveAddrs = function(idtf_list, callbac
     });
 };
 
+SCWeb.core.ComponentSandbox.prototype._appendChilds = function(windows) {
+     for (cntId in windows) {
+        if (!windows.hasOwnProperty(cntId))
+            continue;
+        if (this.childs[cntId])
+            throw "Duplicate child container " + cntId;
+        this.childs[cntId] = windows[cntId];
+    }
+};
+
 /**
  * Create viewers for specified sc-links
  * @param {Object} containers_map Map of viewer containers (key: sc-link addr, value: id of container)
  */
 SCWeb.core.ComponentSandbox.prototype.createViewersForScLinks = function(containers_map) {
-    return SCWeb.ui.WindowManager.createViewersForScLinks(containers_map);
+    var dfd = new jQuery.Deferred();
+    var self = this;
+    SCWeb.ui.WindowManager.createViewersForScLinks(containers_map).done(function (windows) {
+        self._appendChilds(windows);
+        dfd.resolve(windows);
+    }).fail(dfd.reject);
+    
+    return dfd.promise();
+};
+
+/**
+ * Create viewers for specified sc-structures
+ * @param {Object} containers_map Map of viewer containers (id: id of container, value: {key: sc-struct addr, ext_lang_addr: sc-addr of external language}})
+ */
+SCWeb.core.ComponentSandbox.prototype.createViewersForScStructs = function(containers_map) {
+    var windows = SCWeb.ui.WindowManager.createViewersForScStructs(containers_map);
+    this._appendChilds(windows);
+    return windows;
 };
 
 /*! Function takes content of sc-link or sctructure from server and call event handlers
