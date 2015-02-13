@@ -459,7 +459,6 @@ class LanguageSet(base.BaseHandler):
             sc_session = logic.ScSession(self, sctp_client, keys)
             sc_session.set_current_lang_mode(lang_addr)
             
-            self.set_header("Content-Type", "application/json")
             self.finish()
     
 class IdtfFind(base.BaseHandler):
