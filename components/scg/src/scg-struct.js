@@ -39,7 +39,7 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
                 var type = task[1];
 
                 if (editor.scene.getObjectByScAddr(addr))
-                    return;
+                    continue;
 
                 if (type & sc_type_node) {
                     var model_node = editor.scene.createNode(type, randomPos(), '');
@@ -91,8 +91,6 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
     
     return {
         update: function(added, element, arc) {
-            
-            console.log(added, element, arc);
             
             if (added) {
                 window.sctpClient.get_arc(arc).done(function (r) {
