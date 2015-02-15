@@ -52,33 +52,43 @@ SCg.LayoutAlgorithmForceBased.prototype.start = function() {
     // init D3 force layout
     var self = this;
     
+
     this.force = d3.layout.force()
     .nodes(this.nodes)
     .links(this.edges)
     .size(this.rect)
     .friction(0.9)
-    .gravity(0.1)
+    .gravity(0.03)
     .linkDistance(function(edge){
+        
+        var p1 = edge.source.object.getConnectionPos(edge.target.object.position, edge.object.source_dot);
+        var p2 = edge.target.object.getConnectionPos(edge.source.object.position, edge.object.target_dot);
+        var cd = edge.source.object.position.clone().sub(edge.target.object.position).length();
+        var d = cd - p1.sub(p2).length();
+        
 		if (edge.source.type == SCgLayoutObjectType.DotPoint ||
 			edge.target.type == SCgLayoutObjectType.DotPoint) {
-			return 50;
+			return d + 50;
 		}
-		
-		return 170;
+
+		return 100 + d;
 	})
 	.linkStrength(function(edge){
 		if (edge.source.type == SCgLayoutObjectType.DotPoint ||
 			edge.target.type == SCgLayoutObjectType.DotPoint) {
-			return 1.0;
+			return 1;
 		}
 
-		return 0.9;
+		return 0.3;
 	})
     .charge(function(node) {
 		if (node.type == SCgLayoutObjectType.DotPoint) {
-			return 0;
-		}
-		return -1000;
+            return 0;
+		} else if (node.type == SCgLayoutObjectType.Link) {
+            return -900;
+        }
+        
+		return -700;
 	})
     .on('tick', function() {
         self.onLayoutTick();
@@ -108,7 +118,7 @@ SCg.LayoutAlgorithmForceBased.prototype.onLayoutTick = function() {
         var edge = dot.object.target;
         if (dot.source)
             edge = dot.object.source;
-        
+                
         dot.x = edge.position.x;
         dot.y = edge.position.y;
     }
