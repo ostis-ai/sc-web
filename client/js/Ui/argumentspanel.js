@@ -22,7 +22,8 @@ SCWeb.ui.ArgumentsPanel = {
         });
         
         $('#arguments_clear_button').click(function() {
-            if (self.isArgumentAddState()) return;
+            if (self.isArgumentAddState()) 
+                return;
             SCWeb.core.Arguments.clear();
         });
         $('#arguments_add_button').click(function() {

@@ -47,7 +47,7 @@ SCWeb.ui.Core = {
                     }
                 });
             
-                var sc_elements_tooltip_selector = '[sc_addr]:not(.sc-window, .ui-no-tooltip)';
+                /*var sc_elements_tooltip_selector = '[sc_addr]:not(.sc-window, .ui-no-tooltip)';
                 $('body')
                 .delegate(sc_elements_tooltip_selector, 'mouseover', function(e) {
                     
@@ -80,7 +80,7 @@ SCWeb.ui.Core = {
                 }).delegate(sc_elements_tooltip_selector, 'mouseout', function(e) {
                     clearTooltipInterval();
                     destroyTooltip();
-                });
+                });*/
                 
                 $('#help-modal').on('shown.bs.modal', function() {
                     var body = $('#help-modal-body');
