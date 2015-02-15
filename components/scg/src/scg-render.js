@@ -15,6 +15,9 @@ SCg.Render.prototype = {
         this.translate = [0, 0];
         this.translate_started = false;
         
+        // disable tooltips
+        $('#' + this.containerId).parent().addClass('ui-no-tooltip');
+        
         var scgViewer = $('#scg-viewer');
         this.d3_drawer = d3.select('#' + this.containerId)
             .append("svg:svg")
@@ -34,9 +37,7 @@ SCg.Render.prototype = {
             .on('dblclick', function() {
                 self.onMouseDoubleClick(this, self);
             });
-        
-        d3.select('#' + this.containerId);//.attr('style', 'display: block');
-        
+                
         this.scale = 1;
         var self = this;
         this.d3_container = this.d3_drawer.append('svg:g')
@@ -147,7 +148,7 @@ SCg.Render.prototype = {
     
     classState: function(obj, base) {
             
-            var res = 'sc-no-default-cmd SCgElement';
+            var res = 'SCgElement';
             
             if (base)
                 res += ' ' + base;
@@ -193,19 +194,23 @@ SCg.Render.prototype = {
         function eventsWrap(selector) {
             selector.on('mouseover', function(d) {
                 self.classToogle(this, 'SCgStateHighlighted', true);
-                self.scene.onMouseOverObject(d);
+                if (self.scene.onMouseOverObject(d))
+                     d3.event.stopPropagation();
             })
             .on('mouseout', function(d) {
                 self.classToogle(this, 'SCgStateHighlighted', false);
-                self.scene.onMouseOutObject(d)
+                if (self.scene.onMouseOutObject(d))
+                    d3.event.stopPropagation();
             })
             .on('mousedown', function(d) {
                 self.scene.onMouseDownObject(d);
-                d3.event.stopPropagation();
+                if (d3.event.stopPropagation())
+                    d3.event.stopPropagation();
             })
             .on('mouseup', function(d) {
                 self.scene.onMouseUpObject(d);
-                d3.event.stopPropagation();
+                if (d3.event.stopPropagation())
+                    d3.event.stopPropagation();
             })
         };
         
@@ -213,7 +218,8 @@ SCg.Render.prototype = {
             g.append('svg:use')
             .attr('xlink:href', function(d) {
                 return '#' + SCgAlphabet.getDefId(d.sc_type); 
-            });
+            })
+            .attr('class', 'sc-no-default-cmd ui-no-tooltip');
         };
             
         

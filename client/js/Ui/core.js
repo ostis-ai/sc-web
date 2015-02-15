@@ -31,16 +31,26 @@ SCWeb.ui.Core = {
             ).done(function() {
 
                 // listen clicks on sc-elements
-                var sc_elements_selector = '[sc_addr]:not(.sc-window)';
-                $('#window-container,#help-modal').delegate(sc_elements_selector, 'click', function(e) {
-                    if (!SCWeb.ui.ArgumentsPanel.isArgumentAddState() && !$(e.currentTarget).hasClass('sc-no-default-cmd')) {
+                var sc_elements_cmd_selector = '[sc_addr]:not(.sc-window, .sc-no-default-cmd)';
+                $('#window-container,#help-modal').delegate(sc_elements_cmd_selector, 'click', function(e) {
+                    if (!SCWeb.ui.ArgumentsPanel.isArgumentAddState()) {
                         SCWeb.core.Main.doDefaultCommand([$(e.currentTarget).attr('sc_addr')]);
                         e.stopPropagation();
                     }
                 });
-
+            
+                var sc_elements_arg_selector = '[sc_addr]:not(.sc-window)';
+                $('body').delegate(sc_elements_arg_selector, 'click', function(e) {
+                    if (SCWeb.ui.ArgumentsPanel.isArgumentAddState()) {
+                        SCWeb.core.Arguments.appendArgument($(this).attr('sc_addr'));
+                        e.stopPropagation();
+                    }
+                });
+            
+                var sc_elements_tooltip_selector = '[sc_addr]:not(.sc-window, .ui-no-tooltip)';
                 $('body')
-                .delegate(sc_elements_selector, 'mouseover', function(e) {
+                .delegate(sc_elements_tooltip_selector, 'mouseover', function(e) {
+                    
                     clearTooltipInterval();
                     self.tooltip_element = $(this);
                     self.tooltip_interval = setInterval(function() {
@@ -67,18 +77,9 @@ SCWeb.ui.Core = {
                             });
                         }
                     }, 1000);
-                })  
-                .delegate(sc_elements_selector, 'mouseout', function(e) {
+                }).delegate(sc_elements_tooltip_selector, 'mouseout', function(e) {
                     clearTooltipInterval();
                     destroyTooltip();
-                })
-                .delegate(sc_elements_selector, 'mousemove', function(e) {
-                    
-                }).delegate(sc_elements_selector, 'click', function(e) {
-                    if (SCWeb.ui.ArgumentsPanel.isArgumentAddState()) {
-                        SCWeb.core.Arguments.appendArgument($(this).attr('sc_addr'));
-                        e.stopPropagation();
-                    }
                 });
                 
                 $('#help-modal').on('shown.bs.modal', function() {

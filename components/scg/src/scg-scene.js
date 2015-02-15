@@ -429,8 +429,9 @@ SCg.Scene.prototype = {
         
         if (this.modal != SCgModalMode.SCgModalNone) return false; // do nothing
         
-        if (!this.pointed_object)
+        if (!this.pointed_object) { 
             this.clearSelection();
+        }
 
         this.focused_object = null;
         return false;
@@ -473,6 +474,7 @@ SCg.Scene.prototype = {
             this.focused_object = obj;
             if (obj instanceof SCg.ModelContour || obj instanceof SCg.ModelBus) {
                 obj.previousPoint = new SCg.Vector2(this.mouse_pos.x, this.mouse_pos.y);
+                return true;
             }
         }
 
@@ -482,6 +484,7 @@ SCg.Scene.prototype = {
             if (!this.edge_data.source) {
                 this.edge_data.source = obj;
                 this.drag_line_points.push({x: this.mouse_pos.x, y: this.mouse_pos.y, idx: this.drag_line_points.length});
+                return true;
             } else {
                 // source and target must be not equal
                 if (this.edge_data.source != obj) {
@@ -501,6 +504,7 @@ SCg.Scene.prototype = {
 
                     this.updateRender();
                     this.render.updateDragLine();
+                    return true;
                 }
             }
         }
@@ -509,8 +513,11 @@ SCg.Scene.prototype = {
             if (!this.bus_data.source && !obj.bus && !(obj instanceof SCg.ModelBus)) {
                 this.bus_data.source = obj;
                 this.drag_line_points.push({x: this.mouse_pos.x, y: this.mouse_pos.y, idx: this.drag_line_points.length});
+                return true;
             }
         }
+        
+        return false;
     },
     
     onMouseUpObject: function(obj) {
@@ -535,10 +542,14 @@ SCg.Scene.prototype = {
                 this.clearSelection();
                 this.appendSelection(obj);
                 this.updateObjectsVisual();
+                                
+                
             }
 
             this.focused_object = null;
         }
+        
+        return true;
     },
     
     onKeyDown: function(key_code) {
