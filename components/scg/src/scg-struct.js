@@ -265,6 +265,8 @@ function scgScStructTranslator(_editor, _sandbox) {
                 }
                 if (edges.length > 0)
                     window.setTimeout(doIteration, 0);
+                else
+                    dfd.resolve();
                 
                 return dfd.promise();
             }
