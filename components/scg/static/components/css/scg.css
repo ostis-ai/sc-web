@@ -34,12 +34,11 @@
 }
 
 .SCgLinkContainer {
-    display: inline-block; 
-    padding: 5px;
+    display: block; 
+    padding: 5px 0px 5px 5px;
     min-width: 25px;
     min-height: 25px;
-    overflow-x: auto;
-    overflow-y: auto;
+    
 }
 
 /* --- Edges --- */

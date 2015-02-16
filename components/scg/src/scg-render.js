@@ -148,7 +148,7 @@ SCg.Render.prototype = {
     
     classState: function(obj, base) {
             
-            var res = 'SCgElement';
+            var res = 'sc-no-default-cmd ui-no-tooltip SCgElement';
             
             if (base)
                 res += ' ' + base;
@@ -181,6 +181,7 @@ SCg.Render.prototype = {
         var item = d3.select(o);
         var str = item.attr("class");
         var res = str ? str.replace(cl, '') : '';
+        res = res.replace('  ', ' ');
         if (flag)
             res += ' ' + cl;
         item.attr("class", res);
@@ -214,7 +215,7 @@ SCg.Render.prototype = {
             })
         };
         
-        function appendNodeLinkVisual(g) {
+        function appendNodeVisual(g) {
             g.append('svg:use')
             .attr('xlink:href', function(d) {
                 return '#' + SCgAlphabet.getDefId(d.sc_type); 
@@ -234,7 +235,7 @@ SCg.Render.prototype = {
                 return 'translate(' + d.position.x + ', ' + d.position.y + ')';
             });
         eventsWrap(g);
-        appendNodeLinkVisual(g);
+        appendNodeVisual(g);
 
         g.append('svg:text')
             .attr('class', 'SCgText')
@@ -255,20 +256,18 @@ SCg.Render.prototype = {
         g.append('svg:rect')
             .attr('class', function(d) {
                 return self.classState(d, 'SCgLink');
-            });
+            })
+            .attr('class', 'sc-no-default-cmd ui-no-tooltip');
             
         g.append('svg:foreignObject')
             .attr('transform', 'translate(' + self.linkBorderWidth * 0.5 + ',' + self.linkBorderWidth * 0.5 + ')')
-            .attr("width", function(d) {
-                return 800;//d.scale.x;
-            })
-            .attr("height", function(d) {
-                return 600;//d.scale.y;
-            })
+            .attr("width", "100%")
+            .attr("height", "100%")
             .append("xhtml:body")
             .style("background", "transparent")
+            .style("margin", "0 0 0 0")
             .html(function(d) {
-                return '<div id="link_' + self.containerId + '_' + d.id + '" class=\"SCgLinkContainer\"><div id="' + d.containerId + '"></div></div>';
+                return '<div id="link_' + self.containerId + '_' + d.id + '" class=\"SCgLinkContainer\"><div id="' + d.containerId + '" style="display: inline-block;" class="impl"></div></div>';
             });
 
         
@@ -370,15 +369,17 @@ SCg.Render.prototype = {
             
             g.select('rect')
                 .attr('width', function(d) {
-                    d.scale.x = document.getElementById("link_" + self.containerId + "_" + d.id).scrollWidth;                
+                    d.scale.x = Math.min($(document.getElementById("link_" + self.containerId + "_" + d.id)).find('.impl').outerWidth(), 450) + 10;
                     return d.scale.x + self.linkBorderWidth;
                 })
                 .attr('height', function(d) {
-                    d.scale.y = document.getElementById("link_" + self.containerId + "_" + d.id).scrollHeight;
+                    d.scale.y = Math.min($(document.getElementById("link_" + self.containerId + "_" + d.id)).outerHeight(), 350);
                     return d.scale.y + self.linkBorderWidth;
                 })
                 .attr('class', function(d) {
                     return self.classState(d, 'SCgLink');
+                }).attr("sc_addr", function(d) {
+                    return d.sc_addr;
                 });
 
             g.selectAll(function() { return this.getElementsByTagName("foreignObject"); })
