@@ -328,24 +328,15 @@ html.drag {
 }
 
 .sc-content {
-    position: relative;
     border: solid 1px #cccccc;
     background-color: #fafafa;
     padding: 5px;
     margin: 2px;
     display: inline-block;
-    /*background:url("../images/content_corner.png") 0 0 no-repeat #fafafa;*/
-}
-
-.sc-content:before {
-    position: absolute;
-    top: -8px;
-    left: -1px;
-    content: url("../images/content_corner.png");
+    background:url("../images/content_corner.png") 0 0 no-repeat #fafafa;
 }
 
 .sc-content-wrap {
-    position: relative;
     display: inline-block;
     padding-bottom: 3px;
 }
@@ -357,9 +348,7 @@ html.drag {
 
 .sc-content-controls {
     clear: both;
-    position: absolute;
-    top: -1px;
-    right: -12px;
+    float: right;
     width: 12px;
     height: 12px;
 }
