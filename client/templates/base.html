@@ -142,7 +142,6 @@
             SCWeb.ui.Locker.show();
             var params = {
                         menu_container_id: 'menu_container',
-                        default_keynode: 'doc_technology_ostis',
                         {% if first_time == "1" %}first_time: true,{% end %}
                     };
             $.when(SCWeb.core.Main.init(params)).done(function() {

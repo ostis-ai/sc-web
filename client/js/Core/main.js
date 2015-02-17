@@ -61,12 +61,22 @@ SCWeb.core.Main = {
                                         }
                                     }
 
-                                    SCWeb.core.Server.resolveScAddr([params.default_keynode], function(addrs) {
-                                        var argumentAddr = addrs[params.default_keynode];
-                                        //var window = SCWeb.core.ui.Windows.createWindow(outputAddr);
-                                        SCWeb.core.Main.doDefaultCommand([argumentAddr]);
-                                        if (params.first_time)
-                                            $('#help-modal').modal({"keyboard": true});
+                                    SCWeb.core.Server.resolveScAddr(['ui_start_sc_element'], function(addrs) {
+                                        
+                                        function start(a) {
+                                            SCWeb.core.Main.doDefaultCommand([a]);
+                                            if (params.first_time)
+                                                $('#help-modal').modal({"keyboard": true});
+                                        }
+                                        
+                                        var argumentAddr = addrs['ui_start_sc_element'];
+                                        window.sctpClient.iterate_elements(SctpIteratorType.SCTP_ITERATOR_3F_A_A, [argumentAddr, sc_type_arc_pos_const_perm, 0])
+                                        .done(function(res) {
+                                            start(res[0][2]);
+                                        }).fail(function() {
+                                            start(argumentAddr);
+                                        });
+                                        
                                     });
                             });
                         });
