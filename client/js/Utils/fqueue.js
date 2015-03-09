@@ -1,32 +1,32 @@
-function fQueueFunc() {
-    return {
-        func: arguments[0],
-        done: arguments[1],
-        args: arguments.slice(2)
-    };
-}
-
-function fQueue() {
-    var dfd = new jQuery.Deferred();
-    var funcs = arguments.slice(0);
-
-    (function next() {
-        if(funcs.length > 0) {
-            var f = funcs.shift();
-            f.func.call(f.args)
-                .done(function() {
+var fQueue = (function() {
+    
+    var qnb = function() {
+        var dfd = new jQuery.Deferred();
+        var funcs = Array.prototype.slice.call(arguments, 0);
+        
+        function worker() {
+            if (funcs.length > 0) {
+                var f = funcs.shift();
+                f.func.apply(f, f.args).done(function() {
                     if (f.done)
-                        f.done.call(arguments);
-                    next();
-                })
-                .fail(function() {
-                    dfd.reject.call(arguments);
+                        f.done.call(f.args);
+                    setTimeout(worker, 1);
+                }).fail(function() {
+                    dfd.reject.call(f.args);
                 });
-        }
-    })();
-
-    return dfd.promise();
-};
+            } else
+                dfd.resolve();
+        };
+        worker();
+        return dfd.promise();
+    };
+    return {
+        Func: function(func, args, done) {
+            return { func: func, done: done, args: args };
+        },
+        Queue: qnb,
+    };
+})();
 
 (function dfdQueue() {
 
