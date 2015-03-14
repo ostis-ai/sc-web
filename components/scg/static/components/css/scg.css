@@ -215,7 +215,7 @@ path.SCgBusPath {
     stroke: #076EDD;
 }
 
-.SCgStateMergedWithMemory.SCgStateHighlighted {\
+.SCgStateMergedWithMemory.SCgStateHighlighted {
     stroke: #7189A3;
 }
 

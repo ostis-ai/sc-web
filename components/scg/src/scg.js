@@ -120,7 +120,6 @@ SCg.Editor.prototype = {
             
             // temporary
             self.hideTool(self.toolBus());
-            self.hideTool(self.toolContour());
             
             if (self.resolveControls)
                 self.resolveControls(tools_container);

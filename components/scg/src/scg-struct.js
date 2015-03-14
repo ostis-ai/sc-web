@@ -188,10 +188,13 @@ function scgScStructTranslator(_editor, _sandbox) {
                 editor.scene.layout();
                 appendObjects();
             }
+
             
+            /// --------------------
             var translateNodes = function() {
-                //! TODO: rewrite like edges
-                return $.when.apply($, nodes.map(function(node) {
+                var dfdNodes = new jQuery.Deferred();
+                
+                var implFunc = function(node) {
                     var dfd = new jQuery.Deferred();
 
                     if (!node.sc_addr) {
@@ -207,9 +210,48 @@ function scgScStructTranslator(_editor, _sandbox) {
                     }
 
                     return dfd.promise();
-                }));
+                }
+                
+                var funcs = [];
+                for (var i = 0; i < nodes.length; ++i) {
+                    funcs.push(fQueue.Func(implFunc, [ nodes[i] ]));
+                }
+                
+                fQueue.Queue.apply(this, funcs).done(dfdNodes.resolve).fail(dfdNodes.reject);
+                
+                return dfdNodes.promise();
             }
             
+            var preTranslateContours = function() {
+                var dfd = new jQuery.Deferred();
+                
+                // create sc-struct nodes
+                var scAddrGen = function(c) {
+                    var dfd = new jQuery.Deferred();
+                    
+                    if (c.sc_addr)
+                        dfd.resolve();
+                    else {
+                        window.sctpClient.create_node(sc_type_const | sc_type_node | sc_type_node_struct).done(function (node) {
+                            c.setScAddr(node);
+                            c.setObjectState(SCgObjectState.NewInMemory);
+                            dfd.resolve();
+                        }).fail(dfd.reject);
+                    }
+
+                    return dfd.promise();
+                };
+                var funcs = [];
+                for (var i = 0; i < editor.scene.contours.length; ++i)
+                    funcs.push(fQueue.Func(scAddrGen, [ editor.scene.contours[i] ]));
+                
+                // run tasks
+                fQueue.Queue.apply(this, funcs).done(dfd.resolve).fail(dfd.reject);
+                
+                return dfd.promise();
+            }
+            
+            /// --------------------
             var translateEdges = function() {
                 var dfd = new jQuery.Deferred();
                 
@@ -272,20 +314,45 @@ function scgScStructTranslator(_editor, _sandbox) {
             }
             
             var translateContours = function() {
-                var dfd = new jQuery.Deferred();
-                
-                dfd.resolve();
-                
-                return dfd.promise();
+                var dfdCountours = new jQuery.Deferred();
+               
+                // now need to process arcs from countours to child elements
+                var arcGen = function(contour, child) {
+                    var dfd = new jQuery.Deferred();
+
+                    window.sctpClient.iterate_elements(SctpIteratorType.SCTP_ITERATOR_3F_A_F,
+                                                       [contour.sc_addr, sc_type_arc_pos_const_perm, child.sc_addr])
+                    .done(dfd.resolve)
+                    .fail(function() {
+                        window.sctpClient.create_arc(sc_type_arc_pos_const_perm, contour.sc_addr, child.sc_addr).done(dfd.resolve).fail(dfd.reject);
+                    });
+
+                    return dfd.promise();
+                };
+
+                var acrFuncs = [];
+                for (var i = 0; i < editor.scene.contours.length; ++i) {
+                    var c = editor.scene.contours[i];
+                    for (var j = 0;  j < c.childs.length; ++j) {
+                        acrFuncs.push(fQueue.Func(arcGen, [ c, c.childs[j] ]));
+                    }
+                }
+
+                fQueue.Queue.apply(this, acrFuncs).done(dfdCountours.resolve).fail(dfdCountours.reject);
+
+                return dfdCountours.promise();
             }            
             
-            translateNodes().done(function() {
-                translateEdges().done(function() {
-                    translateContours().done(function() {
-                        fireCallback();
-                    });
-                });
-            });
+            
+            fQueue.Queue(
+                /* Translate nodes */
+                fQueue.Func(translateNodes),
+                fQueue.Func(preTranslateContours),
+                fQueue.Func(translateEdges),
+                // translate bus there (before contours)
+                fQueue.Func(translateContours)
+            ).done(fireCallback);
+            
         }
     };
 };

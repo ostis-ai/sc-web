@@ -108,6 +108,8 @@ SCg.LayoutAlgorithmForceBased.prototype.onLayoutTick = function() {
             node_layout.object.setPosition(new SCg.Vector3(node_layout.x, node_layout.y, 0));
         } else if (node_layout.type === SCgLayoutObjectType.DotPoint) {
             dots.push(node_layout);
+        } else if (node_layout.type === SCgLayoutObjectType.Contour) {
+            node_layout.object.setPosition(new SCg.Vector3(node_layout.x, node_layout.y, 0));
         }
     }
     
@@ -157,6 +159,9 @@ SCg.LayoutManager.prototype.prepareObjects = function() {
     // first of all we need to collect objects from scene, and build them representation for layout
     for (idx in this.scene.nodes) {
         var node = this.scene.nodes[idx];
+        if (node.contour)
+            continue;
+        
         var obj = new Object();
         
         obj.x = node.position.x;
@@ -170,6 +175,9 @@ SCg.LayoutManager.prototype.prepareObjects = function() {
     
     for (idx in this.scene.links) {
         var link = this.scene.links[idx];
+        if (link.contour)
+            continue;
+        
         var obj = new Object();
         
         obj.x = link.position.x;
@@ -183,6 +191,9 @@ SCg.LayoutManager.prototype.prepareObjects = function() {
     
     for (idx in this.scene.edges) {
         var edge = this.scene.edges[idx];
+        if (edge.contour)
+            continue;
+        
         var obj = new Object();
         
         obj.object = edge;
@@ -190,6 +201,22 @@ SCg.LayoutManager.prototype.prepareObjects = function() {
         
         objDict[edge.id] = obj;
         this.edges.push(obj);
+    }
+    
+    for (idx in this.scene.contours) {
+        var contour = this.scene.contours[idx];
+        if (contour.contour)
+            continue;
+        
+        var obj = new Object();
+        
+        obj.x = contour.position.x;
+        obj.y = contour.position.y;
+        obj.object = contour;
+        obj.type = SCgLayoutObjectType.Contour;
+        
+        objDict[contour.id] = obj;
+        this.nodes.push(obj);
     }
     
     // store begin and end for edges

@@ -583,6 +583,7 @@ SCg.ModelContour = function(options) {
 
     cx /= this.points.length;
     cy /= this.points.length;
+    
     this.position.x = cx;
     this.position.y = cy;
 };
@@ -659,6 +660,26 @@ SCg.ModelContour.prototype.getConnectionPos = function (from, dotPos) {
         }
     }
     return nearestIntersectionPoint;
+};
+
+SCg.ModelContour.prototype.getCenter = function() {
+    var center = new SCg.Vector3();
+    
+    center.x = this.points[0].x;
+    center.y = this.points[1].x;
+    center.z = 0;
+    
+    for (var i = i; i < points.length; ++i) {
+        var p = points[i];
+        
+        center.x += p.x;
+        center.y += p.y;
+    }
+    
+    center.x /= points.length;
+    center.y /= points.length;
+    
+    return center;
 };
 
 SCg.ModelBus = function(options) {
