@@ -1,4 +1,4 @@
-import uuid, base64
+import uuid, base64, hashlib
 
 from keynodes import KeynodeSysIdentifiers, Keynodes
 from sctp.types import SctpIteratorType, ScElementType
@@ -434,9 +434,12 @@ class ScSession:
     
     def _session_get_sc_addr(self):
         return self._find_user_by_system_idtf("session::" + str(self.session_key))
-
+    
+    def _user_hash(self):
+       return hashlib.sha256(self.user.email).hexdigest()
+        
     def _user_new(self):
-        return self._create_user_with_system_idtf("user::" + str(self.user.name))
+        return self._create_user_with_system_idtf("user::" + str(self._user_hash()))
 
     def _user_get_sc_addr(self):
-        return self._find_user_by_system_idtf("user::" + str(self.user.name))
+        return self._find_user_by_system_idtf("user::" + str(self._user_hash()))

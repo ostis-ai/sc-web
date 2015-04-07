@@ -139,7 +139,14 @@ class ScAddr:
         return self.seg == other.seg and self.offset == other.offset
 
     def to_id(self):
-        return "%d" % (self.seg | (self.offset << 16))
+        return "%d" % self.to_int()
+    
+    def to_int(self):
+        return (self.seg | self.offset << 16)
+    
+    @staticmethod
+    def from_int(addr_int):
+        return ScAddr(addr_int & 0xffff, addr_int >> 16)
 
     @staticmethod
     def parse_from_string(addr_str):
@@ -148,7 +155,7 @@ class ScAddr:
         """
         try:
             a = int(addr_str)
-            addr = ScAddr(a & 0xffff, a >> 16)
+            addr = ScAddr.from_int(a)
         except:
             return None
 

@@ -5,6 +5,12 @@ import json
 import base
 import db
 
+from keynodes import KeynodeSysIdentifiers, Keynodes
+from sctp.logic import SctpClientInstance
+from sctp.types import ScAddr, SctpIteratorType, ScElementType
+
+import api_logic as logic
+
 class GoogleOAuth2LoginHandler(base.BaseHandler,
                                tornado.auth.GoogleOAuth2Mixin):
     def _loggedin(self, user):
@@ -28,12 +34,18 @@ class GoogleOAuth2LoginHandler(base.BaseHandler,
                 if r:
                     role = r.id
             
-            key = database.add_user(name = user['name'], 
-                                    email = email, 
-                                    addr = 1,
-                                    avatar = user['picture'],
-                                    role = role)
-        print key
+            with SctpClientInstance() as sctp_client:
+                keys = Keynodes(sctp_client)
+            
+                sc_session = logic.ScSession(self, sctp_client, keys)
+                
+                print sc_session.get_sc_addr()
+            
+                key = database.add_user(name = user['name'], 
+                                        email = email, 
+                                        avatar = user['picture'],
+                                        role = role)
+                
         self.set_secure_cookie(self.cookie_user_key, key, 1)
         
             

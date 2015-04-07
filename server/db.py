@@ -22,7 +22,6 @@ class User(Base):
     name = Column(String(255), nullable = False)
     email = Column(String(255), nullable = False, unique = True)
     avatar = Column(String(1024))
-    addr = Column(Integer, nullable = False, unique = True)
     key = Column(String(32), nullable = False, unique = True)
     role = Column(Integer)
 
@@ -95,11 +94,10 @@ class DataBase:
         self._session().merge(u)
         self._session().commit()
     
-    def add_user(self, name, email, addr, avatar = None, role = 0):
+    def add_user(self, name, email, avatar = None, role = 0):
         key = self.create_user_key()
         new_user = User(name = unicode(name), 
                         email = unicode(email), 
-                        addr = addr,
                         avatar = unicode(avatar),
                         key = key,
                         role = role)
