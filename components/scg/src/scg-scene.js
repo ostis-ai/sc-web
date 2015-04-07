@@ -3,6 +3,7 @@ var SCgEditMode = {
     SCgModeEdge: 1,
     SCgModeBus: 2,
     SCgModeContour: 3,
+    SCgModeLink: 4,
     
     /**
      * Check if specified mode is valid
@@ -447,6 +448,15 @@ SCg.Scene.prototype = {
             
             this.createNode(sc_type_node | sc_type_const, new SCg.Vector3(x, y, 0), '');
             this.updateRender();
+            return true;
+        }
+        if(this.edit_mode == SCgEditMode.SCgModeLink){
+            if (this.pointed_object)
+                return;
+
+            this.createLink(new SCg.Vector3(x, y, 0), '');
+            this.updateRender();
+
             return true;
         }
         

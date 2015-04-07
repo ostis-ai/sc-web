@@ -170,6 +170,7 @@ function scgScStructTranslator(_editor, _sandbox) {
 
             // translate nodes
             var nodes = editor.scene.nodes.slice();
+            var links = editor.scene.links.slice();
             var objects = [];
             
             
@@ -343,10 +344,42 @@ function scgScStructTranslator(_editor, _sandbox) {
                 return dfdCountours.promise();
             }            
             
+            /// --------------------
+            var translateLinks = function() {
+                var dfdLinks = new jQuery.Deferred();
+                
+                var implFunc = function(link) {
+                    var dfd = new jQuery.Deferred();
+
+                    if (!link.sc_addr) {
+                        window.sctpClient.create_link().done(function (r) {
+                            link.setScAddr(r);
+                            link.setObjectState(SCgObjectState.NewInMemory);
+                            window.sctpClient.set_link_content(r, link.content)
+                            objects.push(link);
+                            dfd.resolve();
+                        });
+                    } else {
+                        dfd.resolve();
+                    }
+
+                    return dfd.promise();
+                }
+                
+                var funcs = [];
+                for (var i = 0; i < links.length; ++i) {
+                    funcs.push(fQueue.Func(implFunc, [ links[i] ]));
+                }
+                
+                fQueue.Queue.apply(this, funcs).done(dfdLinks.resolve).fail(dfdLinks.reject);
+                
+                return dfdLinks.promise();
+            }
             
             fQueue.Queue(
                 /* Translate nodes */
                 fQueue.Func(translateNodes),
+                fQueue.Func(translateLinks),
                 fQueue.Func(preTranslateContours),
                 fQueue.Func(translateEdges),
                 // translate bus there (before contours)
