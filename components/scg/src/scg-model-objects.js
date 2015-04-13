@@ -119,6 +119,15 @@ SCg.ModelObject.prototype.setScType = function(type) {
     this.need_observer_sync = true;
 };
 
+ /**
+ * Setup new content value
+ * @param {String} content New content value
+ */
+SCg.ModelObject.prototype.setContent = function(content) {
+    this.content = content;
+    this.need_observer_sync = true;
+};
+
 /**
  * Notify all connected edges to sync
  */
@@ -285,6 +294,7 @@ SCg.ModelLink = function(options) {
 
     this.contentLoaded = false;
     this.containerId = options.containerId;
+    this.content = options.content;
 };
 
 SCg.ModelLink.prototype = Object.create( SCg.ModelObject.prototype );

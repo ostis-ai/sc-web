@@ -13,6 +13,9 @@
         <label id="scg-tool-contour" class="btn btn-default sc-no-default-cmd" sc_control_sys_idtf="ui_scg_control_tool_contour">
             <input type="radio" name="options" id="option1"> <img src="static/components/images/scg/tool-contour.png"/> </input>
         </label>
+        <label id="scg-tool-link" class="btn btn-default sc-no-default-cmd" sc_control_sys_idtf="ui_scg_control_tool_link">
+            <input type="radio" name="options" id="option1"> <img src="static/components/images/scg/tool-select.png"/> </input>
+        </label>
     </div>
     <hr/>
     <div class="btn-group-vertical">
@@ -20,6 +23,11 @@
                 data-content="<div class='input-group'><input id='scg-change-idtf-input' class='form-control pull-left' value='' autofocus /> <div class='input-group-btn'><button type='button' id='scg-change-idtf-apply' class='btn btn-success'><span class='glyphicon glyphicon-ok-sign'/></button><button type='button' id='scg-change-idtf-cancel' class='btn btn-danger'><span class='glyphicon glyphicon-remove-sign'/></button></div></div>" 
                 data-html="true" data-placement="right" data-toggle="popover">
             <img src="static/components/images/scg/tool-change-idtf.png"/>
+        </button>
+        <button id="scg-tool-set-content" type='button' class="btn btn-default sc-no-default-cmd" data-title="Set content" sc_control_sys_idtf="ui_scg_control_tool_set_content"
+                data-content="<div class='input-group'><input id='scg-set-content-input' class='form-control pull-left' value='' autofocus /><div class='input-group-btn'><button type='button' id='scg-set-content-apply' class='btn btn-success'><span class='glyphicon glyphicon-ok-sign'/></button><button type='button' id='scg-set-content-cancel' class='btn btn-danger'><span class='glyphicon glyphicon-remove-sign'/></button></div></div><br/><input id='content' type='file'/>"
+                data-html="true" data-placement="right" data-toggle="popover">
+            <img src="static/components/images/scg/tool-set-content.png"/>
         </button>
         <button id="scg-tool-change-type" type="button" class="btn btn-default sc-no-default-cmd" sc_control_sys_idtf="ui_scg_control_tool_change_type" >
             <img src="static/components/images/scg/tool-change-type.png"/>

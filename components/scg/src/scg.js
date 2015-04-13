@@ -113,6 +113,7 @@ SCg.Editor.prototype = {
                 self.hideTool(self.toolContour());
                 self.hideTool(self.toolChangeIdtf());
                 self.hideTool(self.toolChangeType());
+                self.hideTool(self.toolSetContent());
                 self.hideTool(self.toolDelete());
                 self.hideTool(self.toolOpen());
                 self.hideTool(self.toolIntegrate());
@@ -163,12 +164,20 @@ SCg.Editor.prototype = {
         return this.tool('contour');
     },
     
+    toolLink: function() {
+        return this.tool('link');
+    },
+    
     toolChangeIdtf: function() {
         return this.tool('change-idtf');
     },
     
     toolChangeType: function() {
         return this.tool('change-type');
+    },
+    
+    toolSetContent: function() {
+        return this.tool('set-content');
     },
     
     toolDelete: function() {
@@ -215,6 +224,9 @@ SCg.Editor.prototype = {
         });
         this.toolContour().click(function() {
             self.scene.setEditMode(SCgEditMode.SCgModeContour);
+        });
+        this.toolLink().click(function() {
+            self.scene.setEditMode(SCgEditMode.SCgModeLink);
         });
         this.toolChangeIdtf().click(function() {
             self.scene.setModal(SCgModalMode.SCgModalIdtf);
@@ -343,7 +355,45 @@ SCg.Editor.prototype = {
                 stop_modal();
             });
         });
-        
+
+
+        this.toolSetContent().click(function() {
+            var tool = $(this);
+            function stop_modal() {
+                self.scene.setModal(SCgModalMode.SCgModalNone);
+                tool.popover('destroy');
+                self.scene.updateObjectsVisual();
+            }
+
+            self.scene.setModal(SCgModalMode.SCgModalIdtf);
+            $(this).popover({container: container});
+            $(this).popover('show');
+
+            var input = $(container + ' #scg-set-content-input');
+            var input_content = $(container + " input#content[type='file']");
+
+            // process controls
+            $(container + ' #scg-set-content-apply').click(function() {
+                var obj = self.scene.selected_objects[0];
+                var file = input_content[0].files[0];
+                if(file != undefined){
+                    var fileReader = new FileReader();
+                    fileReader.onload = function() {
+                        obj.setContent(this.result);
+                        stop_modal();
+                    };
+                    fileReader.readAsArrayBuffer(file);
+                } else {
+                    obj.setContent(input.val());
+                    stop_modal();
+                }
+            });
+            $(container + ' #scg-set-content-cancel').click(function() {
+                stop_modal();
+            });
+        });
+
+
         this.toolDelete().click(function() {
             self.scene.deleteObjects(self.scene.selected_objects.slice(0, self.scene.selected_objects.length));
             self.scene.clearSelection();
@@ -397,10 +447,12 @@ SCg.Editor.prototype = {
             if (!this.scene.selected_objects[0].sc_addr) {
                 this._enableTool(this.toolChangeIdtf());
                 this._enableTool(this.toolChangeType());
+                this._enableTool(this.toolSetContent());
             }
         } else {
             this._disableTool(this.toolChangeIdtf());
             this._disableTool(this.toolChangeType());
+            this._disableTool(this.toolSetContent());
         } 
                 
         if (this.scene.selected_objects.length > 0) {
@@ -429,6 +481,7 @@ SCg.Editor.prototype = {
         
         update_tool(this.toolChangeIdtf());
         update_tool(this.toolChangeType());
+        update_tool(this.toolSetContent());
         update_tool(this.toolDelete());
         update_tool(this.toolZoomIn());
         update_tool(this.toolZoomOut());
