@@ -54,9 +54,9 @@ class GoogleOAuth2LoginHandler(base.BaseHandler,
         self.settings[self._OAUTH_SETTINGS_KEY]['key'] = tornado.options.options.google_client_id
         self.settings[self._OAUTH_SETTINGS_KEY]['secret'] = tornado.options.options.google_client_secret
                 
+        print self.request.uri
+                
         uri = 'http://' + tornado.options.options.host
-        if tornado.options.options.port:
-            uri += ':' + str(tornado.options.options.port)
         uri += '/auth/google'
         
         if self.get_argument('code', False):

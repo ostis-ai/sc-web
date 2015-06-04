@@ -60,3 +60,8 @@ client/static/components/*/scs*
 
 # html
 client/static/components/*/html*
+
+# other
+client/static/components/js/sc-web-core.js
+build_kb.sh
+sc-web.ini
