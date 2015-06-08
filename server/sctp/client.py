@@ -77,6 +77,7 @@ class SctpClient:
         for event_id in self.events.keys():
             self.event_destroy(event_id)
         self.events = {}
+        self.sock.close()
             
     def erase_element(self, el_addr):
         """Erase element with specified sc-addr

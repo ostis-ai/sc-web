@@ -18,7 +18,7 @@ def serialize_error(handler, code, message):
 # -------------------------------------------        
 
 class Init(base.BaseHandler):
-    @tornado.web.asynchronous
+    #@tornado.web.asynchronous
     def get(self):
         result = '{}'
     
@@ -73,7 +73,7 @@ class Init(base.BaseHandler):
         
 class CmdDo(base.BaseHandler):
     
-    @tornado.web.asynchronous
+    #@tornado.web.asynchronous
     def post(self):
         result = '[]'
         with SctpClientInstance() as sctp_client:
@@ -282,7 +282,7 @@ class CmdDo(base.BaseHandler):
         
 class QuestionAnswerTranslate(base.BaseHandler):
     
-    @tornado.web.asynchronous
+    #@tornado.web.asynchronous
     def post(self):
         with SctpClientInstance() as sctp_client:
 
@@ -365,7 +365,7 @@ class QuestionAnswerTranslate(base.BaseHandler):
         
 class LinkContent(base.BaseHandler):
     
-    @tornado.web.asynchronous
+    #@tornado.web.asynchronous
     def get(self):
 
         with SctpClientInstance() as sctp_client:
@@ -389,7 +389,7 @@ class LinkContent(base.BaseHandler):
         
 class LinkFormat(base.BaseHandler):
     
-    @tornado.web.asynchronous
+    #@tornado.web.asynchronous
     def post(self):
    
         with SctpClientInstance() as sctp_client:
@@ -435,7 +435,7 @@ class LinkFormat(base.BaseHandler):
         
 class Languages(base.BaseHandler):
     
-    @tornado.web.asynchronous
+    #@tornado.web.asynchronous
     def get(self):
         
         with SctpClientInstance() as sctp_client:
@@ -449,7 +449,7 @@ class Languages(base.BaseHandler):
     
 class LanguageSet(base.BaseHandler):
     
-    @tornado.web.asynchronous
+    #@tornado.web.asynchronous
     def post(self):
         lang_addr = ScAddr.parse_from_string(self.get_argument(u'lang_addr', None))
         
@@ -463,7 +463,7 @@ class LanguageSet(base.BaseHandler):
     
 class IdtfFind(base.BaseHandler):
     
-    @tornado.web.asynchronous
+    #@tornado.web.asynchronous
     def get(self):
         result = None
     
@@ -519,7 +519,7 @@ class IdtfFind(base.BaseHandler):
         
 class IdtfResolve(base.BaseHandler):
     
-    @tornado.web.asynchronous
+    #@tornado.web.asynchronous
     def post(self):
         result = None
 
@@ -561,7 +561,7 @@ class IdtfResolve(base.BaseHandler):
         
 class AddrResolve(base.BaseHandler):
     
-    @tornado.web.asynchronous
+    #@tornado.web.asynchronous
     def post(self):
 
         # parse arguments
@@ -590,7 +590,7 @@ class AddrResolve(base.BaseHandler):
         
 class InfoTooltip(base.BaseHandler):
     
-    @tornado.web.asynchronous
+    #@tornado.web.asynchronous
     def post(self):
 
         # parse arguments
@@ -623,7 +623,7 @@ class InfoTooltip(base.BaseHandler):
     
 class User(base.BaseHandler):
     
-    @tornado.web.asynchronous
+    #@tornado.web.asynchronous
     def get(self):
         result = '{}'
     
