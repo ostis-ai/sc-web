@@ -84,10 +84,10 @@ class DataBase:
     def get_user_by_id(self, user_id):
         return self._session().query(User).filter(User.id == user_id).first()
     
-    def get_user_rights(self, u):
+    def get_user_role(self, u):
         return self._session().query(Role).filter(Role.id == u.role).first()
     
-    def get_rights_by_id(self, r_id):
+    def get_role_by_id(self, r_id):
         return self._session().query(Role).filter(Role.id == r_id).first()
     
     def update_user(self, u):
@@ -110,7 +110,7 @@ class DataBase:
         users = self._session().query(User).offset(start).limit(count).all()
         res = []
         for u in users:
-            r = self.get_user_rights(u)
+            r = self.get_user_role(u)
             res.append({ 'name': u.name,
                          'avatar': u.avatar,
                          'id': u.id,

@@ -108,7 +108,7 @@ class SocketHandler(tornado.websocket.WebSocketHandler):
         canEdit = False
         u = database.get_user_by_key(key)
         if u:
-            canEdit = base.User._canEdit(database.get_user_rights(u))
+            canEdit = base.User._canEdit(database.get_user_role(u).rights)
         
         self.proxy = SocketProxy(self.socket_write, canEdit)
 

@@ -65,3 +65,4 @@ client/static/components/*/html*
 client/static/components/js/sc-web-core.js
 build_kb.sh
 sc-web.ini
+/server/.settings/*

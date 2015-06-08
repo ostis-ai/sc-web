@@ -8,7 +8,7 @@ class User:
         self.email = u.email
         self.name = u.name
         self.avatar = u.avatar
-        self.rights = db.get_user_rights(u).rights
+        self.rights = db.get_user_role(u).rights
     
     def canAdmin(self):
         return self.rights >= db.DataBase.RIGHTS_ADMIN

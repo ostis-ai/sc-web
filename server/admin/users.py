@@ -41,7 +41,7 @@ class UserSetRights(base.BaseHandler):
         if not u:
             raise tornado.web.HTTPError(500)
         
-        r = database.get_user_rights(u)
+        r = database.get_user_role(u)
         if not r:
             raise tornado.web.HTTPError(500)
         
@@ -55,7 +55,7 @@ class UserSetRights(base.BaseHandler):
                                 'role': 
                                 {
                                     'value': u.role,
-                                    'name': database.get_rights_by_id(u.role).name
+                                    'name': database.get_role_by_id(u.role).name
                                 }
                                }))
         
