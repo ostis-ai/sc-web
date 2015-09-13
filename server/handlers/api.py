@@ -488,8 +488,7 @@ class IdtfFind(base.BaseHandler):
             if not reply or len(reply) == 0:
                 break
             cursor = int(reply[0])
-            if cursor == 0:
-                break
+            
             for idtf in reply[1]:
                 if len(sys) == max_n and len(main) == max_n and len(common) == max_n:
                     break
@@ -503,7 +502,10 @@ class IdtfFind(base.BaseHandler):
                     main.append([addr.to_id(), utf[10:]])
                 elif utf.startswith(u"idtf:common:") and len(common) < max_n:
                     common.append([addr.to_id(), utf[12:]])
-                    
+
+            if cursor == 0:
+                break
+                                
         with SctpClientInstance() as sctp_client:
             keys = Keynodes(sctp_client)
             keynode_nrel_main_idtf = keys[KeynodeSysIdentifiers.nrel_main_idtf]
