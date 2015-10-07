@@ -408,6 +408,9 @@ SCg.Render.prototype = {
             SCgAlphabet.updateEdge(d, d3_edge);
             d3_edge.attr('class', function(d) {
                 return self.classState(d, 'SCgEdge');
+            })
+            .attr("sc_addr", function(d) {
+                return d.sc_addr;
             });
         });
         
@@ -439,6 +442,9 @@ SCg.Render.prototype = {
                 d.need_observer_sync = false;
 
                 return self.d3_contour_line(d.points) + 'Z';
+            })
+            .attr("sc_addr", function(d) {
+                return d.sc_addr;
             });
         });
 
