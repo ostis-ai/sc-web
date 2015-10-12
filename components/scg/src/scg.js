@@ -243,7 +243,12 @@ SCg.Editor.prototype = {
             
             var input = $(container + ' #scg-change-idtf-input');
             // setup initial value
-            input.focus().val(self.scene.selected_objects[0].text);
+            input.val(self.scene.selected_objects[0].text);
+            
+            // Fix for chrome: http://stackoverflow.com/questions/17384464/jquery-focus-not-working-in-chrome
+            setTimeout(function(){
+                input.focus();
+            }, 1);
             input.keypress(function (e) {
                 if (e.keyCode == KeyCode.Enter || e.keyCode == KeyCode.Escape) {
                     

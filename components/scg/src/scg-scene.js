@@ -412,9 +412,9 @@ SCg.Scene.prototype = {
 
         // append new line point
         if (!this.pointed_object) {
-            var isModeEdge = this.edit_mode == SCgEditMode.SCgModeEdge;
-            var isModeContour = this.edit_mode == SCgEditMode.SCgModeContour;
-            var isModeBus = this.edit_mode == SCgEditMode.SCgModeBus;
+            var isModeEdge = (this.edit_mode == SCgEditMode.SCgModeEdge);
+            var isModeContour = (this.edit_mode == SCgEditMode.SCgModeContour);
+            var isModeBus = (this.edit_mode == SCgEditMode.SCgModeBus);
             if (isModeContour || (isModeEdge && this.edge_data.source) || (isModeBus && this.bus_data.source)) {
                 this.drag_line_points.push({x: x, y: y, idx: this.drag_line_points.length});
                 if (isModeBus)
