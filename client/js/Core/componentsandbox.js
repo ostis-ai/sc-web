@@ -119,6 +119,10 @@ SCWeb.core.ComponentSandbox.prototype.canEdit = function() {
     return this.is_editor;
 };
 
+SCWeb.core.ComponentSandbox.prototype.getCurrentLanguage = function() {
+    return SCWeb.core.Translation.getCurrentLanguage();
+};
+
 /*!
  * @param {Array} args Array of sc-addrs of commnad arguments.
  */

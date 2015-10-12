@@ -144,7 +144,27 @@ function scgScStructTranslator(_editor, _sandbox) {
         return dfd.promise();
     };
     
-
+    var currentLanguage = sandbox.getCurrentLanguage();
+    var translateIdentifier = function(obj) {
+        var dfd = new jQuery.Deferred();
+        if (currentLanguage && obj.text) {
+            window.sctpClient.create_link().done(function(link_addr) {
+                window.sctpClient.set_link_content(link_addr, obj.text).done(function () {
+                    window.sctpClient.create_arc(sc_type_arc_common | sc_type_const, obj.sc_addr, link_addr).done(function(arc_addr) {
+                        window.sctpClient.create_arc(sc_type_arc_pos_const_perm, currentLanguage, link_addr).done(function() {
+                            window.sctpClient.create_arc(sc_type_arc_pos_const_perm, window.scKeynodes.nrel_main_idtf, arc_addr)
+                                .done(dfd.resolve)
+                                .fail(dfd.reject);
+                        }).fail(dfd.reject);
+                    }).fail(dfd.reject);
+                }).fail(dfd.reject);
+            }).fail(dfd.reject);
+            
+        } else {
+            dfd.reject();
+        }
+        return dfd.promise();
+    };  
     
     return r = {
         mergedWithMemory: function(obj) {
@@ -204,7 +224,10 @@ function scgScStructTranslator(_editor, _sandbox) {
                             node.setObjectState(SCgObjectState.NewInMemory);
 
                             objects.push(node);
-                            dfd.resolve();
+                            
+                            translateIdentifier(node)
+                                    .done(dfd.resolve)
+                                    .fail(dfd.reject);                          
                         });
                     } else {
                         dfd.resolve();

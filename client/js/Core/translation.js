@@ -34,7 +34,11 @@ SCWeb.core.Translation = {
         
         return dfd.promise();
      },
-      
+    
+    getCurrentLanguage: function() {
+        return this.current_lang;
+    },
+    
     /**
      * Do translation routines. Just for internal usage.
      * @param {Array} objects List of sc-addrs, that need to be translated
@@ -77,6 +81,7 @@ SCWeb.core.Translation = {
 
     fireLanguageChanged: function(lang_addr) {
         SCWeb.core.EventManager.emit("translation/changed_language", lang_addr);
+        this.current_lang = lang_addr;
     },
 
     /** Collect objects for translation
