@@ -74,14 +74,6 @@
             </form>
         </div>
         
-        <div id="search-panel">
-            <form class="navbar-form navbar-right" role="search">
-              <div class="form-group">
-                <input id="search-input" type="text" class="typeahead form-control" x-webkit-speech sc_control_sys_idtf="ui_control_search_idtf_edit" style="width: 250px;" placeholder="Search" data-provide="typeahead" autocomplete="off">
-              </div>
-              {# <button type="button" class="btn btn-success"><span class="glyphicon glyphicon-search"></span></button> #}
-            </form>
-        </div>
     </nav>
 
     <!-- main content -->
@@ -112,6 +104,15 @@
                 <button type="button" class="btn btn-default" id="history-item-link" data-container="body" data-toggle="popover" data-placement="bottom">
                     <span class="glyphicon glyphicon-link"></span>
                 </button>
+            </div>
+            
+            <div id="search-panel">
+                <form role="search">
+                  <div class="form-group">
+                    <input id="search-input" type="text" class="typeahead form-control" x-webkit-speech sc_control_sys_idtf="ui_control_search_idtf_edit" style="width: 250px;" placeholder="Search" data-provide="typeahead" autocomplete="off">
+                  </div>
+                  {# <button type="button" class="btn btn-success"><span class="glyphicon glyphicon-search"></span></button> #}
+                </form>
             </div>
         </div>
         <div id="window-container" class="col-xs-10 col-sm-10 col-md-10">{# Windows will be added later #}</div>

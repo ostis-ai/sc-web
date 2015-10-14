@@ -481,6 +481,25 @@ class IdtfFind(base.BaseHandler):
         common = []
         max_n = tornado.options.options.idtf_serach_limit
         
+        def appendSorted(array, data):
+            if len(array) > 0:
+                idx = 0
+                inserted = False
+                for item in array:
+                    if len(item[1]) > len(data[1]):
+                        array.insert(idx, data)
+                        inserted = True
+                        break;
+                    idx = idx + 1
+                
+                if not inserted and len(array) < max_n:
+                    array.append(data)
+                
+                if (len(array) > max_n):
+                    array.pop()
+            else:
+                array.append(data)
+        
         # first of all need to find system identifiers
         cursor = 0
         while True:
@@ -497,11 +516,11 @@ class IdtfFind(base.BaseHandler):
                 utf = idtf.decode('utf-8')
                 addr = ScAddr.parse_binary(rep)
                 if utf.startswith(u"idtf:sys:") and len(sys) < max_n:
-                    sys.append([addr.to_id(), utf[9:]])
+                    appendSorted(sys, [addr.to_id(), utf[9:]])
                 elif utf.startswith(u"idtf:main:") and len(main) < max_n:
-                    main.append([addr.to_id(), utf[10:]])
+                    appendSorted(main, [addr.to_id(), utf[10:]])
                 elif utf.startswith(u"idtf:common:") and len(common) < max_n:
-                    common.append([addr.to_id(), utf[12:]])
+                    appendSorted(common, [addr.to_id(), utf[12:]])
 
             if cursor == 0:
                 break
