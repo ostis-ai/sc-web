@@ -53,6 +53,13 @@ html.drag {
     height: 100%;
 }
 
+#window-header-tools {
+    padding-right: 15px;
+    position: fixed;
+    right: 15px;
+    z-index: 100000;
+}
+
 #window-container {
     height: 100%;
 }

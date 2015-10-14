@@ -80,7 +80,7 @@ SCWeb.ui.WindowManager = {
         // listen translation events
         SCWeb.core.EventManager.subscribe("translation/update", this, this.updateTranslation);
         SCWeb.core.EventManager.subscribe("translation/get", this, function(objects) {
-            $('#history-container [sc_addr]').each(function(index, element) {
+            $('#window-header-tools [sc_addr]').each(function(index, element) {
                 objects.push($(element).attr('sc_addr'));
             });
         });
@@ -333,7 +333,7 @@ SCWeb.ui.WindowManager = {
     // ---------- Translation listener interface ------------
     updateTranslation: function(namesMap) {
         // apply translation
-        $('#history-container [sc_addr]:not(.btn)').each(function(index, element) {
+        $('#window-header-tools [sc_addr]:not(.btn)').each(function(index, element) {
             var addr = $(element).attr('sc_addr');
             if(namesMap[addr]) {
                 $(element).text(namesMap[addr]);
