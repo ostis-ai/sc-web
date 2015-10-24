@@ -254,6 +254,26 @@ SCWeb.core.Server = {
         }
     },
     
+    _makeArgumentsList: function(arguments_list) {
+        var arguments = {};
+        for (var i = 0; i < arguments_list.length; i++){
+            var arg = arguments_list[i];
+            arguments[i.toString() + '_'] = arg;
+        }
+        return arguments;
+    },
+    
+    contextMenu: function(arguments_list, callback) {
+        var arguments = this._makeArgumentsList(arguments_list);
+    
+        this._push_task({
+            type: "GET",
+            url: "api/context/",
+            data: arguments,
+            success: callback
+        });
+    },
+    
     /*! Function to initiate user command on server
      * @param {cmd_addr} sc-addr of command
      * @param {output_addr} sc-addr of output language
@@ -262,11 +282,7 @@ SCWeb.core.Server = {
      */
     doCommand: function(cmd_addr, arguments_list, callback){
     
-        var arguments = {};
-        for (var i = 0; i < arguments_list.length; i++){
-            var arg = arguments_list[i];
-            arguments[i.toString() + '_'] = arg;
-        }
+        var arguments = this._makeArgumentsList(arguments_list);
         arguments['cmd'] = cmd_addr;
 
         this._push_task({

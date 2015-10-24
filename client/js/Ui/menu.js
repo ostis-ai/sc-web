@@ -25,6 +25,15 @@ SCWeb.ui.Menu = {
             self.updateTranslation(names);
         });
         
+        context.init({
+            //fadeSpeed: 100,
+            //filter: null,
+            //above: 'auto',
+            preventDoubleContext: true,
+            //compress: false            
+        });
+        context.attach('[sc_addr]', this._contextMenu);
+                
         this._build(params.menu_commands);
         dfd.resolve();
         return dfd.promise();
@@ -85,6 +94,70 @@ SCWeb.ui.Menu = {
                 SCWeb.core.Main.doDefaultCommand([sc_addr]);
             }
         });
+    },
+    
+    _sort: function() {
+        
+    },
+    
+    _contextMenu: function(target) {
+        var dfd = new jQuery.Deferred();
+        var args = SCWeb.core.Arguments._arguments.slice();
+        args.push(target.attr('sc_addr'));
+        SCWeb.core.Server.contextMenu(args, function(data) {
+            
+            var translateIds = [];
+            
+            var parseMenuItem = function(item, parentSubmenu) {
+                var menu_item = {};
+                if (item.cmd_type === 'cmd_noatom') {
+                    menu_item.subMenu = [];
+                    for (i in item.childs) {
+                        parseMenuItem(item.childs[i], menu_item.subMenu);
+                    }
+                } else if (item.cmd_type === 'cmd_atom') {
+                    menu_item.action = function(e) {
+                        SCWeb.core.Main.doCommand(item.id, args);
+                    }
+                }
+                
+                menu_item.text = item.id;
+                translateIds.push(item.id);
+                parentSubmenu.push(menu_item);
+            }
+            
+            var menu = [];
+            for(i in data.childs) {
+                var child_item = data.childs[i];
+                parseMenuItem(child_item, menu);
+            }
+            
+            var applyTranslation = function(item, id, text) {
+                if (item.text == id) {
+                    item.text = text;
+                }
+                if (item.subMenu) {
+                    for (i in item.subMenu) {
+                        applyTranslation(item.subMenu[i], id, text);
+                    }
+                }
+            }
+            
+            SCWeb.core.Server.resolveIdentifiers(translateIds, function(namesMap) {
+                
+                for (var itemId in namesMap) {
+                    if (namesMap.hasOwnProperty(itemId)) {
+                        for (i in menu) {
+                            applyTranslation(menu[i], itemId, namesMap[itemId]);
+                        }
+                    }
+                }
+                
+                dfd.resolve(menu); 
+            });
+        });
+            
+        return dfd.promise();
     },
     
     // ---------- Translation listener interface ------------

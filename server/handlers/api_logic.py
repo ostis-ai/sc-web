@@ -36,7 +36,7 @@ def parse_menu_command(cmd_addr, sctp_client, keys):
                                       ScElementType.sc_type_arc_pos_const_perm,
                                       cmd_addr) is not None:
         cmd_type = 'cmd_noatom'
-
+    
     attrs = {}
     attrs['cmd_type'] = cmd_type
     attrs['id'] = cmd_addr.to_id()
@@ -67,6 +67,7 @@ def parse_menu_command(cmd_addr, sctp_client, keys):
             attrs["childs"] = child_commands
 
     return attrs
+
 
 def find_tooltip(addr, sctp_client, keys, lang):
     

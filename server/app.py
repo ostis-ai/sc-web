@@ -69,6 +69,7 @@ def main():
 
             # api
             (r"/api/init/", api.Init),
+            (r"/api/context/", api.ContextMenu),
             (r"/api/cmd/do/", api.CmdDo),
             
             (r"/api/question/answer/translate/", api.QuestionAnswerTranslate),
