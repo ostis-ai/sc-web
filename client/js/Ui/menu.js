@@ -30,7 +30,8 @@ SCWeb.ui.Menu = {
             //filter: null,
             //above: 'auto',
             preventDoubleContext: true,
-            //compress: false            
+            //compress: false,
+            container: '#main-container'
         });
         context.attach('[sc_addr]', this._contextMenu);
                 
@@ -106,30 +107,19 @@ SCWeb.ui.Menu = {
         args.push(target.attr('sc_addr'));
         SCWeb.core.Server.contextMenu(args, function(data) {
             
-            var translateIds = [];
-            
             var parseMenuItem = function(item, parentSubmenu) {
                 var menu_item = {};
-                if (item.cmd_type === 'cmd_noatom') {
-                    menu_item.subMenu = [];
-                    for (i in item.childs) {
-                        parseMenuItem(item.childs[i], menu_item.subMenu);
-                    }
-                } else if (item.cmd_type === 'cmd_atom') {
-                    menu_item.action = function(e) {
-                        SCWeb.core.Main.doCommand(item.id, args);
-                    }
+                menu_item.action = function(e) {
+                    SCWeb.core.Main.doCommand(item, args);
                 }
                 
-                menu_item.text = item.id;
-                translateIds.push(item.id);
+                menu_item.text = item;
                 parentSubmenu.push(menu_item);
             }
             
             var menu = [];
-            for(i in data.childs) {
-                var child_item = data.childs[i];
-                parseMenuItem(child_item, menu);
+            for(i in data) {
+                parseMenuItem(data[i], menu);
             }
             
             var applyTranslation = function(item, id, text) {
@@ -143,7 +133,7 @@ SCWeb.ui.Menu = {
                 }
             }
             
-            SCWeb.core.Server.resolveIdentifiers(translateIds, function(namesMap) {
+            SCWeb.core.Server.resolveIdentifiers(data, function(namesMap) {
                 
                 for (var itemId in namesMap) {
                     if (namesMap.hasOwnProperty(itemId)) {
@@ -152,6 +142,15 @@ SCWeb.ui.Menu = {
                         }
                     }
                 }
+                
+                // sort menu
+                menu.sort(function(a, b) {
+                    if (a.text > b.text)
+                        return 1;
+                    if (a.text < b.text)
+                        return -1;
+                    return 0; 
+                });
                 
                 dfd.resolve(menu); 
             });

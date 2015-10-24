@@ -13,7 +13,8 @@ var context = context || (function () {
 		},
 		above: 'auto',
 		preventDoubleContext: true,
-		compress: false
+		compress: false,
+        container: 'body'
 	};
 
 	function initialize(opts) {
@@ -107,8 +108,7 @@ var context = context || (function () {
                     id = d.getTime(),
                     $menu = buildMenu(data, id);
                 
-                //$('#context-menu-wait').remove();
-                $('body').append($menu);
+                $(options.container).append($menu);
 
                 $('.dropdown-context:not(.dropdown-context-sub)').hide();
 
@@ -121,16 +121,20 @@ var context = context || (function () {
                 } else if (typeof options.above == 'string' && options.above == 'auto') {
                     $dd.removeClass('dropdown-context-up');
                     var autoH = $dd.height() + 12;
-                    if ((e.pageY + autoH) > $('html').height()) {
+                    
+                    var topHeight = e.pageY - 70;
+                    var bottomHeight = $('html').height() - e.pageY - 70;
+                    
+                    if (topHeight > bottomHeight) {
                         $dd.addClass('dropdown-context-up').css({
-                            top: e.pageY - 20 - autoH,
-                            left: e.pageX - 13
-                        }).fadeIn(options.fadeSpeed);
+                            top: e.pageY - 20 - Math.min(topHeight, autoH),
+                            left: e.pageX - 13,
+                        }).css('max-height', topHeight).fadeIn(options.fadeSpeed);
                     } else {
                         $dd.css({
                             top: e.pageY + 10,
                             left: e.pageX - 13
-                        }).fadeIn(options.fadeSpeed);
+                        }).css('max-height', bottomHeight).fadeIn(options.fadeSpeed);
                     }
                 }
             });

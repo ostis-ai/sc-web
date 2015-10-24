@@ -81,9 +81,8 @@ class ContextMenu(base.BaseHandler):
             keynode_languages = keys[KeynodeSysIdentifiers.languages]
     
             # try to find main menu node
-            cmds = logic.parse_menu_command(keynode_ui_main_menu, sctp_client, keys)
-            if cmds is None:
-                cmds = {}
+            cmds = []
+            logic.find_atomic_commands(keynode_ui_main_menu, sctp_client, keys, cmds)
                 
             self.set_header("Content-Type", "application/json")
             self.finish(json.dumps(cmds))
