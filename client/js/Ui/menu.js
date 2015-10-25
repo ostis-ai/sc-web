@@ -152,6 +152,13 @@ SCWeb.ui.Menu = {
                     return 0; 
                 });
                 
+                menu.unshift({
+                    text: '<span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span>',
+                    action: function(e) {
+                        SCWeb.core.Arguments.appendArgument(target.attr('sc_addr'));
+                    }
+                });
+                
                 dfd.resolve(menu); 
             });
         });

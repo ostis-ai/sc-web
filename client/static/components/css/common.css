@@ -57,7 +57,7 @@ html.drag {
     padding-right: 15px;
     position: fixed;
     right: 15px;
-    z-index: 100000;
+    z-index: 900;
 }
 
 #window-container {

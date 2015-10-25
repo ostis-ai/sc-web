@@ -42,7 +42,6 @@
 	-moz-background-clip: padding;
 	background-clip: padding-box;
 	text-align:left;
-    overflow-y: auto;
 }
 .dropdown-menu.pull-right {
 	right: 0;
@@ -214,6 +213,10 @@
 }
 .dropdown-context .dropdown-submenu:hover > .dropdown-menu {
 	display: block;
+}
+
+.dropdown-context {
+    overflow-y: auto;
 }
 
 .compressed-context a{
