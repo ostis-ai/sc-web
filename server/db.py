@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from sqlalchemy import Column, ForeignKey, Integer, TIMESTAMP, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship

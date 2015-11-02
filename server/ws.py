@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import tornado.options
 import tornado.websocket
 import struct
@@ -110,7 +112,7 @@ class SocketHandler(tornado.websocket.WebSocketHandler):
         if u:
             canEdit = base.User._canEdit(database.get_user_role(u).rights)
         
-        self.proxy = SocketProxy(self.socket_write, canEdit)
+        self.proxy = SocketProxy(self.socket_write, True)
 
     def on_close(self):
         if self in clients:

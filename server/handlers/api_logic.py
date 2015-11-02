@@ -1,4 +1,8 @@
-import uuid, base64, hashlib
+# -*- coding: utf-8 -*-
+
+import uuid, base64, hashlib, time
+
+import tornado.web
 
 from keynodes import KeynodeSysIdentifiers, Keynodes
 from sctp.types import SctpIteratorType, ScElementType
@@ -282,7 +286,32 @@ def get_identifier_translated(addr, used_lang, keys, sctp_client):
         return idtf_value
         
     return None
+
+def get_by_identifier_translated(used_lang, keys, sctp_client, idtf):
     
+    keynode_nrel_main_idtf = keys[KeynodeSysIdentifiers.nrel_main_idtf]
+    
+    links = sctp_client.find_links_with_content(idtf)
+    if links:
+        for l in links:
+            elements = sctp_client.iterate_elements(SctpIteratorType.SCTP_ITERATOR_5_A_A_F_A_F,
+                                            0,
+                                            ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
+                                            l,
+                                            ScElementType.sc_type_arc_pos_const_perm,
+                                            keynode_nrel_main_idtf)
+            if elements is not None:
+                # check if founded main identifier is for used language
+                langs = sctp_client.iterate_elements(
+                                                     SctpIteratorType.SCTP_ITERATOR_3F_A_F,
+                                                     used_lang,
+                                                     ScElementType.sc_type_arc_pos_const_perm,
+                                                     l
+                                                     )
+                if langs is not None:
+                    return elements[0][0]
+
+    return None
 
 def check_command_finished(command_addr, keynode_command_finished, sctp_client):
     return sctp_client.iterate_elements(
@@ -342,6 +371,191 @@ def get_languages_list(keynode_languages, sctp_client):
             langs.append(items[2])
                 
     return langs
+
+def do_command(sctp_client, keys, cmd_addr, arguments, handler):
+    result = {}
+     
+    
+    if (len(arguments) > 0) and (cmd_addr is not None):
+
+
+        keynode_ui_rrel_commnad = keys[KeynodeSysIdentifiers.ui_rrel_commnad]
+        keynode_ui_rrel_command_arguments = keys[KeynodeSysIdentifiers.ui_rrel_command_arguments]
+        keynode_ui_nrel_command_result = keys[KeynodeSysIdentifiers.ui_nrel_command_result]
+        keynode_ui_command_generate_instance = keys[KeynodeSysIdentifiers.ui_command_generate_instance]
+        keynode_ui_command_initiated = keys[KeynodeSysIdentifiers.ui_command_initiated]
+        keynode_ui_command_finished = keys[KeynodeSysIdentifiers.ui_command_finished]
+        keynode_ui_nrel_command_result = keys[KeynodeSysIdentifiers.ui_nrel_command_result]
+        keynode_ui_user = keys[KeynodeSysIdentifiers.ui_user]
+        keynode_nrel_authors = keys[KeynodeSysIdentifiers.nrel_authors]
+        keynode_question_initiated = keys[KeynodeSysIdentifiers.question_initiated]
+        keynode_question = keys[KeynodeSysIdentifiers.question]
+        keynode_system_element = keys[KeynodeSysIdentifiers.system_element]
+        keynode_nrel_ui_nrel_command_lang_template = keys[KeynodeSysIdentifiers.nrel_ui_nrel_command_lang_template]
+        keynode_languages = keys[KeynodeSysIdentifiers.languages]
+        keynode_nrel_main_idtf = keys[KeynodeSysIdentifiers.nrel_main_idtf]
+
+        # create command in sc-memory
+        inst_cmd_addr = sctp_client.create_node(ScElementType.sc_type_node | ScElementType.sc_type_const)
+        append_to_system_elements(sctp_client, keynode_system_element, inst_cmd_addr)
+        arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_command_generate_instance, inst_cmd_addr)
+        append_to_system_elements(sctp_client, keynode_system_element, arc)
+
+        inst_cmd_arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, inst_cmd_addr, cmd_addr)
+        append_to_system_elements(sctp_client, keynode_system_element, inst_cmd_arc)
+        arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_rrel_commnad, inst_cmd_arc)
+        append_to_system_elements(sctp_client, keynode_system_element, arc)
+
+        # create arguments
+        args_addr = sctp_client.create_node(ScElementType.sc_type_node | ScElementType.sc_type_const)
+        append_to_system_elements(sctp_client, keynode_system_element, args_addr)
+        args_arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, inst_cmd_addr, args_addr)
+        append_to_system_elements(sctp_client, keynode_system_element, args_arc)
+        arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_rrel_command_arguments, args_arc)
+        append_to_system_elements(sctp_client, keynode_system_element, arc)
+
+        idx = 1
+        for arg in arguments:
+            arg_arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, args_addr, arg)
+            append_to_system_elements(sctp_client, keynode_system_element, arg_arc)
+            if arg_arc is None:
+                return serialize_error(self, 404, 'Error while create "create_instance" command')
+
+            idx_addr = sctp_client.find_element_by_system_identifier(str(u'rrel_%d' % idx))
+            if idx_addr is None:
+                return serialize_error(self, 404, 'Error while create "create_instance" command')
+            idx += 1
+            arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, idx_addr, arg_arc)
+            append_to_system_elements(sctp_client, keynode_system_element, arc)
+
+        wait_time = 0
+        wait_dt = 0.1
+        
+        # initialize command
+        arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_command_initiated, inst_cmd_addr)
+
+        cmd_finished = check_command_finished(inst_cmd_addr, keynode_ui_command_finished, sctp_client)
+        while cmd_finished is None:
+            time.sleep(wait_dt)
+            wait_time += wait_dt
+            if wait_time > tornado.options.options.event_wait_timeout:
+                return serialize_error(self, 404, 'Timeout waiting for "create_instance" command finished')
+            cmd_finished = check_command_finished(inst_cmd_addr, keynode_ui_command_finished, sctp_client)
+
+
+        # get command result
+        cmd_result = sctp_client.iterate_elements(
+            SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
+            inst_cmd_addr,
+            ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
+            ScElementType.sc_type_node | ScElementType.sc_type_const,
+            ScElementType.sc_type_arc_pos_const_perm,
+            keynode_ui_nrel_command_result
+        )
+        if cmd_result is None:
+            return serialize_error(self, 404, 'Can\'t find "create_instance" command result')
+
+        cmd_result = cmd_result[0][2]
+
+        # @todo support all possible commands
+        # try to find question node
+        question = sctp_client.iterate_elements(
+            SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
+            keynode_question,
+            ScElementType.sc_type_arc_pos_const_perm,
+            ScElementType.sc_type_node | ScElementType.sc_type_const,
+            ScElementType.sc_type_arc_pos_const_perm,
+            cmd_result
+        )
+        if question is None:
+            return serialize_error(self, 404, "Can't find question node")
+
+        question = question[0][2]
+
+        append_to_system_elements(sctp_client, keynode_system_element, question)
+        
+        # generate main identifiers
+        langs = get_languages_list(keynode_languages, sctp_client)
+        if langs:
+            templates = sctp_client.iterate_elements(
+                SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
+                cmd_addr,
+                ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
+                ScElementType.sc_type_link,
+                ScElementType.sc_type_arc_pos_const_perm,
+                keynode_nrel_ui_nrel_command_lang_template
+            )
+            if templates:
+                generated = {}
+                identifiers = {}
+                
+                # get identifiers
+                for l in langs:
+                    identifiers[str(l)] = {}
+                    for a in arguments:
+                        idtf_value = get_identifier_translated(a, l, keys, sctp_client)
+                        if idtf_value:
+                            identifiers[str(l)][str(a)] = idtf_value
+                            
+                
+                for t in templates:
+                    input_arcs = sctp_client.iterate_elements(
+                                        SctpIteratorType.SCTP_ITERATOR_3A_A_F,
+                                        ScElementType.sc_type_node | ScElementType.sc_type_const | ScElementType.sc_type_node_class,
+                                        ScElementType.sc_type_arc_pos_const_perm,
+                                        t[2])
+                    if input_arcs:
+                        for arc in input_arcs:
+                            for l in langs:
+                                if not generated.has_key(str(l)) and arc[0] == l:
+                                    lang_idtfs = identifiers[str(l)]
+                                    # get content of link
+                                    data = sctp_client.get_link_content(t[2]).decode('utf-8')
+                                    if data:
+                                        for idx in xrange(len(arguments)):
+                                            value = arguments[idx].to_id()
+                                            if lang_idtfs.has_key(str(arguments[idx])):
+                                                value = lang_idtfs[str(arguments[idx])]
+                                            data = data.replace(u'$ui_arg_%d' % (idx + 1), value)
+                                            
+                                        
+                                        # generate identifier
+                                        idtf_link = sctp_client.create_link()
+                                        sctp_client.set_link_content(idtf_link, str(data.encode('utf-8')))
+                                        sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, l, idtf_link)
+                                        
+                                        bin_arc = sctp_client.create_arc(ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
+                                                                         question, idtf_link)
+                                        sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm,
+                                                               keynode_nrel_main_idtf, bin_arc)
+                                        
+                                        generated[str(l)] = True
+
+        # create author
+        sc_session = ScSession(handler, sctp_client, keys)
+        user_node = sc_session.get_sc_addr()
+        if not user_node:
+            return serialize_error(self, 404, "Can't resolve user node")
+        
+        arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_user, user_node)
+        append_to_system_elements(sctp_client, keynode_system_element, arc)
+
+        author_arc = sctp_client.create_arc(ScElementType.sc_type_arc_common | ScElementType.sc_type_const, question, user_node)
+        append_to_system_elements(sctp_client, keynode_system_element, author_arc)
+        arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_nrel_authors, author_arc)
+        append_to_system_elements(sctp_client, keynode_system_element, arc)
+
+
+        # initiate question
+        arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_question_initiated, question)
+        append_to_system_elements(sctp_client, keynode_system_element, arc)
+
+        # first of all we need to wait answer to this question
+        #print sctp_client.iterate_elements(SctpIteratorType.SCTP_ITERATOR_3F_A_A, keynode_question_initiated, 0, 0)
+        
+        result = { 'question': question.to_id() }
+            
+    return result
 
 # -------------- work with session -------------------------
 class ScSession:

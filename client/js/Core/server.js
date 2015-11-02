@@ -226,31 +226,6 @@ SCWeb.core.Server = {
                     callback({});
                 }
             });
-            /*(function(result, need_resolve, callback) {
-                
-                var resolve_idtf = function() {
-                    if (need_resolve.length == 0) {
-                        callback(result);
-                    } else {
-                        var addr = need_resolve.shift();
-                        window.scHelper.getIdentifier(parseInt(addr), self._current_language)
-                            .done(function (v) {
-                                if (v) {
-                                    result[addr] = v;
-                                    self._identifiers_cache.set(getKey(addr), v ? v : '.');
-                                }
-
-                                resolve_idtf();
-                            })
-                            .fail(function() {
-                                resolve_idtf();
-                            });
-                    }
-                }
-                
-                resolve_idtf();
-                
-            })(result, need_resolve, callback);*/
         }
     },
     
@@ -288,6 +263,23 @@ SCWeb.core.Server = {
         this._push_task({
             type: "POST",
             url: "api/cmd/do/",
+            data: arguments,
+            success: callback
+        });
+    },
+    
+    /*! Function to initiate natural language query on server
+     * @param {String} query Natural language query
+     * @param {callback} Function, that will be called with recieved data
+     */
+    textCommand: function(query, callback){
+    
+        var arguments = {};
+        arguments['query'] = query;
+
+        this._push_task({
+            type: "POST",
+            url: "api/cmd/text/",
             data: arguments,
             success: callback
         });

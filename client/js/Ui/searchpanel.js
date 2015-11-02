@@ -18,14 +18,21 @@ SCWeb.ui.SearchPanel = {
                     $('#search-input').addClass('search-processing');
                     SCWeb.core.Server.findIdentifiersSubStr(query, function(data) {
                         keys = [];
-                        for (key in data) {
+                        
+                        var addValues = function(key) {
                             var list = data[key];
-                            for (idx in list) {
-                                var value = list[idx]
-                                keys.push({name: value[1], addr: value[0], group: key});
+                            if (list) {
+                                for (idx in list) {
+                                    var value = list[idx]
+                                    keys.push({name: value[1], addr: value[0], group: key});
+                                }
                             }
                         }
-
+                        
+                        addValues('sys');
+                        addValues('main');
+                        addValues('common');
+                        
                         cb(keys);
                         $('#search-input').removeClass('search-processing');
                     });
@@ -36,11 +43,11 @@ SCWeb.ui.SearchPanel = {
 
                         //glyphicon glyphicon-globe
                         var html = '';
-                        if (item.group === keynode_nrel_idtf) {
+                        if (item.group === 'common') {
                             return '<p class="sc-content">' + item.name + '</p>';
                         } else {
                             var cl = 'glyphicon glyphicon-user';
-                            if (item.group === keynode_nrel_system_idtf) {
+                            if (item.group === 'sys') {
                                 cl = 'glyphicon glyphicon-globe';
                             }
                             return '<p><span class="tt-suggestion-icon ' + cl + '"></span>' + item.name + '</p>';
@@ -55,6 +62,13 @@ SCWeb.ui.SearchPanel = {
             }
             evt.stopPropagation();
             $('.typeahead').val('');
+        });
+        
+        $('#search-input-nl').keypress(function (event) {
+            if (event.which == 13) {
+                SCWeb.core.Main.doTextCommand($(this).val());
+                $(this).val('');
+            }
         });
 
         SCWeb.core.Server.resolveScAddr(['nrel_main_idtf', 'nrel_idtf', 'nrel_system_identifier'], function(addrs) {

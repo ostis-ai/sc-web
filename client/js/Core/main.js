@@ -118,6 +118,19 @@ SCWeb.core.Main = {
     },
     
     /**
+     * Initiate user natural language command
+     * @param {String} query Natural language query
+     */
+    
+    doTextCommand: function(query) {
+        SCWeb.core.Server.textCommand(query, function(result) {
+            if (result.question != undefined) {
+                SCWeb.ui.WindowManager.appendHistoryItem(result.question);
+            }
+        });
+    },
+    
+    /**
      * Initiate default user interface command
      * @param {Array} cmd_args Array of sc-addrs with command arguments
      */
