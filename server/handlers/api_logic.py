@@ -376,8 +376,7 @@ def do_command(sctp_client, keys, cmd_addr, arguments, handler):
     result = {}
      
     
-    if (len(arguments) > 0) and (cmd_addr is not None):
-
+    if cmd_addr is not None:
 
         keynode_ui_rrel_commnad = keys[KeynodeSysIdentifiers.ui_rrel_commnad]
         keynode_ui_rrel_command_arguments = keys[KeynodeSysIdentifiers.ui_rrel_command_arguments]
