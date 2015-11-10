@@ -62,15 +62,13 @@ SCWeb.ui.SearchPanel = {
             }
             evt.stopPropagation();
             $('.typeahead').val('');
-        });
-        
-        $('#search-input-nl').keypress(function (event) {
+        }).keypress(function(event) {
             if (event.which == 13) {
                 SCWeb.core.Main.doTextCommand($(this).val());
-                $(this).val('');
+                $('#search-input').val('');
             }
         });
-
+        
         SCWeb.core.Server.resolveScAddr(['nrel_main_idtf', 'nrel_idtf', 'nrel_system_identifier'], function(addrs) {
             keynode_nrel_main_idtf = addrs['nrel_main_idtf'];
             keynode_nrel_idtf = addrs['nrel_idtf'];
