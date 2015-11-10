@@ -293,7 +293,7 @@ class SctpClient:
         for i in xrange(resCount):
             addr = ScAddr(0, 0)
             data = data[4:]
-            addr.seg, addr.offset = struct.unpack('=HH', data)
+            addr.seg, addr.offset = struct.unpack('=HH', data[:4])
             res.append(addr)
 
         return res
