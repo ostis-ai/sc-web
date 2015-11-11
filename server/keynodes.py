@@ -80,6 +80,7 @@ class KeynodeSysIdentifiers:
     ui_command_translate_from_sc = 'ui_command_translate_from_sc'
     
     ui_command_initiated = 'ui_command_initiated'
+    ui_command_failed = 'ui_command_failed'
     ui_command_finished = 'ui_command_finished'
     ui_displayed_answer = 'ui_displayed_answer'
     

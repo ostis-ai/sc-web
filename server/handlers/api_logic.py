@@ -321,6 +321,13 @@ def check_command_finished(command_addr, keynode_command_finished, sctp_client):
         command_addr
     )
 
+def check_command_failed(command_addr, keynode_command_failed, sctp_client):
+    return sctp_client.iterate_elements(
+        SctpIteratorType.SCTP_ITERATOR_3F_A_F,
+        keynode_command_failed,
+        ScElementType.sc_type_arc_pos_const_perm,
+        command_addr
+    )
 
 def append_to_system_elements(sctp_client, keynode_system_element, el):
     sctp_client.create_arc(
@@ -384,6 +391,7 @@ def do_command(sctp_client, keys, cmd_addr, arguments, handler):
         keynode_ui_command_generate_instance = keys[KeynodeSysIdentifiers.ui_command_generate_instance]
         keynode_ui_command_initiated = keys[KeynodeSysIdentifiers.ui_command_initiated]
         keynode_ui_command_finished = keys[KeynodeSysIdentifiers.ui_command_finished]
+        keynode_ui_command_failed = keys[KeynodeSysIdentifiers.ui_command_failed]
         keynode_ui_nrel_command_result = keys[KeynodeSysIdentifiers.ui_nrel_command_result]
         keynode_ui_user = keys[KeynodeSysIdentifiers.ui_user]
         keynode_nrel_authors = keys[KeynodeSysIdentifiers.nrel_authors]
@@ -433,14 +441,21 @@ def do_command(sctp_client, keys, cmd_addr, arguments, handler):
         # initialize command
         arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_command_initiated, inst_cmd_addr)
 
-        cmd_finished = check_command_finished(inst_cmd_addr, keynode_ui_command_finished, sctp_client)
-        while cmd_finished is None:
+        cmd_finished = False
+        cmd_failed = False
+        while True:
             time.sleep(wait_dt)
             wait_time += wait_dt
             if wait_time > tornado.options.options.event_wait_timeout:
                 return serialize_error(self, 404, 'Timeout waiting for "create_instance" command finished')
             cmd_finished = check_command_finished(inst_cmd_addr, keynode_ui_command_finished, sctp_client)
-
+            cmd_failed = check_command_failed(inst_cmd_addr, keynode_ui_command_failed, sctp_client)            
+            
+            if cmd_finished or cmd_failed:
+                break;
+            
+        if cmd_failed:
+            return { }
 
         # get command result
         cmd_result = sctp_client.iterate_elements(
