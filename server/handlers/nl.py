@@ -59,6 +59,7 @@ class NaturalLanguageSearch(base.BaseHandler):
                         if arg_addr is not None:
                             arguments.append(arg_addr)
                             found = True
+
                     except KeyError:
                         break
             

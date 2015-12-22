@@ -65,6 +65,9 @@ class KeynodeSysIdentifiers:
     question_initiated = 'question_initiated'
     question_search_all_output_arcs = 'question_search_all_output_arcs'
     
+    command = 'command'
+    command_initiated = 'command_initiated'
+    
     ui_user = 'ui_user'
     ui_user_registered = 'ui_user_registered'
     ui_main_menu = 'ui_main_menu'

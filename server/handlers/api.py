@@ -343,7 +343,7 @@ class IdtfFind(base.BaseHandler):
         # first of all need to find system identifiers
         cursor = 0
         while True:
-            reply = r.scan(cursor, u"idtf:*%s*" % substr, 200)
+            reply = r.scan(cursor, u"idtf:*%s*" % substr, 1000)
             if not reply or len(reply) == 0:
                 break
             cursor = int(reply[0])
