@@ -248,6 +248,26 @@ path.SCgBusPath {
     position: absolute;
 }
 
+.scg-tools-panel img {
+    width: 32px;
+}
+
+#scg-set-content-input {
+    resize: none;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#scg-set-content-buttons-group {
+    margin-top: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+#scg-set-content-buttons-group button span {
+    margin-right: 5px;
+}
+
 .scg-type-list {
     max-height: 400px;
     overflow-y: scroll;

@@ -378,8 +378,36 @@ function scgScStructTranslator(_editor, _sandbox) {
                         window.sctpClient.create_link().done(function (r) {
                             link.setScAddr(r);
                             link.setObjectState(SCgObjectState.NewInMemory);
-                            window.sctpClient.set_link_content(r, link.content)
+                            
+                            var content = link.content;
+                            var keynode = null;
+                            if (link.contentType === 'float') {
+                                var float32 = new Float32Array(1);
+                                float32[0] = parseFloat(link.content);
+                                content = float32.buffer;
+                                keynode = window.scKeynodes.binary_float;
+                            } else if (link.contentType === 'int8') {
+                                var int8 = new Int8Array(1);
+                                int8[0] = parseInt(link.content);
+                                content = int8.buffer;
+                                keynode = window.scKeynodes.binary_int8;
+                            } else if (link.contentType === 'int16') {
+                                var int16 = new Int16Array(1);
+                                int16[0] = parseInt(link.content);
+                                content = int16.buffer;
+                                keynode = window.scKeynodes.binary_int16;
+                            } else if (link.contentType === 'int32') {
+                                var int32 = new Int32Array(1);
+                                int32[0] = parseInt(link.content);
+                                content = int32.buffer;
+                                kaynode = window.scKeynodes.binary_int32;
+                            }
+                            
                             objects.push(link);
+                            
+                            /// TODO: process errors on set content and arc creation
+                            window.sctpClient.set_link_content(r, content);
+                            window.sctpClient.create_arc(sc_type_arc_pos_const_perm, keynode, r);
                             dfd.resolve();
                         });
                     } else {

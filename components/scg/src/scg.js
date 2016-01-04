@@ -376,20 +376,21 @@ SCg.Editor.prototype = {
 
             var input = $(container + ' #scg-set-content-input');
             var input_content = $(container + " input#content[type='file']");
+            var input_content_type = $(container + " #scg-set-content-type");
 
             // process controls
             $(container + ' #scg-set-content-apply').click(function() {
                 var obj = self.scene.selected_objects[0];
                 var file = input_content[0].files[0];
-                if(file != undefined){
+                if (file != undefined){
                     var fileReader = new FileReader();
                     fileReader.onload = function() {
-                        obj.setContent(this.result);
+                        obj.setContent(this.result, 'string');
                         stop_modal();
                     };
                     fileReader.readAsArrayBuffer(file);
                 } else {
-                    obj.setContent(input.val());
+                    obj.setContent(input.val(), input_content_type.val());
                     stop_modal();
                 }
             });

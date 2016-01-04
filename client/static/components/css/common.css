@@ -340,7 +340,7 @@ html.drag {
     padding: 5px;
     margin: 2px;
     display: inline-block;
-    background:url("../images/content_corner.png") 0 0 no-repeat #fafafa;
+    background: url("../images/content_corner.png") 0 0 no-repeat #fafafa;
 }
 
 .sc-content-wrap {
@@ -366,6 +366,10 @@ html.drag {
 
 .sc-content-controls .button-menu:hover {
     opacity: 0.7;
+}
+
+.sc-content-binary {
+    
 }
 
 .sc-contour {

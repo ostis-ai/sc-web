@@ -35,17 +35,28 @@ var TextViewer = function(sandbox){
             var str = '';
 
             if (type_addr == window.scKeynodes.binary_float) {
-                //var buffer = new Float32Array(data.buffer);
                 var float32 = new Float32Array(data);
                 str = float32[0];
+            } else if (type_addr == window.scKeynodes.binary_int8) {
+                var int8 = new Int8Arrray(data);
+                str = int8[0];
+            } else if (type_addr == window.scKeynodes.binary_int16) {
+                var int16 = new Int16Array(data);
+                str = int16[0];
+            } else if (type_addr == window.scKeynodes.binary_int32) {
+                var int32 = new Int32Array(data);
+                str = int32[0];
             } else {
                 str = ArrayBuffer2String(data);
             }
             
-            container.text( str );
+            /// TODO: possible doesn't need to setup binary class, when type unknown and string used
+            container.addClass('sc-content-binary');
+            container.text(str);
             dfd.resolve();
             
         }).fail(function() {
+            container.addClass('sc-content-string');
             container.text(ArrayBuffer2String(data));
             dfd.resolve();
         });    

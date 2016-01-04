@@ -119,14 +119,6 @@ SCg.ModelObject.prototype.setScType = function(type) {
     this.need_observer_sync = true;
 };
 
- /**
- * Setup new content value
- * @param {String} content New content value
- */
-SCg.ModelObject.prototype.setContent = function(content) {
-    this.content = content;
-    this.need_observer_sync = true;
-};
 
 /**
  * Notify all connected edges to sync
@@ -295,6 +287,7 @@ SCg.ModelLink = function(options) {
     this.contentLoaded = false;
     this.containerId = options.containerId;
     this.content = options.content;
+    this.contentType = 'string';
 };
 
 SCg.ModelLink.prototype = Object.create( SCg.ModelObject.prototype );
@@ -333,6 +326,17 @@ SCg.ModelLink.prototype.getConnectionPos = function(from, dotPos) {
     }
     
     return res ? new SCg.Vector3(res.x, res.y, this.position.z) : this.position;
+};
+
+ /**
+ * Setup new content value
+ * @param {String} content New content value
+ * @param {String} contentType Type of content (string, float, int8, int16, int32)
+ */
+SCg.ModelLink.prototype.setContent = function(content, contentType) {
+    this.content = content;
+    this.contentType = contentType ? contentType : 'string';
+    this.need_observer_sync = true;
 };
 
 // --------------- arc -----------

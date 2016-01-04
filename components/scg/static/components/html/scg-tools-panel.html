@@ -14,7 +14,7 @@
             <input type="radio" name="options" id="option1"> <img src="static/components/images/scg/tool-contour.png"/> </input>
         </label>
         <label id="scg-tool-link" class="btn btn-default sc-no-default-cmd" sc_control_sys_idtf="ui_scg_control_tool_link">
-            <input type="radio" name="options" id="option1"> <img src="static/components/images/scg/tool-select.png"/> </input>
+            <input type="radio" name="options" id="option1"> <img src="static/components/images/scg/tool-link.png"/> </input>
         </label>
     </div>
     <hr/>
@@ -24,8 +24,8 @@
                 data-html="true" data-placement="right" data-toggle="popover">
             <img src="static/components/images/scg/tool-change-idtf.png"/>
         </button>
-        <button id="scg-tool-set-content" type='button' class="btn btn-default sc-no-default-cmd" data-title="Set content" sc_control_sys_idtf="ui_scg_control_tool_set_content"
-                data-content="<div class='input-group'><input id='scg-set-content-input' class='form-control pull-left' value='' autofocus /><div class='input-group-btn'><button type='button' id='scg-set-content-apply' class='btn btn-success'><span class='glyphicon glyphicon-ok-sign'/></button><button type='button' id='scg-set-content-cancel' class='btn btn-danger'><span class='glyphicon glyphicon-remove-sign'/></button></div></div><br/><input id='content' type='file'/>"
+        <button id="scg-tool-set-content" type='button' class="btn btn-default sc-no-default-cmd" sc_control_sys_idtf="ui_scg_control_tool_set_content"
+                data-content="<select id='scg-set-content-type' class='form-control'><option value='string'>string</option><option value='float'>float</option><option value='int8'>int8</option><option value='int16'>int16</option><option value='int32'>int32</option></select> <textarea cols='30' rows='3' id='scg-set-content-input' class='form-control pull-left' value='' autofocus /> <br/><input id='content' type='file'/> <div id='scg-set-content-buttons-group' class='row'><button type='button' id='scg-set-content-apply' class='btn btn-success pull-left'><span class='glyphicon glyphicon-ok-sign'/>Apply</button><button type='button' id='scg-set-content-cancel' class='btn btn-danger pull-right'><span class='glyphicon glyphicon-remove-sign'/>Cancel</button></div>"
                 data-html="true" data-placement="right" data-toggle="popover">
             <img src="static/components/images/scg/tool-set-content.png"/>
         </button>
@@ -47,7 +47,7 @@
 
         <div id="scg-tool-open" type="button" class="btn btn-default sc-no-default-cmd" sc_control_sys_idtf="ui_scg_control_tool_open">
             <input id="scg-tool-open-dialog" type="file" style="visibility: hidden; position: absolute;">
-            <img style="width: 30px" src="static/components/images/scg/tool-open.png"/>
+            <img src="static/components/images/scg/tool-open.png"/>
         </div>
         
 
