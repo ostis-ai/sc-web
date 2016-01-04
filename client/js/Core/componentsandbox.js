@@ -13,7 +13,7 @@ SCWeb.core.ComponentSandbox = function(options) {
         
     this.container = options.container;
     this.wrap_selector = '#' + this.container + '_wrap';
-    this.addr = options.addr;
+    this.addr = parseInt(options.addr);
     this.is_struct = options.is_struct;
     this.format_addr = options.format_addr;
     this.is_editor = options.canEdit;
@@ -232,8 +232,10 @@ SCWeb.core.ComponentSandbox.prototype.createViewersForScStructs = function(conta
 };
 
 /*! Function takes content of sc-link or sctructure from server and call event handlers
+ * {String} contentType type of content data (@see SctpClient.getLinkContent). If it's null, then
+ * data will be returned as string
  */
-SCWeb.core.ComponentSandbox.prototype.updateContent = function() {
+SCWeb.core.ComponentSandbox.prototype.updateContent = function(contentType) {
     var dfd = new jQuery.Deferred();
     var self = this;
 
@@ -250,10 +252,11 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = function() {
 
             dfd.resolve();
         });
-    } else
+    }
+    else
     {
-        this.getLinkContent(this.addr,
-            function (data) {
+        window.sctpClient.get_link_content(this.addr, contentType)
+            .done(function(data) {
                 $.when(self.onDataAppend(data)).then(
                     function() {
                         dfd.resolve();
@@ -262,8 +265,8 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = function() {
                         dfd.reject();
                     }
                 );
-            },
-            function () {
+            })
+            .fail(function() {
                 dfd.reject();
             });
     }

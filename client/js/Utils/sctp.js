@@ -104,8 +104,8 @@ function String2ArrayBuffer(string) {
     return new Uint8Array(uintArray);
 }
 
-function ArrayBuffer2String(uintArray) {
-    return new StringView(uintArray).toString();
+function ArrayBuffer2String(arrayBuffer) {
+    return new StringView(new Uint8Array(arrayBuffer)).toString();
 }
 
 
@@ -312,8 +312,8 @@ function SctpResultBuffer(v) {
         },
         getResBuffer: function(offset, len) {
             var o = sctp_header_size + offset;
-            var l = view.buffer.byteLength - o;
-            return new Uint8Array(view.buffer, o, l);
+            //var l = view.buffer.byteLength - o;
+            return view.buffer.slice(o); //new Uint8Array(view.buffer, o, l);
         },
 
     };
@@ -540,6 +540,8 @@ SctpClient.prototype.get_link_content = function(addr, type) {
         var r = null;
         if (!type || type === 'string') {
             r = ArrayBuffer2String(data.getResBuffer(0));
+        } else if (type === 'binary') {
+            r = data.getResBuffer(0);
         } else if (type === 'int') {
             if (data.getResultSize() !== Int32Array.BYTES_PER_ELEMENT)
                 throw "Invalid size of content " + data.getResultSize();

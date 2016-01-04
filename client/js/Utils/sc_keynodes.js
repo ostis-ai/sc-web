@@ -32,7 +32,14 @@ ScKeynodes.prototype.init = function() {
         this.resolveKeynode('ui_nrel_user_default_ext_language'),       
         
         this.resolveKeynode('languages'),
-        this.resolveKeynode('lang_ru')
+        this.resolveKeynode('lang_ru'),
+        
+        this.resolveKeynode('binary_types'),
+        this.resolveKeynode('binary_float'),
+        this.resolveKeynode('binary_int8'),
+        this.resolveKeynode('binary_int16'),
+        this.resolveKeynode('binary_int32'),
+        this.resolveKeynode('binary_int64')
         
     ).done(function() {
         dfd.resolve();

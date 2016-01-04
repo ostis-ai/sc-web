@@ -16,6 +16,10 @@ __all__ = (
     'append_to_system_elements',
 )
 
+def serialize_error(handler, code, message):
+        handler.clear()
+        handler.set_status(code)
+        handler.finish(message)
 
 def parse_menu_command(cmd_addr, sctp_client, keys):
     """Parse specified command from sc-memory and

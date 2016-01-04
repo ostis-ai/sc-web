@@ -101,7 +101,7 @@ SCWeb.core.ComponentManager = {
      * Create new instance of component window
      * @param {Object} options          Object that contains creation options:
      *          {String} format_addr    Sc-addr of window format
-     *          {String} addr           Sc-addr of sc-link or sc-structure, that edit or viewed with sandbox
+     *          {Integer} addr          Sc-addr of sc-link or sc-structure, that edit or viewed with sandbox
      *          {Boolean} is_struct     If that paramater is true, then addr is an sc-addr of struct;
      *                                  otherwise the last one a sc-addr of sc-link
      *          {String} container      Id of dom object, that will contain window
@@ -141,7 +141,7 @@ SCWeb.core.ComponentManager = {
      * Create new instance of component window
      * @param {Object} options          Object that contains creation options:
      *          {String} ext_lang_addr  Sc-addr of window external language
-     *          {String} addr           Sc-addr of sc-link or sc-structure, that edit or viewed with sandbox
+     *          {Integer} addr           Sc-addr of sc-link or sc-structure, that edit or viewed with sandbox
      *          {Boolean} is_struct     If that paramater is true, then addr is an sc-addr of struct;
      *                                  otherwise the last one a sc-addr of sc-link
      *          {String} container      Id of dom object, that will contain window

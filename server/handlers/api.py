@@ -13,10 +13,7 @@ import time
 import base
 
 
-def serialize_error(handler, code, message):
-        handler.clear()
-        handler.set_status(code)
-        handler.finish(message)
+
 # -------------------------------------------        
 
 class Init(base.BaseHandler):
@@ -46,13 +43,13 @@ class Init(base.BaseHandler):
             out_langs = []
             if (res_out_langs is not None):
                 for items in res_out_langs:
-                    out_langs.append(items[2].to_id())
+                    out_langs.append(items[2].to_int())
     
             # try to find available output natural languages
             langs = logic.get_languages_list(keynode_languages, sctp_client)
             langs_str = []
             for l in langs:
-                langs_str.append(l.to_id())
+                langs_str.append(l.to_int())
             
             # get user sc-addr
             sc_session = logic.ScSession(self, sctp_client, keys)
@@ -61,10 +58,10 @@ class Init(base.BaseHandler):
                       'languages': langs_str,
                       'external_languages': out_langs,
                       'user': {
-                                'sc_addr': user_addr.to_id(),
+                                'sc_addr': user_addr.to_int(),
                                 'is_authenticated': False,
-                                'current_lang': sc_session.get_used_language().to_id(),
-                                'default_ext_lang': sc_session.get_default_ext_lang().to_id()
+                                'current_lang': sc_session.get_used_language().to_int(),
+                                'default_ext_lang': sc_session.get_default_ext_lang().to_int()
                                }
             }
         
@@ -110,7 +107,7 @@ class CmdDo(base.BaseHandler):
                     if sctp_client.check_element(arg):
                         arguments.append(arg)
                     else:
-                        return serialize_error(404, "Invalid argument: %s" % arg)
+                        return logic.serialize_error(404, "Invalid argument: %s" % arg)
     
                 first = False
                 idx += 1
@@ -147,12 +144,12 @@ class QuestionAnswerTranslate(base.BaseHandler):
                 time.sleep(wait_dt)
                 wait_time += wait_dt
                 if wait_time > tornado.options.options.event_wait_timeout:
-                    return serialize_error(self, 404, 'Timeout waiting for answer')
+                    return logic.serialize_error(self, 404, 'Timeout waiting for answer')
                 
                 answer = logic.find_answer(question_addr, keynode_nrel_answer, sctp_client)
             
             if answer is None:
-                return serialize_error(self, 404, 'Answer not found')
+                return logic.serialize_error(self, 404, 'Answer not found')
             
             answer_addr = answer[0][2]
             
@@ -191,7 +188,7 @@ class QuestionAnswerTranslate(base.BaseHandler):
                     time.sleep(wait_dt)
                     wait_time += wait_dt
                     if wait_time > tornado.options.options.event_wait_timeout:
-                        return serialize_error(self, 404, 'Timeout waiting for answer translation')
+                        return logic.serialize_error(self, 404, 'Timeout waiting for answer translation')
      
                     translation = logic.find_translation_with_format(answer_addr, format_addr, keynode_nrel_format, keynode_nrel_translation, sctp_client)
                     
@@ -200,7 +197,7 @@ class QuestionAnswerTranslate(base.BaseHandler):
         
             # if result exists, then we need to return it content
             if result_link_addr is not None:
-                result = json.dumps({"link": result_link_addr.to_id()})
+                result = json.dumps({"link": result_link_addr.to_int()})
         
             self.set_header("Content-Type", "application/json")
             self.finish(result) 
@@ -218,13 +215,13 @@ class LinkContent(base.BaseHandler):
             keynode_nrel_mimetype = keys[KeynodeSysIdentifiers.nrel_mimetype]
         
             # parse arguments
-            addr = ScAddr.parse_from_string(self.get_argument('addr', None))
+            addr = ScAddr.parse_from_string(self.get_argument('addr', None))        
             if addr is None:
-                return serialize_error(self, 404, 'Invalid arguments')
+                return logic.serialize_error(self, 404, 'Invalid arguments')
         
             result = sctp_client.get_link_content(addr)
             if result is None:
-                return serialize_error(self, 404, 'Content not found')
+                return logic.serialize_error(self, 404, 'Content not found')
         
             self.set_header("Content-Type", logic.get_link_mime(addr, keynode_nrel_format, keynode_nrel_mimetype, sctp_client))
             self.finish(result)
@@ -267,9 +264,9 @@ class LinkFormat(base.BaseHandler):
                     keynode_nrel_format
                 )
                 if format is not None:
-                    result[arg.to_id()] = format[0][2].to_id()
+                    result[arg.to_int()] = format[0][2].to_int()
                 else:
-                    result[arg.to_id()] = keynode_format_txt.to_id()
+                    result[arg.to_int()] = keynode_format_txt.to_int()
     
             self.set_header("Content-Type", "application/json")
             self.finish(json.dumps(result))
@@ -359,11 +356,11 @@ class IdtfFind(base.BaseHandler):
                 utf = idtf.decode('utf-8')
                 addr = ScAddr.parse_binary(rep)
                 if utf.startswith(u"idtf:sys:") and len(sys) < max_n:
-                    appendSorted(sys, [addr.to_id(), utf[9:]])
+                    appendSorted(sys, [addr.to_int(), utf[9:]])
                 elif utf.startswith(u"idtf:main:") and len(main) < max_n:
-                    appendSorted(main, [addr.to_id(), utf[10:]])
+                    appendSorted(main, [addr.to_int(), utf[10:]])
                 elif utf.startswith(u"idtf:common:") and len(common) < max_n:
-                    appendSorted(common, [addr.to_id(), utf[12:]])
+                    appendSorted(common, [addr.to_int(), utf[12:]])
 
             if cursor == 0:
                 break
@@ -446,7 +443,7 @@ class AddrResolve(base.BaseHandler):
             for idtf in arguments:
                 addr = sctp_client.find_element_by_system_identifier(str(idtf))
                 if addr is not None:
-                    res[idtf] = addr.to_id()
+                    res[idtf] = addr.to_int()
     
             self.set_header("Content-Type", "application/json")
             self.finish(json.dumps(res))
@@ -498,10 +495,10 @@ class User(base.BaseHandler):
             sc_session = logic.ScSession(self, sctp_client, keys)
             user_addr = sc_session.get_sc_addr()
             result = {
-                        'sc_addr': user_addr.to_id(),
+                        'sc_addr': user_addr.to_int(),
                         'is_authenticated': False,
-                        'current_lang': sc_session.get_used_language().to_id(),
-                        'default_ext_lang': sc_session.get_default_ext_lang().to_id()
+                        'current_lang': sc_session.get_used_language().to_int(),
+                        'default_ext_lang': sc_session.get_default_ext_lang().to_int()
             }
         
             self.set_header("Content-Type", "application/json")
