@@ -40,9 +40,7 @@ class GoogleOAuth2LoginHandler(base.BaseHandler,
                 keys = Keynodes(sctp_client)
             
                 sc_session = logic.ScSession(self, sctp_client, keys)
-                
-                print sc_session.get_sc_addr()
-            
+                            
                 key = database.add_user(name = user['name'], 
                                         email = email, 
                                         avatar = user['picture'],

@@ -50,6 +50,7 @@ class KeynodeSysIdentifiers:
     nrel_authors = 'nrel_authors'
     nrel_format = 'nrel_format'
     nrel_mimetype = 'nrel_mimetype'
+    nrel_email = 'nrel_email'
     
     rrel_key_sc_element = 'rrel_key_sc_element'
     sc_definition = 'sc_definition'

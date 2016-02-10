@@ -609,6 +609,11 @@ class ScSession:
         self.sctp_client = sctp_client
         self.keynodes = keynodes
         self.sc_addr = None
+        self.email = None
+        
+        user = handler.get_current_user()
+        if user is not None:
+            self.email = user.email
         
     def get_sc_addr(self):
         """Resolve sc-addr of session
@@ -738,4 +743,21 @@ class ScSession:
         return self._create_user_with_system_idtf("user::" + str(self._user_hash()))
 
     def _user_get_sc_addr(self):
+        
+        # try to find by email
+        if (self.email is not None) and (len(self.email)) > 0:
+            links = self.sctp_client.find_links_with_content(str(self.email))
+            if links and len(links) == 1:
+                user = self.sctp_client.iterate_elements(
+                                               SctpIteratorType.SCTP_ITERATOR_5_A_A_F_A_F,
+                                               ScElementType.sc_type_node | ScElementType.sc_type_const,
+                                               ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
+                                               links[0],
+                                               ScElementType.sc_type_arc_pos_const_perm,
+                                               self.keynodes[KeynodeSysIdentifiers.nrel_email]
+                                            )
+                
+                if user:
+                    return user[0][0]                
+        
         return self._find_user_by_system_idtf("user::" + str(self._user_hash()))
