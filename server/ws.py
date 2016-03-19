@@ -22,7 +22,7 @@ class SocketProxy:
     result_header_fmt = '=BIBI'
     command_header_fmt = '=BBII'
     
-    def __init__(self, on_message, write_rights = False):
+    def __init__(self, on_message, write_rights = True):
         self.on_message = on_message
 
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -107,7 +107,7 @@ class SocketHandler(tornado.websocket.WebSocketHandler):
         key = self.get_secure_cookie(base.BaseHandler.cookie_user_key, None, 1)
         
         database = db.DataBase()
-        canEdit = False
+        canEdit = True
         u = database.get_user_by_key(key)
         if u:
             canEdit = base.User._canEdit(database.get_user_role(u).rights)

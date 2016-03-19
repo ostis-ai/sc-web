@@ -216,8 +216,64 @@ SCg.Editor.prototype = {
         select.click(function() {
             self.scene.setEditMode(SCgEditMode.SCgModeSelect);
         });
+        select.dblclick(function() {             
+            var tool = $(this);
+
+            function stop_modal() {
+                tool.popover('destroy');
+                self.scene.setEditMode(SCgEditMode.SCgModeSelect);
+            }
+
+            el = $(this);
+            el.popover({
+                content: self.node_types_panel_content,
+                container: container,
+                title: 'Change type',
+                html: true,
+                delay: {show: 500, hide: 100}
+            }).popover('show');
+                  
+            cont.find('.popover-title').append('<button id="scg-type-close" type="button" class="close">&times;</button>');
+                  
+            $(container + ' #scg-type-close').click(function() {
+                stop_modal();
+            });
+
+            $(container + ' .popover .btn').click(function() {
+                SCgTypeNodeNow = self.typesMap[$(this).attr('id')];
+                stop_modal();
+            });   
+        });
         this.toolEdge().click(function() {
             self.scene.setEditMode(SCgEditMode.SCgModeEdge);
+        });
+        this.toolEdge().dblclick(function() {             
+            var tool = $(this);
+
+            function stop_modal() {
+                tool.popover('destroy');
+                self.scene.setEditMode(SCgEditMode.SCgModeEdge);
+            }
+
+            el = $(this);
+            el.popover({
+                content: self.edge_types_panel_content,
+                container: container,
+                title: 'Change type',
+                html: true,
+                delay: {show: 500, hide: 100}
+            }).popover('show');
+                  
+            cont.find('.popover-title').append('<button id="scg-type-close" type="button" class="close">&times;</button>');
+                  
+            $(container + ' #scg-type-close').click(function() {
+                stop_modal();
+            });
+
+            $(container + ' .popover .btn').click(function() {
+                SCgTypeEdgeNow = self.typesMap[$(this).attr('id')];
+                stop_modal();
+            });   
         });
         this.toolBus().click(function() {
             self.scene.setEditMode(SCgEditMode.SCgModeBus);
@@ -456,7 +512,11 @@ SCg.Editor.prototype = {
                 this._enableTool(this.toolSetContent());
             }
         } else {
-            this._disableTool(this.toolChangeIdtf());
+            if (this.scene.selected_objects[0] instanceof SCg.ModelContour) {
+                this._enableTool(this.toolChangeIdtf());
+            } else {
+                this._disableTool(this.toolChangeIdtf());
+            }
             this._disableTool(this.toolChangeType());
             this._disableTool(this.toolSetContent());
         } 

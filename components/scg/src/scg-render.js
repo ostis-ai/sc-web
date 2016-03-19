@@ -303,6 +303,9 @@ SCg.Render.prototype = {
                     verticiesString = verticiesString.concat(vertex);
                 }
                 return verticiesString;
+            })
+            .attr('title', function(d) {
+                return d.text;
             });
         eventsWrap(g);
 
@@ -436,6 +439,10 @@ SCg.Render.prototype = {
                         verticiesString = verticiesString.concat(vertex);
                     }
                     return verticiesString;
+                });
+
+                d3_contour.attr('title', function(d) {
+                    return d.text; 
                 });
 
                 d.need_update = false;

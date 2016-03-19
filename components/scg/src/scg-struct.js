@@ -259,8 +259,11 @@ function scgScStructTranslator(_editor, _sandbox) {
                         window.sctpClient.create_node(sc_type_const | sc_type_node | sc_type_node_struct).done(function (node) {
                             c.setScAddr(node);
                             c.setObjectState(SCgObjectState.NewInMemory);
-                            dfd.resolve();
-                        }).fail(dfd.reject);
+                            objects.push(c);
+                            translateIdentifier(c)
+                                    .done(dfd.resolve)
+                                    .fail(dfd.reject);                          
+                        });
                     }
 
                     return dfd.promise();
