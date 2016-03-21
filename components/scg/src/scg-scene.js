@@ -713,9 +713,6 @@ SCg.Scene.prototype = {
             verticies: polygon
         });
 
-        contour.addNodesWhichAreInContourPolygon(this.nodes);
-        contour.addNodesWhichAreInContourPolygon(this.links);
-        contour.addNodesWhichAreInContourPolygon(this.edges);
         this.appendContour(contour);
         this.pointed_object = contour;
         this.drag_line_points.splice(0, this.drag_line_points.length);

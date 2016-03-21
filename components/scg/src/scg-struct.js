@@ -269,8 +269,12 @@ function scgScStructTranslator(_editor, _sandbox) {
                     return dfd.promise();
                 };
                 var funcs = [];
-                for (var i = 0; i < editor.scene.contours.length; ++i)
+                for (var i = 0; i < editor.scene.contours.length; ++i){
+                    editor.scene.contours[i].addNodesWhichAreInContourPolygon(editor.scene.nodes);
+                    editor.scene.contours[i].addNodesWhichAreInContourPolygon(editor.scene.links);
+                    editor.scene.contours[i].addEdgesWhichAreInContourPolygon(editor.scene.edges);
                     funcs.push(fQueue.Func(scAddrGen, [ editor.scene.contours[i] ]));
+                }
                 
                 // run tasks
                 fQueue.Queue.apply(this, funcs).done(dfd.resolve).fail(dfd.reject);
