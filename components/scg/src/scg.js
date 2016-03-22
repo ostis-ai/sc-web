@@ -433,6 +433,7 @@ SCg.Editor.prototype = {
             var input = $(container + ' #scg-set-content-input');
             var input_content = $(container + " input#content[type='file']");
             var input_content_type = $(container + " #scg-set-content-type");
+            input.val(self.scene.selected_objects[0].content);
 
             // process controls
             $(container + ' #scg-set-content-apply').click(function() {
@@ -442,11 +443,15 @@ SCg.Editor.prototype = {
                     var fileReader = new FileReader();
                     fileReader.onload = function() {
                         obj.setContent(this.result, 'string');
+                        var linkDiv = $("#link_" + self.containerId + "_" + obj.id);
+                        linkDiv.find(".impl").text(file);
                         stop_modal();
                     };
                     fileReader.readAsArrayBuffer(file);
                 } else {
                     obj.setContent(input.val(), input_content_type.val());
+                    var linkDiv = $("#link_" + self.containerId + "_" + obj.id);
+                    linkDiv.find(".impl").text(input.val());
                     stop_modal();
                 }
             });
@@ -508,8 +513,11 @@ SCg.Editor.prototype = {
 
             if (!this.scene.selected_objects[0].sc_addr) {
                 this._enableTool(this.toolChangeIdtf());
-                this._enableTool(this.toolChangeType());
-                this._enableTool(this.toolSetContent());
+                if (this.scene.selected_objects[0] instanceof SCg.ModelLink){
+                    this._enableTool(this.toolSetContent());
+                } else {
+                    this._enableTool(this.toolChangeType());
+                }
             }
         } else {
             if (this.scene.selected_objects[0] instanceof SCg.ModelContour) {
@@ -544,13 +552,6 @@ SCg.Editor.prototype = {
         update_tool(this.toolEdge());
         update_tool(this.toolBus());
         update_tool(this.toolContour());
-        
-        update_tool(this.toolChangeIdtf());
-        update_tool(this.toolChangeType());
-        update_tool(this.toolSetContent());
-        update_tool(this.toolDelete());
-        update_tool(this.toolZoomIn());
-        update_tool(this.toolZoomOut());
     },
 
     collectIdtfs : function(keyword){
