@@ -565,7 +565,11 @@ SCg.Render.prototype = {
                 d3.select(this).classed('SCgLinePointHighlighted', false);
             })
             .on('mousedown', function(d) {
-                self.line_point_idx = d.idx;
+                if (self.line_point_idx < 0){
+                    self.line_point_idx = d.idx;
+                } else {
+                    self.line_point_idx = -1;
+                }
             });
             /*.on('mouseup', function(d) {
                 self.scene.pointed_object = null;
