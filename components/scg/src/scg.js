@@ -147,6 +147,11 @@ SCg.Editor.prototype = {
     tool: function(name) {
         return $('#' + this.containerId).find('#scg-tool-' + name);
     },
+
+
+    toolSwitch: function() {
+        return this.tool('switch');
+    },
     
     toolSelect: function() {
         return this.tool('select');
@@ -213,6 +218,26 @@ SCg.Editor.prototype = {
         select.button('toggle');
         
         // handle clicks on mode change
+        this.toolSwitch().click(function() {
+            var tools = [self.toolEdge(),
+                        self.toolContour(),
+                        self.toolChangeIdtf(),
+                        self.toolChangeType(),
+                        self.toolSetContent(),
+                        self.toolDelete(),
+                        self.toolOpen(),
+                        self.toolIntegrate()];
+            if (tools[0].hasClass("hidden")){
+                for (var button = 0 ; button < tools.length ; button++){
+                    self.showTool(tools[button]);       
+                } 
+            } else {
+                for (var button = 0 ; button < tools.length ; button++){
+                    self.hideTool(tools[button]);        
+                } 
+            }
+        
+        });
         select.click(function() {
             self.scene.setEditMode(SCgEditMode.SCgModeSelect);
         });
