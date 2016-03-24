@@ -468,6 +468,8 @@ SCg.Render.prototype = {
                 return self.classState(d, 'SCgBus');
             });
         });
+
+        this.updateLinePoints();
     },
     
     updateTexts: function() {

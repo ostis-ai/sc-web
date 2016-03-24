@@ -376,7 +376,6 @@ SCg.Scene.prototype = {
             }
         }
         
-        this.render.updateLinePoints();
         this.updateObjectsVisual();
     },
     
@@ -396,7 +395,6 @@ SCg.Scene.prototype = {
             }
             
             this.updateObjectsVisual();
-            this.render.updateLinePoints();
             return true;
         }
         
@@ -676,7 +674,6 @@ SCg.Scene.prototype = {
         edge.need_observer_sync = true;
     
         this.updateObjectsVisual();
-        this.render.updateLinePoints();
     },
 
     finishBusCreation: function() {

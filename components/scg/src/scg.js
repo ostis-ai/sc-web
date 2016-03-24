@@ -148,7 +148,6 @@ SCg.Editor.prototype = {
         return $('#' + this.containerId).find('#scg-tool-' + name);
     },
 
-
     toolSwitch: function() {
         return this.tool('switch');
     },
