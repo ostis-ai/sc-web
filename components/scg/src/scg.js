@@ -143,6 +143,10 @@ SCg.Editor.prototype = {
     showTool: function(tool) {
         tool.removeClass('hidden');
     },
+
+    toggleTool: function(tool) {
+        tool.toggleClass('hidden');
+    },
     
     tool: function(name) {
         return $('#' + this.containerId).find('#scg-tool-' + name);
@@ -226,28 +230,19 @@ SCg.Editor.prototype = {
                         self.toolDelete(),
                         self.toolOpen(),
                         self.toolIntegrate()];
-            if (tools[0].hasClass("hidden")){
-                for (var button = 0 ; button < tools.length ; button++){
-                    self.showTool(tools[button]);       
-                } 
-            } else {
-                for (var button = 0 ; button < tools.length ; button++){
-                    self.hideTool(tools[button]);        
-                } 
+            for (var button = 0 ; button < tools.length ; button++){
+                self.toggleTool(tools[button]);
             }
-        
         });
         select.click(function() {
             self.scene.setEditMode(SCgEditMode.SCgModeSelect);
         });
         select.dblclick(function() {             
             var tool = $(this);
-
             function stop_modal() {
                 tool.popover('destroy');
                 self.scene.setEditMode(SCgEditMode.SCgModeSelect);
             }
-
             el = $(this);
             el.popover({
                 content: self.node_types_panel_content,
@@ -256,13 +251,10 @@ SCg.Editor.prototype = {
                 html: true,
                 delay: {show: 500, hide: 100}
             }).popover('show');
-                  
             cont.find('.popover-title').append('<button id="scg-type-close" type="button" class="close">&times;</button>');
-                  
             $(container + ' #scg-type-close').click(function() {
                 stop_modal();
             });
-
             $(container + ' .popover .btn').click(function() {
                 SCgTypeNodeNow = self.typesMap[$(this).attr('id')];
                 stop_modal();
@@ -273,12 +265,10 @@ SCg.Editor.prototype = {
         });
         this.toolEdge().dblclick(function() {             
             var tool = $(this);
-
             function stop_modal() {
                 tool.popover('destroy');
                 self.scene.setEditMode(SCgEditMode.SCgModeEdge);
             }
-
             el = $(this);
             el.popover({
                 content: self.edge_types_panel_content,
@@ -287,13 +277,10 @@ SCg.Editor.prototype = {
                 html: true,
                 delay: {show: 500, hide: 100}
             }).popover('show');
-                  
             cont.find('.popover-title').append('<button id="scg-type-close" type="button" class="close">&times;</button>');
-                  
             $(container + ' #scg-type-close').click(function() {
                 stop_modal();
             });
-
             $(container + ' .popover .btn').click(function() {
                 SCgTypeEdgeNow = self.typesMap[$(this).attr('id')];
                 stop_modal();
