@@ -24,6 +24,9 @@ var KeyCode = {
     Enter: 13
 };
 
+var SCgTypeEdgeNow = sc_type_arc_pos_const_perm;
+var SCgTypeNodeNow = sc_type_node | sc_type_const;
+
 SCg.Scene = function(options) {
 
     this.render = options.render;
@@ -373,7 +376,6 @@ SCg.Scene.prototype = {
             }
         }
         
-        this.render.updateLinePoints();
         this.updateObjectsVisual();
     },
     
@@ -393,7 +395,6 @@ SCg.Scene.prototype = {
             }
             
             this.updateObjectsVisual();
-            this.render.updateLinePoints();
             return true;
         }
         
@@ -446,7 +447,7 @@ SCg.Scene.prototype = {
             if (this.pointed_object)
                 return; // do nothing
             
-            this.createNode(sc_type_node | sc_type_const, new SCg.Vector3(x, y, 0), '');
+            this.createNode(SCgTypeNodeNow, new SCg.Vector3(x, y, 0), '');
             this.updateRender();
             return true;
         }
@@ -498,7 +499,7 @@ SCg.Scene.prototype = {
             } else {
                 // source and target must be not equal
                 if (this.edge_data.source != obj) {
-                    var edge = this.createEdge(this.edge_data.source, obj, sc_type_arc_pos_const_perm);
+                    var edge = this.createEdge(this.edge_data.source, obj, SCgTypeEdgeNow);
 
                     var mouse_pos = new SCg.Vector2(this.mouse_pos.x, this.mouse_pos.y);
                     var start_pos = new SCg.Vector2(this.drag_line_points[0].x, this.drag_line_points[0].y);
@@ -673,7 +674,6 @@ SCg.Scene.prototype = {
         edge.need_observer_sync = true;
     
         this.updateObjectsVisual();
-        this.render.updateLinePoints();
     },
 
     finishBusCreation: function() {
@@ -710,8 +710,6 @@ SCg.Scene.prototype = {
             verticies: polygon
         });
 
-        contour.addNodesWhichAreInContourPolygon(this.nodes);
-        contour.addNodesWhichAreInContourPolygon(this.links);
         this.appendContour(contour);
         this.pointed_object = contour;
         this.drag_line_points.splice(0, this.drag_line_points.length);

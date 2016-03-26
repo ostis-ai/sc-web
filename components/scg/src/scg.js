@@ -143,9 +143,17 @@ SCg.Editor.prototype = {
     showTool: function(tool) {
         tool.removeClass('hidden');
     },
+
+    toggleTool: function(tool) {
+        tool.toggleClass('hidden');
+    },
     
     tool: function(name) {
         return $('#' + this.containerId).find('#scg-tool-' + name);
+    },
+
+    toolSwitch: function() {
+        return this.tool('switch');
     },
     
     toolSelect: function() {
@@ -213,11 +221,70 @@ SCg.Editor.prototype = {
         select.button('toggle');
         
         // handle clicks on mode change
+        this.toolSwitch().click(function() {
+            var tools = [self.toolEdge(),
+                        self.toolContour(),
+                        self.toolChangeIdtf(),
+                        self.toolChangeType(),
+                        self.toolSetContent(),
+                        self.toolDelete(),
+                        self.toolOpen(),
+                        self.toolIntegrate()];
+            for (var button = 0 ; button < tools.length ; button++){
+                self.toggleTool(tools[button]);
+            }
+        });
         select.click(function() {
             self.scene.setEditMode(SCgEditMode.SCgModeSelect);
         });
+        select.dblclick(function() {             
+            var tool = $(this);
+            function stop_modal() {
+                tool.popover('destroy');
+                self.scene.setEditMode(SCgEditMode.SCgModeSelect);
+            }
+            el = $(this);
+            el.popover({
+                content: self.node_types_panel_content,
+                container: container,
+                title: 'Change type',
+                html: true,
+                delay: {show: 500, hide: 100}
+            }).popover('show');
+            cont.find('.popover-title').append('<button id="scg-type-close" type="button" class="close">&times;</button>');
+            $(container + ' #scg-type-close').click(function() {
+                stop_modal();
+            });
+            $(container + ' .popover .btn').click(function() {
+                SCgTypeNodeNow = self.typesMap[$(this).attr('id')];
+                stop_modal();
+            });   
+        });
         this.toolEdge().click(function() {
             self.scene.setEditMode(SCgEditMode.SCgModeEdge);
+        });
+        this.toolEdge().dblclick(function() {             
+            var tool = $(this);
+            function stop_modal() {
+                tool.popover('destroy');
+                self.scene.setEditMode(SCgEditMode.SCgModeEdge);
+            }
+            el = $(this);
+            el.popover({
+                content: self.edge_types_panel_content,
+                container: container,
+                title: 'Change type',
+                html: true,
+                delay: {show: 500, hide: 100}
+            }).popover('show');
+            cont.find('.popover-title').append('<button id="scg-type-close" type="button" class="close">&times;</button>');
+            $(container + ' #scg-type-close').click(function() {
+                stop_modal();
+            });
+            $(container + ' .popover .btn').click(function() {
+                SCgTypeEdgeNow = self.typesMap[$(this).attr('id')];
+                stop_modal();
+            });   
         });
         this.toolBus().click(function() {
             self.scene.setEditMode(SCgEditMode.SCgModeBus);
@@ -377,6 +444,7 @@ SCg.Editor.prototype = {
             var input = $(container + ' #scg-set-content-input');
             var input_content = $(container + " input#content[type='file']");
             var input_content_type = $(container + " #scg-set-content-type");
+            input.val(self.scene.selected_objects[0].content);
 
             // process controls
             $(container + ' #scg-set-content-apply').click(function() {
@@ -386,11 +454,15 @@ SCg.Editor.prototype = {
                     var fileReader = new FileReader();
                     fileReader.onload = function() {
                         obj.setContent(this.result, 'string');
+                        var linkDiv = $("#link_" + self.containerId + "_" + obj.id);
+                        linkDiv.find(".impl").text(file);
                         stop_modal();
                     };
                     fileReader.readAsArrayBuffer(file);
                 } else {
                     obj.setContent(input.val(), input_content_type.val());
+                    var linkDiv = $("#link_" + self.containerId + "_" + obj.id);
+                    linkDiv.find(".impl").text(input.val());
                     stop_modal();
                 }
             });
@@ -452,11 +524,18 @@ SCg.Editor.prototype = {
 
             if (!this.scene.selected_objects[0].sc_addr) {
                 this._enableTool(this.toolChangeIdtf());
-                this._enableTool(this.toolChangeType());
-                this._enableTool(this.toolSetContent());
+                if (this.scene.selected_objects[0] instanceof SCg.ModelLink){
+                    this._enableTool(this.toolSetContent());
+                } else {
+                    this._enableTool(this.toolChangeType());
+                }
             }
         } else {
-            this._disableTool(this.toolChangeIdtf());
+            if (this.scene.selected_objects[0] instanceof SCg.ModelContour) {
+                this._enableTool(this.toolChangeIdtf());
+            } else {
+                this._disableTool(this.toolChangeIdtf());
+            }
             this._disableTool(this.toolChangeType());
             this._disableTool(this.toolSetContent());
         } 
@@ -484,13 +563,6 @@ SCg.Editor.prototype = {
         update_tool(this.toolEdge());
         update_tool(this.toolBus());
         update_tool(this.toolContour());
-        
-        update_tool(this.toolChangeIdtf());
-        update_tool(this.toolChangeType());
-        update_tool(this.toolSetContent());
-        update_tool(this.toolDelete());
-        update_tool(this.toolZoomIn());
-        update_tool(this.toolZoomOut());
     },
 
     collectIdtfs : function(keyword){
