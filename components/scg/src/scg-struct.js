@@ -259,15 +259,22 @@ function scgScStructTranslator(_editor, _sandbox) {
                         window.sctpClient.create_node(sc_type_const | sc_type_node | sc_type_node_struct).done(function (node) {
                             c.setScAddr(node);
                             c.setObjectState(SCgObjectState.NewInMemory);
-                            dfd.resolve();
-                        }).fail(dfd.reject);
+                            objects.push(c);
+                            translateIdentifier(c)
+                                    .done(dfd.resolve)
+                                    .fail(dfd.reject);                          
+                        });
                     }
 
                     return dfd.promise();
                 };
                 var funcs = [];
-                for (var i = 0; i < editor.scene.contours.length; ++i)
+                for (var i = 0; i < editor.scene.contours.length; ++i){
+                    editor.scene.contours[i].addNodesWhichAreInContourPolygon(editor.scene.nodes);
+                    editor.scene.contours[i].addNodesWhichAreInContourPolygon(editor.scene.links);
+                    editor.scene.contours[i].addEdgesWhichAreInContourPolygon(editor.scene.edges);
                     funcs.push(fQueue.Func(scAddrGen, [ editor.scene.contours[i] ]));
+                }
                 
                 // run tasks
                 fQueue.Queue.apply(this, funcs).done(dfd.resolve).fail(dfd.reject);
