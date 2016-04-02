@@ -17,7 +17,12 @@
 	
 	"component": [
         "src/scg-struct.js",
-        "src/scg-component.js"
+        "src/scg-component.js",
+        "src/listener/scg-mode-bus.js",
+        "src/listener/scg-mode-contour.js",
+        "src/listener/scg-mode-edge.js",
+        "src/listener/scg-mode-link.js",
+        "src/listener/scg-mode-select.js"
     ],
 
 	"target": "static/components/js/scg/scg.js"
