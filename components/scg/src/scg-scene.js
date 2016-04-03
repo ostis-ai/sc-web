@@ -29,6 +29,12 @@ var SCgTypeNodeNow = sc_type_node | sc_type_const;
 
 SCg.Scene = function(options) {
 
+    this.listener_array = [ new SCgSelectListener(this),
+                            new SCgEdgeListener(this),
+                            new SCgBusListener(this),
+                            new SCgContourListener(this),
+                            new SCgLinkListener(this) ];
+    this.listener = this.listener_array[0];
     this.render = options.render;
     this.nodes = [];
     this.links = [];
@@ -381,208 +387,54 @@ SCg.Scene.prototype = {
     
     // -------- input processing -----------
     onMouseMove: function(x, y) {
-        
-        if (this.modal != SCgModalMode.SCgModalNone) return; // do nothing
-        
-        var offset = new SCg.Vector3(x - this.mouse_pos.x, y - this.mouse_pos.y, 0);
-
-        this.mouse_pos.x = x;
-        this.mouse_pos.y = y;
-        
-        if ((this.edit_mode == SCgEditMode.SCgModeSelect) && this.focused_object) {
-            if (this.focused_object.sc_type & (sc_type_node | sc_type_link)) {
-                this.focused_object.setPosition(this.focused_object.position.clone().add(offset));
-            }
-            
-            this.updateObjectsVisual();
-            return true;
-        }
-        
-        if (this.edit_mode == SCgEditMode.SCgModeEdge || this.edit_mode == SCgEditMode.SCgModeBus 
-            || this.edit_mode == SCgEditMode.SCgModeContour) {
-            this.render.updateDragLine();
-            return true;
-        }
-        
-        return false;
+        if (this.modal != SCgModalMode.SCgModalNone) return false; // do nothing
+        else return this.listener.onMouseMove(x,y);
     },
     
     onMouseDown: function(x, y) {
-
-        if (this.modal != SCgModalMode.SCgModalNone) return; // do nothing
-
-        // append new line point
-        if (!this.pointed_object) {
-            var isModeEdge = (this.edit_mode == SCgEditMode.SCgModeEdge);
-            var isModeContour = (this.edit_mode == SCgEditMode.SCgModeContour);
-            var isModeBus = (this.edit_mode == SCgEditMode.SCgModeBus);
-            if (isModeContour || (isModeEdge && this.edge_data.source) || (isModeBus && this.bus_data.source)) {
-                this.drag_line_points.push({x: x, y: y, idx: this.drag_line_points.length});
-                if (isModeBus)
-                    this.bus_data.end = {x: x, y: y, idx: this.drag_line_points.length};
-                return true;
-            }
-        }
-        
-        return false;
+        if (this.modal != SCgModalMode.SCgModalNone) return false; // do nothing
+        else return this.listener.onMouseDown(x,y);
     },
     
     onMouseUp: function(x, y) {
-        
         if (this.modal != SCgModalMode.SCgModalNone) return false; // do nothing
-        
         if (!this.pointed_object) { 
             this.clearSelection();
         }
-
         this.focused_object = null;
         return false;
     },
-    
+
     onMouseDoubleClick: function(x, y) {
-        
         if (this.modal != SCgModalMode.SCgModalNone) return false; // do nothing
-        
-        if (this.edit_mode == SCgEditMode.SCgModeSelect) {
-            if (this.pointed_object)
-                return; // do nothing
-            
-            this.createNode(SCgTypeNodeNow, new SCg.Vector3(x, y, 0), '');
-            this.updateRender();
-            return true;
-        }
-        if(this.edit_mode == SCgEditMode.SCgModeLink){
-            if (this.pointed_object)
-                return;
-
-            this.createLink(new SCg.Vector3(x, y, 0), '');
-            this.updateRender();
-
-            return true;
-        }
-        
-        return false;
+        else this.listener.onMouseDoubleClick(x,y);
     },
-    
-    
+
     onMouseOverObject: function(obj) {
-        if (this.modal != SCgModalMode.SCgModalNone) return; // do nothing
-        
+        if (this.modal != SCgModalMode.SCgModalNone) return false; // do nothing
         this.pointed_object = obj;
     },
     
     onMouseOutObject: function(obj) {
-        if (this.modal != SCgModalMode.SCgModalNone) return; // do nothing
-        
+        if (this.modal != SCgModalMode.SCgModalNone) return false; // do nothing
         this.pointed_object = null;
     },
 
     onMouseDownObject: function(obj) {
-        
-        if (this.modal != SCgModalMode.SCgModalNone) return; // do nothing
-
-        if (this.edit_mode == SCgEditMode.SCgModeSelect) {
-            this.focused_object = obj;
-            if (obj instanceof SCg.ModelContour || obj instanceof SCg.ModelBus) {
-                obj.previousPoint = new SCg.Vector2(this.mouse_pos.x, this.mouse_pos.y);
-                return true;
-            }
-        }
-
-        if (this.edit_mode == SCgEditMode.SCgModeEdge) {
-
-            // start new edge
-            if (!this.edge_data.source) {
-                this.edge_data.source = obj;
-                this.drag_line_points.push({x: this.mouse_pos.x, y: this.mouse_pos.y, idx: this.drag_line_points.length});
-                return true;
-            } else {
-                // source and target must be not equal
-                if (this.edge_data.source != obj) {
-                    var edge = this.createEdge(this.edge_data.source, obj, SCgTypeEdgeNow);
-
-                    var mouse_pos = new SCg.Vector2(this.mouse_pos.x, this.mouse_pos.y);
-                    var start_pos = new SCg.Vector2(this.drag_line_points[0].x, this.drag_line_points[0].y);
-                    edge.setSourceDot(this.edge_data.source.calculateDotPos(start_pos));
-                    edge.setTargetDot(obj.calculateDotPos(mouse_pos));
-
-                    if (this.drag_line_points.length > 1) {
-                        edge.setPoints(this.drag_line_points.slice(1));
-                    }
-                    this.edge_data.source = this.edge_data.target = null;
-
-                    this.drag_line_points.splice(0, this.drag_line_points.length);
-
-                    this.updateRender();
-                    this.render.updateDragLine();
-                    return true;
-                }
-            }
-        }
-        if (this.edit_mode == SCgEditMode.SCgModeBus) {
-        
-            if (!this.bus_data.source && !obj.bus && !(obj instanceof SCg.ModelBus)) {
-                this.bus_data.source = obj;
-                this.drag_line_points.push({x: this.mouse_pos.x, y: this.mouse_pos.y, idx: this.drag_line_points.length});
-                return true;
-            }
-        }
-        
-        return false;
+        if (this.modal != SCgModalMode.SCgModalNone) return false; // do nothing
+        else this.listener.onMouseDownObject(obj);
     },
     
     onMouseUpObject: function(obj) {
-        if (this.modal != SCgModalMode.SCgModalNone) return; // do nothing
-        
-        if (this.edit_mode == SCgEditMode.SCgModeSelect) {
-            // case we moved object from contour
-            if (obj.contour && !obj.contour.isNodeInPolygon(obj)) {
-                obj.contour.removeChild(obj);
-            }
-
-            // case we moved object into the contour
-            if (!obj.contour && (obj instanceof SCg.ModelNode || obj instanceof SCg.ModelLink)) {
-                for (var i = 0; i < this.contours.length; i++) {
-                    if (this.contours[i].isNodeInPolygon(obj)) {
-                        this.contours[i].addChild(obj);
-                    }
-                }
-            }
-
-            if (obj == this.focused_object) {
-                this.clearSelection();
-                this.appendSelection(obj);
-                this.updateObjectsVisual();
-                                
-                
-            }
-
-            this.focused_object = null;
-        }
-        
-        return true;
+        return this.listener.onMouseUpObject(obj);
     },
     
     onKeyDown: function(key_code) {
-        
-        if (this.modal != SCgModalMode.SCgModalNone) return false; // do nothing
-        
-        // revert changes on escape key
-        if (key_code == KeyCode.Escape) {
-            if (this.edit_mode == SCgEditMode.SCgModeEdge)
-            {
-                this.resetEdgeMode();
-                return true;
-            }
-        }
-        
-        return false;
+        return this.listener.onKeyDown(key_code);
     },
     
     onKeyUp: function(key_code) {
-        if (this.modal != SCgModalMode.SCgModalNone) return false; // do nothing
-        
-        return false;
+        return this.listener.onKeyUp(key_code);
     },
     
     // -------- edit --------------
@@ -595,7 +447,8 @@ SCg.Scene.prototype = {
         if (this.edit_mode == mode) return; // do nothing
         
         this.edit_mode = mode;
-        
+        this.listener = this.listener_array[mode];
+
         this.focused_object = null;
         this.edge_data.source = null; this.edge_data.target = null;
         
