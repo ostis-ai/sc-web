@@ -52,6 +52,8 @@ SCgEdgeListener.prototype = {
                 scene.drag_line_points.splice(0, scene.drag_line_points.length);
                 scene.updateRender();
                 scene.render.updateDragLine();
+                edge.need_update = true;
+                scene.updateObjectsVisual();
                 return true;
             }
         }

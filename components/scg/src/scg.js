@@ -118,10 +118,7 @@ SCg.Editor.prototype = {
                 self.hideTool(self.toolOpen());
                 self.hideTool(self.toolIntegrate());
             }
-            
-            // temporary
-            self.hideTool(self.toolBus());
-            
+
             if (self.resolveControls)
                 self.resolveControls(tools_container);
         });
@@ -224,6 +221,7 @@ SCg.Editor.prototype = {
         this.toolSwitch().click(function() {
             var tools = [self.toolEdge(),
                         self.toolContour(),
+                        self.toolBus(),
                         self.toolChangeIdtf(),
                         self.toolChangeType(),
                         self.toolSetContent(),

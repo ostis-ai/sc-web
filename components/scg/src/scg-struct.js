@@ -191,6 +191,7 @@ function scgScStructTranslator(_editor, _sandbox) {
             // translate nodes
             var nodes = editor.scene.nodes.slice();
             var links = editor.scene.links.slice();
+            var buses = editor.scene.buses.slice();
             var objects = [];
             
             
@@ -239,6 +240,10 @@ function scgScStructTranslator(_editor, _sandbox) {
                 var funcs = [];
                 for (var i = 0; i < nodes.length; ++i) {
                     funcs.push(fQueue.Func(implFunc, [ nodes[i] ]));
+                }
+
+                for (var number_bus = 0; number_bus < buses.length; ++number_bus) {
+                    buses[number_bus].setScAddr(buses[number_bus].source.sc_addr);
                 }
                 
                 fQueue.Queue.apply(this, funcs).done(dfdNodes.resolve).fail(dfdNodes.reject);
