@@ -111,8 +111,7 @@ var scgViewerWindow = function(sandbox) {
             
             if (elements.hasOwnProperty(el.id))
                 continue;
-                
-            if (this.editor.scene.objects.hasOwnProperty(el.id)) {
+            if (Object.prototype.hasOwnProperty.call(this.editor.scene.objects, el.id)) {
                 elements[el.id] = this.editor.scene.objects[el.id];
                 continue;
             }

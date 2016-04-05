@@ -147,7 +147,7 @@ function scgScStructTranslator(_editor, _sandbox) {
     var currentLanguage = sandbox.getCurrentLanguage();
     var translateIdentifier = function(obj) {
         var dfd = new jQuery.Deferred();
-        if (currentLanguage && obj.text) {
+        if (currentLanguage) {
             window.sctpClient.create_link().done(function(link_addr) {
                 window.sctpClient.set_link_content(link_addr, obj.text).done(function () {
                     window.sctpClient.create_arc(sc_type_arc_common | sc_type_const, obj.sc_addr, link_addr).done(function(arc_addr) {
@@ -191,6 +191,7 @@ function scgScStructTranslator(_editor, _sandbox) {
             // translate nodes
             var nodes = editor.scene.nodes.slice();
             var links = editor.scene.links.slice();
+            var buses = editor.scene.buses.slice();
             var objects = [];
             
             
@@ -222,12 +223,14 @@ function scgScStructTranslator(_editor, _sandbox) {
                         window.sctpClient.create_node(node.sc_type).done(function (r) {
                             node.setScAddr(r);
                             node.setObjectState(SCgObjectState.NewInMemory);
-
                             objects.push(node);
-                            
-                            translateIdentifier(node)
+                            if (node.text) {
+                                translateIdentifier(node)
                                     .done(dfd.resolve)
-                                    .fail(dfd.reject);                          
+                                    .fail(dfd.reject);
+                            } else {
+                                dfd.resolve();
+                            }
                         });
                     } else {
                         dfd.resolve();
@@ -246,7 +249,7 @@ function scgScStructTranslator(_editor, _sandbox) {
                 return dfdNodes.promise();
             }
             
-            var preTranslateContours = function() {
+            var preTranslateContoursAndBus = function() {
                 var dfd = new jQuery.Deferred();
                 
                 // create sc-struct nodes
@@ -260,9 +263,13 @@ function scgScStructTranslator(_editor, _sandbox) {
                             c.setScAddr(node);
                             c.setObjectState(SCgObjectState.NewInMemory);
                             objects.push(c);
-                            translateIdentifier(c)
+                            if (c.text) {
+                                translateIdentifier(c)
                                     .done(dfd.resolve)
-                                    .fail(dfd.reject);                          
+                                    .fail(dfd.reject);
+                            } else {
+                                dfd.resolve();
+                            }
                         });
                     }
 
@@ -275,7 +282,11 @@ function scgScStructTranslator(_editor, _sandbox) {
                     editor.scene.contours[i].addEdgesWhichAreInContourPolygon(editor.scene.edges);
                     funcs.push(fQueue.Func(scAddrGen, [ editor.scene.contours[i] ]));
                 }
-                
+
+                for (var number_bus = 0; number_bus < buses.length; ++number_bus) {
+                    buses[number_bus].setScAddr(buses[number_bus].source.sc_addr);
+                }
+
                 // run tasks
                 fQueue.Queue.apply(this, funcs).done(dfd.resolve).fail(dfd.reject);
                 
@@ -438,7 +449,7 @@ function scgScStructTranslator(_editor, _sandbox) {
                 /* Translate nodes */
                 fQueue.Func(translateNodes),
                 fQueue.Func(translateLinks),
-                fQueue.Func(preTranslateContours),
+                fQueue.Func(preTranslateContoursAndBus),
                 fQueue.Func(translateEdges),
                 // translate bus there (before contours)
                 fQueue.Func(translateContours)
