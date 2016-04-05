@@ -492,9 +492,10 @@ SCg.Editor.prototype = {
         });
         
         this.toolIntegrate().click(function() {
+            self._disableTool(self.toolIntegrate());
             if (self.translateToSc)
                 self.translateToSc(self.scene, function() {
-                    
+                    self._enableTool(self.toolIntegrate());
                 });
         });
         
