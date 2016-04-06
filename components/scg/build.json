@@ -22,7 +22,8 @@
         "src/listener/scg-mode-contour.js",
         "src/listener/scg-mode-edge.js",
         "src/listener/scg-mode-link.js",
-        "src/listener/scg-mode-select.js"
+        "src/listener/scg-mode-select.js",
+        "src/scg-command-manager.js"
     ],
 
 	"target": "static/components/js/scg/scg.js"

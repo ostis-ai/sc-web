@@ -21,7 +21,8 @@ var SCgModalMode = {
 
 var KeyCode = {
     Escape: 27,
-    Enter: 13
+    Enter: 13,
+    Z: 90
 };
 
 var SCgTypeEdgeNow = sc_type_arc_pos_const_perm;
@@ -35,6 +36,7 @@ SCg.Scene = function(options) {
                             new SCgContourListener(this),
                             new SCgLinkListener(this) ];
     this.listener = this.listener_array[0];
+    this.commandManager = new SCgCommandManager(this);
     this.render = options.render;
     this.nodes = [];
     this.links = [];
@@ -429,12 +431,16 @@ SCg.Scene.prototype = {
         return this.listener.onMouseUpObject(obj);
     },
     
-    onKeyDown: function(key_code) {
-        return this.listener.onKeyDown(key_code);
+    onKeyDown: function(event) {
+        if ((event.which == KeyCode.Z) && event.ctrlKey && event.shiftKey){
+            this.commandManager.redo();
+        } else if (event.ctrlKey && (event.which == KeyCode.Z)) {
+            this.commandManager.undo();
+        } else return this.listener.onKeyDown(event.keyCode);
     },
     
-    onKeyUp: function(key_code) {
-        return this.listener.onKeyUp(key_code);
+    onKeyUp: function(event) {
+        return this.listener.onKeyUp(event.keyCode);
     },
     
     // -------- edit --------------

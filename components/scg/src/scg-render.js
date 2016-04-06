@@ -47,10 +47,10 @@ SCg.Render.prototype = {
         // need to check if container is visible
         d3.select(window)
                 .on('keydown', function() {
-                    self.onKeyDown(d3.event.keyCode);
+                    self.onKeyDown(d3.event);
                 })
                 .on('keyup', function() {
-                    self.onKeyUp(d3.event.keyCode);
+                    self.onKeyUp(d3.event);
                 });
         this.initDefs();
                                     
@@ -664,15 +664,15 @@ SCg.Render.prototype = {
             d3.event.stopPropagation();
     },
     
-    onKeyDown: function(key_code) {
+    onKeyDown: function(event) {
         // do not send event to other listeners, if it processed in scene
-        if (this.scene.onKeyDown(key_code))
+        if (this.scene.onKeyDown(event))
             d3.event.stopPropagation();
     },
     
-    onKeyUp: function(key_code) {
+    onKeyUp: function(event) {
         // do not send event to other listeners, if it processed in scene
-        if (this.scene.onKeyUp(key_code))
+        if (this.scene.onKeyUp(event))
             d3.event.stopPropagation();
     },
     
