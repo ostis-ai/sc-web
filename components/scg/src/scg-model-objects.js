@@ -235,7 +235,7 @@ SCg.ModelObject.prototype.removeBus = function(edge) {
 SCg.ModelObject.prototype.setScAddr = function(addr, merged) {
     
     // remove old sc-addr from map
-    if (this.sc_addr && this.scene.objects.hasOwnPropery(this.sc_addr)) {
+    if (this.sc_addr && Object.prototype.hasOwnProperty.call(this.scene.objects, this.sc_addr)) {
         delete this.scene.objects[this.sc_addr];
     }
     this.sc_addr = addr;
@@ -769,6 +769,7 @@ SCg.ModelBus.prototype.setSource = function(scg_obj) {
         this.source.removeBus(this);
     
     this.source = scg_obj;
+    this.id = scg_obj.id;
     this.source.bus = this;
     this.need_observer_sync = true;
     this.need_update = true;

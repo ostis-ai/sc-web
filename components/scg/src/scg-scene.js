@@ -42,7 +42,7 @@ SCg.Scene = function(options) {
     this.contours = [];
     this.buses = [];
     
-    this.objects = {};
+    this.objects = Object.create(null);
     this.edit_mode = SCgEditMode.SCgModeSelect;
     
     // object, that placed under mouse
@@ -312,7 +312,7 @@ SCg.Scene.prototype = {
      * @return If object founded, then return it; otherwise return null
      */
     getObjectByScAddr: function(addr) {
-        if (this.objects.hasOwnProperty(addr))
+        if (Object.prototype.hasOwnProperty.call(this.objects, addr))
             return this.objects[addr];
             
         return null;
