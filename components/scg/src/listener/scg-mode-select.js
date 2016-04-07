@@ -1,5 +1,7 @@
 SCgSelectListener = function(scene) {
     this.scene = scene;
+    this.position = null;
+    this.offsetObject = null;
 };
 
 SCgSelectListener.prototype = {
@@ -33,6 +35,8 @@ SCgSelectListener.prototype = {
     },
 
     onMouseDownObject: function(obj) {
+        this.position = new SCg.Vector3(this.scene.mouse_pos.x, this.scene.mouse_pos.y, 0);
+        this.offsetObject = obj;
         this.scene.focused_object = obj;
         if (obj instanceof SCg.ModelContour || obj instanceof SCg.ModelBus) {
             obj.previousPoint = new SCg.Vector2(this.scene.mouse_pos.x, this.scene.mouse_pos.y);
@@ -42,6 +46,12 @@ SCgSelectListener.prototype = {
     },
 
     onMouseUpObject: function (obj) {
+        var newPosition = new SCg.Vector3(this.scene.mouse_pos.x, this.scene.mouse_pos.y, 0);
+        if (!this.position.equals(newPosition) && this.offsetObject == obj){
+            this.scene.commandManager.addCommand(new SCgCommandMoveObject(obj, this.position, newPosition));
+            this.offsetObject = null;
+            this.position = null;
+        }
         // case we moved object from contour
         if (obj.contour && !obj.contour.isNodeInPolygon(obj)) {
             obj.contour.removeChild(obj);

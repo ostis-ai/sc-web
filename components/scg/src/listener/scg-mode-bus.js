@@ -51,6 +51,22 @@ SCgBusListener.prototype = {
 
     onKeyUp: function(key_code) {
         return false;
+    },
+
+    finishCreation: function () {
+        var scene = this.scene;
+        var bus = scene.createBus(scene.bus_data.source);
+        scene.commandManager.addCommand(new SCgCommandCreateBus(bus));
+        if (scene.drag_line_points.length > 1) {
+            bus.setPoints(scene.drag_line_points.slice(1));
+        }
+        var pos = new SCg.Vector2(scene.drag_line_points[0].x, scene.drag_line_points[0].y);
+        bus.setSourceDot(scene.bus_data.source.calculateDotPos(pos));
+        bus.setTargetDot(0);
+        scene.bus_data.source = scene.bus_data.end = null;
+        scene.drag_line_points.splice(0, scene.drag_line_points.length);
+        scene.updateRender();
+        scene.render.updateDragLine();
     }
 
 };

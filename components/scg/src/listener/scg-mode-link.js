@@ -16,7 +16,8 @@ SCgLinkListener.prototype = {
 
     onMouseDoubleClick: function (x, y) {
         if (this.scene.pointed_object) return false;
-        this.scene.createLink(new SCg.Vector3(x, y, 0), '');
+        var link = this.scene.createLink(new SCg.Vector3(x, y, 0), '');
+        this.scene.commandManager.addCommand(new SCgCommandCreateLink(link));
         this.scene.updateRender();
         return true;
     },

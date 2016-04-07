@@ -200,6 +200,7 @@ SCg.Scene.prototype = {
             sc_type: sc_type_link,
             containerId: containerId
         });
+        link.setContent("null");
         this.appendLink(link);
         
         return link;
@@ -534,48 +535,7 @@ SCg.Scene.prototype = {
     
         this.updateObjectsVisual();
     },
-
-    finishBusCreation: function() {
-        
-        var bus = this.createBus(this.bus_data.source);                    
-                    
-        if (this.drag_line_points.length > 1) {
-            bus.setPoints(this.drag_line_points.slice(1));
-        }       
-        var pos = new SCg.Vector2(this.drag_line_points[0].x, this.drag_line_points[0].y);
-
-        bus.setSourceDot(this.bus_data.source.calculateDotPos(pos));
-        bus.setTargetDot(0);
-         
-        this.bus_data.source = this.bus_data.end = null;
-
-        this.drag_line_points.splice(0, this.drag_line_points.length);
-
-        this.updateRender();
-        this.render.updateDragLine();
-     },
-
-    finishContourCreation: function() {
-        if (this.drag_line_points.length < 3) {
-            SCgDebug.error('Set at least 3 points for contour');
-            return;
-        }
-
-        var polygon =  $.map(this.drag_line_points, function (vertex) {
-            return $.extend({}, vertex);
-        });
-
-        var contour = new SCg.ModelContour({
-            verticies: polygon
-        });
-
-        this.appendContour(contour);
-        this.pointed_object = contour;
-        this.drag_line_points.splice(0, this.drag_line_points.length);
-        this.updateRender();
-        this.render.updateDragLine();
-    },
-
+    
     // ------------- events -------------
     _fireSelectionChanged: function() {
         if (this.event_selection_changed)

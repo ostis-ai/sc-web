@@ -188,7 +188,7 @@ function scgScStructTranslator(_editor, _sandbox) {
 
             var dfdNodes = jQuery.Deferred();
 
-            // translate nodes
+            editor.scene.commandManager.clear();
             var nodes = editor.scene.nodes.slice();
             var links = editor.scene.links.slice();
             var buses = editor.scene.buses.slice();
@@ -451,7 +451,6 @@ function scgScStructTranslator(_editor, _sandbox) {
                 fQueue.Func(translateLinks),
                 fQueue.Func(preTranslateContoursAndBus),
                 fQueue.Func(translateEdges),
-                // translate bus there (before contours)
                 fQueue.Func(translateContours)
             ).done(fireCallback);
             

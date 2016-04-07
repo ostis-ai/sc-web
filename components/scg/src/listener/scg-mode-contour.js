@@ -39,6 +39,20 @@ SCgContourListener.prototype = {
 
     onKeyUp: function(key_code) {
         return false;
+    },
+
+    finishCreation: function () {
+        var scene = this.scene;
+        var polygon = $.map(scene.drag_line_points, function (vertex) {
+            return $.extend({}, vertex);
+        });
+        var contour = new SCg.ModelContour({ verticies: polygon });
+        scene.commandManager.addCommand(new SCgCommandCreateContour(contour));
+        scene.appendContour(contour);
+        scene.pointed_object = contour;
+        scene.drag_line_points.splice(0, scene.drag_line_points.length);
+        scene.updateRender();
+        scene.render.updateDragLine();
     }
 
 };

@@ -368,6 +368,7 @@ SCg.Editor.prototype = {
             // process controls
             $(container + ' #scg-change-idtf-apply').click(function() {
                 var obj = self.scene.selected_objects[0];
+                self.scene.commandManager.addCommand(new SCgCommandChangeIdtf(obj, obj.text, input.val()));
                 obj.setText(input.val());
                 
                 if (self._idtf_item) {
@@ -420,7 +421,9 @@ SCg.Editor.prototype = {
 
             $(container + ' .popover .btn').click(function() {
                 var obj = self.scene.selected_objects[0];
-                obj.setScType(self.typesMap[$(this).attr('id')]);
+                var newType = self.typesMap[$(this).attr('id')];
+                self.scene.commandManager.addCommand(new SCgCommandChangeType(obj, obj.sc_type, newType));
+                obj.setScType(newType);
                 self.scene.updateObjectsVisual();
                 stop_modal();
             });
@@ -451,16 +454,14 @@ SCg.Editor.prototype = {
                 if (file != undefined){
                     var fileReader = new FileReader();
                     fileReader.onload = function() {
+                        self.scene.commandManager.addCommand(new SCgCommandChangeContent(obj, obj.content, file));
                         obj.setContent(this.result, 'string');
-                        var linkDiv = $("#link_" + self.containerId + "_" + obj.id);
-                        linkDiv.find(".impl").text(file);
                         stop_modal();
                     };
                     fileReader.readAsArrayBuffer(file);
                 } else {
+                    self.scene.commandManager.addCommand(new SCgCommandChangeContent(obj, obj.content, input.val()));
                     obj.setContent(input.val(), input_content_type.val());
-                    var linkDiv = $("#link_" + self.containerId + "_" + obj.id);
-                    linkDiv.find(".impl").text(input.val());
                     stop_modal();
                 }
             });

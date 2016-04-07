@@ -74,13 +74,8 @@ SCg.Render.prototype = {
                         d3.select(this).classed('SCgAcceptPointHighlighted', false);
                     })
                     .on('mousedown', function(d) {
-                        if (self.scene.edit_mode == SCgEditMode.SCgModeBus) 
-                            self.scene.finishBusCreation();
-                        else if (self.scene.edit_mode == SCgEditMode.SCgModeContour)
-                            self.scene.finishContourCreation();
-                        else
-                            SCgDebug.error('Invalid edit mode ' + self.scene.edit_mode);
-
+                            self.scene.listener.finishCreation();
+                        
                         d3.event.stopPropagation();
                     });
                 
@@ -368,6 +363,12 @@ SCg.Render.prototype = {
             else
                 d.need_observer_sync = false;
             
+            if (!d.sc_addr){
+                $(document.getElementById("link_" + self.containerId + "_" + d.id))
+                    .find('.impl')
+                    .text(d.content);
+            }
+
             var g = d3.select(this)
             
             g.select('rect')
