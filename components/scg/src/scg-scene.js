@@ -36,7 +36,7 @@ SCg.Scene = function(options) {
                             new SCgContourListener(this),
                             new SCgLinkListener(this) ];
     this.listener = this.listener_array[0];
-    this.commandManager = new SCgCommandManager(this);
+    this.commandManager = new SCgCommandManager();
     this.render = options.render;
     this.nodes = [];
     this.links = [];
@@ -139,6 +139,20 @@ SCg.Scene.prototype = {
         this.buses.push(bus);
         bus.scene = this;
     },
+
+    appendObject: function(obj) {
+        if (obj instanceof SCg.ModelNode) {
+            this.appendNode(obj);
+        }else if (obj instanceof SCg.ModelLink) {
+            this.appendLink(obj);
+        } else if (obj instanceof SCg.ModelEdge) {
+            this.appendEdge(obj);
+        } else if (obj instanceof SCg.ModelContour) {
+            this.appendContour(obj);
+        } else if (obj instanceof SCg.ModelBus) {
+            this.appendBus(obj);
+        }
+    },
     
     /**
      * Remove object from scene.
@@ -162,7 +176,7 @@ SCg.Scene.prototype = {
         } else if (obj instanceof SCg.ModelEdge) {
             remove_from_list(obj, this.edges);
         } else if (obj instanceof SCg.ModelContour) {
-            this.deleteObjects(obj.childs);
+            //this.deleteObjects(obj.childs);
             remove_from_list(obj, this.contours);
         } else if (obj instanceof SCg.ModelBus) {
             remove_from_list(obj, this.buses);
@@ -239,31 +253,41 @@ SCg.Scene.prototype = {
      * @param {Array} objects Array of sc.g-objects to delete
      */
     deleteObjects: function(objects) {
+        var self = this;
         function collect_objects(container, root) {
             if (container.indexOf(root) >= 0)
                 return;
-            
+
             container.push(root);
             for (idx in root.edges) {
-                collect_objects(container, root.edges[idx]);
+                if (self.edges.indexOf(root.edges[idx]) > -1) collect_objects(container, root.edges[idx]);
             }
 
             if (root.bus)
-                collect_objects(container, root.bus);
+                if (self.buses.indexOf(root.bus) > -1) collect_objects(container, root.bus);
+
+            if (root instanceof SCg.ModelContour) {
+                for (var numberChildren = 0; numberChildren < root.childs.length; numberChildren++){
+                    if (self.nodes.indexOf(root.childs[numberChildren]) > -1) {
+                        collect_objects(container, root.childs[numberChildren]);
+                    }
+                }
+            }
         }
-        
+
         // collect objects for remove
         var objs = [];
         
         // collect objects for deletion
         for (var idx in objects)
             collect_objects(objs, objects[idx]);
-
+/*
         // delete objects
         for (var idx in objs) {
             this.removeObject(objs[idx]);
-            objs[idx].destroy();
-        }
+            //objs[idx].destroy();
+        }*/
+        this.commandManager.execute(new SCgCommandDeleteObjects(objs, this));
         
         this.updateRender();
     },
@@ -435,13 +459,17 @@ SCg.Scene.prototype = {
     onKeyDown: function(event) {
         if ((event.which == KeyCode.Z) && event.ctrlKey && event.shiftKey){
             this.commandManager.redo();
+            this.updateRender();
         } else if (event.ctrlKey && (event.which == KeyCode.Z)) {
             this.commandManager.undo();
-        } else return this.listener.onKeyDown(event.keyCode);
+            this.updateRender();
+        } else this.listener.onKeyDown(event.keyCode);
+        return false;
     },
     
     onKeyUp: function(event) {
-        return this.listener.onKeyUp(event.keyCode);
+        this.listener.onKeyUp(event.keyCode);
+        return false;
     },
     
     // -------- edit --------------

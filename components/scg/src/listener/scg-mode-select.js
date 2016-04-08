@@ -28,16 +28,14 @@ SCgSelectListener.prototype = {
 
     onMouseDoubleClick: function (x, y) {
         if (this.scene.pointed_object) return false; // do nothing
-        var node = this.scene.createNode(SCgTypeNodeNow, new SCg.Vector3(x, y, 0), '');
-        this.scene.commandManager.addCommand(new SCgCommandCreateNode(node));
-        this.scene.updateRender();
+        this.scene.commandManager.execute(new SCgCommandCreateNode(x, y, SCgTypeNodeNow, this.scene));
         return true;
     },
 
     onMouseDownObject: function(obj) {
-        this.position = new SCg.Vector3(this.scene.mouse_pos.x, this.scene.mouse_pos.y, 0);
         this.offsetObject = obj;
         this.scene.focused_object = obj;
+        this.position = this.scene.focused_object.position.clone();
         if (obj instanceof SCg.ModelContour || obj instanceof SCg.ModelBus) {
             obj.previousPoint = new SCg.Vector2(this.scene.mouse_pos.x, this.scene.mouse_pos.y);
             return true;
@@ -46,23 +44,13 @@ SCgSelectListener.prototype = {
     },
 
     onMouseUpObject: function (obj) {
-        var newPosition = new SCg.Vector3(this.scene.mouse_pos.x, this.scene.mouse_pos.y, 0);
+        var newPosition = this.scene.focused_object.position.clone();
         if (!this.position.equals(newPosition) && this.offsetObject == obj){
-            this.scene.commandManager.addCommand(new SCgCommandMoveObject(obj, this.position, newPosition));
+            this.scene.commandManager.execute(new SCgCommandMoveObject(obj,
+                this.position,
+                newPosition));
             this.offsetObject = null;
             this.position = null;
-        }
-        // case we moved object from contour
-        if (obj.contour && !obj.contour.isNodeInPolygon(obj)) {
-            obj.contour.removeChild(obj);
-        }
-        // case we moved object into the contour
-        if (!obj.contour && (obj instanceof SCg.ModelNode || obj instanceof SCg.ModelLink)) {
-            for (var i = 0; i < this.scene.contours.length; i++) {
-                if (this.scene.contours[i].isNodeInPolygon(obj)) {
-                    this.scene.contours[i].addChild(obj);
-                }
-            }
         }
         if (obj == this.scene.focused_object) {
             this.scene.clearSelection();
