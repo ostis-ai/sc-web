@@ -429,10 +429,11 @@ SCg.Editor.prototype = {
             });
 
             $(container + ' .popover .btn').click(function() {
-                self.scene.selected_objects.forEach(function(obj){
-                    obj.setScType(self.typesMap[$(this).attr('id')]);
-                    self.scene.updateObjectsVisual();
-                });
+               var sc_type_new = self.typesMap[$(this).attr('id')];
+                    self.scene.selected_objects.forEach(function(obj) {
+                        obj.setScType(sc_type_new);
+               });
+                self.scene.updateObjectsVisual();
                 stop_modal();
             });
         });
