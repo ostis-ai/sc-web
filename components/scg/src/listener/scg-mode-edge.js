@@ -42,7 +42,6 @@ SCgEdgeListener.prototype = {
             if (scene.edge_data.source != obj) {
                 scene.commandManager.execute(new SCgCommandCreateEdge(scene.edge_data.source,
                                                                         obj,
-                                                                        SCgTypeEdgeNow,
                                                                         this.scene));
                 return true;
             }

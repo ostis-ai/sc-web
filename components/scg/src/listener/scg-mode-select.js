@@ -28,7 +28,7 @@ SCgSelectListener.prototype = {
 
     onMouseDoubleClick: function (x, y) {
         if (this.scene.pointed_object) return false; // do nothing
-        this.scene.commandManager.execute(new SCgCommandCreateNode(x, y, SCgTypeNodeNow, this.scene));
+        this.scene.commandManager.execute(new SCgCommandCreateNode(x, y, this.scene));
         return true;
     },
 

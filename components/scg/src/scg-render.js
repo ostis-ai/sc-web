@@ -362,22 +362,27 @@ SCg.Render.prototype = {
             }
             else
                 d.need_observer_sync = false;
-            
-            if (!d.sc_addr){
-                $(document.getElementById("link_" + self.containerId + "_" + d.id))
-                    .find('.impl')
-                    .text(d.content);
+
+            var linkDiv = $(document.getElementById("link_" + self.containerId + "_" + d.id));
+            if (!d.sc_addr) {
+                linkDiv.find('.impl').text(d.content);
+            } else {
+                if (d.content != "") {
+                    linkDiv.find('.impl').text(d.content);
+                } else {
+                    d.content = linkDiv.find('.impl').html();
+                }
             }
 
             var g = d3.select(this)
             
             g.select('rect')
                 .attr('width', function(d) {
-                    d.scale.x = Math.min($(document.getElementById("link_" + self.containerId + "_" + d.id)).find('.impl').outerWidth(), 450) + 10;
+                    d.scale.x = Math.min(linkDiv.find('.impl').outerWidth(), 450) + 10;
                     return d.scale.x + self.linkBorderWidth;
                 })
                 .attr('height', function(d) {
-                    d.scale.y = Math.min($(document.getElementById("link_" + self.containerId + "_" + d.id)).outerHeight(), 350);
+                    d.scale.y = Math.min(linkDiv.outerHeight(), 350);
                     return d.scale.y + self.linkBorderWidth;
                 })
                 .attr('class', function(d) {

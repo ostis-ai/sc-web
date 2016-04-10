@@ -214,7 +214,7 @@ SCg.Scene.prototype = {
             sc_type: sc_type_link,
             containerId: containerId
         });
-        link.setContent("null");
+        link.setContent("");
         this.appendLink(link);
         
         return link;
@@ -281,12 +281,7 @@ SCg.Scene.prototype = {
         // collect objects for deletion
         for (var idx in objects)
             collect_objects(objs, objects[idx]);
-/*
-        // delete objects
-        for (var idx in objs) {
-            this.removeObject(objs[idx]);
-            //objs[idx].destroy();
-        }*/
+
         this.commandManager.execute(new SCgCommandDeleteObjects(objs, this));
         
         this.updateRender();
