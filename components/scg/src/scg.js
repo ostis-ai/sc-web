@@ -546,13 +546,14 @@ SCg.Editor.prototype = {
             } else {
                 this._disableTool(this.toolChangeIdtf());
             }
+            this._disableTool(this.toolChangeType());
             this._disableTool(this.toolSetContent());
         }
 
         /**check*/
         var lastIndex = this.scene.selected_objects.length - 1;
         if(this.scene.selected_objects.length>1) {
-            if (!this.scene.selected_objects.every(function (obj) {
+            if (!this.scene.selected_objects.some(function (obj) {
                     return obj.sc_addr;
                 })) {
                 var typeMask = this.scene.selected_objects[lastIndex].sc_type & sc_type_arc_mask ? sc_type_arc_mask :
