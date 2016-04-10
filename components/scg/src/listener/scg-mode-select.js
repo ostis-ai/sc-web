@@ -1,10 +1,25 @@
 SCgSelectListener = function(scene) {
     this.scene = scene;
+
+    this.selectObject = this.selectSingleObject;
 };
+
+var supportedKeys = {17: 'Ctrl'};
 
 SCgSelectListener.prototype = {
     
     constructor: SCgSelectListener,
+
+    selectSingleObject: function(obj){
+        this.scene.clearSelection();
+        this.scene.appendSelection(obj);
+        this.scene.updateObjectsVisual();
+    },
+
+    selectMultipleObject: function (obj) {
+        this.scene.appendSelection(obj);
+        this.scene.updateObjectsVisual();
+    },
 
     onMouseMove: function(x, y) {
         var offset = new SCg.Vector3(x - this.scene.mouse_pos.x, y - this.scene.mouse_pos.y, 0);
@@ -54,19 +69,25 @@ SCgSelectListener.prototype = {
             }
         }
         if (obj == this.scene.focused_object) {
-            this.scene.clearSelection();
-            this.scene.appendSelection(obj);
-            this.scene.updateObjectsVisual();
+            this.selectObject(obj);
         }
         this.scene.focused_object = null;
         return true;
     },
 
     onKeyDown: function(key_code) {
+        if(key_code==17){
+            this.selectObject = this.selectMultipleObject;
+            return true;
+        }
         return false;
     },
 
     onKeyUp: function(key_code) {
+        if(key_code==17){
+            this.selectObject = this.selectSingleObject;
+            return true;
+        }
         return false;
     }
 
