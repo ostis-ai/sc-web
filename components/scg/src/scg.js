@@ -551,17 +551,21 @@ SCg.Editor.prototype = {
 
         /**check*/
         var lastIndex = this.scene.selected_objects.length - 1;
-        if(this.scene.selected_objects.length>1){
-            var typeMask = this.scene.selected_objects[lastIndex].sc_type & sc_type_arc_mask?  sc_type_arc_mask :
-                this.scene.selected_objects[lastIndex].sc_type & sc_type_node ?
-                    sc_type_node : 0;
-            if(this.scene.selected_objects[lastIndex-1].sc_type & typeMask){
-                this._enableTool(this.toolChangeType());
-            }else{
+        if(this.scene.selected_objects.length>1) {
+            if (!this.scene.selected_objects.every(function (obj) {
+                    return obj.sc_addr;
+                })) {
+                var typeMask = this.scene.selected_objects[lastIndex].sc_type & sc_type_arc_mask ? sc_type_arc_mask :
+                    this.scene.selected_objects[lastIndex].sc_type & sc_type_node ?
+                        sc_type_node : 0;
+                if (this.scene.selected_objects[lastIndex - 1].sc_type & typeMask) {
+                    this._enableTool(this.toolChangeType());
+                } else {
+                    this._disableTool(this.toolChangeType());
+                }
+            } else if (this.scene.selected_objects.length == 0) {
                 this._disableTool(this.toolChangeType());
             }
-        }else if(this.scene.selected_objects.length==0){
-            this._disableTool(this.toolChangeType());
         }
         /**a*/
         if (this.scene.selected_objects.length > 0) {
