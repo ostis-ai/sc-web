@@ -33,7 +33,8 @@
         "src/command/change-content.js",
         "src/command/change-type.js",
         "src/command/delete-objects.js",
-        "src/command/move-object.js"
+        "src/command/move-object.js",
+        "src/command/get-node-from-memory.js"
     ],
 
 	"target": "static/components/js/scg/scg.js"

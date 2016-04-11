@@ -452,13 +452,15 @@ SCg.Scene.prototype = {
     },
     
     onKeyDown: function(event) {
-        if ((event.which == KeyCode.Z) && event.ctrlKey && event.shiftKey){
-            this.commandManager.redo();
-            this.updateRender();
-        } else if (event.ctrlKey && (event.which == KeyCode.Z)) {
-            this.commandManager.undo();
-            this.updateRender();
-        } else this.listener.onKeyDown(event.keyCode);
+        if (this.modal == SCgModalMode.SCgModalNone && !$("#search-input").is( ":focus" )) {
+            if ((event.which == KeyCode.Z) && event.ctrlKey && event.shiftKey) {
+                this.commandManager.redo();
+                this.updateRender();
+            } else if (event.ctrlKey && (event.which == KeyCode.Z)) {
+                this.commandManager.undo();
+                this.updateRender();
+            } else this.listener.onKeyDown(event.keyCode);
+        }
         return false;
     },
     
