@@ -7,11 +7,11 @@ SCgCommandManager.prototype = {
 
     constructor: SCgCommandManager,
 
-    execute: function(command) {
+    execute: function(command, noNeedExecute) {
         this.destroyObject();
         this.listCommand = this.listCommand.slice(0, this.indexCommand + 1);
         this.listCommand.push(command);
-        command.execute();
+        if (!noNeedExecute) command.execute();
         this.indexCommand++;
     },
 

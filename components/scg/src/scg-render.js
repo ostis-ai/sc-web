@@ -552,6 +552,7 @@ SCg.Render.prototype = {
     
     updateLinePoints: function() {
         var self = this;
+        var oldPoints;
         
         line_points = this.d3_line_points.selectAll('use');
         points = line_points.data(this.scene.line_points, function(d) { return d.idx; })
@@ -574,8 +575,19 @@ SCg.Render.prototype = {
             })
             .on('mousedown', function(d) {
                 if (self.line_point_idx < 0){
+                    oldPoints = $.map(self.scene.selected_objects[0].points, function (vertex) {
+                                    return $.extend({}, vertex);
+                                });
                     self.line_point_idx = d.idx;
                 } else {
+                    var newPoints = $.map(self.scene.selected_objects[0].points, function (vertex) {
+                                        return $.extend({}, vertex);
+                                    });
+                    self.scene.commandManager.execute(new SCgCommandMovePoint(self.scene.selected_objects[0],
+                        oldPoints,
+                        newPoints,
+                        self.scene),
+                        true);
                     self.line_point_idx = -1;
                 }
             });
