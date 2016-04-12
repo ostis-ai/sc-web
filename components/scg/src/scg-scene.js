@@ -21,7 +21,8 @@ var SCgModalMode = {
 
 var KeyCode = {
     Escape: 27,
-    Enter: 13
+    Enter: 13,
+    Z: 90
 };
 
 var SCgTypeEdgeNow = sc_type_arc_pos_const_perm;
@@ -35,6 +36,7 @@ SCg.Scene = function(options) {
                             new SCgContourListener(this),
                             new SCgLinkListener(this) ];
     this.listener = this.listener_array[0];
+    this.commandManager = new SCgCommandManager();
     this.render = options.render;
     this.nodes = [];
     this.links = [];
@@ -96,15 +98,11 @@ SCg.Scene.prototype = {
     appendNode: function(node) {
         this.nodes.push(node);
         node.scene = this;
-        if (node.sc_addr)
-            this.objects[node.sc_addr] = node;
     },
     
     appendLink: function(link) {
         this.links.push(link);
         link.scene = this;
-        if (link.sc_addr)
-            this.objects[link.sc_addr] = link;
     },
 
     /**
@@ -114,8 +112,6 @@ SCg.Scene.prototype = {
     appendEdge: function(edge) {
         this.edges.push(edge);
         edge.scene = this;
-        if (edge.sc_addr)
-            this.objects[edge.sc_addr] = edge;
     },
      
     /**
@@ -125,8 +121,6 @@ SCg.Scene.prototype = {
     appendContour: function(contour) {
         this.contours.push(contour);
         contour.scene = this;
-        if (contour.sc_addr)
-            this.objects[contour.sc_addr] = contour;
     },
     
     /**
@@ -136,6 +130,20 @@ SCg.Scene.prototype = {
     appendBus: function(bus) {
         this.buses.push(bus);
         bus.scene = this;
+    },
+
+    appendObject: function(obj) {
+        if (obj instanceof SCg.ModelNode) {
+            this.appendNode(obj);
+        }else if (obj instanceof SCg.ModelLink) {
+            this.appendLink(obj);
+        } else if (obj instanceof SCg.ModelEdge) {
+            this.appendEdge(obj);
+        } else if (obj instanceof SCg.ModelContour) {
+            this.appendContour(obj);
+        } else if (obj instanceof SCg.ModelBus) {
+            this.appendBus(obj);
+        }
     },
     
     /**
@@ -152,7 +160,6 @@ SCg.Scene.prototype = {
             
             list.splice(idx, 1);
         }
-        
         if (obj instanceof SCg.ModelNode) {
             remove_from_list(obj, this.nodes);
         }else if (obj instanceof SCg.ModelLink) {
@@ -160,95 +167,41 @@ SCg.Scene.prototype = {
         } else if (obj instanceof SCg.ModelEdge) {
             remove_from_list(obj, this.edges);
         } else if (obj instanceof SCg.ModelContour) {
-            this.deleteObjects(obj.childs);
             remove_from_list(obj, this.contours);
         } else if (obj instanceof SCg.ModelBus) {
             remove_from_list(obj, this.buses);
         }
-        
-        if (obj.sc_addr)
-            delete this.objects[obj.sc_addr];
     },
 
-    // --------- objects create/destroy -------
-    /**
-     * Create new node
-     * @param {Integer} sc_type Type of node
-     * @param {SCg.Vector3} pos Position of node
-     * @param {String} text Text assotiated with node
-     * 
-     * @return Returns created node
-     */
-    createNode: function(sc_type, pos, text) {
-        var node = new SCg.ModelNode({ 
-                        position: pos.clone(), 
-                        scale: new SCg.Vector2(20, 20),
-                        sc_type: sc_type,
-                        text: text
-                    });
-        this.appendNode(node);
-        
-        return node;
-    },
-    
-    createLink: function(pos, containerId) {
-        var link = new SCg.ModelLink({
-            position: pos.clone(),
-            scale: new SCg.Vector2(50, 50),
-            sc_type: sc_type_link,
-            containerId: containerId
-        });
-        this.appendLink(link);
-        
-        return link;
-    },
-    
-    /**
-     * Create edge between two specified objects
-     * @param {SCg.ModelObject} source Edge source object
-     * @param {SCg.ModelObject} target Edge target object
-     * @param {Integer} sc_type SC-type of edge
-     *
-     * @return Returns created edge
-     */
-    createEdge: function(source, target, sc_type) {
-        var edge = new SCg.ModelEdge({
-                                        source: source,
-                                        target: target,
-                                        sc_type: sc_type ? sc_type : sc_type_edge_common
-                                    });
-        this.appendEdge(edge);
-        
-        return edge;
-    },
-    
-    createBus: function(source) {
-        var bus = new SCg.ModelBus({
-                                      source: source
-                                  });
-        this.appendBus(bus);
-        
-        return bus;
-    },
+    // --------- objects destroy -------
     
     /**
      * Delete objects from scene
      * @param {Array} objects Array of sc.g-objects to delete
      */
     deleteObjects: function(objects) {
+        var self = this;
         function collect_objects(container, root) {
             if (container.indexOf(root) >= 0)
                 return;
-            
+
             container.push(root);
             for (idx in root.edges) {
-                collect_objects(container, root.edges[idx]);
+                if (self.edges.indexOf(root.edges[idx]) > -1) collect_objects(container, root.edges[idx]);
             }
 
             if (root.bus)
-                collect_objects(container, root.bus);
+                if (self.buses.indexOf(root.bus) > -1) collect_objects(container, root.bus);
+
+            if (root instanceof SCg.ModelContour) {
+                for (var numberChildren = 0; numberChildren < root.childs.length; numberChildren++){
+                    if (self.nodes.indexOf(root.childs[numberChildren]) > -1) {
+                        collect_objects(container, root.childs[numberChildren]);
+                    }
+                }
+            }
         }
-        
+
         // collect objects for remove
         var objs = [];
         
@@ -256,11 +209,7 @@ SCg.Scene.prototype = {
         for (var idx in objects)
             collect_objects(objs, objects[idx]);
 
-        // delete objects
-        for (var idx in objs) {
-            this.removeObject(objs[idx]);
-            objs[idx].destroy();
-        }
+        this.commandManager.execute(new SCgCommandDeleteObjects(objs, this));
         
         this.updateRender();
     },
@@ -429,12 +378,22 @@ SCg.Scene.prototype = {
         return this.listener.onMouseUpObject(obj);
     },
     
-    onKeyDown: function(key_code) {
-        return this.listener.onKeyDown(key_code);
+    onKeyDown: function(event) {
+        if (this.modal == SCgModalMode.SCgModalNone && !$("#search-input").is( ":focus" )) {
+            if ((event.which == KeyCode.Z) && event.ctrlKey && event.shiftKey) {
+                this.commandManager.redo();
+                this.updateRender();
+            } else if (event.ctrlKey && (event.which == KeyCode.Z)) {
+                this.commandManager.undo();
+                this.updateRender();
+            } else this.listener.onKeyDown(event.keyCode);
+        }
+        return false;
     },
     
-    onKeyUp: function(key_code) {
-        return this.listener.onKeyUp(key_code);
+    onKeyUp: function(event) {
+        this.listener.onKeyUp(event.keyCode);
+        return false;
     },
     
     // -------- edit --------------
@@ -528,48 +487,7 @@ SCg.Scene.prototype = {
     
         this.updateObjectsVisual();
     },
-
-    finishBusCreation: function() {
-        
-        var bus = this.createBus(this.bus_data.source);                    
-                    
-        if (this.drag_line_points.length > 1) {
-            bus.setPoints(this.drag_line_points.slice(1));
-        }       
-        var pos = new SCg.Vector2(this.drag_line_points[0].x, this.drag_line_points[0].y);
-
-        bus.setSourceDot(this.bus_data.source.calculateDotPos(pos));
-        bus.setTargetDot(0);
-         
-        this.bus_data.source = this.bus_data.end = null;
-
-        this.drag_line_points.splice(0, this.drag_line_points.length);
-
-        this.updateRender();
-        this.render.updateDragLine();
-     },
-
-    finishContourCreation: function() {
-        if (this.drag_line_points.length < 3) {
-            SCgDebug.error('Set at least 3 points for contour');
-            return;
-        }
-
-        var polygon =  $.map(this.drag_line_points, function (vertex) {
-            return $.extend({}, vertex);
-        });
-
-        var contour = new SCg.ModelContour({
-            verticies: polygon
-        });
-
-        this.appendContour(contour);
-        this.pointed_object = contour;
-        this.drag_line_points.splice(0, this.drag_line_points.length);
-        this.updateRender();
-        this.render.updateDragLine();
-    },
-
+    
     // ------------- events -------------
     _fireSelectionChanged: function() {
         if (this.event_selection_changed)

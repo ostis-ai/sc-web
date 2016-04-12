@@ -235,11 +235,14 @@ SCg.Editor.prototype = {
         select.click(function() {
             self.scene.setEditMode(SCgEditMode.SCgModeSelect);
         });
-        select.dblclick(function() {             
+        select.dblclick(function() {
+            self.scene.setModal(SCgModalMode.SCgModalType);
+            self.onModalChanged();
             var tool = $(this);
             function stop_modal() {
                 tool.popover('destroy');
                 self.scene.setEditMode(SCgEditMode.SCgModeSelect);
+                self.scene.setModal(SCgModalMode.SCgModalNone);
             }
             el = $(this);
             el.popover({
@@ -261,11 +264,14 @@ SCg.Editor.prototype = {
         this.toolEdge().click(function() {
             self.scene.setEditMode(SCgEditMode.SCgModeEdge);
         });
-        this.toolEdge().dblclick(function() {             
+        this.toolEdge().dblclick(function() {
+            self.scene.setModal(SCgModalMode.SCgModalType);
+            self.onModalChanged();
             var tool = $(this);
             function stop_modal() {
                 tool.popover('destroy');
                 self.scene.setEditMode(SCgEditMode.SCgModeEdge);
+                self.scene.setModal(SCgModalMode.SCgModalNone);
             }
             el = $(this);
             el.popover({
@@ -317,7 +323,12 @@ SCg.Editor.prototype = {
             input.keypress(function (e) {
                 if (e.keyCode == KeyCode.Enter || e.keyCode == KeyCode.Escape) {
                     
-                    if (e.keyCode == KeyCode.Enter)   self.scene.selected_objects[0].setText(input.val());
+                    if (e.keyCode == KeyCode.Enter) {
+                        var obj = self.scene.selected_objects[0];
+                        if (obj.text != input.val()){
+                            self.scene.commandManager.execute(new SCgCommandChangeIdtf(obj, obj.text, input.val()));
+                        }
+                    }
                     stop_modal();
                     e.preventDefault();
                 } 
@@ -368,12 +379,19 @@ SCg.Editor.prototype = {
             // process controls
             $(container + ' #scg-change-idtf-apply').click(function() {
                 var obj = self.scene.selected_objects[0];
-                obj.setText(input.val());
-                
+                if (obj.text != input.val() && !self._idtf_item) {
+                    self.scene.commandManager.execute(new SCgCommandChangeIdtf(obj, obj.text, input.val()));
+                }
                 if (self._idtf_item) {
-                    obj.setScAddr(self._idtf_item.addr, true);
                     window.sctpClient.get_element_type(self._idtf_item.addr).done(function (t) {
-                        obj.setScType(t);
+                        self.scene.commandManager.execute(new SCgCommandGetNodeFromMemory(obj,
+                            obj.sc_type,
+                            t,
+                            obj.text,
+                            input.val(),
+                            obj.sc_addr,
+                            self._idtf_item.addr,
+                            self.scene));
                         stop_modal();
                     });
                 } else
@@ -420,7 +438,10 @@ SCg.Editor.prototype = {
 
             $(container + ' .popover .btn').click(function() {
                 var obj = self.scene.selected_objects[0];
-                obj.setScType(self.typesMap[$(this).attr('id')]);
+                var newType = self.typesMap[$(this).attr('id')];
+                if (obj.sc_type != newType){
+                    self.scene.commandManager.execute(new SCgCommandChangeType(obj, obj.sc_type, newType));
+                }
                 self.scene.updateObjectsVisual();
                 stop_modal();
             });
@@ -443,6 +464,7 @@ SCg.Editor.prototype = {
             var input_content = $(container + " input#content[type='file']");
             var input_content_type = $(container + " #scg-set-content-type");
             input.val(self.scene.selected_objects[0].content);
+            input_content_type.val(self.scene.selected_objects[0].contentType);
 
             // process controls
             $(container + ' #scg-set-content-apply').click(function() {
@@ -451,16 +473,24 @@ SCg.Editor.prototype = {
                 if (file != undefined){
                     var fileReader = new FileReader();
                     fileReader.onload = function() {
-                        obj.setContent(this.result, 'string');
-                        var linkDiv = $("#link_" + self.containerId + "_" + obj.id);
-                        linkDiv.find(".impl").text(file);
+                        if (obj.content != this.result || obj.contentType != 'string') {
+                            self.scene.commandManager.execute(new SCgCommandChangeContent(obj,
+                                obj.content,
+                                this.result,
+                                obj.contentType,
+                                'string'));
+                        }
                         stop_modal();
                     };
                     fileReader.readAsArrayBuffer(file);
                 } else {
-                    obj.setContent(input.val(), input_content_type.val());
-                    var linkDiv = $("#link_" + self.containerId + "_" + obj.id);
-                    linkDiv.find(".impl").text(input.val());
+                    if (obj.content != input.val() || obj.contentType != input_content_type.val()) {
+                        self.scene.commandManager.execute(new SCgCommandChangeContent(obj,
+                            obj.content,
+                            input.val(),
+                            obj.contentType,
+                            input_content_type.val()));
+                    }
                     stop_modal();
                 }
             });
@@ -562,6 +592,13 @@ SCg.Editor.prototype = {
         update_tool(this.toolEdge());
         update_tool(this.toolBus());
         update_tool(this.toolContour());
+        update_tool(this.toolLink());
+        update_tool(this.toolChangeIdtf());
+        update_tool(this.toolChangeType());
+        update_tool(this.toolSetContent());
+        update_tool(this.toolDelete());
+        update_tool(this.toolZoomIn());
+        update_tool(this.toolZoomOut());
     },
 
     collectIdtfs : function(keyword){

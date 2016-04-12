@@ -106,13 +106,10 @@ GwfObjectNode.prototype.parseObject = function (args) {
 GwfObjectNode.prototype.buildObject = function (args) {
     var scene = args.scene;
     var builder = args.builder;
-
-    var node = scene.createNode(this.attributes["type"], new SCg.Vector3(this.attributes["x"] + GwfObjectController.getXOffset(), this.attributes["y"] + +GwfObjectController.getYOffset(), 0), this.attributes["idtf"]);
-
+    var node = SCg.Creator.createNode(this.attributes["type"], new SCg.Vector3(this.attributes["x"] + GwfObjectController.getXOffset(), this.attributes["y"] + +GwfObjectController.getYOffset(), 0), this.attributes["idtf"]);
+    scene.appendNode(node);
     args.scg_object = node;
-
     this.fixParent(args);
-
     node.update();
     return node;
 }
@@ -155,18 +152,14 @@ GwfObjectPair.prototype.parseObject = function (args) {
 GwfObjectPair.prototype.buildObject = function (args) {
     var scene = args.scene;
     var builder = args.builder;
-
     var source = builder.getOrCreate(this.attributes["id_b"]);
     var target = builder.getOrCreate(this.attributes["id_e"]);
-
-    var edge = scene.createEdge(source, target, this.attributes["type"]);
+    var edge = SCg.Creator.createEdge(source, target, this.attributes["type"]);
+    scene.appendEdge(edge);
     edge.source_dot = parseFloat(this.attributes["dotBBalance"]);
     edge.target_dot = parseFloat(this.attributes["dotEBalance"]);
-
-
     var edge_points = this.attributes["points"];
     var points = [];
-
     for (var i = 0; i < edge_points.length; i++) {
         var edge_point = edge_points[i];
         var point = new SCg.Vector2(parseFloat(edge_point.x) + GwfObjectController.getXOffset(), parseFloat(edge_point.y) + GwfObjectController.getYOffset());
@@ -176,7 +169,6 @@ GwfObjectPair.prototype.buildObject = function (args) {
     source.update();
     target.update();
     edge.update();
-
     return edge;
 }
 
@@ -223,9 +215,7 @@ GwfObjectContour.prototype.buildObject = function (args) {
         verticies.push(vertex);
     }
 
-    var contour = new SCg.ModelContour({
-        verticies: verticies
-    });
+    var contour = SCg.Creator.createCounter(verticies);
 
     args.scg_object = contour;
     this.fixParent(args);
@@ -272,7 +262,7 @@ GwfObjectBus.prototype.buildObject = function (args) {
     var builder = args.builder;
 
 
-    var bus = new SCg.ModelBus({});
+    var bus = SCg.Creator.createBus({});
 
     bus.setSource(builder.getOrCreate(this.attributes["owner"]));
     bus.setTargetDot(0);

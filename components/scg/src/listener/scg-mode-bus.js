@@ -51,6 +51,10 @@ SCgBusListener.prototype = {
 
     onKeyUp: function(key_code) {
         return false;
+    },
+
+    finishCreation: function () {
+        this.scene.commandManager.execute(new SCgCommandCreateBus(this.scene.bus_data.source, this.scene));
     }
 
 };
