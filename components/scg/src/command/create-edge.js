@@ -17,7 +17,8 @@ SCgCommandCreateEdge.prototype = {
     execute: function() {
         var scene = this.scene;
         if (this.edge == null){
-            this.edge = scene.createEdge(this.source, this.target, SCgTypeEdgeNow);
+            this.edge = SCg.Creator.createEdge(this.source, this.target, SCgTypeEdgeNow);
+            scene.appendEdge(this.edge);
             var mouse_pos = new SCg.Vector2(scene.mouse_pos.x, scene.mouse_pos.y);
             var start_pos = new SCg.Vector2(scene.drag_line_points[0].x, scene.drag_line_points[0].y);
             this.edge.setSourceDot(this.source.calculateDotPos(start_pos));

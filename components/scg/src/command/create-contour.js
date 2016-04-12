@@ -18,7 +18,7 @@ SCgCommandCreateContour.prototype = {
             var polygon = $.map(scene.drag_line_points, function (vertex) {
                 return $.extend({}, vertex);
             });
-            this.contour = new SCg.ModelContour({ verticies: polygon });
+            this.contour = SCg.Creator.createCounter(polygon);
             scene.appendContour(this.contour);
             scene.pointed_object = this.contour;
             scene.drag_line_points.splice(0, scene.drag_line_points.length);

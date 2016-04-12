@@ -15,7 +15,8 @@ SCgCommandCreateNode.prototype = {
 
     execute: function() {
         if (this.node == null){
-            this.node = this.scene.createNode(SCgTypeNodeNow, new SCg.Vector3(this.x, this.y, 0), '');
+            this.node = SCg.Creator.createNode(SCgTypeNodeNow, new SCg.Vector3(this.x, this.y, 0), '');
+            this.scene.appendNode(this.node);
             this.scene.updateRender();
         } else {
             this.scene.appendNode(this.node);

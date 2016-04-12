@@ -17,6 +17,7 @@
 	
 	"component": [
         "src/scg-struct.js",
+        "src/scg-object-creator.js",
         "src/scg-component.js",
         "src/listener/scg-mode-bus.js",
         "src/listener/scg-mode-contour.js",

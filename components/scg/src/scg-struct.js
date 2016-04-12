@@ -42,7 +42,9 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
                     continue;
 
                 if (type & sc_type_node) {
-                    var model_node = editor.scene.createNode(type, randomPos(), '');
+                    var model_node = SCg.Creator.createNode(type, randomPos(), '');
+                    editor.scene.appendNode(model_node);
+                    editor.scene.objects[addr] = model_node;
                     model_node.setScAddr(addr);
                     model_node.setObjectState(SCgObjectState.FromMemory);
                     resolveIdtf(addr, model_node);
@@ -52,14 +54,18 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
                     if (!bObj || !eObj) {
                         tasks.push(task);
                     } else {
-                        var model_edge = editor.scene.createEdge(bObj, eObj, type);
+                        var model_edge = SCg.Creator.createEdge(bObj, eObj, type);
+                        editor.scene.appendEdge(model_edge);
+                        editor.scene.objects[addr] = model_edge;
                         model_edge.setScAddr(addr);
                         model_edge.setObjectState(SCgObjectState.FromMemory);
                         resolveIdtf(addr, model_edge);
                     }
                 } else if (type & sc_type_link) {
                     var containerId = 'scg-window-' + sandbox.addr + '-' + addr + '-' + new Date().getUTCMilliseconds();;
-                    var model_link = editor.scene.createLink(randomPos(), containerId);
+                    var model_link = SCg.Creator.createLink(randomPos(), containerId);
+                    editor.scene.appendLink(model_link);
+                    editor.scene.objects[addr] = model_link;
                     model_link.setScAddr(addr);
                     model_link.setObjectState(SCgObjectState.FromMemory);
                 }

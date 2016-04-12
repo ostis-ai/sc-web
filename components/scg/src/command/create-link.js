@@ -15,7 +15,8 @@ SCgCommandCreateLink.prototype = {
 
     execute: function() {
         if (this.link == null){
-            this.link = this.scene.createLink(new SCg.Vector3(this.x, this.y, 0), '');
+            this.link = SCg.Creator.createLink(new SCg.Vector3(this.x, this.y, 0), '');
+            this.scene.appendLink(this.link);
             this.scene.updateRender();
         } else {
             this.scene.appendLink(this.link);

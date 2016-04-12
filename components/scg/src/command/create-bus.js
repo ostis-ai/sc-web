@@ -16,7 +16,8 @@ SCgCommandCreateBus.prototype = {
     execute: function() {
         var scene = this.scene;
         if (this.bus == null){
-            this.bus = this.scene.createBus(this.source);
+            this.bus = SCg.Creator.createBus(this.source);
+            scene.appendBus(this.bus);
             if (scene.drag_line_points.length > 1) this.bus.setPoints(scene.drag_line_points.slice(1));
             var pos = new SCg.Vector2(scene.drag_line_points[0].x, scene.drag_line_points[0].y);
             this.bus.setSourceDot(this.source.calculateDotPos(pos));

@@ -98,15 +98,11 @@ SCg.Scene.prototype = {
     appendNode: function(node) {
         this.nodes.push(node);
         node.scene = this;
-        if (node.sc_addr)
-            this.objects[node.sc_addr] = node;
     },
     
     appendLink: function(link) {
         this.links.push(link);
         link.scene = this;
-        if (link.sc_addr)
-            this.objects[link.sc_addr] = link;
     },
 
     /**
@@ -116,8 +112,6 @@ SCg.Scene.prototype = {
     appendEdge: function(edge) {
         this.edges.push(edge);
         edge.scene = this;
-        if (edge.sc_addr)
-            this.objects[edge.sc_addr] = edge;
     },
      
     /**
@@ -127,8 +121,6 @@ SCg.Scene.prototype = {
     appendContour: function(contour) {
         this.contours.push(contour);
         contour.scene = this;
-        if (contour.sc_addr)
-            this.objects[contour.sc_addr] = contour;
     },
     
     /**
@@ -168,7 +160,6 @@ SCg.Scene.prototype = {
             
             list.splice(idx, 1);
         }
-        
         if (obj instanceof SCg.ModelNode) {
             remove_from_list(obj, this.nodes);
         }else if (obj instanceof SCg.ModelLink) {
@@ -176,77 +167,13 @@ SCg.Scene.prototype = {
         } else if (obj instanceof SCg.ModelEdge) {
             remove_from_list(obj, this.edges);
         } else if (obj instanceof SCg.ModelContour) {
-            //this.deleteObjects(obj.childs);
             remove_from_list(obj, this.contours);
         } else if (obj instanceof SCg.ModelBus) {
             remove_from_list(obj, this.buses);
         }
-        
-        if (obj.sc_addr)
-            delete this.objects[obj.sc_addr];
     },
 
-    // --------- objects create/destroy -------
-    /**
-     * Create new node
-     * @param {Integer} sc_type Type of node
-     * @param {SCg.Vector3} pos Position of node
-     * @param {String} text Text assotiated with node
-     * 
-     * @return Returns created node
-     */
-    createNode: function(sc_type, pos, text) {
-        var node = new SCg.ModelNode({ 
-                        position: pos.clone(), 
-                        scale: new SCg.Vector2(20, 20),
-                        sc_type: sc_type,
-                        text: text
-                    });
-        this.appendNode(node);
-        
-        return node;
-    },
-    
-    createLink: function(pos, containerId) {
-        var link = new SCg.ModelLink({
-            position: pos.clone(),
-            scale: new SCg.Vector2(50, 50),
-            sc_type: sc_type_link,
-            containerId: containerId
-        });
-        link.setContent("");
-        this.appendLink(link);
-        
-        return link;
-    },
-    
-    /**
-     * Create edge between two specified objects
-     * @param {SCg.ModelObject} source Edge source object
-     * @param {SCg.ModelObject} target Edge target object
-     * @param {Integer} sc_type SC-type of edge
-     *
-     * @return Returns created edge
-     */
-    createEdge: function(source, target, sc_type) {
-        var edge = new SCg.ModelEdge({
-                                        source: source,
-                                        target: target,
-                                        sc_type: sc_type ? sc_type : sc_type_edge_common
-                                    });
-        this.appendEdge(edge);
-        
-        return edge;
-    },
-    
-    createBus: function(source) {
-        var bus = new SCg.ModelBus({
-                                      source: source
-                                  });
-        this.appendBus(bus);
-        
-        return bus;
-    },
+    // --------- objects destroy -------
     
     /**
      * Delete objects from scene

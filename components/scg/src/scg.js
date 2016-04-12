@@ -328,7 +328,6 @@ SCg.Editor.prototype = {
                         if (obj.text != input.val()){
                             self.scene.commandManager.execute(new SCgCommandChangeIdtf(obj, obj.text, input.val()));
                         }
-                        obj.setText(input.val());
                     }
                     stop_modal();
                     e.preventDefault();
