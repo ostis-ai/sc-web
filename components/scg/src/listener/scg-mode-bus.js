@@ -37,6 +37,14 @@ SCgBusListener.prototype = {
                 idx: this.scene.drag_line_points.length
             });
             return true;
+        } else {
+            if (obj instanceof SCg.ModelContour){
+                var x = this.scene.mouse_pos.x;
+                var y = this.scene.mouse_pos.y;
+                this.scene.drag_line_points.push({x: x, y: y, idx: this.scene.drag_line_points.length});
+                this.scene.bus_data.end = {x: x, y: y, idx: this.scene.drag_line_points.length};
+                return true;
+            }
         }
         return false;
     },
