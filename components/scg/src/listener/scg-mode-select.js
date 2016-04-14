@@ -27,7 +27,9 @@ SCgSelectListener.prototype = {
     },
 
     onMouseDoubleClick: function (x, y) {
-        if (this.scene.pointed_object) return false; // do nothing
+        if (this.scene.pointed_object && !(this.scene.pointed_object instanceof SCg.ModelContour)) {
+            return false;
+        }
         this.scene.commandManager.execute(new SCgCommandCreateNode(x, y, this.scene));
         return true;
     },

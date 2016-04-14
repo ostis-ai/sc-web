@@ -30,6 +30,8 @@ SCgCommandCreateEdge.prototype = {
             scene.render.updateDragLine();
             this.edge.need_update = true;
             scene.updateObjectsVisual();
+            scene.clearSelection();
+            scene.appendSelection(this.edge);
         } else {
             scene.appendEdge(this.edge);
             this.edge.update();

@@ -63,25 +63,21 @@ SCg.Render.prototype = {
         this.d3_drag_line = this.d3_container.append('svg:path')
                 .attr('class', 'dragline hidden')
                 .attr('d', 'M0,0L0,0');
-
-        this.d3_accept_point = this.d3_container.append('svg:use')
-                    .attr('class', 'SCgAcceptPoint hidden')
-                    .attr('xlink:href', '#acceptPoint')
-                    .on('mouseover', function(d) {
-                        d3.select(this).classed('SCgAcceptPointHighlighted', true);
-                    })
-                    .on('mouseout', function(d) {
-                        d3.select(this).classed('SCgAcceptPointHighlighted', false);
-                    })
-                    .on('mousedown', function(d) {
-                            self.scene.listener.finishCreation();
-                        
-                        d3.event.stopPropagation();
-                    });
-                
         this.d3_contour_line = d3.svg.line().interpolate("cardinal-closed");
-                        
         this.d3_contours = this.d3_container.append('svg:g').selectAll('path');
+        this.d3_accept_point = this.d3_container.append('svg:use')
+            .attr('class', 'SCgAcceptPoint hidden')
+            .attr('xlink:href', '#acceptPoint')
+            .on('mouseover', function(d) {
+                d3.select(this).classed('SCgAcceptPointHighlighted', true);
+            })
+            .on('mouseout', function(d) {
+                d3.select(this).classed('SCgAcceptPointHighlighted', false);
+            })
+            .on('mousedown', function(d) {
+                self.scene.listener.finishCreation();
+                d3.event.stopPropagation();
+            });
         this.d3_edges = this.d3_container.append('svg:g').selectAll('path');
         this.d3_nodes = this.d3_container.append('svg:g').selectAll('g');
         this.d3_links = this.d3_container.append('svg:g').selectAll('g');
@@ -590,6 +586,9 @@ SCg.Render.prototype = {
                         true);
                     self.line_point_idx = -1;
                 }
+            })
+            .on('dblclick', function(d) {
+                self.line_point_idx = -1;
             });
             /*.on('mouseup', function(d) {
                 self.scene.pointed_object = null;
