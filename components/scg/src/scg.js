@@ -1,6 +1,6 @@
-var SCg = SCg || { version: "0.1.0" };
+var SCg = SCg || {version: "0.1.0"};
 
-SCg.Editor = function() {
+SCg.Editor = function () {
 
     this.render = null;
     this.scene = null;
@@ -9,8 +9,7 @@ SCg.Editor = function() {
 SCg.Editor.prototype = {
 
 
-    init: function(params)
-    {
+    init: function (params) {
         this.typesMap = {
             'scg-type-node': sc_type_node,
             'scg-type-node-const': sc_type_node | sc_type_const,
@@ -406,24 +405,17 @@ SCg.Editor.prototype = {
         this.toolChangeType().click(function() {
             self.scene.setModal(SCgModalMode.SCgModalType);
             
-           if (self.scene.selected_objects.length >= 1) {
-            var typeMask = self.scene.selected_objects[0].sc_type & sc_type_arc_mask?  sc_type_arc_mask :
-                self.scene.selected_objects[0].sc_type & sc_type_node ?
-                    sc_type_node : 0;
-               if(!self.scene.selected_objects.every(function(obj){
-                return obj.sc_type & typeMask;
-               })){
-                   
-               SCgDebug.error('Something wrong with type selection');
+           /**if (!self.scene.isThisObjectAllArcsOrAllNodes(selected_objects.length)) {
+                SCgDebug.error('Something wrong with type selection');
                 return;
-            }
-            }
+            }*/
             
             var tool = $(this);
             
             function stop_modal() {
                 self.scene.setModal(SCgModalMode.SCgModalNone);
                 tool.popover('destroy');
+                self.scene.event_selection_changed();
                 self.scene.updateObjectsVisual();
             }
             
@@ -445,11 +437,11 @@ SCg.Editor.prototype = {
             });
 
             $(container + ' .popover .btn').click(function() {
-                var obj = self.scene.selected_objects[0];
                 var newType = self.typesMap[$(this).attr('id')];
+                self.scene.selected_objects.forEach(function(obj){
                 if (obj.sc_type != newType){
                     self.scene.commandManager.execute(new SCgCommandChangeType(obj, obj.sc_type, newType));
-                }
+                }});
                 self.scene.updateObjectsVisual();
                 stop_modal();
             });
@@ -563,8 +555,6 @@ SCg.Editor.prototype = {
                 this._enableTool(this.toolChangeIdtf());
                 if (this.scene.selected_objects[0] instanceof SCg.ModelLink){
                     this._enableTool(this.toolSetContent());
-                } else {
-                    this._enableTool(this.toolChangeType());
                 }
             }
         } else {
@@ -573,29 +563,26 @@ SCg.Editor.prototype = {
             } else {
                 this._disableTool(this.toolChangeIdtf());
             }
-            this._disableTool(this.toolChangeType());
             this._disableTool(this.toolSetContent());
         }
 
-        /**check*/
-        var lastIndex = this.scene.selected_objects.length - 1;
-        if(this.scene.selected_objects.length>1) {
+                var lastIndex = this.scene.selected_objects.length - 1;
+        if(this.scene.selected_objects.length>0) {
             if (!this.scene.selected_objects.some(function (obj) {
                     return obj.sc_addr;
                 })) {
-                var typeMask = this.scene.selected_objects[lastIndex].sc_type & sc_type_arc_mask ? sc_type_arc_mask :
-                    this.scene.selected_objects[lastIndex].sc_type & sc_type_node ?
-                        sc_type_node : 0;
-                if (this.scene.selected_objects[lastIndex - 1].sc_type & typeMask) {
+                if (this.scene.isThisObjectAllArcsOrAllNodes(this.scene.selected_objects.slice(lastIndex - 1 , lastIndex + 1))){
                     this._enableTool(this.toolChangeType());
                 } else {
                     this._disableTool(this.toolChangeType());
                 }
-            } else if (this.scene.selected_objects.length == 0) {
+            } else {
                 this._disableTool(this.toolChangeType());
             }
+        }else{
+            this._disableTool(this.toolChangeType());
         }
-        /**a*/
+
         if (this.scene.selected_objects.length > 0) {
             this._enableTool(this.toolDelete());
         } else {
@@ -603,7 +590,7 @@ SCg.Editor.prototype = {
         }
     },
 
-    
+
     /**
      * Function, that process modal state changes of scene
      */

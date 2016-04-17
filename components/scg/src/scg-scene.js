@@ -79,7 +79,6 @@ SCg.Scene = function(options) {
      * in that moment shows modal dialog
      */
     this.modal = SCgModalMode.SCgModalNone;
-
 };
 
 SCg.Scene.prototype = {
@@ -272,13 +271,13 @@ SCg.Scene.prototype = {
      */
     appendSelection: function(obj) {
         if (obj.is_selected) {
-            SCgDebug.error('Object trying to be selecting twice');
-            return;
+            var idx = this.selected_objects.indexOf(obj);
+            this.selected_objects.splice(idx, 1);
+            obj._setSelected(false);
+        }else{
+            this.selected_objects.push(obj);
+            obj._setSelected(true);    
         }
-        
-        this.selected_objects.push(obj);
-        obj._setSelected(true);
-        
         this.selectionChanged();
     },
     
@@ -497,5 +496,21 @@ SCg.Scene.prototype = {
     _fireModalChanged: function() {
         if (this.event_modal_changed)
             this.event_modal_changed();
+    },
+
+    isThisObjectAllArcsOrAllNodes: function(objects) {
+    if(objects instanceof Array){
+        if (objects.length > 1) {
+            var typeMask = objects[0].sc_type & sc_type_arc_mask ? sc_type_arc_mask :
+                objects[0].sc_type & sc_type_node ?
+                    sc_type_node : 0;
+            return (objects.every(function (obj) {
+                return obj.sc_type & typeMask;
+        }))}else {
+            return true;
+        }
+    }else{
+        return false;
+        }
     }
 };
