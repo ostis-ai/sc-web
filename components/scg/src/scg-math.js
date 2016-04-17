@@ -101,7 +101,11 @@ SCg.Vector3 = function(x, y, z) {
 
 SCg.Vector3.prototype = {
     constructor: SCg.Vector3,
-    
+
+    equals: function(other) {
+        return this.x == other.x && this.y == other.y && this.z == other.z;
+    },
+
     copyFrom: function(other) {
         this.x = other.x;
         this.y = other.y;

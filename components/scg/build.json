@@ -17,12 +17,26 @@
 	
 	"component": [
         "src/scg-struct.js",
+        "src/scg-object-creator.js",
         "src/scg-component.js",
         "src/listener/scg-mode-bus.js",
         "src/listener/scg-mode-contour.js",
         "src/listener/scg-mode-edge.js",
         "src/listener/scg-mode-link.js",
-        "src/listener/scg-mode-select.js"
+        "src/listener/scg-mode-select.js",
+        "src/command/command-manager.js",
+        "src/command/create-node.js",
+        "src/command/create-edge.js",
+        "src/command/create-bus.js",
+        "src/command/create-contour.js",
+        "src/command/create-link.js",
+        "src/command/change-idtf.js",
+        "src/command/change-content.js",
+        "src/command/change-type.js",
+        "src/command/delete-objects.js",
+        "src/command/move-object.js",
+        "src/command/move-line-point.js",
+        "src/command/get-node-from-memory.js"
     ],
 
 	"target": "static/components/js/scg/scg.js"

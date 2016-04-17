@@ -111,17 +111,17 @@ var scgViewerWindow = function(sandbox) {
             
             if (elements.hasOwnProperty(el.id))
                 continue;
-                
-            if (this.editor.scene.objects.hasOwnProperty(el.id)) {
+            if (Object.prototype.hasOwnProperty.call(this.editor.scene.objects, el.id)) {
                 elements[el.id] = this.editor.scene.objects[el.id];
                 continue;
             }
             
             if (el.el_type & sc_type_node || el.el_type & sc_type_link) {
-                var model_node = this.editor.scene.createNode(el.el_type, new SCg.Vector3(10 * Math.random(), 10 * Math.random(), 0), '');
+                var model_node = SCg.Creator.createNode(el.el_type, new SCg.Vector3(10 * Math.random(), 10 * Math.random(), 0), '');
+                this.editor.scene.appendNode(model_node);
+                this.editor.scene.objects[el.id] = model_node;
                 model_node.setScAddr(el.id);
                 model_node.setObjectState(SCgObjectState.FromMemory);
-                
                 elements[el.id] = model_node;
             } else if (el.el_type & sc_type_arc_mask) {
                 edges.push(el);
@@ -140,14 +140,13 @@ var scgViewerWindow = function(sandbox) {
                 if (elements.hasOwnProperty(beginId) && elements.hasOwnProperty(endId)) {
                     var beginNode = elements[beginId];
                     var endNode = elements[endId];
-                    
                     founded = true;
                     edges.splice(idx, 1);
-                    
-                    var model_edge = this.editor.scene.createEdge(beginNode, endNode, obj.el_type);
+                    var model_edge = SCg.Creator.createEdge(beginNode, endNode, obj.el_type);
+                    this.editor.scene.appendEdge(model_edge);
+                    this.editor.scene.objects[obj.id] = model_edge;
                     model_edge.setScAddr(obj.id);
                     model_edge.setObjectState(SCgObjectState.FromMemory);
-                    
                     elements[obj.id] = model_edge;
                 } 
             }

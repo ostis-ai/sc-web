@@ -39,6 +39,10 @@ SCgContourListener.prototype = {
 
     onKeyUp: function(key_code) {
         return false;
+    },
+
+    finishCreation: function () {
+        this.scene.commandManager.execute(new SCgCommandCreateContour(this.scene));
     }
 
 };

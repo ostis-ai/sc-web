@@ -47,10 +47,10 @@ SCg.Render.prototype = {
         // need to check if container is visible
         d3.select(window)
                 .on('keydown', function() {
-                    self.onKeyDown(d3.event.keyCode);
+                    self.onKeyDown(d3.event);
                 })
                 .on('keyup', function() {
-                    self.onKeyUp(d3.event.keyCode);
+                    self.onKeyUp(d3.event);
                 });
         this.initDefs();
                                     
@@ -63,30 +63,21 @@ SCg.Render.prototype = {
         this.d3_drag_line = this.d3_container.append('svg:path')
                 .attr('class', 'dragline hidden')
                 .attr('d', 'M0,0L0,0');
-
-        this.d3_accept_point = this.d3_container.append('svg:use')
-                    .attr('class', 'SCgAcceptPoint hidden')
-                    .attr('xlink:href', '#acceptPoint')
-                    .on('mouseover', function(d) {
-                        d3.select(this).classed('SCgAcceptPointHighlighted', true);
-                    })
-                    .on('mouseout', function(d) {
-                        d3.select(this).classed('SCgAcceptPointHighlighted', false);
-                    })
-                    .on('mousedown', function(d) {
-                        if (self.scene.edit_mode == SCgEditMode.SCgModeBus) 
-                            self.scene.finishBusCreation();
-                        else if (self.scene.edit_mode == SCgEditMode.SCgModeContour)
-                            self.scene.finishContourCreation();
-                        else
-                            SCgDebug.error('Invalid edit mode ' + self.scene.edit_mode);
-
-                        d3.event.stopPropagation();
-                    });
-                
         this.d3_contour_line = d3.svg.line().interpolate("cardinal-closed");
-                        
         this.d3_contours = this.d3_container.append('svg:g').selectAll('path');
+        this.d3_accept_point = this.d3_container.append('svg:use')
+            .attr('class', 'SCgAcceptPoint hidden')
+            .attr('xlink:href', '#acceptPoint')
+            .on('mouseover', function(d) {
+                d3.select(this).classed('SCgAcceptPointHighlighted', true);
+            })
+            .on('mouseout', function(d) {
+                d3.select(this).classed('SCgAcceptPointHighlighted', false);
+            })
+            .on('mousedown', function(d) {
+                self.scene.listener.finishCreation();
+                d3.event.stopPropagation();
+            });
         this.d3_edges = this.d3_container.append('svg:g').selectAll('path');
         this.d3_nodes = this.d3_container.append('svg:g').selectAll('g');
         this.d3_links = this.d3_container.append('svg:g').selectAll('g');
@@ -367,16 +358,27 @@ SCg.Render.prototype = {
             }
             else
                 d.need_observer_sync = false;
-            
+
+            var linkDiv = $(document.getElementById("link_" + self.containerId + "_" + d.id));
+            if (!d.sc_addr) {
+                linkDiv.find('.impl').text(d.content);
+            } else {
+                if (d.content != "") {
+                    linkDiv.find('.impl').text(d.content);
+                } else {
+                    d.content = linkDiv.find('.impl').html();
+                }
+            }
+
             var g = d3.select(this)
             
             g.select('rect')
                 .attr('width', function(d) {
-                    d.scale.x = Math.min($(document.getElementById("link_" + self.containerId + "_" + d.id)).find('.impl').outerWidth(), 450) + 10;
+                    d.scale.x = Math.min(linkDiv.find('.impl').outerWidth(), 450) + 10;
                     return d.scale.x + self.linkBorderWidth;
                 })
                 .attr('height', function(d) {
-                    d.scale.y = Math.min($(document.getElementById("link_" + self.containerId + "_" + d.id)).outerHeight(), 350);
+                    d.scale.y = Math.min(linkDiv.outerHeight(), 350);
                     return d.scale.y + self.linkBorderWidth;
                 })
                 .attr('class', function(d) {
@@ -546,6 +548,7 @@ SCg.Render.prototype = {
     
     updateLinePoints: function() {
         var self = this;
+        var oldPoints;
         
         line_points = this.d3_line_points.selectAll('use');
         points = line_points.data(this.scene.line_points, function(d) { return d.idx; })
@@ -568,10 +571,24 @@ SCg.Render.prototype = {
             })
             .on('mousedown', function(d) {
                 if (self.line_point_idx < 0){
+                    oldPoints = $.map(self.scene.selected_objects[0].points, function (vertex) {
+                                    return $.extend({}, vertex);
+                                });
                     self.line_point_idx = d.idx;
                 } else {
+                    var newPoints = $.map(self.scene.selected_objects[0].points, function (vertex) {
+                                        return $.extend({}, vertex);
+                                    });
+                    self.scene.commandManager.execute(new SCgCommandMovePoint(self.scene.selected_objects[0],
+                        oldPoints,
+                        newPoints,
+                        self.scene),
+                        true);
                     self.line_point_idx = -1;
                 }
+            })
+            .on('dblclick', function(d) {
+                self.line_point_idx = -1;
             });
             /*.on('mouseup', function(d) {
                 self.scene.pointed_object = null;
@@ -664,15 +681,15 @@ SCg.Render.prototype = {
             d3.event.stopPropagation();
     },
     
-    onKeyDown: function(key_code) {
+    onKeyDown: function(event) {
         // do not send event to other listeners, if it processed in scene
-        if (this.scene.onKeyDown(key_code))
+        if (this.scene.onKeyDown(event))
             d3.event.stopPropagation();
     },
     
-    onKeyUp: function(key_code) {
+    onKeyUp: function(event) {
         // do not send event to other listeners, if it processed in scene
-        if (this.scene.onKeyUp(key_code))
+        if (this.scene.onKeyUp(event))
             d3.event.stopPropagation();
     },
     

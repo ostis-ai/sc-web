@@ -42,7 +42,9 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
                     continue;
 
                 if (type & sc_type_node) {
-                    var model_node = editor.scene.createNode(type, randomPos(), '');
+                    var model_node = SCg.Creator.createNode(type, randomPos(), '');
+                    editor.scene.appendNode(model_node);
+                    editor.scene.objects[addr] = model_node;
                     model_node.setScAddr(addr);
                     model_node.setObjectState(SCgObjectState.FromMemory);
                     resolveIdtf(addr, model_node);
@@ -52,14 +54,18 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
                     if (!bObj || !eObj) {
                         tasks.push(task);
                     } else {
-                        var model_edge = editor.scene.createEdge(bObj, eObj, type);
+                        var model_edge = SCg.Creator.createEdge(bObj, eObj, type);
+                        editor.scene.appendEdge(model_edge);
+                        editor.scene.objects[addr] = model_edge;
                         model_edge.setScAddr(addr);
                         model_edge.setObjectState(SCgObjectState.FromMemory);
                         resolveIdtf(addr, model_edge);
                     }
                 } else if (type & sc_type_link) {
                     var containerId = 'scg-window-' + sandbox.addr + '-' + addr + '-' + new Date().getUTCMilliseconds();;
-                    var model_link = editor.scene.createLink(randomPos(), containerId);
+                    var model_link = SCg.Creator.createLink(randomPos(), containerId);
+                    editor.scene.appendLink(model_link);
+                    editor.scene.objects[addr] = model_link;
                     model_link.setScAddr(addr);
                     model_link.setObjectState(SCgObjectState.FromMemory);
                 }
@@ -147,7 +153,7 @@ function scgScStructTranslator(_editor, _sandbox) {
     var currentLanguage = sandbox.getCurrentLanguage();
     var translateIdentifier = function(obj) {
         var dfd = new jQuery.Deferred();
-        if (currentLanguage && obj.text) {
+        if (currentLanguage) {
             window.sctpClient.create_link().done(function(link_addr) {
                 window.sctpClient.set_link_content(link_addr, obj.text).done(function () {
                     window.sctpClient.create_arc(sc_type_arc_common | sc_type_const, obj.sc_addr, link_addr).done(function(arc_addr) {
@@ -188,9 +194,10 @@ function scgScStructTranslator(_editor, _sandbox) {
 
             var dfdNodes = jQuery.Deferred();
 
-            // translate nodes
+            editor.scene.commandManager.clear();
             var nodes = editor.scene.nodes.slice();
             var links = editor.scene.links.slice();
+            var buses = editor.scene.buses.slice();
             var objects = [];
             
             
@@ -222,12 +229,14 @@ function scgScStructTranslator(_editor, _sandbox) {
                         window.sctpClient.create_node(node.sc_type).done(function (r) {
                             node.setScAddr(r);
                             node.setObjectState(SCgObjectState.NewInMemory);
-
                             objects.push(node);
-                            
-                            translateIdentifier(node)
+                            if (node.text) {
+                                translateIdentifier(node)
                                     .done(dfd.resolve)
-                                    .fail(dfd.reject);                          
+                                    .fail(dfd.reject);
+                            } else {
+                                dfd.resolve();
+                            }
                         });
                     } else {
                         dfd.resolve();
@@ -246,7 +255,7 @@ function scgScStructTranslator(_editor, _sandbox) {
                 return dfdNodes.promise();
             }
             
-            var preTranslateContours = function() {
+            var preTranslateContoursAndBus = function() {
                 var dfd = new jQuery.Deferred();
                 
                 // create sc-struct nodes
@@ -260,9 +269,13 @@ function scgScStructTranslator(_editor, _sandbox) {
                             c.setScAddr(node);
                             c.setObjectState(SCgObjectState.NewInMemory);
                             objects.push(c);
-                            translateIdentifier(c)
+                            if (c.text) {
+                                translateIdentifier(c)
                                     .done(dfd.resolve)
-                                    .fail(dfd.reject);                          
+                                    .fail(dfd.reject);
+                            } else {
+                                dfd.resolve();
+                            }
                         });
                     }
 
@@ -275,7 +288,11 @@ function scgScStructTranslator(_editor, _sandbox) {
                     editor.scene.contours[i].addEdgesWhichAreInContourPolygon(editor.scene.edges);
                     funcs.push(fQueue.Func(scAddrGen, [ editor.scene.contours[i] ]));
                 }
-                
+
+                for (var number_bus = 0; number_bus < buses.length; ++number_bus) {
+                    buses[number_bus].setScAddr(buses[number_bus].source.sc_addr);
+                }
+
                 // run tasks
                 fQueue.Queue.apply(this, funcs).done(dfd.resolve).fail(dfd.reject);
                 
@@ -438,9 +455,8 @@ function scgScStructTranslator(_editor, _sandbox) {
                 /* Translate nodes */
                 fQueue.Func(translateNodes),
                 fQueue.Func(translateLinks),
-                fQueue.Func(preTranslateContours),
+                fQueue.Func(preTranslateContoursAndBus),
                 fQueue.Func(translateEdges),
-                // translate bus there (before contours)
                 fQueue.Func(translateContours)
             ).done(fireCallback);
             
