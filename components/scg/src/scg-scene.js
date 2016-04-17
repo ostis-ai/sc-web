@@ -79,7 +79,6 @@ SCg.Scene = function(options) {
      * in that moment shows modal dialog
      */
     this.modal = SCgModalMode.SCgModalNone;
-    asd;
 };
 
 SCg.Scene.prototype = {
