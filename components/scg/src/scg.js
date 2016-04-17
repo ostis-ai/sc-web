@@ -1,4 +1,4 @@
-var SCg = SCg || { version: "0.1.0" };
+var SCg = SCg || {version: "0.1.0"};
 
 SCg.Editor = function() {
 
@@ -9,8 +9,7 @@ SCg.Editor = function() {
 SCg.Editor.prototype = {
 
 
-    init: function(params)
-    {
+    init: function (params) {
         this.typesMap = {
             'scg-type-node': sc_type_node,
             'scg-type-node-const': sc_type_node | sc_type_const,
@@ -583,10 +582,7 @@ SCg.Editor.prototype = {
             if (!this.scene.selected_objects.some(function (obj) {
                     return obj.sc_addr;
                 })) {
-                var typeMask = this.scene.selected_objects[lastIndex].sc_type & sc_type_arc_mask ? sc_type_arc_mask :
-                    this.scene.selected_objects[lastIndex].sc_type & sc_type_node ?
-                        sc_type_node : 0;
-                if (this.scene.selected_objects[lastIndex - 1].sc_type & typeMask) {
+                if (this.scene.isThisObjectAllArcsOrAllNodes(this.scene.selected_objects.slice(lastIndex - 1 , lastIndex + 1))){
                     this._enableTool(this.toolChangeType());
                 } else {
                     this._disableTool(this.toolChangeType());
