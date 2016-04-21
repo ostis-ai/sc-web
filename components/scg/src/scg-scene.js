@@ -385,13 +385,13 @@ SCg.Scene.prototype = {
             } else if (event.ctrlKey && (event.which == KeyCode.Z)) {
                 this.commandManager.undo();
                 this.updateRender();
-            } else this.listener.onKeyDown(event.keyCode);
+            } else this.listener.onKeyDown(event);
         }
         return false;
     },
     
     onKeyUp: function(event) {
-        this.listener.onKeyUp(event.keyCode);
+        this.listener.onKeyUp(event);
         return false;
     },
     
