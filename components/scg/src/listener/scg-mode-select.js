@@ -5,8 +5,6 @@ SCgSelectListener = function(scene) {
     this.offsetObject = null;
 };
 
-var supportedKeys = {17: 'Ctrl'};
-
 SCgSelectListener.prototype = {
     
     constructor: SCgSelectListener,
@@ -75,16 +73,16 @@ SCgSelectListener.prototype = {
         return true;
     },
 
-    onKeyDown: function(key_code) {
-        if(key_code==17){
+    onKeyDown: function(event) {
+        if(event.ctrlKey){
             this.selectObject = this.selectMultipleObject;
             return true;
         }
         return false;
     },
 
-    onKeyUp: function(key_code) {
-        if(key_code==17){
+    onKeyUp: function(event) {
+        if(!event.ctrlKey){
             this.selectObject = this.selectSingleObject;
             return true;
         }
