@@ -1,8 +1,8 @@
-SCgCommandChangeContent = function (object, oldContent, newContent, oldType, newType) {
+SCgCommandChangeContent = function (object, newContent, newType) {
     this.object = object;
-    this.oldContent = oldContent;
+    this.oldContent = object.content;
     this.newContent = newContent;
-    this.oldType = oldType;
+    this.oldType = object.contentType;
     this.newType = newType;
 };
 

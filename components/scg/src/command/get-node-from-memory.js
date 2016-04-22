@@ -1,10 +1,10 @@
-SCgCommandGetNodeFromMemory = function (object, oldType, newType, oldIdtf, newIdtf, oldScAddr, newScAddr, scene) {
+SCgCommandGetNodeFromMemory = function (object, newType, newIdtf, newScAddr, scene) {
     this.object = object;
-    this.oldType = oldType;
+    this.oldType = object.sc_type;
     this.newType = newType;
-    this.oldIdtf = oldIdtf;
+    this.oldIdtf = object.text;
     this.newIdtf = newIdtf;
-    this.oldScAddr = oldScAddr;
+    this.oldScAddr = object.sc_addr;
     this.newScAddr = newScAddr;
     this.scene = scene;
 };

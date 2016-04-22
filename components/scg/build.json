@@ -36,7 +36,8 @@
         "src/command/delete-objects.js",
         "src/command/move-object.js",
         "src/command/move-line-point.js",
-        "src/command/get-node-from-memory.js"
+        "src/command/get-node-from-memory.js",
+        "src/command/wrapper-command.js"
     ],
 
 	"target": "static/components/js/scg/scg.js"

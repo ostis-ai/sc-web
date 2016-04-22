@@ -22,6 +22,21 @@ var SCgModalMode = {
 var KeyCode = {
     Escape: 27,
     Enter: 13,
+    Delete: 46,
+    Key1: 49,
+    Key2: 50,
+    Key3: 51,
+    Key4: 52,
+    Key5: 53,
+    KeyMinusFirefox: 173,
+    KeyMinus: 189,
+    KeyMinusNum: 109,
+    KeyEqualFirefox: 61,
+    KeyEqual: 187,
+    KeyPlusNum: 107,
+    C: 67,
+    I: 73,
+    T: 84,
     Z: 90
 };
 
@@ -38,12 +53,13 @@ SCg.Scene = function(options) {
     this.listener = this.listener_array[0];
     this.commandManager = new SCgCommandManager();
     this.render = options.render;
+    this.edit = options.edit;
     this.nodes = [];
     this.links = [];
     this.edges = [];
     this.contours = [];
     this.buses = [];
-    
+
     this.objects = Object.create(null);
     this.edit_mode = SCgEditMode.SCgModeSelect;
     
@@ -385,13 +401,44 @@ SCg.Scene.prototype = {
             } else if (event.ctrlKey && (event.which == KeyCode.Z)) {
                 this.commandManager.undo();
                 this.updateRender();
-            } else this.listener.onKeyDown(event);
+            } else if (event.which == KeyCode.Key1) {
+                this.edit.toolSelect().click()
+            } else if (event.which == KeyCode.Key2) {
+                this.edit.toolEdge().click()
+            } else if (event.which == KeyCode.Key3) {
+                this.edit.toolBus().click()
+            } else if (event.which == KeyCode.Key4) {
+                this.edit.toolContour().click()
+            } else if (event.which == KeyCode.Key5) {
+                this.edit.toolLink().click()
+            } else if (event.which == KeyCode.Delete) {
+                this.edit.toolDelete().click();
+            } else if (event.which == KeyCode.I) {
+                if (!this.edit.toolChangeIdtf().hasClass("hidden"))
+                    this.edit.toolChangeIdtf().click();
+            } else if (event.which == KeyCode.C) {
+                if (!this.edit.toolSetContent().hasClass("hidden"))
+                    this.edit.toolSetContent().click();
+            } else if (event.which == KeyCode.T) {
+                if (!this.edit.toolChangeType().hasClass("hidden"))
+                    this.edit.toolChangeType().click();
+            } else if (event.which == KeyCode.KeyMinusFirefox || event.which == KeyCode.KeyMinus ||
+                                                                    event.which == KeyCode.KeyMinusNum) {
+                this.edit.toolZoomOut().click();
+            } else if (event.which == KeyCode.KeyEqualFirefox || event.which == KeyCode.KeyEqual ||
+                                                                    event.which == KeyCode.KeyPlusNum) {
+                this.edit.toolZoomIn().click();
+            } else {
+                this.listener.onKeyDown(event);
+            }
         }
         return false;
     },
     
     onKeyUp: function(event) {
-        this.listener.onKeyUp(event);
+        if (this.modal == SCgModalMode.SCgModalNone && !$("#search-input").is( ":focus" )) {
+            this.listener.onKeyUp(event);
+        }
         return false;
     },
     
@@ -498,19 +545,19 @@ SCg.Scene.prototype = {
             this.event_modal_changed();
     },
 
-    isThisObjectAllArcsOrAllNodes: function(objects) {
-    if(objects instanceof Array){
-        if (objects.length > 1) {
-            var typeMask = objects[0].sc_type & sc_type_arc_mask ? sc_type_arc_mask :
-                objects[0].sc_type & sc_type_node ?
-                    sc_type_node : 0;
-            return (objects.every(function (obj) {
-                return obj.sc_type & typeMask;
-        }))}else {
-            return true;
-        }
-    }else{
-        return false;
-        }
+    isSelectedObjectAllArcsOrAllNodes: function () {
+        var objects = this.selected_objects;
+        var typeMask = objects[0].sc_type & sc_type_arc_mask ? sc_type_arc_mask :
+            objects[0].sc_type & sc_type_node ?
+                sc_type_node : 0;
+        return (objects.every(function (obj) {
+            return ((obj.sc_type & typeMask) && !(obj instanceof SCg.ModelContour));
+        }))
+    },
+
+    isSelectedObjectAllHaveScAddr: function () {
+        return (this.selected_objects.some(function (obj) {
+            return obj.sc_addr;
+        }))
     }
 };

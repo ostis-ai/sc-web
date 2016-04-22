@@ -30,11 +30,11 @@ SCgLinkListener.prototype = {
         return true;
     },
 
-    onKeyDown: function(key_code) {
+    onKeyDown: function(event) {
         return false;
     },
 
-    onKeyUp: function(key_code) {
+    onKeyUp: function(event) {
         return false;
     }
 

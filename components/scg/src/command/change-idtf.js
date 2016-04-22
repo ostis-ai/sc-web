@@ -1,6 +1,6 @@
-SCgCommandChangeIdtf = function (object, oldIdtf, newIdtf) {
+SCgCommandChangeIdtf = function (object, newIdtf) {
     this.object = object;
-    this.oldIdtf = oldIdtf;
+    this.oldIdtf = object.text;
     this.newIdtf = newIdtf;
 };
 

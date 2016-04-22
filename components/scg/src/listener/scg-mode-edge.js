@@ -67,15 +67,15 @@ SCgEdgeListener.prototype = {
         return true;
     },
 
-    onKeyDown: function (key_code) {
-        if (key_code == KeyCode.Escape) {
-            this.scene.resetEdgeMode();
+    onKeyDown: function (event) {
+        if (event.which == KeyCode.Escape) {
+            this.scene.revertDragPoint(0);
             return true;
         }
         return false;
     },
 
-    onKeyUp: function(key_code) {
+    onKeyUp: function(event) {
         return false;
     }
 

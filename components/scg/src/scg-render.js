@@ -93,7 +93,7 @@ SCg.Render.prototype = {
         // define arrow markers for graph links
         var defs = this.d3_drawer.append('svg:defs')
         
-        SCgAlphabet.initSvgDefs(defs);
+        SCgAlphabet.initSvgDefs(defs, this.containerId);
 
         var grad = defs.append('svg:radialGradient')
             .attr('id', 'backGrad')
@@ -410,7 +410,7 @@ SCg.Render.prototype = {
             if (d.need_update)
                 d.update();
             var d3_edge = d3.select(this);
-            SCgAlphabet.updateEdge(d, d3_edge);
+            SCgAlphabet.updateEdge(d, d3_edge, self.containerId);
             d3_edge.attr('class', function(d) {
                 return self.classState(d, 'SCgEdge');
             })
