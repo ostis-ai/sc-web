@@ -693,7 +693,6 @@ SCg.Render.prototype = {
             d3.event.stopPropagation();
     },
     
-    
     // ------- help functions -----------
     getContainerSize: function() {
         var el = document.getElementById(this.containerId);

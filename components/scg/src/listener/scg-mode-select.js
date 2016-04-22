@@ -1,5 +1,6 @@
 SCgSelectListener = function(scene) {
     this.scene = scene;
+    this.selectObject = this.selectSingleObject;
     this.position = null;
     this.offsetObject = null;
 };
@@ -7,6 +8,17 @@ SCgSelectListener = function(scene) {
 SCgSelectListener.prototype = {
     
     constructor: SCgSelectListener,
+
+    selectSingleObject: function(obj){
+        this.scene.clearSelection();
+        this.scene.appendSelection(obj);
+        this.scene.updateObjectsVisual();
+    },
+
+    selectMultipleObject: function (obj) {
+        this.scene.appendSelection(obj);
+        this.scene.updateObjectsVisual();
+    },
 
     onMouseMove: function(x, y) {
         var offset = new SCg.Vector3(x - this.scene.mouse_pos.x, y - this.scene.mouse_pos.y, 0);
@@ -55,19 +67,25 @@ SCgSelectListener.prototype = {
             this.position = null;
         }
         if (obj == this.scene.focused_object) {
-            this.scene.clearSelection();
-            this.scene.appendSelection(obj);
-            this.scene.updateObjectsVisual();
+            this.selectObject(obj);
         }
         this.scene.focused_object = null;
         return true;
     },
 
-    onKeyDown: function(key_code) {
+    onKeyDown: function(event) {
+        if(event.ctrlKey){
+            this.selectObject = this.selectMultipleObject;
+            return true;
+        }
         return false;
     },
 
-    onKeyUp: function(key_code) {
+    onKeyUp: function(event) {
+        if(!event.ctrlKey){
+            this.selectObject = this.selectSingleObject;
+            return true;
+        }
         return false;
     }
 
