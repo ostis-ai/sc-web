@@ -24,6 +24,8 @@ SCgCommandCreateContour.prototype = {
             scene.drag_line_points.splice(0, scene.drag_line_points.length);
             scene.updateRender();
             scene.render.updateDragLine();
+            scene.clearSelection();
+            scene.appendSelection(this.contour);
         } else {
             scene.appendContour(this.contour);
             this.contour.update();

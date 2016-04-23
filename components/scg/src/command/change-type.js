@@ -1,6 +1,6 @@
-SCgCommandChangeType = function (object, oldType, newType) {
+SCgCommandChangeType = function (object, newType) {
     this.object = object;
-    this.oldType = oldType;
+    this.oldType = object.sc_type;
     this.newType = newType;
 };
 

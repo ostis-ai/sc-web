@@ -41,7 +41,8 @@ var SCsViewer = function(sandbox) {
         // apply translation
         $(SCWeb.ui.Core.selectorWindowScAddr(this.container)).each(function(index, element) {
             var addr = $(element).attr('sc_addr');
-            if (!$(element).hasClass('sc-content') && !$(element).hasClass('sc-contour') && !$(element).hasClass('scs-scn-connector')) {
+            if (!$(element).hasClass('sc-content') && !$(element).hasClass('sc-contour') &&
+                !$(element).hasClass('scs-scn-connector') && ($(element).hasClass('scs-scn-element'))) {
                 $(element).removeClass('resolve-idtf-anim');
                 if (namesMap[addr]) {
                     $(element).text(namesMap[addr]);
