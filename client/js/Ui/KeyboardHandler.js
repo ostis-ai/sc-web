@@ -3,23 +3,23 @@
  */
 SCWeb.ui.KeyboardHandler = {
 
-    windowManager: null,
-    init: function (windowManager) {
-        this.windowManager = windowManager;
+    events: {},
 
-        var keyHandler = this;
+    init: function () {
+        var self = this;
 
-        d3.select(window)
+        $(window)
             .on('keydown', function (d3_event) {
-                keyHandler.onKeyDown(d3_event);
+                self.emit('onkeydown', d3_event);
             })
             .on('keyup', function (d3_event) {
-                keyHandler.onKeyDown(d3_event);
+                self.emit('onkeyup', d3_event);
             })
             .on('keypress', function (d3_event) {
-                keyHandler.onKeyPress(d3_event);
+                self.emit('onkeypress', d3_event);
             });
     },
+
 
     onKeyDown: function (d3_event) {
         this.getActiveWindow().onKeyDown(d3_event);
@@ -32,8 +32,54 @@ SCWeb.ui.KeyboardHandler = {
     onKeyPress: function (d3_event) {
         this.getActiveWindow().onKeyPress(d3_event);
     },
-    
-    getActiveWindow: function () {
-        return this.windowManager.getActiveWindow();
+
+    subscribe: function (evt_name, window_id, callback) {
+
+        var event = {
+            event_name: evt_name,
+            func: callback,
+            window_id: window_id
+        };
+
+        if (!this.events[evt_name]) {
+            this.events[evt_name] = {};
+            this.events[evt_name][window_id] = event;
+        } else {
+            this.events[evt_name][window_id] = event;
+        }
+    },
+
+    subscribeWindow: function (window_id, callbackArray) {
+
+        for(var eventType in callbackArray){
+            var func = callbackArray[eventType];
+            if(typeof func !== typeof function(){}){
+                continue;
+            }
+            this.subscribe(eventType, window_id, func);
+        }
+    },
+
+    /**
+     * Remove subscription
+     * @param {Object} event Event object
+     */
+    unsubscribe: function (event) {
+
+        this.events[event.event_name][event.window_id] = undefined;
+    },
+
+    /**
+     * Emit specified event with params
+     * First param - is an event name. Other parameters will be passed into callback
+     */
+    emit: function (eventType, d3_event) {
+        var windowId = SCWeb.ui.WindowManager.getActiveWindowId();
+        if(!this.events[eventType])
+            return;
+        var callBack = this.events[eventType][windowId].func;
+        if(callBack){
+            callBack(d3_event);
+        }
     }
 }

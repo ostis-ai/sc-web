@@ -125,6 +125,14 @@ SCg.Editor.prototype = {
         this.scene.event_modal_changed = function() {
             self.onModalChanged();
         }
+        this.keyboardCallbacks = {
+            'onkeydown': function(event) {
+                self.scene.onKeyDown(event)
+            },
+            'onkeyup': function(event){
+                self.scene.onKeyUp(event);
+            }
+        };
     },
     
     hideTool: function(tool) {

@@ -186,6 +186,7 @@ SCWeb.ui.WindowManager = {
                 addr: addr, 
                 is_struct: is_struct, 
                 container: window_id,
+                window_id: id,
                 canEdit: true    //! TODO: check user rights
             });
             if (sandbox) {
@@ -245,7 +246,11 @@ SCWeb.ui.WindowManager = {
 
     getActiveWindow: function(id) {
         if (this.active_window_id)
-            return ..this.window_container.find("#" + this.active_window_id);
+            return this.window_container.find("#" + this.active_window_id);
+    },
+
+    getActiveWindowId: function () {
+        return this.active_window_id;
     },
 
     /*!
