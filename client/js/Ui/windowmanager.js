@@ -243,6 +243,11 @@ SCWeb.ui.WindowManager = {
             this.window_container.find("#" + this.active_window_id).removeClass('hidden'); 
     },
 
+    getActiveWindow: function(id) {
+        if (this.active_window_id)
+            return ..this.window_container.find("#" + this.active_window_id);
+    },
+
     /*!
      * Genarate html for new window container
      * @param {String} containerId ID that will be set to container
