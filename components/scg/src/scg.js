@@ -116,7 +116,6 @@ SCg.Editor.prototype = {
             }
             if (self.resolveControls)
                 self.resolveControls(tools_container);
-            self.setButtonTittle();
         });
         this.scene.event_selection_changed = function() {
             self.onSelectionChanged();
@@ -683,17 +682,5 @@ SCg.Editor.prototype = {
      */
     _enableTool: function(tool) {
          tool.removeAttr('disabled');
-    },
-
-    setButtonTittle: function () {
-        var self = this;
-        var keynodes = ['ui_scg_control_tool_select',
-                        'ui_scg_control_tool_edge'];
-        SCWeb.core.Server.resolveScAddr(keynodes, function (keynodes) {
-            SCWeb.core.Server.resolveIdentifiers(keynodes, function (idf) {
-                self.toolSelect().attr('title', idf[keynodes['ui_scg_control_tool_select']]);
-                self.toolEdge().attr('title', idf[keynodes['ui_scg_control_tool_edge']]);
-            });
-        });
     }
 };

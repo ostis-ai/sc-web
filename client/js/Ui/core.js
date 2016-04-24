@@ -47,7 +47,7 @@ SCWeb.ui.Core = {
                     }
                 });
             
-                /*var sc_elements_tooltip_selector = '[sc_addr]:not(.sc-window, .ui-no-tooltip)';
+                var sc_elements_tooltip_selector = '[sc_addr]:not(.sc-window, .ui-no-tooltip)';
                 $('body')
                 .delegate(sc_elements_tooltip_selector, 'mouseover', function(e) {
                     
@@ -56,22 +56,12 @@ SCWeb.ui.Core = {
                     self.tooltip_interval = setInterval(function() {
                         clearInterval(self.tooltip_interval);
                         self.tooltip_interval = null;
-
                         var addr = self.tooltip_element.attr('sc_addr');
                         if (addr) {
-                            SCWeb.core.Server.getTooltips([addr], function(tips) {
-                                var value = tips[addr];
-                                if (value) {
-                                    self.tooltip_element.tooltip({
-                                        html: true,
-                                        placement: 'auto',
-                                        trigger: 'manual',
-                                        title: value,
-                                        animation: true,
-                                        container: 'body'
-                                    }).tooltip('show');
-                                } else
-                                    destroyTooltip();
+                            SCWeb.core.Server.resolveIdentifiers([addr], function (idf) {
+                                self.tooltip_element.attr('data-toggle', "tooltip");
+                                self.tooltip_element.attr('title', idf[addr]);
+                                self.tooltip_element.tooltip('show');
                             }, function() {
                                 destroyTooltip();
                             });
@@ -80,7 +70,7 @@ SCWeb.ui.Core = {
                 }).delegate(sc_elements_tooltip_selector, 'mouseout', function(e) {
                     clearTooltipInterval();
                     destroyTooltip();
-                });*/
+                });
                 
                 $('#help-modal').on('shown.bs.modal', function() {
                     var body = $('#help-modal-body');

@@ -1,0 +1,8 @@
+ui_scg_control_tool_zoomin
+    <- ui_scg_control; sc_node_not_relation;
+    => nrel_main_idtf:
+        [Увеличить]
+        (* <- lang_ru;; *);
+    => nrel_main_idtf:
+        [Zoom in]
+        (* <- lang_en;; *);;

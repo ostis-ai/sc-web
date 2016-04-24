@@ -1,0 +1,8 @@
+ui_scg_control_tool_change_type
+    <- ui_scg_control; sc_node_not_relation;
+    => nrel_main_idtf:
+        [Изменение типа объекта]
+        (* <- lang_ru;; *);
+    => nrel_main_idtf:
+        [Change object type]
+        (* <- lang_en;; *);;

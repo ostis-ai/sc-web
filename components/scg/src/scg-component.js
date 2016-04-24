@@ -175,7 +175,6 @@ var scgViewerWindow = function(sandbox) {
                 obj.text = namesMap[addr];
             }
         }
-        this.editor.setButtonTittle();
         this.editor.render.updateTexts();
     };
     
