@@ -1,0 +1,8 @@
+ui_scg_control_tool_set_content
+    <- ui_scg_control; sc_node_not_relation;
+    => nrel_main_idtf:
+        [Установка содержимого в ссылку]
+        (* <- lang_ru;; *);
+    => nrel_main_idtf:
+        [Set content into link]
+        (* <- lang_en;; *);;

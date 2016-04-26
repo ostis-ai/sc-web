@@ -1,0 +1,8 @@
+ui_scg_control_tool_delete
+    <- ui_scg_control; sc_node_not_relation;
+    => nrel_main_idtf:
+        [Удаление объектов с редактора]
+        (* <- lang_ru;; *);
+    => nrel_main_idtf:
+        [Delete object from editor]
+        (* <- lang_en;; *);;

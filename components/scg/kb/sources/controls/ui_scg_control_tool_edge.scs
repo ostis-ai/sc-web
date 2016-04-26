@@ -1,8 +1,11 @@
 ui_scg_control_tool_edge
 	<- ui_scg_control; sc_node_not_relation;
 	=> nrel_main_idtf:
-		[Режим создания sc.g-дуг]
+		[Режим создания дуг/Выбор создаваемых дуг]
 		(* <- lang_ru;; *);
+	=> nrel_main_idtf:
+        [Mode to create edge/Choose created edge]
+        (* <- lang_en;; *);
 	<- rrel_key_sc_element:
     		..e
 		(*

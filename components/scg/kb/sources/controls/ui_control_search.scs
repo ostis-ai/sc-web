@@ -1,0 +1,8 @@
+ui_control_search
+	<- ui_scg_control; sc_node_not_relation;
+	=> nrel_main_idtf:
+		[Поиск...]
+		(* <- lang_ru;; *);
+	=> nrel_main_idtf:
+        [Search...]
+        (* <- lang_en;; *);;

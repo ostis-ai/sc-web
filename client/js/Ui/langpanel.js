@@ -46,6 +46,7 @@ SCWeb.ui.LanguagePanel = {
     // ---------- Translation listener interface ------------
     updateTranslation: function(namesMap) {
         // apply translation
+        this.updateSearchInput();
         $('#language-select [sc_addr]').each(function(index, element) {
             var addr = $(element).attr('sc_addr');
             if(namesMap[addr]) {
@@ -54,5 +55,14 @@ SCWeb.ui.LanguagePanel = {
         });
         
     },
+
+    updateSearchInput: function () {
+        var keynodes = ['ui_control_search'];
+        SCWeb.core.Server.resolveScAddr(keynodes, function (keynodes) {
+            SCWeb.core.Server.resolveIdentifiers(keynodes, function (idf) {
+                $("#search-input").attr('placeholder', idf[keynodes['ui_control_search']]);
+            });
+        })
+    }
     
 };

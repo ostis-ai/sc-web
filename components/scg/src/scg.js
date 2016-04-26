@@ -75,7 +75,6 @@ SCg.Editor.prototype = {
      */
     initUI: function() {
         var self = this;
-        
         var container = '#' + this.containerId;
         $(container).prepend('<div id="tools-' + this.containerId + '"></div>');
         var tools_container = '#tools-' + this.containerId;
@@ -112,13 +111,12 @@ SCg.Editor.prototype = {
                 self.hideTool(self.toolDelete());
                 self.hideTool(self.toolOpen());
                 self.hideTool(self.toolIntegrate());
+                self.hideTool(self.toolUndo());
+                self.hideTool(self.toolRedo());
             }
             if (self.resolveControls)
                 self.resolveControls(tools_container);
         });
-        
-        
-        var self = this;
         this.scene.event_selection_changed = function() {
             self.onSelectionChanged();
         }
@@ -174,6 +172,14 @@ SCg.Editor.prototype = {
     toolLink: function() {
         return this.tool('link');
     },
+
+    toolUndo: function() {
+        return this.tool('undo');
+    },
+
+    toolRedo: function() {
+        return this.tool('redo');
+    },
     
     toolChangeIdtf: function() {
         return this.tool('change-idtf');
@@ -225,6 +231,8 @@ SCg.Editor.prototype = {
             var tools = [self.toolEdge(),
                         self.toolContour(),
                         self.toolBus(),
+                        self.toolUndo(),
+                        self.toolRedo(),
                         self.toolDelete(),
                         self.toolOpen(),
                         self.toolIntegrate()];
@@ -301,6 +309,14 @@ SCg.Editor.prototype = {
         });
         this.toolLink().click(function() {
             self.scene.setEditMode(SCgEditMode.SCgModeLink);
+        });
+        this.toolUndo().click(function() {
+            self.scene.commandManager.undo();
+            self.scene.updateRender();
+        });
+        this.toolRedo().click(function() {
+            self.scene.commandManager.redo();
+            self.scene.updateRender();
         });
         this.toolChangeIdtf().click(function() {
             self.scene.setModal(SCgModalMode.SCgModalIdtf);
