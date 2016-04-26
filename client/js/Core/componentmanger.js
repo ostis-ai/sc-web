@@ -125,8 +125,14 @@ SCWeb.core.ComponentManager = {
             });
             if (!comp_def.struct_support && options.is_struct)
                 throw "Component doesn't support structures: " + comp_def;
-            
-            if (comp_def.factory(sandbox)) {
+
+            var component = comp_def.factory(sandbox);
+            if(component.editor){
+                if(component.editor.keyboardCallbacks){
+                    SCWeb.ui.KeyboardHandler.subscribeWindow(options.window_id, component.editor.keyboardCallbacks);
+                }
+            }
+            if (component) {
                 dfd.resolve();
                 
             } else throw "Can't create viewer properly"

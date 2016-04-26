@@ -42,16 +42,7 @@ SCg.Render.prototype = {
         var self = this;
         this.d3_container = this.d3_drawer.append('svg:g')
                                 .attr("class", "SCgSvg");           
-
         
-        // need to check if container is visible
-        d3.select(window)
-                .on('keydown', function() {
-                    self.onKeyDown(d3.event);
-                })
-                .on('keyup', function() {
-                    self.onKeyUp(d3.event);
-                });
         this.initDefs();
                                     
        /* this.d3_container.append('svg:rect')
