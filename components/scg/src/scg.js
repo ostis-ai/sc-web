@@ -108,7 +108,6 @@ SCg.Editor.prototype = {
                 self.hideTool(self.toolEdge());
                 self.hideTool(self.toolBus());
                 self.hideTool(self.toolContour());
-                self.hideTool(self.toolDelete());
                 self.hideTool(self.toolOpen());
                 self.hideTool(self.toolIntegrate());
                 self.hideTool(self.toolUndo());
@@ -242,6 +241,7 @@ SCg.Editor.prototype = {
             self.hideTool(self.toolChangeIdtf());
             self.hideTool(self.toolSetContent());
             self.hideTool(self.toolChangeType());
+            self.hideTool(self.toolDelete());
         });
         select.click(function() {
             self.scene.setEditMode(SCgEditMode.SCgModeSelect);
@@ -580,11 +580,14 @@ SCg.Editor.prototype = {
             this.hideTool(this.toolChangeIdtf());
             this.hideTool(this.toolSetContent());
             this.hideTool(this.toolChangeType());
+            this.hideTool(this.toolDelete());
             if (this.scene.selected_objects.length > 1) {
                 if (this.scene.isSelectedObjectAllArcsOrAllNodes() && !this.scene.isSelectedObjectAllHaveScAddr()) {
                     this.showTool(this.toolChangeType());
                 }
+                this.showTool(this.toolDelete());
             } else if (this.scene.selected_objects.length == 1 && !this.scene.selected_objects[0].sc_addr) {
+                this.showTool(this.toolDelete());
                 if (this.scene.selected_objects[0] instanceof SCg.ModelNode) {
                     this.showTool(this.toolChangeIdtf());
                     this.showTool(this.toolChangeType());

@@ -551,7 +551,7 @@ SCg.Scene.prototype = {
             objects[0].sc_type & sc_type_node ?
                 sc_type_node : 0;
         return (objects.every(function (obj) {
-            return ((obj.sc_type & typeMask) && !(obj instanceof SCg.ModelContour));
+            return ((obj.sc_type & typeMask) && !(obj instanceof SCg.ModelContour) && !(obj instanceof SCg.ModelBus));
         }))
     },
 

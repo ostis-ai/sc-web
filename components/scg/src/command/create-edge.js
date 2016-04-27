@@ -10,7 +10,13 @@ SCgCommandCreateEdge.prototype = {
     constructor: SCgCommandCreateEdge,
 
     undo: function() {
-        if (this.edge.is_selected) this.scene.line_points = [];
+        if (this.edge.is_selected) {
+            var idx = this.scene.selected_objects.indexOf(this.edge);
+            this.scene.selected_objects.splice(idx, 1);
+            this.edge._setSelected(false);
+            this.scene.edit.onSelectionChanged();
+            this.scene.line_points = [];
+        }
         this.scene.removeObject(this.edge);
     },
 

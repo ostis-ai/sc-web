@@ -8,7 +8,13 @@ SCgCommandCreateContour.prototype = {
     constructor: SCgCommandCreateContour,
 
     undo: function() {
-        if (this.contour.is_selected) this.scene.line_points = [];
+        if (this.contour.is_selected) {
+            var idx = this.scene.selected_objects.indexOf(this.contour);
+            this.scene.selected_objects.splice(idx, 1);
+            this.contour._setSelected(false);
+            this.scene.edit.onSelectionChanged();
+            this.scene.line_points = [];
+        }
         this.scene.removeObject(this.contour);
     },
 

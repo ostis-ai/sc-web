@@ -10,6 +10,12 @@ SCgCommandCreateLink.prototype = {
     constructor: SCgCommandCreateLink,
 
     undo: function() {
+        if (this.link.is_selected) {
+            var idx = this.scene.selected_objects.indexOf(this.link);
+            this.scene.selected_objects.splice(idx, 1);
+            this.link._setSelected(false);
+            this.scene.edit.onSelectionChanged();
+        }
         this.scene.removeObject(this.link);
     },
 

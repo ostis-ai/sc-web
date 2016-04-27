@@ -60,15 +60,19 @@ SCWeb.ui.Core = {
                         var addr = self.tooltip_element.attr('sc_addr');
                         if (addr) {
                             SCWeb.core.Server.resolveIdentifiers([addr], function (idf) {
-                                self.tooltip_element.attr('data-toggle', "tooltip");
-                                self.tooltip_element.attr('title', idf[addr]);
-                                self.tooltip_element.tooltip('show');
+                                self.tooltip_element.tooltip({
+                                        placement: 'auto',
+                                        title: idf[addr]
+                                }).tooltip('show');
                             }, function() {
                                 destroyTooltip();
                             });
                         }
                     }, 1000);
                 }).delegate(sc_elements_tooltip_selector, 'mouseout', function(e) {
+                    clearTooltipInterval();
+                    destroyTooltip();
+                }).delegate(sc_elements_tooltip_selector, 'keydown', function(e) {
                     clearTooltipInterval();
                     destroyTooltip();
                 });
