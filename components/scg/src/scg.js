@@ -585,9 +585,7 @@ SCg.Editor.prototype = {
                 if (this.scene.isSelectedObjectAllArcsOrAllNodes() && !this.scene.isSelectedObjectAllHaveScAddr()) {
                     this.showTool(this.toolChangeType());
                 }
-                this.showTool(this.toolDelete());
             } else if (this.scene.selected_objects.length == 1 && !this.scene.selected_objects[0].sc_addr) {
-                this.showTool(this.toolDelete());
                 if (this.scene.selected_objects[0] instanceof SCg.ModelNode) {
                     this.showTool(this.toolChangeIdtf());
                     this.showTool(this.toolChangeType());
@@ -599,6 +597,7 @@ SCg.Editor.prototype = {
                     this.showTool(this.toolSetContent());
                 }
             }
+            if (this.scene.selected_objects.length > 0) this.showTool(this.toolDelete());
         }
     },
 
@@ -614,18 +613,22 @@ SCg.Editor.prototype = {
             else
                 self._enableTool(tool);
         }
-
+        update_tool(this.toolSwitch());
         update_tool(this.toolSelect());
         update_tool(this.toolEdge());
         update_tool(this.toolBus());
         update_tool(this.toolContour());
         update_tool(this.toolLink());
+        update_tool(this.toolUndo());
+        update_tool(this.toolRedo());
         update_tool(this.toolChangeIdtf());
         update_tool(this.toolChangeType());
         update_tool(this.toolSetContent());
         update_tool(this.toolDelete());
         update_tool(this.toolZoomIn());
         update_tool(this.toolZoomOut());
+        update_tool(this.toolIntegrate());
+        update_tool(this.toolOpen());
     },
 
     collectIdtfs : function(keyword){

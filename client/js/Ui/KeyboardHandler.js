@@ -75,7 +75,7 @@ SCWeb.ui.KeyboardHandler = {
      */
     emit: function (eventType, d3_event) {
         var windowId = SCWeb.ui.WindowManager.getActiveWindowId();
-        if(!this.events[eventType])
+        if(!this.events[eventType] || !this.events[eventType][windowId])
             return;
         var callBack = this.events[eventType][windowId].func;
         if(callBack){
