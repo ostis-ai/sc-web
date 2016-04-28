@@ -60,10 +60,12 @@ SCWeb.ui.Core = {
                         var addr = self.tooltip_element.attr('sc_addr');
                         if (addr) {
                             SCWeb.core.Server.resolveIdentifiers([addr], function (idf) {
-                                self.tooltip_element.tooltip({
+                                if (self.tooltip_element) { // check mouseout destroy
+                                    self.tooltip_element.tooltip({
                                         placement: 'auto',
                                         title: idf[addr]
-                                }).tooltip('show');
+                                    }).tooltip('show');
+                                }
                             }, function() {
                                 destroyTooltip();
                             });

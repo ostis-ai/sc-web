@@ -222,8 +222,7 @@ SCg.ModelObject.prototype.removeEdge = function(edge) {
 /**
  * Remove edge from edges list
  */
-SCg.ModelObject.prototype.removeBus = function(edge) {
-    
+SCg.ModelObject.prototype.removeBus = function() {
     this.bus = null;
 };
 
@@ -762,12 +761,7 @@ SCg.ModelBus.prototype.update = function() {
 };
 
 SCg.ModelBus.prototype.setSource = function(scg_obj) {
-    
-    if (this.source == scg_obj) return; // do nothing
-    
-    if (this.source)
-        this.source.removeBus(this);
-    
+    if (this.source) this.source.removeBus();
     this.source = scg_obj;
     this.id = scg_obj.id;
     this.source.bus = this;
@@ -834,7 +828,6 @@ SCg.ModelBus.prototype.changePosition = function(mouse_pos) {
 
 SCg.ModelBus.prototype.destroy = function() {
     SCg.ModelObject.prototype.destroy.call(this);
-    
     if (this.source)
-        this.source.removeBus(this);
+        this.source.removeBus();
 };

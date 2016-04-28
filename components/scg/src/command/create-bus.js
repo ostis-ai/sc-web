@@ -34,6 +34,7 @@ SCgCommandCreateBus.prototype = {
             scene.render.updateDragLine();
         } else {
             scene.appendBus(this.bus);
+            this.bus.setSource(this.source);
             this.bus.update();
         }
 
