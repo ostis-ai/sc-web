@@ -10,6 +10,12 @@ SCgCommandCreateNode.prototype = {
     constructor: SCgCommandCreateNode,
 
     undo: function() {
+        if (this.node.is_selected) {
+            var idx = this.scene.selected_objects.indexOf(this.node);
+            this.scene.selected_objects.splice(idx, 1);
+            this.node._setSelected(false);
+            this.scene.edit.onSelectionChanged();
+        }
         this.scene.removeObject(this.node);
     },
 

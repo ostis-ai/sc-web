@@ -1,7 +1,6 @@
-SCgCommandMoveObject = function (object, oldPosition, newPosition) {
+SCgCommandMoveObject = function (object, offset) {
     this.object = object;
-    this.oldPosition = oldPosition;
-    this.newPosition = newPosition;
+    this.offset = offset;
 };
 
 SCgCommandMoveObject.prototype = {
@@ -9,11 +8,11 @@ SCgCommandMoveObject.prototype = {
     constructor: SCgCommandMoveObject,
 
     undo: function() {
-        this.object.setPosition(this.oldPosition);
+        this.object.setPosition(this.object.position.clone().add(this.offset));
     },
 
     execute: function() {
-        this.object.setPosition(this.newPosition);
+        this.object.setPosition(this.object.position.clone().sub(this.offset));
     }
 
 };

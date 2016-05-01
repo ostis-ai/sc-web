@@ -9,7 +9,13 @@ SCgCommandCreateBus.prototype = {
     constructor: SCgCommandCreateBus,
 
     undo: function() {
-        if (this.bus.is_selected) this.scene.line_points = [];
+        if (this.bus.is_selected) {
+            var idx = this.scene.selected_objects.indexOf(this.bus);
+            this.scene.selected_objects.splice(idx, 1);
+            this.bus._setSelected(false);
+            this.scene.edit.onSelectionChanged();
+            this.scene.line_points = [];
+        }
         this.scene.removeObject(this.bus);
     },
 
@@ -28,6 +34,7 @@ SCgCommandCreateBus.prototype = {
             scene.render.updateDragLine();
         } else {
             scene.appendBus(this.bus);
+            this.bus.setSource(this.source);
             this.bus.update();
         }
 

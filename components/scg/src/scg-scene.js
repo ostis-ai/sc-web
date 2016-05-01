@@ -140,7 +140,7 @@ SCg.Scene.prototype = {
     
     /**
      * Append new sc.g-contour to scene
-     * @param {SCg.ModelContour} contour Contour to append
+     * @param {SCg.ModelBus} bus Bus to append
      */
     appendBus: function(bus) {
         this.buses.push(bus);
@@ -158,6 +158,7 @@ SCg.Scene.prototype = {
             this.appendContour(obj);
         } else if (obj instanceof SCg.ModelBus) {
             this.appendBus(obj);
+            obj.setSource(obj.source);
         }
     },
     
@@ -185,6 +186,7 @@ SCg.Scene.prototype = {
             remove_from_list(obj, this.contours);
         } else if (obj instanceof SCg.ModelBus) {
             remove_from_list(obj, this.buses);
+            obj.destroy();
         }
     },
 
@@ -551,7 +553,7 @@ SCg.Scene.prototype = {
             objects[0].sc_type & sc_type_node ?
                 sc_type_node : 0;
         return (objects.every(function (obj) {
-            return ((obj.sc_type & typeMask) && !(obj instanceof SCg.ModelContour));
+            return ((obj.sc_type & typeMask) && !(obj instanceof SCg.ModelContour) && !(obj instanceof SCg.ModelBus));
         }))
     },
 

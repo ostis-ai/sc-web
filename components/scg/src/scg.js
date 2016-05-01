@@ -108,7 +108,6 @@ SCg.Editor.prototype = {
                 self.hideTool(self.toolEdge());
                 self.hideTool(self.toolBus());
                 self.hideTool(self.toolContour());
-                self.hideTool(self.toolDelete());
                 self.hideTool(self.toolOpen());
                 self.hideTool(self.toolIntegrate());
                 self.hideTool(self.toolUndo());
@@ -242,6 +241,7 @@ SCg.Editor.prototype = {
             self.hideTool(self.toolChangeIdtf());
             self.hideTool(self.toolSetContent());
             self.hideTool(self.toolChangeType());
+            self.hideTool(self.toolDelete());
         });
         select.click(function() {
             self.scene.setEditMode(SCgEditMode.SCgModeSelect);
@@ -580,6 +580,7 @@ SCg.Editor.prototype = {
             this.hideTool(this.toolChangeIdtf());
             this.hideTool(this.toolSetContent());
             this.hideTool(this.toolChangeType());
+            this.hideTool(this.toolDelete());
             if (this.scene.selected_objects.length > 1) {
                 if (this.scene.isSelectedObjectAllArcsOrAllNodes() && !this.scene.isSelectedObjectAllHaveScAddr()) {
                     this.showTool(this.toolChangeType());
@@ -596,6 +597,7 @@ SCg.Editor.prototype = {
                     this.showTool(this.toolSetContent());
                 }
             }
+            if (this.scene.selected_objects.length > 0) this.showTool(this.toolDelete());
         }
     },
 
@@ -611,18 +613,22 @@ SCg.Editor.prototype = {
             else
                 self._enableTool(tool);
         }
-
+        update_tool(this.toolSwitch());
         update_tool(this.toolSelect());
         update_tool(this.toolEdge());
         update_tool(this.toolBus());
         update_tool(this.toolContour());
         update_tool(this.toolLink());
+        update_tool(this.toolUndo());
+        update_tool(this.toolRedo());
         update_tool(this.toolChangeIdtf());
         update_tool(this.toolChangeType());
         update_tool(this.toolSetContent());
         update_tool(this.toolDelete());
         update_tool(this.toolZoomIn());
         update_tool(this.toolZoomOut());
+        update_tool(this.toolIntegrate());
+        update_tool(this.toolOpen());
     },
 
     collectIdtfs : function(keyword){

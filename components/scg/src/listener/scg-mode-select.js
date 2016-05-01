@@ -1,6 +1,5 @@
 SCgSelectListener = function(scene) {
     this.scene = scene;
-    this.selectObject = this.selectSingleObject;
     this.position = null;
     this.offsetObject = null;
 };
@@ -9,13 +8,8 @@ SCgSelectListener.prototype = {
     
     constructor: SCgSelectListener,
 
-    selectSingleObject: function(obj){
-        this.scene.clearSelection();
-        this.scene.appendSelection(obj);
-        this.scene.updateObjectsVisual();
-    },
-
-    selectMultipleObject: function (obj) {
+    selectObject: function(obj) {
+        if (!d3.event.ctrlKey) this.scene.clearSelection();
         this.scene.appendSelection(obj);
         this.scene.updateObjectsVisual();
     },
@@ -25,9 +19,11 @@ SCgSelectListener.prototype = {
         this.scene.mouse_pos.x = x;
         this.scene.mouse_pos.y = y;
         if (this.scene.focused_object) {
-            if (this.scene.focused_object.sc_type & (sc_type_node | sc_type_link)) {
-                this.scene.focused_object.setPosition(this.scene.focused_object.position.clone().add(offset));
-            }
+            this.scene.selected_objects.forEach(function (object) {
+                if (object.sc_type & (sc_type_node | sc_type_link)) {
+                    object.setPosition(object.position.clone().add(offset));
+                }
+            });
             this.scene.updateObjectsVisual();
             return true;
         }
@@ -54,38 +50,42 @@ SCgSelectListener.prototype = {
             obj.previousPoint = new SCg.Vector2(this.scene.mouse_pos.x, this.scene.mouse_pos.y);
             return true;
         }
+        if (d3.event.ctrlKey){
+            this.selectObject(obj);
+            this.onMouseUpObject(obj); // do not move object after select with ctrl
+        } else {
+            if (this.scene.selected_objects.indexOf(obj) == -1) {
+                this.selectObject(obj);
+            }
+        }
         return false;
     },
 
     onMouseUpObject: function (obj) {
-        var newPosition = this.scene.focused_object.position.clone();
-        if (!this.position.equals(newPosition) && this.offsetObject == obj){
-            this.scene.commandManager.execute(new SCgCommandMoveObject(obj,
-                this.position,
-                newPosition));
+        if (!this.scene.focused_object) return; // do nothing after select with ctrl
+        var offset = new SCg.Vector3(this.position.x - this.scene.mouse_pos.x, this.position.y - this.scene.mouse_pos.y, 0);
+        if (!this.position.equals(this.scene.focused_object.position) && this.offsetObject == obj){
+            var commands = [];
+            this.scene.selected_objects.forEach(function (object) {
+                if (object.sc_type & (sc_type_node | sc_type_link)) {
+                    commands.push(new SCgCommandMoveObject(object, offset));
+                }
+            });
+            this.scene.commandManager.execute(new SCgWrapperCommand(commands), true);
             this.offsetObject = null;
             this.position = null;
-        }
-        if (obj == this.scene.focused_object) {
-            this.selectObject(obj);
+        } else if (!d3.event.ctrlKey && obj == this.scene.focused_object) {
+            this.selectObject(obj); // remove multi selection and select object
         }
         this.scene.focused_object = null;
         return true;
     },
 
     onKeyDown: function(event) {
-        if(event.ctrlKey){
-            this.selectObject = this.selectMultipleObject;
-            return true;
-        }
         return false;
     },
 
     onKeyUp: function(event) {
-        if(!event.ctrlKey){
-            this.selectObject = this.selectSingleObject;
-            return true;
-        }
         return false;
     }
 
