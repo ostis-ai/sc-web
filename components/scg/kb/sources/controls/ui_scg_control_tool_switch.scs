@@ -5,4 +5,18 @@ ui_scg_control_tool_switch
         (* <- lang_ru;; *);
     => nrel_main_idtf:
         [Hide/show the extra button]
-        (* <- lang_en;; *);;
+        (* <- lang_en;; *);
+	<- rrel_key_sc_element:
+    		..e
+		(*
+		<- sc_explanation;;
+   		<= nrel_sc_text_translation:	
+	     ..t1
+	    	(*
+        	-> [Используйте этот режим редактирования для открытия/скрытия дополнительных клавиш панели инструментов] (* <- lang_ru;; *);;
+        	*);
+		..t2
+		(*
+		-> [Use this edit mode for showing/hidding an extra button's panel] (* <- lang_en;; *);;
+		*);;
+    *);;

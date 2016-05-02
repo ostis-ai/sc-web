@@ -1,8 +1,22 @@
 ui_scg_control_tool_set_content
     <- ui_scg_control; sc_node_not_relation;
     => nrel_main_idtf:
-        [Установка содержимого в ссылку]
+        [Установка содержимого для SCg-ссылки]
         (* <- lang_ru;; *);
     => nrel_main_idtf:
-        [Set content into link]
-        (* <- lang_en;; *);;
+        [Setting content for SCg-link]
+        (* <- lang_en;; *);
+	<- rrel_key_sc_element:
+    		..e
+		(*
+		<- sc_explanation;;
+   		<= nrel_sc_text_translation:	
+	     ..t1
+	    	(*
+        	-> [Используйте этот режим редактирования для задания содержимого для SCg-ссылки] (* <- lang_ru;; *);;
+        	*);
+		..t2
+		(*
+		-> [Use this edit mode to set a content for SCg-link] (* <- lang_en;; *);;
+		*);;
+    *);;
