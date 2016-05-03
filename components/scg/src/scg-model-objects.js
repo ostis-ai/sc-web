@@ -369,6 +369,15 @@ SCg.ModelEdge = function(options) {
 
 SCg.ModelEdge.prototype = Object.create( SCg.ModelObject.prototype );
 
+SCg.ModelEdge.prototype.setPosition = function(offset) {
+    var dp = offset.clone().sub(this.position);
+    for (var i = 0; i < this.points.length; i++) {
+        this.points[i].x += dp.x;
+        this.points[i].y += dp.y;
+    }
+    SCg.ModelObject.prototype.setPosition.call(this, offset);
+};
+
 /**
  * Destroy object
  */
@@ -609,8 +618,10 @@ SCg.ModelContour.prototype.setPosition = function(pos) {
     var dp = pos.clone().sub(this.position);
     
     for (var i = 0; i < this.childs.length; i++) {
-        var newPos = this.childs[i].position.clone().add(dp);
-        this.childs[i].setPosition(newPos);
+        if (!this.childs[i].is_selected){
+            var newPos = this.childs[i].position.clone().add(dp);
+            this.childs[i].setPosition(newPos);
+        }
     }
 
     for (var i = 0; i < this.points.length; i++) {
@@ -729,6 +740,15 @@ SCg.ModelBus = function(options) {
 
 SCg.ModelBus.prototype = Object.create( SCg.ModelObject.prototype );
 
+SCg.ModelBus.prototype.setPosition = function(offset) {
+    var dp = offset.clone().sub(this.position);
+    for (var i = 0; i < this.points.length; i++) {
+        this.points[i].x += dp.x;
+        this.points[i].y += dp.y;
+    }
+    SCg.ModelObject.prototype.setPosition.call(this, offset);
+};
+
 SCg.ModelBus.prototype.update = function() {
     
     if (!this.source_pos)
@@ -831,3 +851,5 @@ SCg.ModelBus.prototype.destroy = function() {
     if (this.source)
         this.source.removeBus();
 };
+
+

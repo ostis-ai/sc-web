@@ -119,6 +119,12 @@
     stroke-width: 10px;
 }
 
+/* TODO */
+.SCgEdgeFuzDash {
+    stroke-dasharray: 0, 20, 2, 6;
+    stroke-width: 10px;
+}
+
 /* --------- */
 .SCgEdgePermDash {
     stroke-dasharray: 4, 10;

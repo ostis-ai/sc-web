@@ -83,3 +83,12 @@ SCWeb.ui.KeyboardHandler = {
         }
     }
 }
+
+/**
+ * Turn off hot key in browsers
+ */
+document.onkeydown = function(event) {
+    if ((event.which == KeyCode.A) && event.ctrlKey) {
+        return false;
+    }
+};

@@ -16,7 +16,7 @@ GwfObjectInfoReader = {
         "node/const/predmet": sc_type_node | sc_type_const | sc_type_node_abstract,
 
         "node/var/general_node": sc_type_node | sc_type_var,
-        "node/var/asymmetry": sc_type_node | sc_type_var | sc_type_node_tuple,
+        "node/var/symmetry": sc_type_node | sc_type_var | sc_type_node_tuple,
         "node/var/nopredmet": sc_type_node | sc_type_var | sc_type_node_struct,
         "node/var/attribute": sc_type_node | sc_type_var | sc_type_node_role,
         "node/var/relation": sc_type_node | sc_type_var | sc_type_node_norole,
@@ -135,13 +135,15 @@ GwfObjectInfoReader = {
     },
 
     parseNode: function (node) {
-
-        var parsed_node = new GwfObjectNode(null);
-
-
+        var content = node.getElementsByTagName("content");
+        var parsed_node;
+        if (content[0].textContent == ""){
+            parsed_node = new GwfObjectNode(null);
+        } else {
+            parsed_node = new GwfObjectLink(null);
+        }
         if (parsed_node.parseObject({gwf_object: node, reader: this}) == false)
             return false;
-
         this.objects_info[parsed_node.id] = parsed_node;
 
     },
