@@ -70,9 +70,9 @@ SCg.Render.prototype = {
                 d3.event.stopPropagation();
             });
         this.d3_edges = this.d3_container.append('svg:g').selectAll('path');
+        this.d3_buses = this.d3_container.append('svg:g').selectAll('path');
         this.d3_nodes = this.d3_container.append('svg:g').selectAll('g');
         this.d3_links = this.d3_container.append('svg:g').selectAll('g');
-        this.d3_buses = this.d3_container.append('svg:g').selectAll('path');
         this.d3_dragline = this.d3_container.append('svg:g');
         this.d3_line_points = this.d3_container.append('svg:g');
         

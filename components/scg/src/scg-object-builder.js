@@ -6,7 +6,6 @@ ScgObjectBuilder = {
 
     buildObjects: function (gwf_objects) {
         this.gwf_objects = gwf_objects;
-
         for (var gwf_object_id  in gwf_objects) {
             var gwf_object = gwf_objects[gwf_object_id];
             if (gwf_object.attributes.id in this.scg_objects == false) {
@@ -17,6 +16,7 @@ ScgObjectBuilder = {
                 this.scg_objects[gwf_object.attributes.id] = scg_object;
             }
         }
+        this.emptyObjects();
     },
 
     getOrCreate: function (gwf_object_id) {
@@ -29,5 +29,10 @@ ScgObjectBuilder = {
             })
         }
         return this.scg_objects[gwf_object_id];
+    },
+
+    emptyObjects: function () {
+        this.gwf_objects = {};
+        this.scg_objects = {};
     }
 }

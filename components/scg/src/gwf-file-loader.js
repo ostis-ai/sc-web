@@ -25,8 +25,8 @@ GwfFileLoader = {
                 GwfObjectInfoReader.printErrors();
 
         }
-        reader.readAsText(args["file"], "CP1251");
-//        reader.readAsText(args["file"]);
+//        reader.readAsText(args["file"], "CP1251");
+        reader.readAsText(args["file"]);
         return true;
     }
 }
