@@ -1,12 +1,12 @@
 ui_scg_control_tool_select 
 	<- ui_scg_control; sc_node_not_relation;
 	=> nrel_main_idtf:
-		[Режим выделение и перемещения объектов/Создания и выбор узлов]
+		[Режим выделения и перемещения объектов/Создания и выбора узлов]
 		(* <- lang_ru;; *);
 	=> nrel_main_idtf:
-		[Mode to select and move elements/Created and choose created edge]
+		[Mode of selecting and move elements/Creating and choosing created nodes]
 		(* <- lang_en;; *);
-	<- rrel_key_sc_element:
+		<- rrel_key_sc_element:
     		..e
 		(*
 		<- sc_explanation;;

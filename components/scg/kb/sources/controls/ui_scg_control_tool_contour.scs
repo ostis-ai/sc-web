@@ -1,8 +1,22 @@
 ui_scg_control_tool_contour
     <- ui_scg_control; sc_node_not_relation;
     => nrel_main_idtf:
-        [Режим создания контуров]
+        [Режим создания SCg-контура]
         (* <- lang_ru;; *);
     => nrel_main_idtf:
-        [Mode to create contour]
-        (* <- lang_en;; *);;
+        [Creating SCg-contours mode]
+        (* <- lang_en;; *);
+	<- rrel_key_sc_element:
+    		..e
+		(*
+		<- sc_explanation;;
+   		<= nrel_sc_text_translation:	
+	     ..t1
+	    	(*
+        	-> [Используйте этот режим редактирования для создания SCg-контуров] (* <- lang_ru;; *);;
+        	*);
+		..t2
+		(*
+		-> [Use this edit mode to create SCg-contours] (* <- lang_en;; *);;
+		*);;
+    *);;

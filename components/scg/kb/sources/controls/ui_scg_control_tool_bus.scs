@@ -1,8 +1,22 @@
 ui_scg_control_tool_bus
     <- ui_scg_control; sc_node_not_relation;
     => nrel_main_idtf:
-        [Режим создания шин]
+        [Режим создания SCg-шин]
         (* <- lang_ru;; *);
     => nrel_main_idtf:
-        [Mode to create bus]
-        (* <- lang_en;; *);;
+        [SCg-buses creating mode]
+        (* <- lang_en;; *);
+	<- rrel_key_sc_element:
+    		..e
+		(*
+		<- sc_explanation;;
+   		<= nrel_sc_text_translation:	
+	     ..t1
+	    	(*
+        	-> [Используйте этот режим редактирования для создания SCg-шин] (* <- lang_ru;; *);;
+        	*);
+		..t2
+		(*
+		-> [Use this edit mode to create SCg-buses] (* <- lang_en;; *);;
+		*);;
+    *);;
