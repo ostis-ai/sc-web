@@ -520,8 +520,13 @@ SCg.ModelEdge.prototype.getConnectionPos = function(from, dotPos) {
         else
             beg_pos = this.source_pos;
     } else {
-        beg_pos = new SCg.Vector3(this.points[sector - 1].x, this.points[sector - 1].y, 0);
-        end_pos = new SCg.Vector3(this.points[sector].x, this.points[sector].y, 0);
+        if (this.points.length > sector){
+            beg_pos = new SCg.Vector3(this.points[sector - 1].x, this.points[sector - 1].y, 0);
+            end_pos = new SCg.Vector3(this.points[sector].x, this.points[sector].y, 0);
+        } else {
+            beg_pos = new SCg.Vector3(this.source.x, this.source.y, 0);
+            end_pos = new SCg.Vector3(this.target.x, this.target.y, 0);
+        }
     }
         
     var l_pt = new SCg.Vector3(0, 0, 0);

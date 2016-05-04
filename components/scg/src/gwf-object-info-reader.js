@@ -47,7 +47,7 @@ GwfObjectInfoReader = {
     },
 
     read: function (strs) {
-
+        this.objects_info = {};
         var xml_doc = (new DOMParser()).parseFromString(strs, "text/xml");
 
         var root = xml_doc.documentElement;
