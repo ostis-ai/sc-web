@@ -17,6 +17,6 @@ ui_scg_control_tool_delete
         	*);
 		..t2
 		(*
-		-> [Use this delete mode for deleting/hidding SCg-objects] (* <- lang_en;; *);;
+		-> [Use this function for deleting/hidding SCg-objects] (* <- lang_en;; *);;
 		*);;
     *);;

@@ -13,10 +13,10 @@ ui_scg_control_tool_integrate
    		<= nrel_sc_text_translation:	
 	     ..t1
 	    	(*
-        	-> [Используйте этот режим редактирования для синхронизации изменений с базой системы] (* <- lang_ru;; *);;
+        	-> [Используйте эту функцию для синхронизации изменений с базой системы] (* <- lang_ru;; *);;
         	*);
 		..t2
 		(*
-		-> [Use this edit mode to synchronize changes with a system base] (* <- lang_en;; *);;
+		-> [Use this function to synchronize changes with a system base] (* <- lang_en;; *);;
 		*);;
     *);;

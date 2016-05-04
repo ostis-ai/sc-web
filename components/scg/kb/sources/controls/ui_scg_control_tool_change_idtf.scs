@@ -13,10 +13,10 @@ ui_scg_control_tool_change_idtf
    		<= nrel_sc_text_translation:	
 	     ..t1
 	    	(*
-        	-> [Используйте этот режим редактирования для изменения/задания SCg-идентификатора] (* <- lang_ru;; *);;
+        	-> [Используйте эту функцию для изменения/задания SCg-идентификатора] (* <- lang_ru;; *);;
         	*);
 		..t2
 		(*
-		-> [Use this edit mode to change/set SCg-identifier] (* <- lang_en;; *);;
+		-> [Use this function to change/set SCg-identifier] (* <- lang_en;; *);;
 		*);;
     *);;

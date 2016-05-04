@@ -13,10 +13,10 @@ ui_scg_control_tool_change_type
    		<= nrel_sc_text_translation:	
 	     ..t1
 	    	(*
-        	-> [Используйте этот режим редактирования для изменения типа SCg-объекта] (* <- lang_ru;; *);;
+        	-> [Используйте эту функцию для изменения типа SCg-объекта] (* <- lang_ru;; *);;
         	*);
 		..t2
 		(*
-		-> [Use this edit mode to change a type of SCg-object] (* <- lang_en;; *);;
+		-> [Use this function to change a type of SCg-object] (* <- lang_en;; *);;
 		*);;
     *);;

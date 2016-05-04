@@ -13,10 +13,10 @@ ui_scg_control_tool_undo
    		<= nrel_sc_text_translation:	
 	     ..t1
 	    	(*
-        	-> [Используйте этот режим редактирования для отмены последнего действия] (* <- lang_ru;; *);;
+        	-> [Используйте эту функцию для отмены последнего действия] (* <- lang_ru;; *);;
         	*);
 		..t2
 		(*
-		-> [Use this edit mode to cancel last performed action] (* <- lang_en;; *);;
+		-> [Use this funtcion to cancel last performed action] (* <- lang_en;; *);;
 		*);;
     *);;

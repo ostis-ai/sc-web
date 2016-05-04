@@ -13,10 +13,10 @@ ui_scg_control_tool_set_content
    		<= nrel_sc_text_translation:	
 	     ..t1
 	    	(*
-        	-> [Используйте этот режим редактирования для задания содержимого для SCg-ссылки] (* <- lang_ru;; *);;
+        	-> [Используйте эту функцию для задания содержимого для SCg-ссылки] (* <- lang_ru;; *);;
         	*);
 		..t2
 		(*
-		-> [Use this edit mode to set a content for SCg-link] (* <- lang_en;; *);;
+		-> [Use this function to set a content for SCg-link] (* <- lang_en;; *);;
 		*);;
     *);;

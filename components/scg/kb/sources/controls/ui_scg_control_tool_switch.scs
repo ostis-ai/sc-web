@@ -13,10 +13,10 @@ ui_scg_control_tool_switch
    		<= nrel_sc_text_translation:	
 	     ..t1
 	    	(*
-        	-> [Используйте этот режим редактирования для открытия/скрытия дополнительных клавиш панели инструментов] (* <- lang_ru;; *);;
+        	-> [Используйте эту функцию для открытия/скрытия дополнительных клавиш панели инструментов] (* <- lang_ru;; *);;
         	*);
 		..t2
 		(*
-		-> [Use this edit mode for showing/hidding an extra button's panel] (* <- lang_en;; *);;
+		-> [Use this functon for showing/hidding an extra button's panel] (* <- lang_en;; *);;
 		*);;
     *);;

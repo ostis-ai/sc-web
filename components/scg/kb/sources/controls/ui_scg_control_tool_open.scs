@@ -13,10 +13,10 @@ ui_scg_control_tool_open
    		<= nrel_sc_text_translation:	
 	     ..t1
 	    	(*
-        	-> [Используйте этот режим для открытия файла в SCg-редакторе] (* <- lang_ru;; *);;
+        	-> [Используйте эту фнукцию для открытия файла в SCg-редакторе] (* <- lang_ru;; *);;
         	*);
 		..t2
 		(*
-		-> [Use this edit mode to open file in SCg-editor] (* <- lang_en;; *);;
+		-> [Use this function to open file in SCg-editor] (* <- lang_en;; *);;
 		*);;
     *);;
