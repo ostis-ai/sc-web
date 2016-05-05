@@ -1,7 +1,7 @@
 ScgObjectBuilder = {
     scg_objects: {},
     gwf_objects: {},
-
+    commandList: [],
     scene: null,
 
     buildObjects: function (gwf_objects) {
@@ -14,8 +14,10 @@ ScgObjectBuilder = {
                     builder: this
                 });
                 this.scg_objects[gwf_object.attributes.id] = scg_object;
+                this.commandList.push(new SCgCommandAppendObject(scg_object, this.scene));
             }
         }
+        this.scene.commandManager.execute(new SCgWrapperCommand(this.commandList), true);
         this.emptyObjects();
     },
 
@@ -26,7 +28,8 @@ ScgObjectBuilder = {
             this.scg_objects[gwf_object_id] = gwf_object.buildObject({
                 scene: this.scene,
                 builder: this
-            })
+            });
+            this.commandList.push(new SCgCommandAppendObject(this.scg_objects[gwf_object_id], this.scene));
         }
         return this.scg_objects[gwf_object_id];
     },
