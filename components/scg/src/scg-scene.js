@@ -34,6 +34,7 @@ var KeyCode = {
     KeyEqualFirefox: 61,
     KeyEqual: 187,
     KeyPlusNum: 107,
+    A: 65,
     C: 67,
     I: 73,
     T: 84,
@@ -283,7 +284,25 @@ SCg.Scene.prototype = {
             
         return null;
     },
-    
+
+    /**
+     * Selection all object
+     */
+    selectAll: function () {
+        var self = this;
+        var allObjects = [this.nodes, this.edges, this.buses, this.contours, this.links];
+        allObjects.forEach(function (setObjects) {
+            setObjects.forEach(function (obj) {
+                if (!obj.is_selected) {
+                    self.selected_objects.push(obj);
+                    obj._setSelected(true);
+                }
+            });
+        });
+        this.updateObjectsVisual();
+        this._fireSelectionChanged();
+    },
+
     /**
      * Append selection to object
      */
@@ -403,6 +422,8 @@ SCg.Scene.prototype = {
             } else if (event.ctrlKey && (event.which == KeyCode.Z)) {
                 this.commandManager.undo();
                 this.updateRender();
+            } else if ((event.which == KeyCode.A) && event.ctrlKey) {
+                this.selectAll();
             } else if (event.which == KeyCode.Key1) {
                 this.edit.toolSelect().click()
             } else if (event.which == KeyCode.Key2) {

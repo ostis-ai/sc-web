@@ -24,6 +24,7 @@
         "src/listener/scg-mode-edge.js",
         "src/listener/scg-mode-link.js",
         "src/listener/scg-mode-select.js",
+        "src/command/append-object.js",
         "src/command/command-manager.js",
         "src/command/create-node.js",
         "src/command/create-edge.js",

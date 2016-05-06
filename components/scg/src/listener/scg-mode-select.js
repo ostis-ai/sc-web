@@ -20,9 +20,7 @@ SCgSelectListener.prototype = {
         this.scene.mouse_pos.y = y;
         if (this.scene.focused_object) {
             this.scene.selected_objects.forEach(function (object) {
-                if (object.sc_type & (sc_type_node | sc_type_link)) {
-                    object.setPosition(object.position.clone().add(offset));
-                }
+                object.setPosition(object.position.clone().add(offset));
             });
             this.scene.updateObjectsVisual();
             return true;
@@ -48,7 +46,6 @@ SCgSelectListener.prototype = {
         this.position = this.scene.focused_object.position.clone();
         if (obj instanceof SCg.ModelContour || obj instanceof SCg.ModelBus) {
             obj.previousPoint = new SCg.Vector2(this.scene.mouse_pos.x, this.scene.mouse_pos.y);
-            return true;
         }
         if (d3.event.ctrlKey){
             this.selectObject(obj);
@@ -67,9 +64,7 @@ SCgSelectListener.prototype = {
         if (!this.position.equals(this.scene.focused_object.position) && this.offsetObject == obj){
             var commands = [];
             this.scene.selected_objects.forEach(function (object) {
-                if (object.sc_type & (sc_type_node | sc_type_link)) {
-                    commands.push(new SCgCommandMoveObject(object, offset));
-                }
+                commands.push(new SCgCommandMoveObject(object, offset));
             });
             this.scene.commandManager.execute(new SCgWrapperCommand(commands), true);
             this.offsetObject = null;

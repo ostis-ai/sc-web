@@ -273,12 +273,20 @@ var SCgAlphabet = {
                         .attr('d', position_path);
                 }
             } else if (edge.sc_type & (sc_type_arc_common | sc_type_edge_common)) {
-                
-                var p = d3_group.append('svg:path')
-                    .classed('SCgEdgeCommonBack', true)
-                    .classed('SCgEdgeEndArrowCommon', edge.sc_type & sc_type_arc_common)
-                    .style("marker-end", "url(#end-arrow-common_" + containerId + ")")
-                    .attr('d', position_path);
+
+                if (edge.sc_type & sc_type_edge_common){
+                    d3_group.append('svg:path')
+                        .classed('SCgEdgeCommonBack', true)
+                        .attr('d', position_path);
+                }
+
+                if (edge.sc_type & sc_type_arc_common) {
+                    d3_group.append('svg:path')
+                        .classed('SCgEdgeCommonBack', true)
+                        .classed('SCgEdgeEndArrowCommon', edge.sc_type & sc_type_arc_common)
+                        .style("marker-end", "url(#end-arrow-common_" + containerId + ")")
+                        .attr('d', position_path);
+                }
                 
                 d3_group.append('svg:path')
                     .classed('SCgEdgeCommonForeground', true)
@@ -314,6 +322,10 @@ var SCgAlphabet = {
         // now we need to draw fuz markers (for now it not supported)
         if (edge.sc_type & sc_type_arc_fuz) {
             d3_group.selectAll('path').attr('stroke', '#f00');
+            d3_group.append('svg:path')
+                .classed('SCgEdgeFuzDash', true)
+                .attr('d', position_path)
+                .attr('stroke', '#f00');
         }
         
     },

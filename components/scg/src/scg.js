@@ -538,7 +538,7 @@ SCg.Editor.prototype = {
         this.toolOpen().click(function() {
             var document = $(this)[0].ownerDocument;
             var open_dialog = document.getElementById("scg-tool-open-dialog");
-
+            self.scene.clearSelection();
             open_dialog.onchange = function(){
                 return GwfFileLoader.load({
                     file: open_dialog.files[0],
