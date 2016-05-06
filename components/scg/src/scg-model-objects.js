@@ -53,7 +53,6 @@ SCg.ModelObject = function(options) {
     }
     
     this.id = ObjectId++;
-
     this.edges = [];    // list of connected edges
     this.need_update = true;    // update flag
     this.state = SCgObjectState.Normal;
