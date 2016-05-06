@@ -130,7 +130,7 @@ SCs.SCnTree.prototype = {
                 var orderMap = {};
                 var orderMapReverse = {};
                 for (k in keywords) {
-                    var a = keywords[k][1].addr;
+                    var a = keywords[k][2].addr;
                     klist.push(a);
                     elements[a] = keywords[k][2];
                 }
