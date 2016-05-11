@@ -60,6 +60,7 @@ SCg.ModelObject = function(options) {
     this.is_selected = false;
     this.scene = null;
     this.bus = null;
+    this.contour = null;
 };
 
 SCg.ModelObject.prototype = {
@@ -623,10 +624,8 @@ SCg.ModelContour.prototype.setPosition = function(pos) {
     var dp = pos.clone().sub(this.position);
     
     for (var i = 0; i < this.childs.length; i++) {
-        if (!this.childs[i].is_selected){
-            var newPos = this.childs[i].position.clone().add(dp);
-            this.childs[i].setPosition(newPos);
-        }
+        var newPos = this.childs[i].position.clone().add(dp);
+        this.childs[i].setPosition(newPos);
     }
 
     for (var i = 0; i < this.points.length; i++) {
