@@ -37,5 +37,6 @@ ScgObjectBuilder = {
     emptyObjects: function () {
         this.gwf_objects = {};
         this.scg_objects = {};
+        this.commandList = [];
     }
 }
