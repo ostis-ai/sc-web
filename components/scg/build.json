@@ -1,5 +1,6 @@
 {
 	"sources": [
+        "src/gwf-file-creater.js",
         "src/gwf-file-loader.js",
         "src/gwf-model-objects.js",
         "src/gwf-object-info-reader.js",

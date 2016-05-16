@@ -109,6 +109,7 @@ SCg.Editor.prototype = {
                 self.hideTool(self.toolBus());
                 self.hideTool(self.toolContour());
                 self.hideTool(self.toolOpen());
+                self.hideTool(self.toolSave());
                 self.hideTool(self.toolIntegrate());
                 self.hideTool(self.toolUndo());
                 self.hideTool(self.toolRedo());
@@ -203,6 +204,10 @@ SCg.Editor.prototype = {
     toolOpen: function() {
         return this.tool('open');
     },
+
+    toolSave: function() {
+        return this.tool('save');
+    },
     
     toolZoomIn: function() {
         return this.tool('zoomin');
@@ -234,6 +239,7 @@ SCg.Editor.prototype = {
                         self.toolRedo(),
                         self.toolDelete(),
                         self.toolOpen(),
+                        self.toolSave(),
                         self.toolIntegrate()];
             for (var button = 0 ; button < tools.length ; button++){
                 self.toggleTool(tools[button]);
@@ -547,6 +553,13 @@ SCg.Editor.prototype = {
             }
             ScgObjectBuilder.scene = self.scene;
             var result = open_dialog.click();
+        });
+
+        this.toolSave().click(function() {
+            var blob = new Blob([GwfFileCreate.createFile(self.scene)], {
+                type : "text/plain;charset=utf-8"
+            });
+            saveAs(blob, "new_file.gwf");
         });
         
         this.toolIntegrate().click(function() {

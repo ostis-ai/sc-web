@@ -355,7 +355,7 @@ SCg.Render.prototype = {
                 linkDiv.find('.impl').text(d.content);
             } else {
                 if (d.content != "") {
-                    linkDiv.find('.impl').text(d.content);
+                    linkDiv.find('.impl').html(d.content);
                 } else {
                     d.content = linkDiv.find('.impl').html();
                 }
