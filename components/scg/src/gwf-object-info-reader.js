@@ -43,7 +43,8 @@ GwfObjectInfoReader = {
         "arc/var/neg/temp": sc_type_arc_access | sc_type_var | sc_type_arc_neg | sc_type_arc_temp,
         "arc/var/neg": sc_type_arc_access | sc_type_var | sc_type_arc_neg | sc_type_arc_perm,
         "pair/var/noorient": sc_type_edge_common | sc_type_var,
-        "pair/var/synonym": sc_type_edge_common | sc_type_var
+        "pair/var/synonym": sc_type_edge_common | sc_type_var,
+        "pair/noorient": sc_type_edge_common
     },
 
     read: function (strs) {

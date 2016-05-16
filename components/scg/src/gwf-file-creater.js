@@ -14,7 +14,7 @@ GwfFileCreate = {
         this.scene.nodes.forEach(function (node) {
             self.createNode(node);
         });
-        /*this.scene.buses.forEach(function (bus) {
+        this.scene.buses.forEach(function (bus) {
             self.createBus(bus);
         });
         this.scene.links.forEach(function (link) {
@@ -22,7 +22,7 @@ GwfFileCreate = {
         });
         this.scene.edges.forEach(function (edge) {
             self.createEdge(edge);
-        });*/
+        });
         this.addEndFile();
         return this.fileString;
     },
@@ -42,17 +42,25 @@ GwfFileCreate = {
 
     createNode: function (node) {
         this.fileString +=
-        '       <node type="' + this.getTypeNode(node) + '" idtf="' + this.getIdtf(node) + '" shapeColor="0" id="' + this.getIdObject(node) + '" parent="' + this.haveParent(node) + '" left="0" top="0" right="16.125" bottom="25" textColor="164" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" x="' + node.position.x + '" y="' + node.position.y + '" haveBus="' + this.haveBus(node) + '" idtf_pos="0">\n' +
+        '       <node type="' + this.getTypeObject(node) + '" idtf="' + this.getIdtf(node) + '" shapeColor="0" id="' + this.getIdObject(node) + '" parent="' + this.haveParent(node) + '" left="0" top="0" right="16.125" bottom="25" textColor="164" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" x="' + node.position.x + '" y="' + node.position.y + '" haveBus="' + this.haveBus(node) + '" idtf_pos="0">\n' +
         '           <content type="0" mime_type="" content_visibility="false" file_name=""/>\n' +
         '       </node>\n';
     },
 
-    createEdge: function () {
-
+    createEdge: function (edge) {
+        this.fileString +=
+        '       <arc type="' + this.getTypeObject(edge) + '" idtf="" shapeColor="0" id="' + this.getIdObject(edge) + '" parent="' + this.haveParent(edge) + '" id_b="' + this.getIdObject(edge.source) + '" id_e="' + this.getIdObject(edge.target) + '" b_x="' + edge.source_pos.x + '" b_y="' + edge.source_pos.y + '" e_x="' + edge.target_pos.x + '" e_y="' + edge.target_pos.y + '" dotBBalance="' + edge.source_dot + '" dotEBalance="' + edge.target_dot + '">\n';
+        this.addPoints(edge);
+        this.fileString +=
+        '       </arc>\n';
     },
 
-    createBus: function () {
-
+    createBus: function (bus) {
+        this.fileString +=
+        '       <bus type="" idtf="" shapeColor="0" id="' + this.getIdBus(bus) + '" parent="' + this.haveParent(bus) + '" owner="' + this.getIdObject(bus.source) + '" b_x="' + bus.source_pos.x + '" b_y="' + bus.source_pos.y + '" e_x="' + bus.target_pos.x + '" e_y="' + bus.target_pos.y + '">\n';
+        this.addPointsBus(bus);
+        this.fileString +=
+        '       </bus>\n';
     },
 
     createContour: function (contour) {
@@ -63,35 +71,69 @@ GwfFileCreate = {
         '       </contour>\n';
     },
 
-    createLink: function () {
-
+    createLink: function (node) {
+        this.fileString +=
+        '       <node type="node/const/general_node" idtf="" shapeColor="0" id="' + this.getIdObject(node) + '" parent="' + this.haveParent(node) + '" left="0" top="0" right="16.125" bottom="25" textColor="164" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" x="' + node.position.x + '" y="' + node.position.y + '" haveBus="' + this.haveBus(node) + '" idtf_pos="0">\n' +
+        '           <content type="' + this.getLinkType(node)+ '" mime_type="' + this.getLinkMimeType(node)+ '" content_visibility="true" file_name=""><![CDATA[' + node.content + ']]></content>\n' +
+        '       </node>\n';
     },
 
     addPoints: function (object) {
         var self = this;
-        this.fileString +=
-        '           <points>\n';
-        object.points.forEach(function (point) {
-            self.fileString +=
-            '               <point x="' + point.x + '" y="' + point.y + '"/>\n';
-        });
-        this.fileString +=
-        '           </points>\n';
+        if (object instanceof SCg.ModelBus){
+            this.addPointsBus(object);
+        } else {
+            if (object.points.length > 0) {
+                this.fileString +=
+                    '           <points>\n';
+                object.points.forEach(function (point) {
+                    self.fileString +=
+                    '               <point x="' + point.x + '" y="' + point.y + '"/>\n';
+                });
+                this.fileString +=
+                    '           </points>\n';
+            } else {
+                this.fileString +=
+                    '           <points/>\n';
+            }
+        }
     },
 
-    getTypeNode: function (node) {
+    addPointsBus: function (object) {
+        var self = this;
+        if (object.points.length > 1){
+            this.fileString +=
+                '           <points>\n';
+            for (var point = 0; point < object.points.length - 1; point++) {
+                self.fileString +=
+                '               <point x="' + object.points[point].x + '" y="' + object.points[point].y + '"/>\n';
+            }
+            this.fileString +=
+                '           </points>\n';
+        } else {
+            this.fileString +=
+                '           <points/>\n';
+        }
+    },
+
+    getTypeObject: function (object) {
         for (var key in GwfObjectInfoReader.gwf_type_to_scg_type) {
-            if (GwfObjectInfoReader.gwf_type_to_scg_type[key] == node.sc_type) {
+            if (GwfObjectInfoReader.gwf_type_to_scg_type[key] == object.sc_type) {
                 return key
             }
         }
-        console.log("Error getType");
-        console.log(node);
-        return "node/const/general_node";
     },
 
     getIdObject: function (object) {
-        return object.id + 100;
+        if (object instanceof SCg.ModelBus){
+            return this.getIdBus(object);
+        } else {
+            return object.id + 100;
+        }
+    },
+
+    getIdBus: function (bus) {
+        return bus.id_bus + 100;
     },
 
     getIdtf: function (object) {
@@ -100,6 +142,20 @@ GwfFileCreate = {
         } else {
             return "";
         }
+    },
+
+    getLinkType: function (object) {
+        // TODO add work with file(example type="4" mime_type="image/png")
+        if (object.contentType == 'string'){
+            return "1";
+        } else {
+            return "3";
+        }
+    },
+
+    getLinkMimeType: function (object) {
+        // TODO add work with file(example type="4" mime_type="image/png")
+        return "content/term";
     },
 
     haveBus: function (object) {
