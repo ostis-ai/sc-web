@@ -1,0 +1,22 @@
+ui_scg_control_tool_save
+    <- ui_scg_control; sc_node_not_relation;
+    => nrel_main_idtf:
+        [Сохранить файл]
+        (* <- lang_ru;; *);
+    => nrel_main_idtf:
+        [Save file]
+        (* <- lang_en;; *);
+	<- rrel_key_sc_element:
+    		..e
+		(*
+		<- sc_explanation;;
+   		<= nrel_sc_text_translation:
+	     ..t1
+	    	(*
+        	-> [Используйте эту фнукцию для сохранения файла] (* <- lang_ru;; *);;
+        	*);
+		..t2
+		(*
+		-> [Use this function to save file] (* <- lang_en;; *);;
+		*);;
+    *);;

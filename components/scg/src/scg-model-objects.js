@@ -53,7 +53,6 @@ SCg.ModelObject = function(options) {
     }
     
     this.id = ObjectId++;
-
     this.edges = [];    // list of connected edges
     this.need_update = true;    // update flag
     this.state = SCgObjectState.Normal;
@@ -725,18 +724,15 @@ SCg.ModelContour.prototype.getCenter = function() {
 SCg.ModelBus = function(options) {
     
     SCg.ModelObject.call(this, options);
-
+    this.id_bus = this.id;
     this.source = null;
-
     if (options.source)
         this.setSource(options.source);
-
     this.source_pos = null; // the begin position of bus in world coordinates
     this.target_pos = null; // the end position of bus in world coordinates
     this.points = [];
     this.source_dot = 0.5;
     this.target_dot = 0.5;
-
     this.previousPoint = null;
     //this.requestUpdate();
     //this.update();
