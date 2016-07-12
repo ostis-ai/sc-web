@@ -1,0 +1,22 @@
+ui_scg_control_tool_clear
+    <- ui_scg_control; sc_node_not_relation;
+    => nrel_main_idtf:
+        [Удаление всех объектов]
+        (* <- lang_ru;; *);
+    => nrel_main_idtf:
+        [Deleting all objects]
+        (* <- lang_en;; *);
+	<- rrel_key_sc_element:
+    		..e
+		(*
+		<- sc_explanation;;
+   		<= nrel_sc_text_translation:
+	     ..t1
+	    	(*
+        	-> [Используйте эту функцию для удаления/скрытия всех SCg-объектов] (* <- lang_ru;; *);;
+        	*);
+		..t2
+		(*
+		-> [Use this function for deleting/hidding all SCg-objects] (* <- lang_en;; *);;
+		*);;
+    *);;
