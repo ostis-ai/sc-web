@@ -119,10 +119,10 @@ SCg.Editor.prototype = {
         });
         this.scene.event_selection_changed = function() {
             self.onSelectionChanged();
-        }
+        };
         this.scene.event_modal_changed = function() {
             self.onModalChanged();
-        }
+        };
         this.keyboardCallbacks = {
             'onkeydown': function(event) {
                 self.scene.onKeyDown(event)
@@ -131,6 +131,9 @@ SCg.Editor.prototype = {
                 self.scene.onKeyUp(event);
             }
         };
+        this.openComponentCallbacks = function () {
+            self.render.requestUpdateAll();
+        }
     },
     
     hideTool: function(tool) {
