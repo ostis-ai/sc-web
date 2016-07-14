@@ -119,10 +119,10 @@ SCg.Editor.prototype = {
         });
         this.scene.event_selection_changed = function() {
             self.onSelectionChanged();
-        }
+        };
         this.scene.event_modal_changed = function() {
             self.onModalChanged();
-        }
+        };
         this.keyboardCallbacks = {
             'onkeydown': function(event) {
                 self.scene.onKeyDown(event)
@@ -131,6 +131,9 @@ SCg.Editor.prototype = {
                 self.scene.onKeyUp(event);
             }
         };
+        this.openComponentCallbacks = function () {
+            self.render.requestUpdateAll();
+        }
     },
     
     hideTool: function(tool) {
@@ -196,6 +199,10 @@ SCg.Editor.prototype = {
     toolDelete: function() {
         return this.tool('delete');
     },
+
+    toolClear: function() {
+        return this.tool('clear');
+    },
     
     toolIntegrate: function() {
         return this.tool('integrate');
@@ -238,6 +245,7 @@ SCg.Editor.prototype = {
                         self.toolUndo(),
                         self.toolRedo(),
                         self.toolDelete(),
+                        self.toolClear(),
                         self.toolOpen(),
                         self.toolSave(),
                         self.toolIntegrate()];
@@ -531,16 +539,18 @@ SCg.Editor.prototype = {
             });
         });
 
-
         this.toolDelete().click(function() {
             if (self.scene.selected_objects.length > 0){
                 self.scene.deleteObjects(self.scene.selected_objects.slice(0, self.scene.selected_objects.length));
                 self.scene.clearSelection();
             }
         });
+        
+        this.toolClear().click(function() {
+            self.scene.selectAll();
+            self.toolDelete().click();
+        });
 
-
-        //problem with opening the same doc twice
         this.toolOpen().click(function() {
             var document = $(this)[0].ownerDocument;
             var open_dialog = document.getElementById("scg-tool-open-dialog");
@@ -638,6 +648,7 @@ SCg.Editor.prototype = {
         update_tool(this.toolChangeType());
         update_tool(this.toolSetContent());
         update_tool(this.toolDelete());
+        update_tool(this.toolClear());
         update_tool(this.toolZoomIn());
         update_tool(this.toolZoomOut());
         update_tool(this.toolIntegrate());

@@ -468,6 +468,28 @@ SCg.Render.prototype = {
     updateTexts: function() {
         this.d3_nodes.select('text').text(function(d) { return d.text; });
     },
+
+    requestUpdateAll: function () {
+        this.d3_nodes.each(function (d) {
+            d.need_observer_sync = true;
+        });
+        this.d3_links.each(function (d) {
+            d.need_observer_sync = true;
+        });
+        this.d3_edges.each(function (d) {
+            d.need_observer_sync = true;
+            d.need_update = true;
+        });
+        this.d3_contours.each(function(d) {
+            d.need_observer_sync = true;
+            d.need_update = true;
+        });
+        this.d3_buses.each(function(d) {
+            d.need_observer_sync = true;
+            d.need_update = true;
+        });
+        this.update();
+    },
     
     updateDragLine: function() {
         var self = this;
