@@ -131,6 +131,9 @@ SCWeb.core.ComponentManager = {
                 if(component.editor.keyboardCallbacks){
                     SCWeb.ui.KeyboardHandler.subscribeWindow(options.window_id, component.editor.keyboardCallbacks);
                 }
+                if(component.editor.openComponentCallbacks) {
+                    SCWeb.ui.OpenComponentHandler.subscribeComponent(options.window_id, component.editor.openComponentCallbacks);
+                }
             }
             if (component) {
                 dfd.resolve();
