@@ -41,13 +41,14 @@ SCWeb.ui.WindowManager = {
         
             var fmt_addr = SCWeb.core.ComponentManager.getPrimaryFormatForExtLang(lang_addr);
             if (fmt_addr) {
-                var id = self.hash_addr(question_addr, fmt_addr);
+                var command_state = new SCWeb.core.CommandState(null, null, fmt_addr);
+                var id = self.hash_addr(question_addr, command_state);
                 if (self.windows.indexOf(id) != -1) {
                     self.setWindowActive(id);
                 } else {
-                    self.appendWindow(question_addr, fmt_addr);
-                    self.window_active_formats[question_addr] = fmt_addr;
-                    self.windows[self.hash_addr(question_addr, fmt_addr)] = question_addr;
+                    self.appendWindow(question_addr, command_state);
+                    self.window_active_formats[question_addr] = command_state.format;
+                    self.windows[self.hash_addr(question_addr, command_state.format)] = question_addr;
                 }
             }
         });
@@ -98,7 +99,7 @@ SCWeb.ui.WindowManager = {
      * Append new tab into history
      * @param {String} question_addr sc-addr of item to append into history
      */
-    appendHistoryItem: function(question_addr) {
+    appendHistoryItem: function(question_addr, command_state) {
         
         // @todo check if tab exist        
         var tab_html = '<a class="list-group-item history-item" sc_addr="' + question_addr + '">' +
@@ -109,14 +110,14 @@ SCWeb.ui.WindowManager = {
                 
         // get translation and create window
         var ext_lang_addr = SCWeb.core.Main.getDefaultExternalLang();
-        var fmt_addr = SCWeb.core.ComponentManager.getPrimaryFormatForExtLang(ext_lang_addr);
-        if (fmt_addr) {
-            var id = this.hash_addr(question_addr, fmt_addr)
+        command_state.format = SCWeb.core.ComponentManager.getPrimaryFormatForExtLang(ext_lang_addr);
+        if (command_state.format) {
+            var id = this.hash_addr(question_addr, command_state.format, command_state.command_args)
             if (this.windows.indexOf(id) != -1) {
                 this.setWindowActive(id);
             } else {            
-                this.appendWindow(question_addr, fmt_addr);
-                this.window_active_formats[question_addr] = fmt_addr;
+                this.appendWindow(question_addr, command_state);
+                this.window_active_formats[question_addr] = command_state.format;
             }
         }
         
@@ -167,13 +168,13 @@ SCWeb.ui.WindowManager = {
      * @param {String} addr sc-addr of sc-structure
      * @param {String} fmt_addr sc-addr of window format
      */
-    appendWindow: function(question_addr, fmt_addr) {
+    appendWindow: function(question_addr, command_state) {
         var self = this;
         
         var f = function(addr, is_struct) {
-            var id = self.hash_addr(question_addr, fmt_addr);
+            var id = self.hash_addr(question_addr, command_state.format);
             var window_id = 'window_' + question_addr;
-            var window_html =   '<div class="panel panel-default sc-window" id="' + id + '" sc_addr="' + question_addr + '" sc-addr-fmt="' + fmt_addr + '">' +
+            var window_html =   '<div class="panel panel-default sc-window" id="' + id + '" sc_addr="' + question_addr + '" sc-addr-fmt="' + command_state.format + '">' +
                                     '<div class="panel-body" id="' + window_id + '"></div>'
                                 '</div>';
             self.window_container.prepend(window_html);
@@ -182,11 +183,12 @@ SCWeb.ui.WindowManager = {
             self.windows.push(id);
             
             var sandbox = SCWeb.core.ComponentManager.createWindowSandboxByFormat({
-                format_addr: fmt_addr, 
+                format_addr: command_state.format,
                 addr: addr, 
                 is_struct: is_struct, 
                 container: window_id,
                 window_id: id,
+                command_state: command_state,
                 canEdit: true    //! TODO: check user rights
             });
             if (sandbox) {
@@ -199,12 +201,12 @@ SCWeb.ui.WindowManager = {
         };
         
         var translated = function() {
-            SCWeb.core.Server.getAnswerTranslated(question_addr, fmt_addr, function(d) {
+            SCWeb.core.Server.getAnswerTranslated(question_addr, command_state.format, function(d) {
                 f(d.link, false);
             });
         };
         
-        if (SCWeb.core.ComponentManager.isStructSupported(fmt_addr)) {
+        if (SCWeb.core.ComponentManager.isStructSupported(command_state.format)) {
             // determine answer structure
             window.scHelper.getAnswer(question_addr).done(function (addr) {
                 f(addr, true);

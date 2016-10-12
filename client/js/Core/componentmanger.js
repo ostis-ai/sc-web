@@ -121,6 +121,7 @@ SCWeb.core.ComponentManager = {
                 is_struct: options.is_struct,
                 format_addr: options.format_addr, 
                 keynodes: this._keynodes,
+                command_state: options.command_state,
                 canEdit: options.canEdit
             });
             if (!comp_def.struct_support && options.is_struct)
@@ -170,7 +171,8 @@ SCWeb.core.ComponentManager = {
                 is_struct: options.is_struct,
                 format_addr: null,
                 keynodes: this._keynodes,
-                canEdit: options.canEdit
+                canEdit: options.canEdit,
+                command_state: options.command_state
             });
             if (!comp_def.struct_support && is_struct)
                 throw "Component doesn't support structures: " + comp_def;

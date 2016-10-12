@@ -112,7 +112,8 @@ SCWeb.core.Main = {
         SCWeb.core.Arguments.clear();
         SCWeb.core.Server.doCommand(cmd_addr, cmd_args, function(result) {
             if (result.question != undefined) {
-                SCWeb.ui.WindowManager.appendHistoryItem(result.question);
+                var commandState = new SCWeb.core.CommandState(cmd_addr, cmd_args);
+                SCWeb.ui.WindowManager.appendHistoryItem(result.question, commandState);
             } else if (result.command != undefined) {
                 
             } else {
