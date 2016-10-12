@@ -117,6 +117,7 @@ SCWeb.core.ComponentManager = {
         if (comp_def) {
             var sandbox = new SCWeb.core.ComponentSandbox({
                 container: options.container,
+                window_id: options.window_id,
                 addr: options.addr,
                 is_struct: options.is_struct,
                 format_addr: options.format_addr, 
@@ -130,10 +131,10 @@ SCWeb.core.ComponentManager = {
             var component = comp_def.factory(sandbox);
             if(component.editor){
                 if(component.editor.keyboardCallbacks){
-                    SCWeb.ui.KeyboardHandler.subscribeWindow(options.window_id, component.editor.keyboardCallbacks);
+                    SCWeb.ui.KeyboardHandler.subscribeWindow(options.container_selector, component.editor.keyboardCallbacks);
                 }
                 if(component.editor.openComponentCallbacks) {
-                    SCWeb.ui.OpenComponentHandler.subscribeComponent(options.window_id, component.editor.openComponentCallbacks);
+                    SCWeb.ui.OpenComponentHandler.subscribeComponent(options.container_selector, component.editor.openComponentCallbacks);
                 }
             }
             if (component) {

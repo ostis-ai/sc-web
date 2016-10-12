@@ -1,6 +1,6 @@
 SCWeb.core.scAddrsDict = {};
 
-SCWeb.core.CommandState = function(command_addr, command_args, format){
+SCWeb.core.CommandState = function (command_addr, command_args, format) {
     this.command_addr = command_addr;
     this.command_args = command_args;
     this.format = format;
@@ -19,6 +19,7 @@ SCWeb.core.ComponentSandbox = function (options) {
 
     this.command_state = options.command_state;
     this.container = options.container;
+    this.container_selector = "#" + SCWeb.ui.Core.selectorWindowScAddr(options.window_id);
     this.wrap_selector = '#' + this.container + '_wrap';
     this.addr = parseInt(options.addr);
     this.is_struct = options.is_struct;
