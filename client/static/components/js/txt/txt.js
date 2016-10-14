@@ -38,7 +38,7 @@ var TextViewer = function(sandbox){
                 var float32 = new Float32Array(data);
                 str = float32[0];
             } else if (type_addr == window.scKeynodes.binary_int8) {
-                var int8 = new Int8Arrray(data);
+                var int8 = new Int8Array(data);
                 str = int8[0];
             } else if (type_addr == window.scKeynodes.binary_int16) {
                 var int16 = new Int16Array(data);

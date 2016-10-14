@@ -516,15 +516,27 @@ SCg.Editor.prototype = {
                 var file = input_content[0].files[0];
                 if (file != undefined){
                     var fileReader = new FileReader();
-                    fileReader.onload = function() {
-                        if (obj.content != this.result || obj.contentType != 'string') {
-                            self.scene.commandManager.execute(new SCgCommandChangeContent(obj,
-                                this.result,
-                                'string'));
-                        }
-                        stop_modal();
-                    };
-                    fileReader.readAsArrayBuffer(file);
+                    if (file.type === 'text/html'){
+                        fileReader.onload = function() {
+                            if (obj.content != this.result || obj.contentType != 'html') {
+                                self.scene.commandManager.execute(new SCgCommandChangeContent(obj,
+                                    this.result,
+                                    'html'));
+                            }
+                            stop_modal();
+                        };
+                        fileReader.readAsText(file);
+                    } else {
+                        fileReader.onload = function() {
+                            if (obj.content != this.result || obj.contentType != 'html') {
+                                self.scene.commandManager.execute(new SCgCommandChangeContent(obj,
+                                    '<img src="' + this.result + '" alt="Image">',
+                                    'html'));
+                            }
+                            stop_modal();
+                        };
+                        fileReader.readAsDataURL(file);
+                    }
                 } else {
                     if (obj.content != input.val() || obj.contentType != input_content_type.val()) {
                         self.scene.commandManager.execute(new SCgCommandChangeContent(obj,
