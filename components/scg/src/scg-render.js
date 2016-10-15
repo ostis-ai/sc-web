@@ -358,6 +358,9 @@ SCg.Render.prototype = {
                     linkDiv.find('.impl').html(d.content);
                 } else {
                     d.content = linkDiv.find('.impl').html();
+                    if (d.content != ""){
+                        d.setAutoType();
+                    }
                 }
             }
 

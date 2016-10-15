@@ -338,6 +338,26 @@ SCg.ModelLink.prototype.setContent = function(content, contentType) {
     this.need_observer_sync = true;
 };
 
+SCg.ModelLink.prototype.setAutoType = function () {
+    function isHTML(str) {
+        return /<[a-z][\s\S]*>/i.test(str);
+    }
+
+    function isFloat(value) {
+        return !isNaN(value) && value.toString().indexOf('.') != -1;
+    }
+
+    if (isHTML(this.content)){
+        this.contentType = 'html';
+    } else if (isFloat(this.content)){
+        this.contentType = 'float';
+    } else if (!isNaN(this.content)){
+        this.contentType = 'int32';
+    } else {
+        this.contentType = 'string';
+    }
+};
+
 // --------------- arc -----------
 
 /**
