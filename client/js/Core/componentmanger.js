@@ -117,10 +117,12 @@ SCWeb.core.ComponentManager = {
         if (comp_def) {
             var sandbox = new SCWeb.core.ComponentSandbox({
                 container: options.container,
+                window_id: options.window_id,
                 addr: options.addr,
                 is_struct: options.is_struct,
                 format_addr: options.format_addr, 
                 keynodes: this._keynodes,
+                command_state: options.command_state,
                 canEdit: options.canEdit
             });
             if (!comp_def.struct_support && options.is_struct)
@@ -129,10 +131,10 @@ SCWeb.core.ComponentManager = {
             var component = comp_def.factory(sandbox);
             if(component.editor){
                 if(component.editor.keyboardCallbacks){
-                    SCWeb.ui.KeyboardHandler.subscribeWindow(options.window_id, component.editor.keyboardCallbacks);
+                    SCWeb.ui.KeyboardHandler.subscribeWindow(options.container_selector, component.editor.keyboardCallbacks);
                 }
                 if(component.editor.openComponentCallbacks) {
-                    SCWeb.ui.OpenComponentHandler.subscribeComponent(options.window_id, component.editor.openComponentCallbacks);
+                    SCWeb.ui.OpenComponentHandler.subscribeComponent(options.container_selector, component.editor.openComponentCallbacks);
                 }
             }
             if (component) {
@@ -170,7 +172,8 @@ SCWeb.core.ComponentManager = {
                 is_struct: options.is_struct,
                 format_addr: null,
                 keynodes: this._keynodes,
-                canEdit: options.canEdit
+                canEdit: options.canEdit,
+                command_state: options.command_state
             });
             if (!comp_def.struct_support && is_struct)
                 throw "Component doesn't support structures: " + comp_def;
