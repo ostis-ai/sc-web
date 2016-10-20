@@ -300,6 +300,12 @@ var GwfObjectLink = function (args) {
 GwfObjectLink.prototype = Object.create(GwfObject.prototype);
 
 GwfObjectLink.prototype.parseObject = function (args) {
+    function isHTML(str) {
+        return /<[a-z][\s\S]*>/i.test(str);
+    }
+    function isFloat(value) {
+        return !isNaN(value) && value.toString().indexOf('.') != -1;
+    }
     var link = args.gwf_object;
     var reader = args.reader;
     this.attributes = reader.fetchAttributes(link, this.requiredAttrs);
@@ -310,7 +316,32 @@ GwfObjectLink.prototype.parseObject = function (args) {
     this.id = this.attributes["id"];
     var content = link.getElementsByTagName("content")[0];
     this.type = reader.fetchAttributes(content, ["type"])["type"];
-    this.content = content.textContent;
+    var mime_type = reader.fetchAttributes(content, ["mime_type"])["mime_type"];
+    switch (this.type){
+        case '1':
+            this.type = 'string';
+            break;
+        case '3':
+            this.type = 'int32';
+            break;
+        case '4':
+            this.type = 'html';
+            break;
+        default:
+            console.log('ERROR PARSE TYPE IN GwfObjectLink');
+            break;
+    }
+    if (this.type != 'html'){
+        this.content = content.textContent;
+        if (isHTML(this.content)){
+            this.type = 'html';
+        } else if (this.type === 'int32' && isFloat(this.content)){
+            this.type = 'float';
+        }
+    } else {
+        this.content = '<img src="data:' + mime_type +
+            ';base64,' + content.textContent + ' " alt="Image">';
+    }
     return this;
 };
 
@@ -320,7 +351,7 @@ GwfObjectLink.prototype.buildObject = function (args) {
                                                       this.attributes["y"] + +GwfObjectController.getYOffset(),
                                                       0),
                                       '');
-    link.setContent(this.content);
+    link.setContent(this.content, this.type);
     scene.appendLink(link);
     scene.appendSelection(link);
     args.scg_object = link;

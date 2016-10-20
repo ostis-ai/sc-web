@@ -148,7 +148,9 @@ GwfFileCreate = {
         // TODO add work with file(example type="4" mime_type="image/png")
         if (object.contentType == 'string'){
             return "1";
-        } else {
+        } if (object.contentType == 'html'){    // KBE not support HTML, save as string
+            return "1";
+        }else {
             return "3";
         }
     },

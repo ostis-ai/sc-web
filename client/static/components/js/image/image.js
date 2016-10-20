@@ -9,6 +9,20 @@ var ImageViewer = function(sandbox){
     this.container = '#' + sandbox.container;
     this.sandbox = sandbox;
 
+    function toDataUrl(url, callback) {
+        var xhr = new XMLHttpRequest();
+        xhr.responseType = 'blob';
+        xhr.onload = function() {
+            var reader = new FileReader();
+            reader.onloadend = function() {
+                callback(reader.result);
+            };
+            reader.readAsDataURL(xhr.response);
+        };
+        xhr.open('GET', url);
+        xhr.send();
+    }
+
     // ---- window interface -----
     this.receiveData = function(data) {
         var dfd = new jQuery.Deferred();
@@ -19,9 +33,12 @@ var ImageViewer = function(sandbox){
         dfd.resolve();
         return dfd.promise();
     };
-    
+
+    var self = this;
     if (this.sandbox.addr) {
-        this.receiveData('api/link/content/?addr=' + this.sandbox.addr);
+        toDataUrl('api/link/content/?addr=' + this.sandbox.addr, function(base64Img) {
+            self.receiveData(base64Img);
+        });
     }
 };
 

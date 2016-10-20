@@ -352,12 +352,15 @@ SCg.Render.prototype = {
 
             var linkDiv = $(document.getElementById("link_" + self.containerId + "_" + d.id));
             if (!d.sc_addr) {
-                linkDiv.find('.impl').text(d.content);
+                linkDiv.find('.impl').html(d.content);
             } else {
                 if (d.content != "") {
                     linkDiv.find('.impl').html(d.content);
                 } else {
                     d.content = linkDiv.find('.impl').html();
+                    if (d.content != ""){
+                        d.setAutoType();
+                    }
                 }
             }
 

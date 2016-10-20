@@ -424,14 +424,21 @@ function scgScStructTranslator(_editor, _sandbox) {
                                 var int32 = new Int32Array(1);
                                 int32[0] = parseInt(link.content);
                                 content = int32.buffer;
-                                kaynode = window.scKeynodes.binary_int32;
+                                keynode = window.scKeynodes.binary_int32;
                             }
                             
                             objects.push(link);
                             
                             /// TODO: process errors on set content and arc creation
                             window.sctpClient.set_link_content(r, content);
-                            window.sctpClient.create_arc(sc_type_arc_pos_const_perm, keynode, r);
+                            if (link.contentType === 'html') {
+                                keynode = window.scKeynodes.format_html;
+                                window.sctpClient.create_arc(sc_type_arc_common | sc_type_const, r, keynode).done(function(arc_addr) {
+                                    window.sctpClient.create_arc(sc_type_arc_pos_const_perm, window.scKeynodes.nrel_format, arc_addr).fail(dfd.reject);
+                                }).fail(dfd.reject);
+                            } else {
+                                window.sctpClient.create_arc(sc_type_arc_pos_const_perm, keynode, r);
+                            }
                             dfd.resolve();
                         });
                     } else {
