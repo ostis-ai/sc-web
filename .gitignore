@@ -58,9 +58,6 @@ client/static/components/*/github*
 # scs
 client/static/components/*/scs*
 
-# scn-editor
-client/static/components/js/scn-editor/
-
 # html
 client/static/components/*/html*
 
