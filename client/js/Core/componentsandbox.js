@@ -2,7 +2,7 @@ SCWeb.core.scAddrsDict = {};
 
 SCWeb.core.CommandState = function (command_addr, command_args, format) {
     this.command_addr = command_addr;
-    this.command_args = command_args;
+    this.command_args = command_args || [];
     this.format = format;
 }
 
