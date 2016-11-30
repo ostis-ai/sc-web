@@ -2,7 +2,7 @@ SCWeb.core.scAddrsDict = {};
 
 SCWeb.core.CommandState = function (command_addr, command_args, format) {
     this.command_addr = command_addr;
-    this.command_args = command_args;
+    this.command_args = command_args || [];
     this.format = format;
 }
 
@@ -217,6 +217,17 @@ SCWeb.core.ComponentSandbox.prototype._appendChilds = function (windows) {
 SCWeb.core.ComponentSandbox.prototype.removeChild = function removeChild() {
     this.childs = {};
 };
+
+SCWeb.core.ComponentSandbox.prototype.updateAnswer = function() {
+    var performAnswer = jQuery.proxy(function(answer_addr) {
+        this.addr = answer_addr;
+        this.removeChild();
+    }, this);
+    return SCWeb.core.Main.getTranslatedAnswer(this.command_state)
+        .then(performAnswer);
+}
+
+
 
 
 /**

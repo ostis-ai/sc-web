@@ -56,7 +56,8 @@ SCWeb.core.Main = {
                                         var question = url.searchObject['question'];
                                         if (question) {
                                             /// @todo Check question is realy a question
-                                            SCWeb.ui.WindowManager.appendHistoryItem(question);
+                                            var commandState = new SCWeb.core.CommandState(question, null, null);
+                                            SCWeb.ui.WindowManager.appendHistoryItem(question, commandState);
                                             return;
                                         }
                                     }
@@ -152,7 +153,8 @@ SCWeb.core.Main = {
     doTextCommand: function (query) {
         SCWeb.core.Server.textCommand(query, function (result) {
             if (result.question != undefined) {
-                SCWeb.ui.WindowManager.appendHistoryItem(result.question);
+                var commandState = new SCWeb.core.CommandState(null, null, null);
+                SCWeb.ui.WindowManager.appendHistoryItem(result.question, commandState);
             } else if (result.command != undefined) {
 
             } else {
