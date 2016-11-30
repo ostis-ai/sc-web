@@ -40,7 +40,7 @@ def main():
     tornado.options.define("sctp_port", default = 55770, help = "port of sctp server", type = int)
     tornado.options.define("sctp_host", default = "localhost", help = "host of sctp server", type = str)
     tornado.options.define("event_wait_timeout", default = 10, help = "time to wait commands processing", type = int)
-    tornado.options.define("idtf_serach_limit", default = 20, help = "number of maximum results for searching by identifier", type = int)
+    tornado.options.define("idtf_serach_limit", default = 100, help = "number of maximum results for searching by identifier", type = int)
     tornado.options.define("redis_host", default = "localhost", help = "host of redis server", type = str)
     tornado.options.define("redis_port", default = 6379, help = "port of redis server", type = int)
     tornado.options.define("redis_db_idtf", default = 0, help = "number of redis database to store identifiers", type = int)
