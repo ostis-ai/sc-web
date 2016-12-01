@@ -41,6 +41,7 @@ module.exports = function(grunt) {
                       webCoreCompPath + 'Ui/taskpanel.js',
                       webCoreCompPath + 'Ui/argumentspanel.js',
                       webCoreCompPath + 'Ui/windowmanager.js',
+                      webCoreCompPath + 'Ui/OpenComponentHandler.js',
                       webCoreCompPath + 'Ui/userpanel.js'],
                 dest: clientJsDirPath + 'sc-web-core.js',
             },
@@ -156,7 +157,7 @@ module.exports = function(grunt) {
                 flatten: true
             },
             scgHtml: {
-                cwd: scgDirPath + 'static/components/scg/html/',
+                cwd: scgDirPath + 'static/components/html/',
                 src: ['**/*.html'],
                 dest: clientHtmlDirPath,
                 expand: true,
@@ -237,5 +238,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
 
     grunt.registerTask('default', ['concat', 'copy', 'watch']);
+    grunt.registerTask('build', ['concat', 'copy']);
 
 };
