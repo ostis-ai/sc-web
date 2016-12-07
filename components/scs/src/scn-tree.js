@@ -130,7 +130,7 @@ SCs.SCnTree.prototype = {
                 var orderMap = {};
                 var orderMapReverse = {};
                 for (k in keywords) {
-                    var a = keywords[k][1].addr;
+                    var a = keywords[k][2].addr;
                     klist.push(a);
                     elements[a] = keywords[k][2];
                 }
@@ -179,45 +179,7 @@ SCs.SCnTree.prototype = {
             
             // determine keywords by input/output arcs number
             if (keywordsList.length == 0) {
-                var keywords = {};
-                function addArc(el, value) {
-                        
-                    var n = value;
-                    if (el.type & (sc_type_arc_mask | sc_type_link)) 
-                        n += -2; // minimize priority of arcs
-                        
-                    if (keywords[el.addr]) 
-                        keywords[el.addr].priority += n;
-                    else 
-                        keywords[el.addr] = {el: el, priority: n};
-                }
-                
-                //---
-                for (idx in subtree.triples) {
-                    var tpl = subtree.triples[idx];
-                    var n = 1;
-                    
-                    if (tpl[2].type & sc_type_arc_mask | tpl[0].type & sc_type_link)
-                        n -= 1; // minimize priority of nodes, that has output/input arcs to other arcs or links
-                    if (tpl[2].type & sc_type_link || tpl[0].type & sc_type_link)
-                        n -= 1; // minimize priority of nodes, that has output/input arcs to links
-                    if (tpl[1].type & (sc_type_arc_common | sc_type_edge_common))
-                        n += 1;
-
-                    if (tpl[0].addr != addr)
-                        addArc(tpl[0], n);
-                    if (tpl[2].addr != addr)
-                        addArc(tpl[2], n);
-                }
-                
-                var maxValue = -1;
-                for (a in keywords) {
-                    var el = keywords[a];
-                    if (el.priority > maxValue) {
-                        keywordsList = [el.el];
-                        maxValue = el.priority;
-                    }
-                }
+                keywordsList = this.findKeywords(subtree.triples, addr);
             }
 
             this.subtrees[addr] = tree;
@@ -234,6 +196,10 @@ SCs.SCnTree.prototype = {
 
         var queue = [];
         this.triples = this.triples.concat(triples);
+
+        if (keywords.length == 0) {
+            keywords = this.findKeywords(this.triples);
+        }
         
         // first of all we need to create root nodes for all keywords
         for (i in keywords) {
@@ -395,6 +361,56 @@ SCs.SCnTree.prototype = {
                 return {edge: tpl[1], source: tpl[0], target: tpl[2]};
         }
         return null;
+    },
+
+    findKeywords: function(triples, addr) {
+        var keywords = {};
+        var keywordsList = [];
+        function addArc(el, value) {
+
+            var n = value;
+            if (el.type & (sc_type_arc_mask | sc_type_link))
+                n += -2; // minimize priority of arcs
+
+            if (keywords[el.addr])
+                keywords[el.addr].priority += n;
+            else
+                keywords[el.addr] = {el: el, priority: n};
+        }
+
+        //---
+        for (idx in triples) {
+            var tpl = triples[idx];
+            var n = 1;
+
+            if (tpl[2].type & sc_type_arc_mask | tpl[0].type & sc_type_link)
+                n -= 1; // minimize priority of nodes, that has output/input arcs to other arcs or links
+            if (tpl[2].type & sc_type_link || tpl[0].type & sc_type_link)
+                n -= 1; // minimize priority of nodes, that has output/input arcs to links
+            if (tpl[1].type & (sc_type_arc_common | sc_type_edge_common))
+                n += 1;
+
+            if (addr != null) {
+                if (tpl[0].addr != addr)
+                    addArc(tpl[0], n);
+                if (tpl[2].addr != addr)
+                    addArc(tpl[2], n);
+            } else {
+                addArc(tpl[0], n);
+                addArc(tpl[2], n);
+            }
+        }
+
+        var maxValue = -1;
+        for (a in keywords) {
+            var el = keywords[a];
+            if (el.priority > maxValue) {
+                keywordsList = [el.el];
+                maxValue = el.priority;
+            }
+        }
+
+        return keywordsList;
     }
     
 };
