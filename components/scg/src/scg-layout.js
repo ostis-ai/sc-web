@@ -268,4 +268,5 @@ SCg.LayoutManager.prototype.doLayout = function() {
 
 SCg.LayoutManager.prototype.onTickUpdate = function() { 
     this.scene.updateObjectsVisual();
+    this.scene.pointed_object = null;
 };
