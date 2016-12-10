@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>SCg-viewer test</title>
+		<title>SCg-editor</title>
 		<meta charset="utf-8">
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<meta name="keywords" content="" />
 		<meta name="description" content="" />
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		
 		<style>
 			html, body {
-				background-color: #fff;
 				margin: 0px;
 				overflow: hidden;
 				font-family:Monospace;
@@ -18,6 +18,7 @@
 				font-weight: bold;
 				text-align:center;
 				height: 100%;
+				width: 100%;
 			}
 
 			#info {
@@ -28,150 +29,139 @@
 				z-index:100;
 			}
 			
-			.scg-viewer {
-				background-color: #eee;
-				
+			.scg-viewer {	
 				border-color: #ddd;
 				border-style: solid;
 				border-width: 1px;
 				height: 100%;
 				width: 100%;
+				padding: 5px;
 				overflow: auto;
 			}
-
 		</style>
 		
-		<link href="static/components/css/scg.css" rel="stylesheet">
-		<link href="../external/css/bootstrap.css" rel="stylesheet">
-	</head>
-	<body>
+		<link rel="stylesheet" type="text/css" href="../../client/static/common/bootstrap/css/bootstrap.min.css" />
+    	<link rel="stylesheet" type="text/css" href="../../client/static/common/bootstrap/css/bootstrap-multilevel.css" />
+    	<link rel="stylesheet" type="text/css" href="../../client/static/common/highlight/googlecode.css" />
+		<link rel="stylesheet" type="text/css" href="../../client/static/common/context/context.standalone.css" />
 
-		<script type="text/javascript" src="../external/js/d3.js"></script>
-		<script type="text/javascript" src="../external/js/jquery/jquery-1.8.3.min.js"></script>
-		<script type="text/javascript" src="../external/js/jquery/jquery.namespace.js"></script>
-		<script type="text/javascript" src="../external/js/Constants.js"></script>
-		<script type="text/javascript" src="../external/js/bootstrap.js"></script>
-        <script type="text/javascript" src="../external/js/typeahead.bundle.min.js"></script>
-		
-		<script type="text/javascript" src="static/components/js/scg/scg.js"></script>
+		<link rel="stylesheet" type="text/css" href="static/components/css/scg.css" />
+
+		<!--<link rel="stylesheet" type="text/css" href="../../client/static/components/css/common.css" />-->
+		<!--<link rel="stylesheet" type="text/css" href="../../client/static/components/css/scs.css" />-->
+		<!--<link rel="stylesheet" type="text/css" href="../../client/static/components/css/html.css" />-->
+		<!--<link rel="stylesheet" type="text/css" href="../../client/static/components/css/github.css" />-->
+	</head>
+
+	<body>
+		<script type="text/javascript" charset="utf-8" src="../../client/static/common/jquery/jquery-2.1.3.js"></script>
+		<script type="text/javascript" charset="utf-8" src="../../client/static/common/jquery/jquery.namespace.js"></script>
+		<script type="text/javascript" charset="utf-8" src="../../client/static/common/bootstrap/js/bootstrap.min.js"></script>
+		<script type="text/javascript" charset="utf-8" src="../../client/static/common/typeahead/typeahead.bundle.min.js"></script>
+		<script type="text/javascript" charset="utf-8" src="../../client/static/common/context/context.js"></script>
+		<script type="text/javascript" charset="utf-8" src="../../client/static/common/kinetic/kinetic-v4.0.1.js"></script>
+		<script type="text/javascript" charset="utf-8" src="../../client/static/common/d3/d3.js"></script>
+		<script type="text/javascript" charset="utf-8" src="../../client/static/common/highlight/highlight.min.js"></script>
+		<script type="text/javascript" charset="utf-8" src="../../client/static/common/base64/base64.min.js"></script>
+		<script type="text/javascript" charset="utf-8" src="../../client/static/common/pdf/pdf.js"></script>
+		<script type="text/javascript" charset="utf-8" src="../../client/static/common/pdf/pdf.worker.js"></script>
+
+
+		<script type="text/javascript">
+			var SCWeb = {
+				core: {
+					ComponentManager: {
+						appendComponentInitialize: function(SCgComponent){
+								
+						}
+					}
+				}
+			};
+		</script>
+
+		<script type="text/javascript" charset="utf-8" src="../../client/js/Utils/sctp.js"></script>
+
+		<!--<script type="text/javascript" charset="utf-8" src="../../client/static/components/js/sc-web-core.js"></script>-->
+		<!--<script type="text/javascript" charset="utf-8" src="../../client/static/components/js/scs/scs.js"></script>-->
+		<!--<script type="text/javascript" charset="utf-8" src="../../client/static/components/js/scg/scg.js"></script>-->
+
+
+		<script type="text/javascript" src="src/gwf-file-loader.js"></script>
+        <script type="text/javascript" src="src/gwf-model-objects.js"></script>
+        <script type="text/javascript" src="src/gwf-object-info-reader.js"></script>
+        <script type="text/javascript" src="src/scg-object-builder.js"></script>
+        <script type="text/javascript" src="src/scg.js"></script>
+        <script type="text/javascript" src="src/scg-debug.js"></script>
+        <script type="text/javascript" src="src/scg-math.js"></script>
+        <script type="text/javascript" src="src/scg-model-objects.js"></script>
+        <script type="text/javascript" src="src/scg-alphabet.js"></script>
+        <script type="text/javascript" src="src/scg-render.js"></script>
+        <script type="text/javascript" src="src/scg-scene.js"></script>
+        <script type="text/javascript" src="src/scg-layout.js"></script>
+        <script type="text/javascript" src="src/scg-tree.js"></script>
+        <script type="text/javascript" src="src/scg-struct.js"></script>
+        <script type="text/javascript" src="src/scg-object-creator.js"></script>
+        <script type="text/javascript" src="src/scg-component.js"></script>
+        <script type="text/javascript" src="src/listener/scg-mode-bus.js"></script>
+        <script type="text/javascript" src="src/listener/scg-mode-contour.js"></script>
+        <script type="text/javascript" src="src/listener/scg-mode-edge.js"></script>
+        <script type="text/javascript" src="src/listener/scg-mode-link.js"></script>
+		<script type="text/javascript" src="src/listener/scg-mode-select.js"></script>
+		<script type="text/javascript" src="src/command/append-object.js"></script>
+        <script type="text/javascript" src="src/command/command-manager.js"></script>
+        <script type="text/javascript" src="src/command/create-node.js"></script>
+        <script type="text/javascript" src="src/command/create-edge.js"></script>
+        <script type="text/javascript" src="src/command/create-bus.js"></script>
+        <script type="text/javascript" src="src/command/create-contour.js"></script>
+        <script type="text/javascript" src="src/command/create-link.js"></script>
+        <script type="text/javascript" src="src/command/change-idtf.js"></script>
+        <script type="text/javascript" src="src/command/change-content.js"></script>
+        <script type="text/javascript" src="src/command/change-type.js"></script>
+        <script type="text/javascript" src="src/command/delete-objects.js"></script>
+        <script type="text/javascript" src="src/command/move-object.js"></script>
+        <script type="text/javascript" src="src/command/move-line-point.js"></script>
+        <script type="text/javascript" src="src/command/get-node-from-memory.js"></script>
+        <script type="text/javascript" src="src/command/wrapper-command.js"></script>
+
+		<!--<script type="text/javascript" charset="utf-8" src="../../client/static/components/js/image/image.js"></script>-->
+		<!--<script type="text/javascript" charset="utf-8" src="../../client/static/components/js/txt/txt.js"></script>-->
+		<!--<script type="text/javascript" charset="utf-8" src="../../client/static/components/js/html/html.js"></script>-->
+		<!--<script type="text/javascript" charset="utf-8" src="../../client/static/components/js/youtube/youtubelink.js"></script>-->
+		<!--<script type="text/javascript" charset="utf-8" src="../../client/static/components/js/map/googlemaplink.js"></script>-->
+		<!--<script type="text/javascript" charset="utf-8" src="../../client/static/components/js/github/github.js"></script>-->
+		<!--<script type="text/javascript" charset="utf-8" src="../../client/static/components/js/pdf/pdf.js"></script>-->
+		<script type="text/javascript" charset="utf-8" src="../../client/static/components/js/file-saver/FileSaver.min.js"></script>
 
 		<script type="text/javascript">
 			$(document).ready(function() {
-				
-				SCgDebug.enabled = true;
-				
+								
+				var sandbox = {
+            		container: "scg-viewer",
+            		addr: 0,
+            		is_struct: false,
+            		format_addr: "format_scg_json",
+            		createViewersForScLinks: function(v){
+            		}
+        		};
+
 				var editor = new SCg.Editor();
-				editor.init({containerId: "scg-viewer"});
+				editor.init({
+					sandbox: sandbox,
+					containerId: "scg-viewer",
+					canEdit: true,
+				});
 
-				var node_types = [
-					sc_type_node,
-	 				sc_type_node | sc_type_const,
-	 				sc_type_node | sc_type_const | sc_type_node_material,
-	 				sc_type_node | sc_type_const | sc_type_node_abstract,
-	 				sc_type_node | sc_type_const | sc_type_node_class,
-	 				sc_type_node | sc_type_const | sc_type_node_struct,
-	 				sc_type_node | sc_type_const | sc_type_node_norole,
-	 				sc_type_node | sc_type_const | sc_type_node_role,
-	 				sc_type_node | sc_type_const | sc_type_node_tuple,
+				$(window)
+            		.on('keydown', function (d3_event) {
+                		editor.keyboardCallbacks.onkeydown(d3_event);
+            		})
+            		.on('keyup', function (d3_event) {
+                		editor.keyboardCallbacks.onkeyup(d3_event);
+            		})
+            		.on('keypress', function (d3_event) {
+                		
+            		});
 
-	 				sc_type_node | sc_type_var,
-	 				sc_type_node | sc_type_var | sc_type_node_material,
-	 				sc_type_node | sc_type_var | sc_type_node_abstract,
-	 				sc_type_node | sc_type_var | sc_type_node_class,
-	 				sc_type_node | sc_type_var | sc_type_node_struct,
-	 				sc_type_node | sc_type_var | sc_type_node_norole,
-	 				sc_type_node | sc_type_var | sc_type_node_role,
-	 				sc_type_node | sc_type_var | sc_type_node_tuple
-				];
-
-//				nodes = [];
-//				for (var i = 0; i < node_types.length; i++)
-//				{
-//					var model_node = new SCg.ModelNode({
-//						position: new SCg.Vector3(900 * Math.random(), 600 * Math.random(), 0), //1000 * Math.random() - 500),
-//						scale: new SCg.Vector2(20, 20),
-//						sc_type: node_types[i],
-//						text: "Object_" + i.toString()
-//					});
-//					editor.scene.appendNode(model_node);
-//					nodes.push(model_node);
-//				}
-				
-
-				var edge_types = [
-					sc_type_edge_common,
-					sc_type_arc_common,
-					sc_type_arc_access,
-					sc_type_arc_pos_const_perm, 
-					
-					sc_type_edge_common | sc_type_const,
-					sc_type_edge_common | sc_type_var,
-					
-					sc_type_arc_common | sc_type_const,
-					sc_type_arc_common | sc_type_var,
-					
-					sc_type_arc_access | sc_type_var | sc_type_arc_pos | sc_type_arc_perm,
-					
-					sc_type_arc_access | sc_type_const | sc_type_arc_neg | sc_type_arc_perm,
-					sc_type_arc_access | sc_type_var | sc_type_arc_neg | sc_type_arc_perm,
-					sc_type_arc_access | sc_type_const | sc_type_arc_fuz | sc_type_arc_perm,
-					sc_type_arc_access | sc_type_var | sc_type_arc_fuz | sc_type_arc_perm,
-					
-					sc_type_arc_access | sc_type_const | sc_type_arc_pos | sc_type_arc_temp,
-					sc_type_arc_access | sc_type_var | sc_type_arc_pos | sc_type_arc_temp,
-					sc_type_arc_access | sc_type_const | sc_type_arc_neg | sc_type_arc_temp,
-					sc_type_arc_access | sc_type_var | sc_type_arc_neg | sc_type_arc_temp,
-					sc_type_arc_access | sc_type_const | sc_type_arc_fuz | sc_type_arc_temp,
-					sc_type_arc_access | sc_type_var | sc_type_arc_fuz | sc_type_arc_temp
-				];
-				
-//				edges = []
-//				for (var i = 0; i < edge_types.length; i++)
-//				{
-//					var n1 = 0;
-//					var n2 = 0;
-//					while (n1 === n2) {
-//						n1 = Math.floor((Math.random() * nodes.length));
-//						n2 = Math.floor((Math.random() * nodes.length));
-//					}
-//					var model_edge = new SCg.ModelEdge({
-//						source: nodes[n1],
-//						target: nodes[n2],
-//						sc_type: edge_types[i]
-//					});
-//
-//					editor.scene.appendEdge(model_edge);
-//					edges.push(model_edge);
-//				}
-//
-//				var contours = [];
-//                var model_contour = new SCg.ModelContour({
-//                    verticies: [
-//                        new SCg.Vector3(300, 300, 0),
-//                        new SCg.Vector3(700, 300, 0),
-//                        new SCg.Vector3(700, 100, 0),
-//                        new SCg.Vector3(300, 100, 0)
-//                    ]
-//                });
-//                model_contour.addNodesWhichAreInContourPolygon(nodes);
-//                editor.scene.appendContour(model_contour);
-//                contours.push(model_contour);
-				
-//				var buses = [];
-//				var model_bus = new SCg.ModelBus({ 
-//													source: nodes[0] 
-//												});
-//
-//				model_bus.setPoints([
-//								{ x: 700, y: 400, idx: 0 },
-//							{ x: 400, y: 400, idx: 1 }
-//				]);
-//
-//				var pos = new SCg.Vector2(700, 400);
-//				model_bus.setSourceDot(nodes[0].calculateDotPos(pos));
-//				editor.scene.appendBus(model_bus);
-//				buses.push(model_bus);
-//
 				editor.render.update();
 				editor.scene.layout();
 			});

@@ -71,6 +71,7 @@ module.exports = function(grunt) {
                       scgDirPath + '/src/scg-object-creator.js',
                       scgDirPath + '/src/scg-component.js',
                       scgDirPath + '/src/listener/*.js',
+                      scgDirPath + '/src/command/append-object.js',
                       scgDirPath + '/src/command/command-manager.js',
                       scgDirPath + '/src/command/create-node.js',
                       scgDirPath + '/src/command/create-edge.js',
@@ -187,47 +188,47 @@ module.exports = function(grunt) {
         },
         watch: {
             githubJs: {
-                files: githubDirPath + 'src/*.js',
+                files: githubDirPath + 'src/**',
                 tasks: ['concat:github', 'copy:githubJs'],
             },
             htmlJs: {
-                files: htmlDirPath + 'src/*.js',
+                files: htmlDirPath + 'src/**',
                 tasks: ['concat:html', 'copy:htmlJs'],
             },
             scgJs: {
-                files: scgDirPath + 'src/*.js',
+                files: scgDirPath + 'src/**',
                 tasks: ['concat:scg', 'copy:scgJs'],
             },
             scsJs: {
-                files: scsDirPath + 'src/*.js',
+                files: scsDirPath + 'src/**',
                 tasks: ['concat:scs', 'copy:scsJs'],
             },
             githubCss: {
-                files: githubDirPath + 'static/components/css/*.css',
+                files: githubDirPath + 'static/components/css/**',
                 tasks: ['copy:githubCss'],
             },
             htmlCss: {
-                files: htmlDirPath + 'static/components/css/*.css',
+                files: htmlDirPath + 'static/components/css/**',
                 tasks: ['copy:htmlCss'],
             },
             scgCss: {
-                files: scgDirPath + 'static/components/css/*.css',
+                files: scgDirPath + 'static/components/css/**',
                 tasks: ['copy:scgCss'],
             },
             scsCss: {
-                files: scsDirPath + 'static/components/css/*.css',
+                files: scsDirPath + 'static/components/css/**',
                 tasks: ['copy:scsCss'],
             },
             scgHtml: {
-                files: [scgDirPath + 'static/components/html/*.html'],
+                files: [scgDirPath + 'static/components/html/**'],
                 tasks: ['copy:scgHtml'],
             },
             htmlImg: {
-                files: [htmlDirPath + 'static/components/images/html/*.png',],
+                files: [htmlDirPath + 'static/components/images/html/**',],
                 tasks: ['copy:htmlImg'],
             },
             scgImg: {
-                files: [scgDirPath + 'static/components/images/scg/**/*.png'],
+                files: [scgDirPath + 'static/components/images/scg/**'],
                 tasks: ['copy:scgImg', 'copy:scgImgAlphabet'],
             },
         },
