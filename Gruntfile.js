@@ -54,7 +54,9 @@ module.exports = function(grunt) {
                 dest: htmlDirPath + 'static/components/js/html/html.js'
             },
             scg: {
-                src: [scgDirPath + '/src/gwf-file-loader.js',
+                src: [
+                      scgDirPath + '/src/gwf-file-creater.js',
+                      scgDirPath + '/src/gwf-file-loader.js',
                       scgDirPath + '/src/gwf-model-objects.js',
                       scgDirPath + '/src/gwf-object-info-reader.js',
                       scgDirPath + '/src/scg-object-builder.js',
