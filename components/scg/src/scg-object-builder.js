@@ -68,7 +68,7 @@ ScgObjectBuilder = {
                     edit.autocompletionVariants(idtf, function (keys) {
                         var notFindIdtf = true;
                         for (var key = 0; key < keys.length; key++) {
-                            if (keys[key].name == idtf) {
+                            if (keys[key].name == idtf && keys[key].addr != null) {
                                 notFindIdtf = false;
                                 var addr = keys[key].addr;
                                 self.commandSetAddrList.push(new SCgCommandGetNodeFromMemory(
