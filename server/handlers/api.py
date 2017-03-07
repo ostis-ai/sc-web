@@ -114,10 +114,9 @@ class CmdDo(base.BaseHandler):
 
             keys = Keynodes(sctp_client)
             result = logic.do_command(sctp_client, keys, cmd_addr, arguments, self)
- 
-                
-        self.set_header("Content-Type", "application/json")
-        self.finish(json.dumps(result))
+                 
+            self.set_header("Content-Type", "application/json")
+            self.finish(json.dumps(result))
         
         
 class QuestionAnswerTranslate(base.BaseHandler):
