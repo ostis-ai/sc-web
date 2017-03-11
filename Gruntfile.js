@@ -189,6 +189,10 @@ module.exports = function(grunt) {
             }
         },
         watch: {
+            core: {
+                files: webCoreCompPath + '**',
+                tasks: ['concat:webcore'],
+            },
             githubJs: {
                 files: githubDirPath + 'src/**',
                 tasks: ['concat:github', 'copy:githubJs'],

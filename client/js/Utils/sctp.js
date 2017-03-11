@@ -353,14 +353,22 @@ SctpClient.prototype.connect = function(url, success) {
     this.socket.onmessage = function(e) {
         console.log('message', e.data);
     };
-    this.socket.onclose = function() {
+    this.socket.onclose = function(e) {
+        var CLOSE_NORMAL = 1000;
+        var CLOSE_GOING_AWAY = 1001;
         console.log('Closed websocket connection');
+        if (!(e.code == CLOSE_NORMAL || e.code == CLOSE_GOING_AWAY)){
+            $('#sc-ui-locker').removeClass('shown');
+            alert("WebSocket closed");
+        }
     };
     this.socket.onerror = function(e) {
         console.log('WebSocket Error ' + e);
+        $('#sc-ui-locker').removeClass('shown');
+        alert('WebSocket error');
     };
     
-}
+};
 
 
 SctpClient.prototype._push_task = function(task) {
