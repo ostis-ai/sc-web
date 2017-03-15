@@ -1,7 +1,11 @@
-html, body {
-    margin-top: 30px;
-    margin-bottom: 45px;
-    height: 100%;
+html {
+   	height: 100%;
+}
+		
+body {
+		padding-top: 65px;
+    padding-bottom: 73px;
+		height: 100%;
 }
 
 html.drag {
@@ -42,6 +46,19 @@ html.drag {
     margin-left: 23px;
 }
 
+#static-window-container {
+		max-height: 100%;
+    overflow-y: auto;
+}
+
+#history-container {
+	 margin-bottom: 0;
+}
+
+#history-items {
+	 margin-bottom: 0;
+}
+
 .loading {
     background: #CCC url("../images/load-content-cog.gif") no-repeat center center;
     min-width: 36px;
@@ -49,14 +66,14 @@ html.drag {
 }
 
 .main-container {
-    width: 100%;
+		position: relative;
     height: 100%;
 }
 
 #window-header-tools {
-    padding-right: 15px;
-    position: fixed;
-    right: 15px;
+		position: absolute;
+		top: 16px;
+		right: 30px;
     z-index: 900;
 }
 
@@ -107,7 +124,8 @@ html.drag {
 }
 
 .argument-container {
-    min-height: 38px;
+    float: left;
+    margin: 8px 0px 0px 8px;
 }
 
 .argument-container.over {
@@ -272,8 +290,9 @@ html.drag {
 }
 
 .copyright {
-    margin-left: auto;
-    margin-right: auto;
+		display: block;
+    margin: 0 auto;
+    line-height: 50px;
     text-align: center;
 }
 
