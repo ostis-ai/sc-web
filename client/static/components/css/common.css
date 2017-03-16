@@ -47,8 +47,9 @@ html.drag {
 }
 
 #static-window-container {
-    max-height: 100%;
-    overflow-y: auto;
+    /*max-height: 100%;*/
+    /*overflow-y: auto;*/
+    margin-bottom: 100px;
 }
 
 #history-container {
@@ -165,6 +166,7 @@ html.drag {
 .sc-window .panel-body {
     height: 100%;
     overflow-y: auto;
+    min-height: 80vh;
 }
 
 /* --- search --- */
