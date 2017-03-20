@@ -47,9 +47,10 @@ html.drag {
 }
 
 #static-window-container {
-    /*max-height: 100%;*/
-    /*overflow-y: auto;*/
-    margin-bottom: 100px;
+    max-height: 80%;
+    overflow: auto;
+    width: : 15vw;
+    position: fixed;
 }
 
 #history-container {
@@ -78,8 +79,12 @@ html.drag {
     z-index: 900;
 }
 
-#window-container {
-    /*height: 100%;*/
+#static-window-container ~ #window-container {
+    margin-left: 16vw;
+}
+
+#static-window-container[style*="display: none;"] ~ #window-container {
+    margin-left: 0vw;
 }
 
 .hidden {
