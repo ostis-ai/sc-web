@@ -105,7 +105,7 @@ SCWeb.ui.WindowManager = {
     appendHistoryItem: function (question_addr, command_state) {
 
         // @todo check if tab exist        
-        var tab_html = '<a class="list-group-item history-item" sc_addr="' + question_addr + '">' +
+        var tab_html = '<a class="list-group-item history-item ui-no-tooltip" sc_addr="' + question_addr + '">' +
             '<p>' + question_addr + '</p>' +
             '</a>';
 
