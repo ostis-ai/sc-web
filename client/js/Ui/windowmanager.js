@@ -87,6 +87,9 @@ SCWeb.ui.WindowManager = {
             $('#window-header-tools [sc_addr]').each(function (index, element) {
                 objects.push($(element).attr('sc_addr'));
             });
+            $('#history-container [sc_addr]').each(function (index, element) {
+                objects.push($(element).attr('sc_addr'));
+            });
         });
 
         dfd.resolve();
@@ -353,6 +356,13 @@ SCWeb.ui.WindowManager = {
     updateTranslation: function (namesMap) {
         // apply translation
         $('#window-header-tools [sc_addr]:not(.btn)').each(function (index, element) {
+            var addr = $(element).attr('sc_addr');
+            if (namesMap[addr]) {
+                $(element).text(namesMap[addr]);
+            }
+        });
+
+        $('#history-container [sc_addr]:not(.btn)').each(function (index, element) {
             var addr = $(element).attr('sc_addr');
             if (namesMap[addr]) {
                 $(element).text(namesMap[addr]);
