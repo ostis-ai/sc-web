@@ -245,7 +245,7 @@ SCg.Render.prototype = {
             .attr('transform', 'translate(' + self.linkBorderWidth * 0.5 + ',' + self.linkBorderWidth * 0.5 + ')')
             .attr("width", "100%")
             .attr("height", "100%")
-            .append("xhtml:body")
+            .append("xhtml:link_body")
             .style("background", "transparent")
             .style("margin", "0 0 0 0")
             .html(function(d) {

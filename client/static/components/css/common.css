@@ -1,6 +1,10 @@
-html, body {
-    margin-top: 30px;
-    margin-bottom: 45px;
+html {
+    height: 100%;
+}
+		
+body {
+    padding-top: 65px;
+    padding-bottom: 73px;
     height: 100%;
 }
 
@@ -42,6 +46,21 @@ html.drag {
     margin-left: 23px;
 }
 
+#static-window-container {
+    max-height: 80%;
+    overflow: auto;
+    width: : 15vw;
+    position: fixed;
+}
+
+#history-container {
+    margin-bottom: 0;
+}
+
+#history-items {
+    margin-bottom: 0;
+}
+
 .loading {
     background: #CCC url("../images/load-content-cog.gif") no-repeat center center;
     min-width: 36px;
@@ -49,19 +68,23 @@ html.drag {
 }
 
 .main-container {
-    width: 100%;
+    position: relative;
     height: 100%;
 }
 
 #window-header-tools {
-    padding-right: 15px;
-    position: fixed;
-    right: 15px;
+    position: absolute;
+    top: 16px;
+    right: 30px;
     z-index: 900;
 }
 
-#window-container {
-    height: 100%;
+#static-window-container ~ #window-container {
+    margin-left: 16vw;
+}
+
+#static-window-container[style*="display: none;"] ~ #window-container {
+    margin-left: 0vw;
 }
 
 .hidden {
@@ -107,7 +130,8 @@ html.drag {
 }
 
 .argument-container {
-    min-height: 38px;
+    float: left;
+    margin: 8px 0px 0px 8px;
 }
 
 .argument-container.over {
@@ -147,6 +171,7 @@ html.drag {
 .sc-window .panel-body {
     height: 100%;
     overflow-y: auto;
+    min-height: 80vh;
 }
 
 /* --- search --- */
@@ -263,7 +288,7 @@ html.drag {
 /* --- drag --- */
 .drag-value {
     background-color: #ddd;
-    display: display: inline-block !important;
+    display: inline-block !important;
     max-width: 250px !important;
     max-height: 200px !important;
     border: 1px dotted #999;
@@ -272,8 +297,9 @@ html.drag {
 }
 
 .copyright {
-    margin-left: auto;
-    margin-right: auto;
+    display: block;
+    margin: 0 auto;
+    line-height: 50px;
     text-align: center;
 }
 
