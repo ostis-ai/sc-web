@@ -39,7 +39,7 @@ var SCsViewer = function(sandbox) {
     
     this.updateTranslation = function(namesMap) {
         // apply translation
-        $(SCWeb.ui.Core.selectorWindowScAddr(this.container)).each(function(index, element) {
+        $(this.sandbox.container_selector).each(function(index, element) {
             var addr = $(element).attr('sc_addr');
             if (!$(element).hasClass('sc-content') && !$(element).hasClass('sc-contour') &&
                 !$(element).hasClass('scs-scn-connector') && ($(element).hasClass('scs-scn-element'))) {
