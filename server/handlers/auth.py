@@ -6,6 +6,7 @@ import tornado.web
 import json
 import base
 import db
+import decorators
 
 from keynodes import KeynodeSysIdentifiers, Keynodes
 from sctp.logic import SctpClientInstance
@@ -13,6 +14,8 @@ from sctp.types import ScAddr, SctpIteratorType, ScElementType
 
 import api_logic as logic
 
+
+@decorators.class_logging
 class GoogleOAuth2LoginHandler(base.BaseHandler,
                                tornado.auth.GoogleOAuth2Mixin):
     def _loggedin(self, user):
@@ -89,7 +92,9 @@ class GoogleOAuth2LoginHandler(base.BaseHandler,
                 scope = ['profile', 'email'],
                 response_type = 'code',
                 extra_params = {'approval_prompt': 'auto'})
-            
+
+
+@decorators.class_logging
 class LogOut(base.BaseHandler):
     
     @tornado.web.asynchronous

@@ -6,6 +6,7 @@ import tornado.web
 
 from keynodes import KeynodeSysIdentifiers, Keynodes
 from sctp.types import SctpIteratorType, ScElementType
+import decorators
 
 __all__ = (
     'parse_menu_command',
@@ -16,11 +17,15 @@ __all__ = (
     'append_to_system_elements',
 )
 
+
+@decorators.method_logging
 def serialize_error(handler, code, message):
         handler.clear()
         handler.set_status(code)
         handler.finish(message)
 
+
+@decorators.method_logging
 def parse_menu_command(cmd_addr, sctp_client, keys):
     """Parse specified command from sc-memory and
         return hierarchy map (with childs), that represent it
@@ -76,6 +81,8 @@ def parse_menu_command(cmd_addr, sctp_client, keys):
 
     return attrs
 
+
+@decorators.method_logging
 def find_atomic_commands(cmd_addr, sctp_client, keys, commands):
     """Parse specified command from sc-memory and
         return hierarchy map (with childs), that represent it
@@ -120,6 +127,7 @@ def find_atomic_commands(cmd_addr, sctp_client, keys, commands):
     
         
 
+@decorators.method_logging
 def find_tooltip(addr, sctp_client, keys, lang):
     
     # try to find structure, where addr is key sc-element
@@ -192,6 +200,7 @@ def find_tooltip(addr, sctp_client, keys, lang):
     return None
 
 
+@decorators.method_logging
 def find_cmd_result(command_addr, keynode_ui_nrel_command_result, sctp_client):
     return sctp_client.iterate_elements(
         SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
@@ -203,6 +212,7 @@ def find_cmd_result(command_addr, keynode_ui_nrel_command_result, sctp_client):
     )
 
 
+@decorators.method_logging
 def find_answer(question_addr, keynode_nrel_answer, sctp_client):
     return sctp_client.iterate_elements(
         SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
@@ -214,6 +224,7 @@ def find_answer(question_addr, keynode_nrel_answer, sctp_client):
     )
 
 
+@decorators.method_logging
 def find_translation(construction_addr, keynode_nrel_translation, sctp_client):
     return sctp_client.iterate_elements(
         SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
@@ -223,9 +234,11 @@ def find_translation(construction_addr, keynode_nrel_translation, sctp_client):
         ScElementType.sc_type_arc_pos_const_perm,
         keynode_nrel_translation
     )
-    
-def find_translation_with_format(construction_addr, format_addr, keynode_nrel_format, keynode_nrel_translation, sctp_client):
-    
+
+
+@decorators.method_logging
+def find_translation_with_format(construction_addr, format_addr, keynode_nrel_format, keynode_nrel_translation,
+                                 sctp_client):
     translations = find_translation(construction_addr, keynode_nrel_translation, sctp_client)
     
     if translations is None:
@@ -245,6 +258,8 @@ def find_translation_with_format(construction_addr, format_addr, keynode_nrel_fo
 
     return None
 
+
+@decorators.method_logging
 def get_identifier_translated(addr, used_lang, keys, sctp_client):
     keynode_nrel_main_idtf = keys[KeynodeSysIdentifiers.nrel_main_idtf]
     keynode_nrel_system_identifier = keys[KeynodeSysIdentifiers.nrel_system_identifier]
@@ -291,6 +306,8 @@ def get_identifier_translated(addr, used_lang, keys, sctp_client):
     
     return None
 
+
+@decorators.method_logging
 def get_by_identifier_translated(used_lang, keys, sctp_client, idtf):
     
     keynode_nrel_main_idtf = keys[KeynodeSysIdentifiers.nrel_main_idtf]
@@ -317,6 +334,8 @@ def get_by_identifier_translated(used_lang, keys, sctp_client, idtf):
 
     return sctp_client.find_element_by_system_identifier(idtf)
 
+
+@decorators.method_logging
 def check_command_finished(command_addr, keynode_command_finished, sctp_client):
     return sctp_client.iterate_elements(
         SctpIteratorType.SCTP_ITERATOR_3F_A_F,
@@ -325,6 +344,8 @@ def check_command_finished(command_addr, keynode_command_finished, sctp_client):
         command_addr
     )
 
+
+@decorators.method_logging
 def check_command_failed(command_addr, keynode_command_failed, sctp_client):
     return sctp_client.iterate_elements(
         SctpIteratorType.SCTP_ITERATOR_3F_A_F,
@@ -333,13 +354,17 @@ def check_command_failed(command_addr, keynode_command_failed, sctp_client):
         command_addr
     )
 
+
+@decorators.method_logging
 def append_to_system_elements(sctp_client, keynode_system_element, el):
     sctp_client.create_arc(
         ScElementType.sc_type_arc_pos_const_perm,
         keynode_system_element,
         el
     )
-    
+
+
+@decorators.method_logging
 def get_link_mime(link_addr, keynode_nrel_format, keynode_nrel_mimetype, sctp_client):
     mimetype_str = u'text/plain'
     # determine format and mimetype
@@ -369,6 +394,7 @@ def get_link_mime(link_addr, keynode_nrel_format, keynode_nrel_mimetype, sctp_cl
     return mimetype_str
 
 
+@decorators.method_logging
 def get_languages_list(keynode_languages, sctp_client):
     res_langs = sctp_client.iterate_elements(
             SctpIteratorType.SCTP_ITERATOR_3F_A_A,
@@ -383,6 +409,8 @@ def get_languages_list(keynode_languages, sctp_client):
                 
     return langs
 
+
+@decorators.method_logging
 def do_command(sctp_client, keys, cmd_addr, arguments, handler):
     result = {}
      
@@ -596,6 +624,7 @@ def do_command(sctp_client, keys, cmd_addr, arguments, handler):
     return result
 
 # -------------- work with session -------------------------
+@decorators.class_logging
 class ScSession:
     
     def __init__(self, handler, sctp_client, keynodes):

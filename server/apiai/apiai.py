@@ -18,6 +18,7 @@ except ImportError:
 import sys
 import json
 import uuid
+import decorators
 from time import gmtime
 from time import strftime
 
@@ -37,6 +38,8 @@ else:
     def b(s):
         return s
 
+
+@decorators.class_logging
 class ApiAI(object):
     """Main andpoint for using API
 
@@ -86,12 +89,15 @@ class ApiAI(object):
 
         return request
 
+
+@decorators.class_logging
 class Serializable(object):
     """Abstract serializable class"""
     def to_dict(self):
         raise NotImplementedError()
         
 
+@decorators.class_logging
 class Entry(Serializable):
     """User entry for entity"""
     def __init__(self, value, synonyms):
@@ -107,6 +113,7 @@ class Entry(Serializable):
         }
         
 
+@decorators.class_logging
 class Entity(Serializable):
     """User entity for request."""
     def __init__(self, name, entries):
@@ -120,6 +127,7 @@ class Entity(Serializable):
             'name': self.name,
             'entries': list(map(lambda x: x.to_dict(), self.entries))
         }
+
 
 class Request(object):
     """Abstract request class"""
@@ -246,6 +254,7 @@ class Request(object):
         raise NotImplementedError("Please Implement this method")
 
 
+@decorators.class_logging
 class TextRequest(Request):
     """TextRequest request class
 
@@ -287,6 +296,7 @@ class TextRequest(Request):
         return json.dumps(data)
 
 
+@decorators.class_logging
 class VoiceRequest(Request):
     """VoiceRequest request class
 

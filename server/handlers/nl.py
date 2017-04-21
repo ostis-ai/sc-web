@@ -3,6 +3,7 @@
 import apiai
 import json
 import base
+import decorators
 
 import tornado.web
 
@@ -13,6 +14,8 @@ from sctp.types import ScAddr, SctpIteratorType, ScElementType
 
 import api_logic as logic
 
+
+@decorators.class_logging
 class NaturalLanguageSearch(base.BaseHandler):
     
     # @tornado.web.asynchronous

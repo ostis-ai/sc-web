@@ -24,6 +24,7 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 import socket
 import struct
 import time
+import decorators
 import thread, threading
 
 from sctp.types import ScAddr, SctpIteratorType, ScStatItem, SctpCommandType, SctpResultCode
@@ -32,6 +33,8 @@ __all__ = (
     'SctpClient',
 )
 
+
+@decorators.class_logging
 class EventStruct:
     
     def __init__(self, event_id, event_type, addr, callback):
@@ -39,8 +42,9 @@ class EventStruct:
         self.addr = addr
         self._event_type = event_type
         self.callback = callback
-    
-    
+
+
+@decorators.class_logging
 class SctpClient:
     
     def __init__(self):
