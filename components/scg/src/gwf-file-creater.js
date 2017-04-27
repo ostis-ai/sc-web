@@ -26,6 +26,58 @@ GwfFileCreate = {
         this.addEndFile();
         return this.fileString;
     },
+
+    createFileWithSelectedObject: function (scene) {
+
+        function selectedFilter(object) {
+            return object.is_selected;
+        }
+
+        function selectedFilterForBus(bus) {
+            return bus.is_selected && bus.source.is_selected;
+        }
+
+        function selectedFilterForEdges(edge) {
+            return edge.is_selected && edge.source.is_selected && edge.target.is_selected;
+        }
+
+        function fixParents(text) {
+            var results = text.match(/parent="(\d+)"/g) || [];
+            results.forEach(function (string) {
+                var id = string.match(/\d+/)[0] || 0;
+                if (id !== 0) {
+                    var index = text.indexOf('id="' + id +'"');
+                    if (index == -1) {
+                        text = text.replace(new RegExp('parent="' + id + '"', 'g'), 'parent="0"');
+                    }
+                }
+            });
+            return text;
+        }
+
+        this.scene = scene;
+        this.fileString = "";
+        var self = this;
+        this.addHeaderFile();
+        this.scene.contours.filter(selectedFilter).forEach(function (counter) {
+            self.createContour(counter);
+        });
+        this.scene.nodes.filter(selectedFilter).forEach(function (node) {
+            self.createNode(node);
+        });
+        this.scene.buses.filter(selectedFilterForBus).forEach(function (bus) {
+            self.createBus(bus);
+        });
+        this.scene.links.filter(selectedFilter).forEach(function (link) {
+            self.createLink(link);
+        });
+        this.scene.edges.filter(selectedFilterForEdges).forEach(function (edge) {
+            self.createEdge(edge);
+        });
+        this.addEndFile();
+        this.fileString = fixParents(this.fileString);
+        return this.fileString;
+    },
     
     addHeaderFile: function () {
         this.fileString +=
