@@ -13,7 +13,7 @@ var SCgEditMode = {
     }
 };
 
-var clipScgText = null;
+var clipScgText = "clipScgText";
 
 var SCgModalMode = {
     SCgModalNone: 0,
@@ -429,12 +429,12 @@ SCg.Scene.prototype = {
                 this.commandManager.undo();
                 this.updateRender();
             } else if (event.ctrlKey && (event.which == KeyCode.C)) {
-                clipScgText = GwfFileCreate.createFileWithSelectedObject(this);
+                localStorage.setItem(clipScgText, GwfFileCreate.createFileWithSelectedObject(this));
             } else if (event.ctrlKey && (event.which == KeyCode.V)) {
-                if ( clipScgText !== null) {
+                if (localStorage.getItem(clipScgText) !== null) {
                     ScgObjectBuilder.scene = this;
                     this.clearSelection();
-                    GwfFileLoader.loadFromText(clipScgText, this.render);
+                    GwfFileLoader.loadFromText(localStorage.getItem(clipScgText), this.render);
                 }
             } else if ((event.which == KeyCode.A) && event.ctrlKey) {
                 this.selectAll();
