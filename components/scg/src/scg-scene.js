@@ -13,6 +13,8 @@ var SCgEditMode = {
     }
 };
 
+var clipScgText = "clipScgText";
+
 var SCgModalMode = {
     SCgModalNone: 0,
     SCgModalIdtf: 1,
@@ -38,6 +40,7 @@ var KeyCode = {
     C: 67,
     I: 73,
     T: 84,
+    V: 86,
     Z: 90
 };
 
@@ -425,6 +428,14 @@ SCg.Scene.prototype = {
             } else if (event.ctrlKey && (event.which == KeyCode.Z)) {
                 this.commandManager.undo();
                 this.updateRender();
+            } else if (event.ctrlKey && (event.which == KeyCode.C)) {
+                localStorage.setItem(clipScgText, GwfFileCreate.createFileWithSelectedObject(this));
+            } else if (event.ctrlKey && (event.which == KeyCode.V)) {
+                if (localStorage.getItem(clipScgText) !== null) {
+                    ScgObjectBuilder.scene = this;
+                    this.clearSelection();
+                    GwfFileLoader.loadFromText(localStorage.getItem(clipScgText), this.render);
+                }
             } else if ((event.which == KeyCode.A) && event.ctrlKey) {
                 this.selectAll();
             } else if (event.which == KeyCode.Key1) {
