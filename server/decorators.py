@@ -18,7 +18,7 @@ def requestAdmin(method):
 def method_logging(func):
         @wraps(func)
         def wrapper(*argv):
-            logging.debug("- %s" % "call method " + func.func_code.co_name + str(argv) + " in: " +
+            logging.debug("- %s" % "call method " + func.func_code.co_name + " in: " +
                           func.func_code.co_filename + " line: " + str(func.func_code.co_firstlineno))
             return func(*argv)
 
