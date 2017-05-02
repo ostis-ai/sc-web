@@ -2,8 +2,10 @@
 
 import tornado
 import db
+import decorators
 
 
+@decorators.class_logging
 class User:
     
     def __init__(self, u, db):
@@ -18,9 +20,9 @@ class User:
     @staticmethod
     def _canEdit(rights):
         return rights >= db.DataBase.RIGHTS_EDITOR
-    
 
-    
+
+
 class BaseHandler(tornado.web.RequestHandler):
     
     cookie_user_key = u'user_key'

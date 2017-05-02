@@ -2,7 +2,10 @@
 
 import tornado.web
 import base
+import decorators
 
+
+@decorators.class_logging
 class MainHandler(base.BaseHandler):
     @tornado.web.asynchronous
     def get(self):

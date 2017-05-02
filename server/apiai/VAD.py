@@ -2,7 +2,10 @@
 
 import math
 import numpy as np
+import decorators
 
+
+@decorators.class_logging
 class VAD(object):
     """docstring for VAD"""
     def __init__(self, sampleRate = 16000):

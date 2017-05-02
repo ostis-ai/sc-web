@@ -21,6 +21,7 @@ along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 """
 import tornado.options
+import decorators
 from sctp.client import SctpClient
 
 __all__ = (
@@ -28,11 +29,14 @@ __all__ = (
 )
 
 
+@decorators.method_logging
 def new_sctp_client():
     sctp_client = SctpClient()
     sctp_client.initialize(tornado.options.options['sctp_host'], tornado.options.options['sctp_port'])
     return sctp_client
 
+
+@decorators.class_logging
 class SctpClientInstance:
     
     def __enter__(self):

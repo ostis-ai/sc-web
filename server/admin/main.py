@@ -5,6 +5,8 @@ import tornado
 import decorators
 import handlers.base as base
 
+
+@decorators.class_logging
 class MainHandler(base.BaseHandler):
     
     @tornado.web.authenticated

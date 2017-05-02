@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
+import decorators
 
+
+@decorators.class_logging
 class Resampler(object):
     """docstring for Resapler"""
     def __init__(self, source_samplerate, destination_samplerate=16000, dtype=np.int16, channels=1):

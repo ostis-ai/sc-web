@@ -3,6 +3,7 @@
 import tornado.web
 import json
 import redis
+import decorators
 
 from keynodes import KeynodeSysIdentifiers, Keynodes
 from sctp.logic import SctpClientInstance
@@ -16,6 +17,8 @@ import base
 
 # -------------------------------------------        
 
+
+@decorators.class_logging
 class Init(base.BaseHandler):
     #@tornado.web.asynchronous
     def get(self):
@@ -269,9 +272,9 @@ class LinkFormat(base.BaseHandler):
     
             self.set_header("Content-Type", "application/json")
             self.finish(json.dumps(result))
-        
-        
-        
+
+
+@decorators.class_logging
 class Languages(base.BaseHandler):
     
     #@tornado.web.asynchronous
@@ -284,8 +287,9 @@ class Languages(base.BaseHandler):
             
             self.set_header("Content-Type", "application/json")
             self.finish(json.dumps(langs))
-        
-    
+
+
+@decorators.class_logging
 class LanguageSet(base.BaseHandler):
     
     #@tornado.web.asynchronous
@@ -299,7 +303,9 @@ class LanguageSet(base.BaseHandler):
             sc_session.set_current_lang_mode(lang_addr)
             
             self.finish()
-    
+
+
+@decorators.class_logging
 class IdtfFind(base.BaseHandler):
     
     #@tornado.web.asynchronous
@@ -376,7 +382,9 @@ class IdtfFind(base.BaseHandler):
             
             self.set_header("Content-Type", "application/json")
             self.finish(json.dumps(result))
-        
+
+
+@decorators.class_logging
 class IdtfResolve(base.BaseHandler):
     
     #@tornado.web.asynchronous
@@ -417,8 +425,9 @@ class IdtfResolve(base.BaseHandler):
             
             self.set_header("Content-Type", "application/json")
             self.finish(json.dumps(result))
-        
-        
+
+
+@decorators.class_logging
 class AddrResolve(base.BaseHandler):
     
     #@tornado.web.asynchronous
@@ -446,8 +455,9 @@ class AddrResolve(base.BaseHandler):
     
             self.set_header("Content-Type", "application/json")
             self.finish(json.dumps(res))
-        
-        
+
+
+@decorators.class_logging
 class InfoTooltip(base.BaseHandler):
     
     #@tornado.web.asynchronous
@@ -479,8 +489,8 @@ class InfoTooltip(base.BaseHandler):
             self.set_header("Content-Type", "application/json")
             self.finish(json.dumps(res))
 
-    
-    
+
+@decorators.class_logging
 class User(base.BaseHandler):
     
     #@tornado.web.asynchronous

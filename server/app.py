@@ -13,6 +13,7 @@ import handlers.auth as auth
 import admin.main as admin
 import admin.users as admin_users
 import ws, db
+import logger_sc
 
 is_closing = False
 
@@ -67,6 +68,9 @@ def main():
     # prepare database
     database = db.DataBase()
     database.init()
+
+    # prepare logger
+    logger_sc.init()
 
     rules = [
             (r"/", MainHandler),

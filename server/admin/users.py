@@ -6,6 +6,8 @@ import json
 import decorators, db
 import handlers.base as base
 
+
+@decorators.class_logging
 class UsersInfo(base.BaseHandler):
     
     ITEMS_PER_PAGE = 100
@@ -21,6 +23,7 @@ class UsersInfo(base.BaseHandler):
         self.finish(json.dumps(users))
                 
 
+@decorators.class_logging
 class UserSetRights(base.BaseHandler):
     
     @tornado.web.authenticated
@@ -60,7 +63,9 @@ class UserSetRights(base.BaseHandler):
                                     'name': database.get_role_by_id(u.role).name
                                 }
                                }))
-        
+
+
+@decorators.class_logging
 class UserListRights(base.BaseHandler):
     
     @tornado.web.authenticated
