@@ -69,3 +69,5 @@ sc-web.ini
 /server/.settings/*
 
 .idea/
+
+server_log*
