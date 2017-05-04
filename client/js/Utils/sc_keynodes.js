@@ -40,6 +40,8 @@ ScKeynodes.prototype.init = function() {
         this.resolveKeynode('binary_int16'),
         this.resolveKeynode('binary_int32'),
         this.resolveKeynode('binary_int64'),
+        this.resolveKeynode('format_pdf'),
+        this.resolveKeynode('format_png'),
         this.resolveKeynode('format_html'),
         this.resolveKeynode('nrel_format')
         

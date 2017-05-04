@@ -287,6 +287,7 @@ SCg.ModelLink = function(options) {
     this.containerId = options.containerId;
     this.content = options.content;
     this.contentType = 'string';
+    this.fileReaderResult = null;
 };
 
 SCg.ModelLink.prototype = Object.create( SCg.ModelObject.prototype );

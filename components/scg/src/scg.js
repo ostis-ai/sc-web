@@ -521,7 +521,9 @@ SCg.Editor.prototype = {
                             if (obj.content != this.result || obj.contentType != 'html') {
                                 self.scene.commandManager.execute(new SCgCommandChangeContent(obj,
                                     this.result,
-                                    'html'));
+                                    'html',
+                                    this.result
+                                ));
                             }
                             stop_modal();
                         };
@@ -530,18 +532,22 @@ SCg.Editor.prototype = {
                         fileReader.onload = function() {
                             if (obj.content != this.result || obj.contentType != 'html') {
                                 self.scene.commandManager.execute(new SCgCommandChangeContent(obj,
-                                    '<img src="' + this.result + '" alt="Image">',
-                                    'html'));
+                                    '<img src="data:image/png;base64,' + btoa(String.fromCharCode.apply(null, new Uint8Array(this.result))) + '" alt="Image">',
+                                    'image',
+                                    this.result
+                                ));
                             }
                             stop_modal();
                         };
-                        fileReader.readAsDataURL(file);
+                        fileReader.readAsArrayBuffer(file);
                     }
                 } else {
                     if (obj.content != input.val() || obj.contentType != input_content_type.val()) {
                         self.scene.commandManager.execute(new SCgCommandChangeContent(obj,
                             input.val(),
-                            input_content_type.val()));
+                            input_content_type.val(),
+                            null
+                        ));
                     }
                     stop_modal();
                 }
