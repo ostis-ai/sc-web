@@ -516,31 +516,18 @@ SCg.Editor.prototype = {
                 var file = input_content[0].files[0];
                 if (file != undefined){
                     var fileReader = new FileReader();
-                    if (file.type === 'text/html'){
-                        fileReader.onload = function() {
-                            if (obj.content != this.result || obj.contentType != 'html') {
-                                self.scene.commandManager.execute(new SCgCommandChangeContent(obj,
-                                    this.result,
-                                    'html',
-                                    this.result
-                                ));
-                            }
-                            stop_modal();
-                        };
-                        fileReader.readAsText(file);
-                    } else {
-                        fileReader.onload = function() {
-                            if (obj.content != this.result || obj.contentType != 'html') {
-                                self.scene.commandManager.execute(new SCgCommandChangeContent(obj,
-                                    '<img src="data:image/png;base64,' + btoa(String.fromCharCode.apply(null, new Uint8Array(this.result))) + '" alt="Image">',
-                                    'image',
-                                    this.result
-                                ));
-                            }
-                            stop_modal();
-                        };
-                        fileReader.readAsArrayBuffer(file);
-                    }
+                    fileReader.onload = function() {
+                        var scLinkHelper = new ScFileLinkHelper(file, this.result);
+                        if (obj.fileReaderResult != scLinkHelper.fileArrayBuffer || obj.contentType != scLinkHelper.type) {
+                            self.scene.commandManager.execute(new SCgCommandChangeContent(obj,
+                                scLinkHelper.htmlViewResult(),
+                                scLinkHelper.type,
+                                scLinkHelper.fileArrayBuffer
+                            ));
+                        }
+                        stop_modal();
+                    };
+                    fileReader.readAsArrayBuffer(file);
                 } else {
                     if (obj.content != input.val() || obj.contentType != input_content_type.val()) {
                         self.scene.commandManager.execute(new SCgCommandChangeContent(obj,

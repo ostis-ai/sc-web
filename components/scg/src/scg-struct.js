@@ -431,8 +431,11 @@ function scgScStructTranslator(_editor, _sandbox) {
                             } else if (link.contentType === 'html') {
                                 content = link.fileReaderResult;
                                 keynode = window.scKeynodes.format_html;
+                            } else if (link.contentType === 'pdf') {
+                                content = link.fileReaderResult;
+                                keynode = window.scKeynodes.format_pdf;
                             }
-                            
+
                             objects.push(link);
 
                             window.sctpClient.set_link_content(r, content);
