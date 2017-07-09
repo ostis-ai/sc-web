@@ -7,7 +7,7 @@ SCgCommandCreateContour.prototype = {
 
     constructor: SCgCommandCreateContour,
 
-    undo: function() {
+    undo: function () {
         if (this.contour.is_selected) {
             var idx = this.scene.selected_objects.indexOf(this.contour);
             this.scene.selected_objects.splice(idx, 1);
@@ -18,9 +18,9 @@ SCgCommandCreateContour.prototype = {
         this.scene.removeObject(this.contour);
     },
 
-    execute: function() {
+    execute: function () {
         var scene = this.scene;
-        if (this.contour == null){
+        if (this.contour == null) {
             var polygon = $.map(scene.drag_line_points, function (vertex) {
                 return $.extend({}, vertex);
             });

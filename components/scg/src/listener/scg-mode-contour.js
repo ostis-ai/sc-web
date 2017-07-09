@@ -1,4 +1,4 @@
-SCgContourListener = function(scene) {
+SCgContourListener = function (scene) {
     this.scene = scene;
 };
 
@@ -6,14 +6,14 @@ SCgContourListener.prototype = {
 
     constructor: SCgContourListener,
 
-    onMouseMove: function(x, y) {
+    onMouseMove: function (x, y) {
         this.scene.mouse_pos.x = x;
         this.scene.mouse_pos.y = y;
         this.scene.render.updateDragLine();
         return true;
     },
 
-    onMouseDown: function(x, y) {
+    onMouseDown: function (x, y) {
         if (!this.scene.pointed_object) {
             this.scene.drag_line_points.push({x: x, y: y, idx: this.scene.drag_line_points.length});
             return true;
@@ -21,19 +21,19 @@ SCgContourListener.prototype = {
         return false;
     },
 
-    onMouseDoubleClick: function(x, y) {
+    onMouseDoubleClick: function (x, y) {
         return false;
     },
 
-    onMouseDownObject: function(obj) {
+    onMouseDownObject: function (obj) {
         return false;
     },
 
-    onMouseUpObject: function(obj) {
+    onMouseUpObject: function (obj) {
         return true;
     },
 
-    onKeyDown: function(event) {
+    onKeyDown: function (event) {
         if (event.which == KeyCode.Escape) {
             this.scene.resetEdgeMode();
             return true;
@@ -41,7 +41,7 @@ SCgContourListener.prototype = {
         return false;
     },
 
-    onKeyUp: function(event) {
+    onKeyUp: function (event) {
         return false;
     },
 

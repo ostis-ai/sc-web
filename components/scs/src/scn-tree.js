@@ -1,10 +1,10 @@
-SCs.SCnTree = function() {
-    
+SCs.SCnTree = function () {
+
 };
 
 SCs.SCnTree.prototype = {
-    
-    init: function(contourAddr, keynode_func) {
+
+    init: function (contourAddr, keynode_func) {
         this.nodes = [];
         this.addrs = [];    // array of sc-addrs
         this.links = [];
@@ -14,19 +14,19 @@ SCs.SCnTree.prototype = {
         this.contourAddr = contourAddr;    // sc-addr of contour, that structure build with this tree
         this.getKeynode = keynode_func;
     },
-    
+
     /**
      * Append new addr into sc-addrs list
      */
-    _appendAddr: function(el) {
+    _appendAddr: function (el) {
         if (!(el.type & sc_type_link) && this.addrs.indexOf(el.addr) < 0) {
             this.addrs.push(el.addr);
         }
     },
-    
+
     /** Determine all subtrees in triples
      */
-    determineSubTrees: function() {
+    determineSubTrees: function () {
         // collect subtree elements
         var subtrees = {};
         var idx = 0;
@@ -35,7 +35,7 @@ SCs.SCnTree.prototype = {
 
         for (t in this.triples)
             tu.appendTriple(this.triples[t]);
-        
+
         function isElementExist(st, addr) {
             for (j in st.elements) {
                 if (st.elements[j].el.addr == addr)
@@ -46,12 +46,12 @@ SCs.SCnTree.prototype = {
 
         while (idx < this.triples.length) {
             var tpl = this.triples[idx];
-            
+
             if ((tpl[1].type != sc_type_arc_pos_const_perm) || !(tpl[0].type & sc_type_node_struct) || (tpl[0].addr == this.contourAddr)) {
                 idx++;
                 continue;
             }
-            
+
             // check if there are any input/output arcs
             tpl.ignore = true;
             for (k in this.triples) {
@@ -68,10 +68,10 @@ SCs.SCnTree.prototype = {
             } else {
                 subtrees[tpl[0].addr] = {el: tpl[0], elements: [{el: tpl[2], tpl: tpl}], triples: []};
             }
-            
+
             idx++;
         }
-        
+
         // we have elements, so we need to find all triples, where all element exist in subtree contour
         idx = 0;
         while (idx < this.triples.length) {
@@ -79,20 +79,20 @@ SCs.SCnTree.prototype = {
             var used = false;
             for (addr in subtrees) {
                 var st = subtrees[addr];
-                
+
                 if (!isElementExist(st, tpl[0].addr) || !isElementExist(st, tpl[1].addr) || !isElementExist(st, tpl[2].addr)) {
                     continue;
                 }
-                
+
                 st.triples = st.triples.concat(this.triples.splice(idx, 1));
                 used = true;
                 break;
             }
-            
+
             if (!used)
                 idx++;
         }
-        
+
         // if subtree has no any elements, then merge it back to main tree
         var delKeys = [];
         for (addr in subtrees) {
@@ -100,15 +100,15 @@ SCs.SCnTree.prototype = {
                 delKeys.push(addr);
             }
         }
-        
+
         for (idx in delKeys) {
             var st = subtrees[delKeys[idx]];
             this.triples = this.triples.concat(st.triples);
             delete subtrees[delKeys[idx]];
         }
-        
+
         var self = this;
-        
+
         // build tree objects
         for (addr in subtrees) {
             var subtree = subtrees[addr];
@@ -118,7 +118,7 @@ SCs.SCnTree.prototype = {
             // now we need to find keynodes for subtree
             var key_key = this.getKeynode('rrel_key_sc_element');
             var keywordsList = [];
-            var keywords = tu.find5_f_a_a_a_f(addr, 
+            var keywords = tu.find5_f_a_a_a_f(addr,
                 sc_type_arc_pos_const_perm,
                 0,
                 sc_type_arc_pos_const_perm,
@@ -134,7 +134,7 @@ SCs.SCnTree.prototype = {
                     klist.push(a);
                     elements[a] = keywords[k][2];
                 }
-                
+
                 var order_key = this.getKeynode('nrel_key_sc_element_base_order');
                 for (var i = 0; i < klist.length; i++) {
                     for (var j = 0; j < klist.length; j++) {
@@ -163,7 +163,7 @@ SCs.SCnTree.prototype = {
                         break;
                     }
                 }
-                
+
                 // fill keywords list
                 while (order_start) {
                     keywordsList.push(elements[order_start]);
@@ -176,7 +176,7 @@ SCs.SCnTree.prototype = {
                     }
                 }
             }
-            
+
             // determine keywords by input/output arcs number
             if (keywordsList.length == 0) {
                 keywordsList = this.findKeywords(subtree.triples, addr);
@@ -187,12 +187,12 @@ SCs.SCnTree.prototype = {
             this.addrs = this.addrs.concat(tree.addrs);
         }
     },
-    
+
     /*! Builds tree based on array of triples
      * @param {Array} keyords Array of keywords
      * @param {Array} triples Array of triples
      */
-    build: function(keywords, triples) {
+    build: function (keywords, triples) {
 
         var queue = [];
         this.triples = this.triples.concat(triples);
@@ -200,21 +200,21 @@ SCs.SCnTree.prototype = {
         if (keywords.length == 0) {
             keywords = this.findKeywords(this.triples);
         }
-        
+
         // first of all we need to create root nodes for all keywords
         for (i in keywords) {
             var node = new SCs.SCnTreeNode();
-            
+
             node.type = SCs.SCnTreeNodeType.Keyword;
             node.element = keywords[i];
             node.level = -1;
-            
+
             this.nodes.push(node);
             queue.push(node);
 
             this._appendAddr(keywords[i]);
         }
-        
+
         this.determineSubTrees();
 
         // collect triples to process
@@ -222,25 +222,25 @@ SCs.SCnTree.prototype = {
         for (t in this.triples) {
             var tpl = this.triples[t];
             if (!tpl.output && !tpl.ignore)
-                this.triples_process.push(tpl); 
+                this.triples_process.push(tpl);
         }
         this.buildLevels(queue, this.triples_process);
     },
-    
-    buildLevels: function(queue, triples) {
-    
+
+    buildLevels: function (queue, triples) {
+
         while (queue.length > 0) {
             var node = queue.shift();
 
             // stop tree building after input sc_type_arc_pos_const_perm to sc_type_link
             if ((node.parent)
-                && (node.parent.element.type & sc_type_link) 
+                && (node.parent.element.type & sc_type_link)
                 && (node.predicate.type == sc_type_arc_pos_const_perm)
                 && (node.backward)
-                ) {
+            ) {
                 continue;
             }
-            
+
 
             // try to find triple that can be added as child to tree node
             var idx = 0;
@@ -252,76 +252,76 @@ SCs.SCnTree.prototype = {
                 // collect all sc-addrs (do not collect addrs of edges in triples, because addrs used to resolve identifiers)
                 this._appendAddr(tpl[0]);
                 this._appendAddr(tpl[2]);
-                
+
                 if (!tpl.output && !tpl.ignore) {
                     // arc attributes
                     if (node.type == SCs.SCnTreeNodeType.Sentence) {
-                        if ((tpl[0].type & (sc_type_node_role | sc_type_node_norole)) 
-                                && (tpl[1].type & sc_type_arc_pos_const_perm | sc_type_var)
-                                && tpl[2].addr == node.predicate.addr) {
+                        if ((tpl[0].type & (sc_type_node_role | sc_type_node_norole))
+                            && (tpl[1].type & sc_type_arc_pos_const_perm | sc_type_var)
+                            && tpl[2].addr == node.predicate.addr) {
                             node.attrs.push({n: tpl[0], a: tpl[1], triple: tpl});
                             tpl.output = true;
-                            
+
                             //this._appendAddr(tpl[0]);
                         }
                     }
-                    
+
                     var predicate = null, el = null;
                     if (tpl[0].addr == node.element.addr) {
                         predicate = tpl[1];
                         el = tpl[2];
                         found = true;
                     }
-                    
+
                     if (tpl[2].addr == node.element.addr) {
                         predicate = tpl[1];
                         el = tpl[0];
                         found = true;
                         backward = true;
                     }
-                    
+
                     if (found && !this.usedLinks[el.addr]) {
                         var nd = new SCs.SCnTreeNode();
-            
+
                         nd.type = SCs.SCnTreeNodeType.Sentence;
                         nd.element = el;
                         nd.predicate = predicate;
                         nd.level = node.level + 1;
                         nd.parent = node;
                         nd.backward = backward;
-                        tpl.scn = { treeNode: nd };
+                        tpl.scn = {treeNode: nd};
 
                         if (el.type & sc_type_link) {
                             this.usedLinks[el.addr] = el;
                         }
-                        
+
                         node.childs.push(nd);
                         nd.triple = tpl;
                         tpl.output = true;
-    
+
                         triples.splice(idx, 1);
-                        
+
                         queue.push(nd);
-                    } else 
+                    } else
                         ++idx;
-                } else 
+                } else
                     ++idx;
             }
         }
     },
-    
+
     /*! Destroy whole node sub-trees of specified node.
      * @param {Object} node Node to destroy
      */
-    destroySubTree: function(node) {
+    destroySubTree: function (node) {
         var queue = [node];
-        
+
         while (queue.length > 0) {
             var n = queue.shift();
             for (idx in n.childs) {
                 queue.push(n.childs[idx]);
             }
-            
+
             // remove from parent
             if (n.parent) {
                 for (idx in n.parent.childs) {
@@ -331,22 +331,22 @@ SCs.SCnTree.prototype = {
                     }
                 }
             }
-            
+
             for (idx in n.attrs) {
                 n.attrs[idx].triple.ouput = false;
             }
-            
+
             n.triple.output = false;
             n.triple = null;
             n.parent = null;
-            
+
             for (idx in node.childs) {
                 queue.push(node.childs[idx]);
             }
             node.childs.splice(0, node.childs.length);
         }
     },
-    
+
     /*! Returns information about specified edge.
      * Returned object has such properties:
      * - source - source element
@@ -354,7 +354,7 @@ SCs.SCnTree.prototype = {
      * - edge - edge element
      * If there are no info about specified edge, then returns null
      */
-    getEdgeInfo: function(addr) {
+    getEdgeInfo: function (addr) {
         for (i in this.triples) {
             var tpl = this.triples[i];
             if (tpl[1].addr == addr)
@@ -363,9 +363,10 @@ SCs.SCnTree.prototype = {
         return null;
     },
 
-    findKeywords: function(triples, addr) {
+    findKeywords: function (triples, addr) {
         var keywords = {};
         var keywordsList = [];
+
         function addArc(el, value) {
 
             var n = value;
@@ -412,7 +413,7 @@ SCs.SCnTree.prototype = {
 
         return keywordsList;
     }
-    
+
 };
 
 
@@ -422,7 +423,7 @@ SCs.SCnTreeNodeType = {
     Sentence: 2
 };
 
-SCs.SCnTreeNode = function() {
+SCs.SCnTreeNode = function () {
     this.type = SCs.SCnTreeNodeType.Sentence;
     this.element = null;
     this.childs = new Array();   // list of child sentences for subject
@@ -433,6 +434,4 @@ SCs.SCnTreeNode = function() {
     this.parent = null;         // parent tree node
 };
 
-SCs.SCnTreeNode.prototype = {
-    
-};
+SCs.SCnTreeNode.prototype = {};

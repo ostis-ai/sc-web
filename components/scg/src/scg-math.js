@@ -1,99 +1,99 @@
-SCg.Vector2 = function(x, y) {
+SCg.Vector2 = function (x, y) {
     this.x = x;
     this.y = y;
 };
 
 SCg.Vector2.prototype = {
     constructor: SCg.Vector2,
-    
-    copyFrom: function(other) {
+
+    copyFrom: function (other) {
         this.x = other.x;
         this.y = other.y;
-        
+
         return this;
     },
-    
-    clone: function() {
+
+    clone: function () {
         return new SCg.Vector2(this.x, this.y);
     },
-    
-    add: function(other) {
+
+    add: function (other) {
         this.x += other.x;
         this.y += other.y;
         return this;
     },
-    
-    sub: function(other) {
+
+    sub: function (other) {
         this.x -= other.x;
         this.y -= other.y;
         return this;
     },
-    
-    mul: function(other) {
+
+    mul: function (other) {
         this.x *= other.x;
         this.y *= other.y;
         return this;
     },
-    
-    div: function(other) {
+
+    div: function (other) {
         this.x /= other.x;
         this.y /= other.y;
         return this;
     },
-    
-    multiplyScalar: function(v) {
+
+    multiplyScalar: function (v) {
         this.x *= v;
         this.y *= v;
         return this;
     },
-    
-    divideScalar: function(v) {
+
+    divideScalar: function (v) {
         this.x /= v;
         this.y /= v;
         return this;
     },
-    
-    length: function() {
+
+    length: function () {
         return Math.sqrt(this.lengthSquared());
     },
-    
-    lengthSquared: function() {
+
+    lengthSquared: function () {
         return this.x * this.x + this.y * this.y;
     },
-    
-    distance: function() {
+
+    distance: function () {
         return Math.sqrt(this.distanceSquared.apply(this, arguments));
     },
-    
-    distanceSquared: function() {
+
+    distanceSquared: function () {
         if (arguments.length === 2) {
             var x = this.x - arguments[0],
                 y = this.y - arguments[1];
-        
+
             return x * x + y * y;
         }
-        
+
         var x = this.x - arguments[0].x,
             y = this.y - arguments[0].y;
         return x * x + y * y;
     },
-    
-    normalize: function() {
+
+    normalize: function () {
         return this.divideScalar(this.length());
     },
-    
-    dotProduct: function(other) {
+
+    dotProduct: function (other) {
         return this.x * other.x + this.y * other.y;
     },
-    
-    crossProduct: function(other) {
+
+    crossProduct: function (other) {
         return this.x * other.y - this.y * other.x;
     }
 };
 
 
 // --------------------
-SCg.Vector3 = function(x, y, z) {
+SCg.Vector3 = function (x, y, z) {
     this.x = x;
     this.y = y;
     this.z = z;
@@ -102,103 +102,101 @@ SCg.Vector3 = function(x, y, z) {
 SCg.Vector3.prototype = {
     constructor: SCg.Vector3,
 
-    equals: function(other) {
+    equals: function (other) {
         return this.x == other.x && this.y == other.y && this.z == other.z;
     },
 
-    copyFrom: function(other) {
+    copyFrom: function (other) {
         this.x = other.x;
         this.y = other.y;
         this.z = other.z;
-        
+
         return this;
     },
-    
-    clone: function() {
+
+    clone: function () {
         return new SCg.Vector3(this.x, this.y, this.z);
     },
-    
-    sub: function(other) {
+
+    sub: function (other) {
         this.x -= other.x;
         this.y -= other.y;
         this.z -= other.z;
-        
+
         return this;
     },
-    
-    add: function(other) {
+
+    add: function (other) {
         this.x += other.x;
         this.y += other.y;
         this.z += other.z;
-        
+
         return this;
     },
-    
-    mul: function(other) {
+
+    mul: function (other) {
         this.x *= other.x;
         this.y *= other.y;
         this.z *= other.z;
-        
+
         return this;
     },
-    
-    div: function(other) {
+
+    div: function (other) {
         this.x /= other.x;
         this.y /= other.y;
         this.z /= other.z;
-        
+
         return this;
     },
-    
-    multiplyScalar: function(v) {
+
+    multiplyScalar: function (v) {
         this.x *= v;
         this.y *= v;
         this.z *= v;
-        
+
         return this;
     },
-    
-    normalize: function() {
+
+    normalize: function () {
         var l = this.length();
         this.x /= l;
         this.y /= l;
         this.z /= l;
     },
-    
-    length: function() {
+
+    length: function () {
         return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
     },
-    
-    lengthSquared: function() {
+
+    lengthSquared: function () {
         return this.x * this.x + this.y * this.y + this.z * this.z;
     },
-    
-    dotProduct: function(other) {
+
+    dotProduct: function (other) {
         return this.x * other.x + this.y * other.y + this.z * other.z;
     },
-    
-    crossProduct: function(other) {
+
+    crossProduct: function (other) {
         return new SCg.Vector3(
-                this.y * other.z - this.z * other.y,
-                this.z * other.x - this.x * other.z,
-                this.x * other.y - this.y * other.x);
+            this.y * other.z - this.z * other.y,
+            this.z * other.x - this.x * other.z,
+            this.x * other.y - this.y * other.x);
     },
-    
-    to2d: function() {
+
+    to2d: function () {
         return new SCg.Vector2(this.x, this.y);
     }
 };
 
 SCg.Math = {};
 
-SCg.Math.distanceSquared = function(p1, p2) {
+SCg.Math.distanceSquared = function (p1, p2) {
     var x = p1.x - p2.x,
         y = p1.y - p2.y;
-    
+
     return x * x + y * y;
 };
-
-
 
 
 SCg.Algorithms = {};
@@ -210,13 +208,13 @@ SCg.Algorithms = {};
  * @param vertecies Array of points, which represents a polygon
  * @return {boolean} true if the point is in the polygon, false otherwise
  */
-SCg.Algorithms.isPointInPolygon = function(point, vertecies) {
+SCg.Algorithms.isPointInPolygon = function (point, vertecies) {
     // create copy of array of vertecies
-    var polygon =  $.map(vertecies, function (vertex) {
+    var polygon = $.map(vertecies, function (vertex) {
         return $.extend({}, vertex);
     });
 
-    var Q_PATT = [ [0,1], [3,2] ];
+    var Q_PATT = [[0, 1], [3, 2]];
 
     var pred_pt = polygon[polygon.length - 1];
     var t1 = pred_pt.y - point.y < 0 ? 1 : 0;
@@ -246,7 +244,7 @@ SCg.Algorithms.isPointInPolygon = function(point, vertecies) {
                     ++w;
                 break;
             case 2:
-                if(!(pred_pt.x * cur_pt.y >= pred_pt.y * cur_pt.x))
+                if (!(pred_pt.x * cur_pt.y >= pred_pt.y * cur_pt.x))
                     --w;
                 break;
         }
@@ -265,9 +263,9 @@ SCg.Algorithms.isPointInPolygon = function(point, vertecies) {
  * @param segEnd the second point, object with 'x' and 'y' fields, {SCg.Vector2} for example
  * @return {Array} intersection points
  */
-SCg.Algorithms.polyclip = function(pin, segStart, segEnd) {
+SCg.Algorithms.polyclip = function (pin, segStart, segEnd) {
 
-    var inside = function(p, plane) {
+    var inside = function (p, plane) {
         var d = p.x * plane[0] + p.y * plane[1];
         return d > plane[2];
     };

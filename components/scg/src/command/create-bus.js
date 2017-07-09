@@ -8,7 +8,7 @@ SCgCommandCreateBus.prototype = {
 
     constructor: SCgCommandCreateBus,
 
-    undo: function() {
+    undo: function () {
         if (this.bus.is_selected) {
             var idx = this.scene.selected_objects.indexOf(this.bus);
             this.scene.selected_objects.splice(idx, 1);
@@ -19,9 +19,9 @@ SCgCommandCreateBus.prototype = {
         this.scene.removeObject(this.bus);
     },
 
-    execute: function() {
+    execute: function () {
         var scene = this.scene;
-        if (this.bus == null){
+        if (this.bus == null) {
             this.bus = SCg.Creator.createBus(this.source);
             scene.appendBus(this.bus);
             if (scene.drag_line_points.length > 1) this.bus.setPoints(scene.drag_line_points.slice(1));

@@ -2,8 +2,8 @@ SCWeb.ui.TaskPanel = {
     _container: '#task_panel',
     _text_container: '#task_num',
     _task_num: 0,
-    
-    init: function(callback) {
+
+    init: function (callback) {
         var dfd = new jQuery.Deferred();
 
         SCWeb.core.Server.appendListener(this);
@@ -11,11 +11,11 @@ SCWeb.ui.TaskPanel = {
 
         return dfd.promise();
     },
-    
+
     /*!
      * Updates task panel view
      */
-    updatePanel: function() {
+    updatePanel: function () {
 //        if (this._task_num == 0) {
 //            $(this._container).removeClass('active');
 //        }else{
@@ -26,15 +26,15 @@ SCWeb.ui.TaskPanel = {
 //            text = this._task_num.toString();
 //        $(this._text_container).text(text);
     },
-    
+
     // ------- Server listener --------
-    taskStarted: function() {
+    taskStarted: function () {
         this._task_num++;
         this.updatePanel();
         //SCWeb.ui.Locker.show();
     },
-    
-    taskFinished: function() {
+
+    taskFinished: function () {
         this._task_num--;
         this.updatePanel();
         //SCWeb.ui.Locker.hide();

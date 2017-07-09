@@ -1,4 +1,4 @@
-SCgLinkListener = function(scene) {
+SCgLinkListener = function (scene) {
     this.scene = scene;
 };
 
@@ -6,11 +6,11 @@ SCgLinkListener.prototype = {
 
     constructor: SCgLinkListener,
 
-    onMouseMove: function(x, y) {
+    onMouseMove: function (x, y) {
         return false;
     },
 
-    onMouseDown: function(x, y) {
+    onMouseDown: function (x, y) {
         return false;
     },
 
@@ -22,19 +22,19 @@ SCgLinkListener.prototype = {
         return true;
     },
 
-    onMouseDownObject: function(obj) {
+    onMouseDownObject: function (obj) {
         return false;
     },
 
-    onMouseUpObject: function(obj) {
+    onMouseUpObject: function (obj) {
         return true;
     },
 
-    onKeyDown: function(event) {
+    onKeyDown: function (event) {
         return false;
     },
 
-    onKeyUp: function(event) {
+    onKeyUp: function (event) {
         return false;
     }
 

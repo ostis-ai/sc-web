@@ -8,11 +8,11 @@ SCgCommandChangeType.prototype = {
 
     constructor: SCgCommandChangeType,
 
-    undo: function() {
+    undo: function () {
         this.object.setScType(this.oldType);
     },
 
-    execute: function() {
+    execute: function () {
         this.object.setScType(this.newType);
     }
 

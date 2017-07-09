@@ -1,19 +1,19 @@
 /**
  * Object controls list of command parameters.
  * It can fires next events:
- * - "arguments/add" - this event emits on new argument add. Parameters: arg, idx 
+ * - "arguments/add" - this event emits on new argument add. Parameters: arg, idx
  * where:
- * 		- arg - is a sc-addr of object that added as argument;
- * 		- idx - is an index of the argument
+ *        - arg - is a sc-addr of object that added as argument;
+ *        - idx - is an index of the argument
  * - "arguments/remove" - this event emits on argument remove. Parameters: arg, idx
  * where:
- * 		- arg - is a sc-addr of object that removed from arguments;
- * 		- idx - is an index of the argument
+ *        - arg - is a sc-addr of object that removed from arguments;
+ *        - idx - is an index of the argument
  * - "arguments/clear" - this event emits on arguments clear (all arguments removed at once)
  */
 SCWeb.core.Arguments = {
 
-    _arguments : [],
+    _arguments: [],
 
     /**
      * Append new argument into the end of list
@@ -22,7 +22,7 @@ SCWeb.core.Arguments = {
      * argument SC-addr of command argument
      * @return Returns index of appended argument
      */
-    appendArgument : function(argument) {
+    appendArgument: function (argument) {
 
         this._arguments.push(argument);
 
@@ -38,7 +38,7 @@ SCWeb.core.Arguments = {
      * @param {String}
      * argument SC-add of argument to remove
      */
-    removeArgument : function(argument) {
+    removeArgument: function (argument) {
 
         var idx = this._arguments.indexOf(argument);
 
@@ -56,7 +56,7 @@ SCWeb.core.Arguments = {
      * @param {Number}
      * idx Index of argument to remove
      */
-    removeArgumentByIndex : function(idx) {
+    removeArgumentByIndex: function (idx) {
 
         if (idx < this._arguments.length) {
             var arg = this._arguments[idx];
@@ -69,7 +69,7 @@ SCWeb.core.Arguments = {
     /**
      * Clears arguments list
      */
-    clear : function() {
+    clear: function () {
 
         this._arguments = [];
         this._fireArgumentCleared();
@@ -83,7 +83,7 @@ SCWeb.core.Arguments = {
      * @param {Number}
      * Index of added argument
      */
-    _fireArgumentAppended : function(argument, idx) {
+    _fireArgumentAppended: function (argument, idx) {
 
         SCWeb.core.EventManager.emit("arguments/add", argument, idx);
     },
@@ -96,7 +96,7 @@ SCWeb.core.Arguments = {
      * @param {Number}
      * Index of removed argument
      */
-    _fireArgumentRemoved : function(argument, idx) {
+    _fireArgumentRemoved: function (argument, idx) {
 
         SCWeb.core.EventManager.emit("arguments/remove", argument, idx);
     },
@@ -104,7 +104,7 @@ SCWeb.core.Arguments = {
     /**
      * Notify listener on argument clear
      */
-    _fireArgumentCleared : function() {
+    _fireArgumentCleared: function () {
 
         SCWeb.core.EventManager.emit("arguments/clear");
     },
@@ -114,7 +114,7 @@ SCWeb.core.Arguments = {
      *
      * @returns {Array} the array of available arguments.
      */
-    getArguments : function() {
+    getArguments: function () {
 
         return this._arguments;
     }

@@ -8,7 +8,7 @@ SCg.Creator = {};
  *
  * @return SCg.ModelNode created node
  */
-SCg.Creator.createNode = function(sc_type, pos, text) {
+SCg.Creator.createNode = function (sc_type, pos, text) {
     return new SCg.ModelNode({
         position: pos.clone(),
         scale: new SCg.Vector2(20, 20),
@@ -17,7 +17,7 @@ SCg.Creator.createNode = function(sc_type, pos, text) {
     });
 };
 
-SCg.Creator.createLink = function(pos, containerId) {
+SCg.Creator.createLink = function (pos, containerId) {
     var link = new SCg.ModelLink({
         position: pos.clone(),
         scale: new SCg.Vector2(50, 50),
@@ -36,7 +36,7 @@ SCg.Creator.createLink = function(pos, containerId) {
  *
  * @return SCg.ModelEdge created edge
  */
-SCg.Creator.createEdge = function(source, target, sc_type) {
+SCg.Creator.createEdge = function (source, target, sc_type) {
     return new SCg.ModelEdge({
         source: source,
         target: target,
@@ -44,13 +44,13 @@ SCg.Creator.createEdge = function(source, target, sc_type) {
     });
 };
 
-SCg.Creator.createBus = function(source) {
+SCg.Creator.createBus = function (source) {
     return new SCg.ModelBus({
         source: source
     });
 };
 
-SCg.Creator.createCounter = function(polygon) {
+SCg.Creator.createCounter = function (polygon) {
     return new SCg.ModelContour({
         verticies: polygon
     });

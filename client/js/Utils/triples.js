@@ -1,4 +1,4 @@
-TripleUtils = function() {
+TripleUtils = function () {
     this.outputEdges = {};
     this.inputEdges = {};
     this.types = {};
@@ -6,7 +6,7 @@ TripleUtils = function() {
 
 TripleUtils.prototype = {
 
-    appendTriple: function(tpl) {
+    appendTriple: function (tpl) {
         this.types[tpl[0].addr] = tpl[0].type;
         this.types[tpl[1].addr] = tpl[1].type;
         this.types[tpl[2].addr] = tpl[2].type;
@@ -15,7 +15,7 @@ TripleUtils.prototype = {
         this._appendInputEdge(tpl[0].addr, tpl[1].addr, tpl[2].addr);
     },
 
-    removeTriple: function(tpl) {
+    removeTriple: function (tpl) {
         this._removeOutputEdge(tpl[0].addr, tpl[1].addr);
         this._removeInputEdge(tpl[2].addr, tpl[1].addr);
     },
@@ -23,7 +23,7 @@ TripleUtils.prototype = {
     /*! Search all constructions, that equal to template. 
      * @returns If something found, then returns list of results; otherwise returns null
      */
-    find5_f_a_a_a_f: function(addr1, type2, type3, type4, addr5) {
+    find5_f_a_a_a_f: function (addr1, type2, type3, type4, addr5) {
         var res = null;
         // iterate all output edges from addr1
         var list = this.outputEdges[addr1];
@@ -39,11 +39,11 @@ TripleUtils.prototype = {
                         if (this._compareType(type4, this._getType(edge2.edge)) && (edge2.src == addr5)) {
                             if (!res) res = [];
                             res.push([
-                                { addr: addr1, type: this._getType(addr1) },
-                                { addr: edge.edge, type: this._getType(edge.edge) },
-                                { addr: edge.trg, type: this._getType(edge.trg) },
-                                { addr: edge2.edge, type: this._getType(edge2.edge) },
-                                { addr: addr5, type: this._getType(addr5) }
+                                {addr: addr1, type: this._getType(addr1)},
+                                {addr: edge.edge, type: this._getType(edge.edge)},
+                                {addr: edge.trg, type: this._getType(edge.trg)},
+                                {addr: edge2.edge, type: this._getType(edge2.edge)},
+                                {addr: addr5, type: this._getType(addr5)}
                             ]);
                         }
                     }
@@ -53,7 +53,7 @@ TripleUtils.prototype = {
         return res;
     },
 
-    find5_f_a_f_a_f: function(addr1, type2, addr3, type4, addr5) {
+    find5_f_a_f_a_f: function (addr1, type2, addr3, type4, addr5) {
         var list = this.inputEdges[addr3];
         if (!list) return null;
 
@@ -69,11 +69,11 @@ TripleUtils.prototype = {
                     if (this._compareType(type4, this._getType(edge2.edge)) && (addr3 === edge.src)) {
                         if (!res) res = [];
                         res.push([
-                            { addr: addr1, type: this._getType(addr1) },
-                            { addr: edge.edge, type: this._getType(edge.edge) },
-                            { addr: addr3, type: this._getType(addr3) },
-                            { addr: edge2.edge, type: this._getType(edge2.edge) },
-                            { addr: addr5, type: this._getType(addr5) }
+                            {addr: addr1, type: this._getType(addr1)},
+                            {addr: edge.edge, type: this._getType(edge.edge)},
+                            {addr: addr3, type: this._getType(addr3)},
+                            {addr: edge2.edge, type: this._getType(edge2.edge)},
+                            {addr: addr5, type: this._getType(addr5)}
                         ]);
                     }
                 }
@@ -81,7 +81,7 @@ TripleUtils.prototype = {
         }
     },
 
-    find3_f_a_f: function(addr1, type2, addr3) {
+    find3_f_a_f: function (addr1, type2, addr3) {
         var list = this.inputEdges[addr3];
         if (!list) return null;
 
@@ -91,9 +91,9 @@ TripleUtils.prototype = {
             if (this._compareType(type2, edge.edge) && (addr1 === edge.src)) {
                 if (!res) res = [];
                 res.push([
-                    { addr: addr1, type: this._getType(addr1) },
-                    { addr: edge.edge, type: this._getType(edge.edge) },
-                    { addr: addr3, type: this._getType(addr3) }
+                    {addr: addr1, type: this._getType(addr1)},
+                    {addr: edge.edge, type: this._getType(edge.edge)},
+                    {addr: addr3, type: this._getType(addr3)}
                 ]);
             }
         }
@@ -104,7 +104,7 @@ TripleUtils.prototype = {
     /*! Search all constructions, that equal to template. 
      * @returns If something found, then returns list of results; otherwise returns null
      */
-    find3_f_a_a: function(addr1, type2, type3) {
+    find3_f_a_a: function (addr1, type2, type3) {
         // iterate elements
         var list = this.outputEdges[addr1];
         if (!list) return null;
@@ -115,24 +115,24 @@ TripleUtils.prototype = {
             if (this._compareType(type2, this._getType(edge.edge)) && this._compareType(type3, this._getType(edge.trg))) {
                 if (!res) res = [];
                 res.push([
-                    { addr: addr1, type: this._getType(addr1) },
-                    { addr: edge.edge, type: this._getType(edge.edge) },
-                    { addr: edge.trg, type: this._getType(edge.trg) }
+                    {addr: addr1, type: this._getType(addr1)},
+                    {addr: edge.edge, type: this._getType(edge.edge)},
+                    {addr: edge.trg, type: this._getType(edge.trg)}
                 ]);
             }
         }
         return res;
     },
 
-    checkAnyOutputEdge: function(srcAddr) {
+    checkAnyOutputEdge: function (srcAddr) {
         return this.outputEdges[srcAddr] ? true : false;
     },
 
-    checkAnyInputEdge: function(trgAddr) {
+    checkAnyInputEdge: function (trgAddr) {
         return this.inputEdges[trgAddr] ? true : false;
     },
 
-    checkAnyOutputEdgeType: function(srcAddr, edgeType) {
+    checkAnyOutputEdgeType: function (srcAddr, edgeType) {
         var list = this.outputEdges[srcAddr];
         if (list) {
             for (l in list) {
@@ -143,7 +143,7 @@ TripleUtils.prototype = {
         return false;
     },
 
-    checkAnyInputEdgeType: function(trgAddr, edgeType) {
+    checkAnyInputEdgeType: function (trgAddr, edgeType) {
         var list = this.inputEdges[trgAddr];
         if (list) {
             for (l in list) {
@@ -155,15 +155,15 @@ TripleUtils.prototype = {
     },
 
     // just for internal usage
-    _compareType: function(it_type, el_type) {
+    _compareType: function (it_type, el_type) {
         return ((it_type & el_type) == it_type);
     },
-    
-    _getType: function(addr) {
+
+    _getType: function (addr) {
         return this.types[addr];
     },
 
-    _appendOutputEdge: function(srcAddr, edgeAddr, trgAddr) {
+    _appendOutputEdge: function (srcAddr, edgeAddr, trgAddr) {
         var list = this.outputEdges[srcAddr];
         var edge = {src: srcAddr, edge: edgeAddr, trg: trgAddr};
         if (!list) {
@@ -173,7 +173,7 @@ TripleUtils.prototype = {
         }
     },
 
-    _removeOutputEdge: function(srcAddr, edgeAddr) {
+    _removeOutputEdge: function (srcAddr, edgeAddr) {
         var list = this.outputEdges[srcAddr];
         if (list) {
             for (e in list) {
@@ -184,11 +184,11 @@ TripleUtils.prototype = {
                 }
             }
         }
-        
+
         throw "Can't find output edges"
     },
 
-    _appendInputEdge: function(srcAddr, edgeAddr, trgAddr) {
+    _appendInputEdge: function (srcAddr, edgeAddr, trgAddr) {
         var list = this.inputEdges[trgAddr];
         var edge = {src: srcAddr, edge: edgeAddr, trg: trgAddr};
         if (!list) {
@@ -197,8 +197,8 @@ TripleUtils.prototype = {
             list.push(edge);
         }
     },
-    
-    _removeInputEdge: function(trgAddr, edgeAddr) {
+
+    _removeInputEdge: function (trgAddr, edgeAddr) {
         var list = this.inputEdges[trgAddr];
         if (list) {
             for (e in list) {
@@ -209,7 +209,7 @@ TripleUtils.prototype = {
                 }
             }
         }
-        
+
         throw "Can't find input edges"
     }
 

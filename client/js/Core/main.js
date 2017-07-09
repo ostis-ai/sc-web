@@ -135,10 +135,10 @@ SCWeb.core.Main = {
         });
     },
 
-    getTranslatedAnswer: function (command_state){
-        return new Promise(function(resolve, reject){
-            SCWeb.core.Main.doCommandWithPromise(command_state).then(function(question_addr){
-                SCWeb.core.Server.getAnswerTranslated(question_addr, command_state.format, function(answer){
+    getTranslatedAnswer: function (command_state) {
+        return new Promise(function (resolve, reject) {
+            SCWeb.core.Main.doCommandWithPromise(command_state).then(function (question_addr) {
+                SCWeb.core.Server.getAnswerTranslated(question_addr, command_state.format, function (answer) {
                     resolve(answer.link);
                 })
             })

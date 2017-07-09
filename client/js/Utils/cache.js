@@ -70,6 +70,6 @@ AppCache.prototype.set = function (key, val) {
     }
 };
 
-AppCache.prototype.clear = function() {
+AppCache.prototype.clear = function () {
     this.cache = [];
 };

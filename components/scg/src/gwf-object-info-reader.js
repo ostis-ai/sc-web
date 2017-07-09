@@ -1,6 +1,6 @@
 GwfObjectInfoReader = {
 
-    objects_info: { },
+    objects_info: {},
     errors: [],
 
     gwf_type_to_scg_type: {
@@ -138,7 +138,7 @@ GwfObjectInfoReader = {
     parseNode: function (node) {
         var content = node.getElementsByTagName("content");
         var parsed_node;
-        if (content[0].textContent == ""){
+        if (content[0].textContent == "") {
             parsed_node = new GwfObjectNode(null);
         } else {
             parsed_node = new GwfObjectLink(null);
@@ -149,11 +149,11 @@ GwfObjectInfoReader = {
 
     },
 
-    parseBus: function (bus){
+    parseBus: function (bus) {
         var parsed_bus = new GwfObjectBus(null);
 
         if (parsed_bus.parseObject({gwf_object: bus, reader: this}) == false)
-                    return false;
+            return false;
         this.objects_info[parsed_bus.id] = parsed_bus;
     },
 

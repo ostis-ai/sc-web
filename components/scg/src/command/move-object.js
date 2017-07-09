@@ -7,11 +7,11 @@ SCgCommandMoveObject.prototype = {
 
     constructor: SCgCommandMoveObject,
 
-    undo: function() {
+    undo: function () {
         this.object.setPosition(this.object.position.clone().add(this.offset));
     },
 
-    execute: function() {
+    execute: function () {
         this.object.setPosition(this.object.position.clone().sub(this.offset));
     }
 

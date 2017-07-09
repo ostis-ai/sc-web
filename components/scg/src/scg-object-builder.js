@@ -35,7 +35,7 @@ ScgObjectBuilder = {
         return this.scg_objects[gwf_object_id];
     },
 
-    getScAddrsForObjects : function () {
+    getScAddrsForObjects: function () {
         var self = this;
         var nodes = this.getAllNodesFromObjects();
         var promises = this.trySetScAddrForNodes(nodes);
@@ -45,26 +45,26 @@ ScgObjectBuilder = {
         });
     },
 
-    getAllNodesFromObjects : function () {
+    getAllNodesFromObjects: function () {
         var self = this;
         var nodes = [];
         Object.keys(this.scg_objects).forEach(function (gwf_object_id) {
             var node = self.scg_objects[gwf_object_id];
-            if (node instanceof SCg.ModelNode){
+            if (node instanceof SCg.ModelNode) {
                 nodes.push(node);
             }
         });
         return nodes;
     },
 
-    trySetScAddrForNodes : function (nodes) {
+    trySetScAddrForNodes: function (nodes) {
         var self = this;
         var edit = this.scene.edit;
         var promises = [];
         nodes.forEach(function (node) {
-            promises.push(new Promise(function(resolve){
+            promises.push(new Promise(function (resolve) {
                 var idtf = node.text;
-                if (idtf != null){
+                if (idtf != null) {
                     edit.autocompletionVariants(idtf, function (keys) {
                         var notFindIdtf = true;
                         for (var key = 0; key < keys.length; key++) {
