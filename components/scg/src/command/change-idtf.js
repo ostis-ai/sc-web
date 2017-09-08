@@ -8,11 +8,11 @@ SCgCommandChangeIdtf.prototype = {
 
     constructor: SCgCommandChangeIdtf,
 
-    undo: function() {
+    undo: function () {
         this.object.setText(this.oldIdtf);
     },
 
-    execute: function() {
+    execute: function () {
         this.object.setText(this.newIdtf);
     }
 

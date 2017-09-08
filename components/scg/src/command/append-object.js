@@ -8,7 +8,7 @@ SCgCommandAppendObject.prototype = {
     constructor: SCgCommandAppendObject,
 
 
-    undo: function() {
+    undo: function () {
         if (this.object) {
             var idx = this.scene.selected_objects.indexOf(this.object);
             this.scene.selected_objects.splice(idx, 1);
@@ -19,7 +19,7 @@ SCgCommandAppendObject.prototype = {
         this.scene.removeObject(this.object);
     },
 
-    execute: function() {
+    execute: function () {
         this.scene.appendObject(this.object);
         this.object.update();
     }

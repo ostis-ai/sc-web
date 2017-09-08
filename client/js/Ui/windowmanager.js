@@ -207,7 +207,8 @@ SCWeb.ui.WindowManager = {
             } else {
                 self.showActiveWindow();
                 throw "Error while create window";
-            };
+            }
+            ;
         };
 
         var translated = function () {

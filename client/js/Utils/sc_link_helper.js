@@ -1,8 +1,7 @@
-
 var ScFileLinkTypes = {
-    html : "html",
-    pdf : "pdf",
-    image : "image"
+    html: "html",
+    pdf: "pdf",
+    image: "image"
 };
 
 class ScFileLinkHelper {

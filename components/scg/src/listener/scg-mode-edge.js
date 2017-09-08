@@ -63,7 +63,7 @@ SCgEdgeListener.prototype = {
         return false;
     },
 
-    onMouseUpObject: function(obj) {
+    onMouseUpObject: function (obj) {
         return true;
     },
 
@@ -75,7 +75,7 @@ SCgEdgeListener.prototype = {
         return false;
     },
 
-    onKeyUp: function(event) {
+    onKeyUp: function (event) {
         return false;
     }
 

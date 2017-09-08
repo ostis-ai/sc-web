@@ -1,7 +1,6 @@
-
 // ------------------------------
 
-SCg.Widget = function(postition, size) {
+SCg.Widget = function (postition, size) {
 }
 
 SCg.Widget.prototype = {
@@ -9,10 +8,10 @@ SCg.Widget.prototype = {
 };
 
 /// ------------------------------
-SCg.Button = function(position, size) {
+SCg.Button = function (position, size) {
     SCg.Widget.call(this, position, size);
 };
 
-SCg.Button.prototype = Object.create( SCg.Widget.prototype );
+SCg.Button.prototype = Object.create(SCg.Widget.prototype);
 
 

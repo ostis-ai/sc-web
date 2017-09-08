@@ -51,9 +51,10 @@ SCWeb.ui.KeyboardHandler = {
 
     subscribeWindow: function (window_id, callbackArray) {
 
-        for(var eventType in callbackArray){
+        for (var eventType in callbackArray) {
             var func = callbackArray[eventType];
-            if(typeof func !== typeof function(){}){
+            if (typeof func !== typeof function () {
+                }) {
                 continue;
             }
             this.subscribe(eventType, window_id, func);
@@ -75,10 +76,10 @@ SCWeb.ui.KeyboardHandler = {
      */
     emit: function (eventType, d3_event) {
         var windowId = SCWeb.ui.WindowManager.getActiveWindowId();
-        if(!this.events[eventType] || !this.events[eventType][windowId])
+        if (!this.events[eventType] || !this.events[eventType][windowId])
             return;
         var callBack = this.events[eventType][windowId].func;
-        if(callBack){
+        if (callBack) {
             callBack(d3_event);
         }
     }

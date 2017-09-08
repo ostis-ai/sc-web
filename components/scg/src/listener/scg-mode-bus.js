@@ -38,7 +38,7 @@ SCgBusListener.prototype = {
             });
             return true;
         } else {
-            if (obj instanceof SCg.ModelContour){
+            if (obj instanceof SCg.ModelContour) {
                 var x = this.scene.mouse_pos.x;
                 var y = this.scene.mouse_pos.y;
                 this.scene.drag_line_points.push({x: x, y: y, idx: this.scene.drag_line_points.length});
@@ -49,11 +49,11 @@ SCgBusListener.prototype = {
         return false;
     },
 
-    onMouseUpObject: function(obj) {
+    onMouseUpObject: function (obj) {
         return true;
     },
 
-    onKeyDown: function(event) {
+    onKeyDown: function (event) {
         if (event.which == KeyCode.Escape) {
             this.scene.revertDragPoint(0);
             return true;
@@ -61,7 +61,7 @@ SCgBusListener.prototype = {
         return false;
     },
 
-    onKeyUp: function(event) {
+    onKeyUp: function (event) {
         return false;
     },
 

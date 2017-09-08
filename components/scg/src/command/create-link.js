@@ -9,7 +9,7 @@ SCgCommandCreateLink.prototype = {
 
     constructor: SCgCommandCreateLink,
 
-    undo: function() {
+    undo: function () {
         if (this.link.is_selected) {
             var idx = this.scene.selected_objects.indexOf(this.link);
             this.scene.selected_objects.splice(idx, 1);
@@ -19,8 +19,8 @@ SCgCommandCreateLink.prototype = {
         this.scene.removeObject(this.link);
     },
 
-    execute: function() {
-        if (this.link == null){
+    execute: function () {
+        if (this.link == null) {
             this.link = SCg.Creator.createLink(new SCg.Vector3(this.x, this.y, 0), '');
             this.scene.appendLink(this.link);
             this.scene.updateRender();

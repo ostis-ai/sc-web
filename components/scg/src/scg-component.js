@@ -2,7 +2,7 @@ SCgComponent = {
     ext_lang: 'scg_code',
     formats: ['format_scg_json'],
     struct_support: true,
-    factory: function(sandbox) {
+    factory: function (sandbox) {
         return new scgViewerWindow(sandbox);
     }
 };
@@ -13,21 +13,21 @@ SCgComponent = {
  * @param config
  * @constructor
  */
-var scgViewerWindow = function(sandbox) {
+var scgViewerWindow = function (sandbox) {
 
     this.domContainer = sandbox.container;
     this.sandbox = sandbox;
     this.tree = new SCg.Tree();
     this.editor = new SCg.Editor();
-    
+
     var self = this;
     if (sandbox.is_struct) {
         this.scStructTranslator = new scgScStructTranslator(this.editor, this.sandbox);
     }
 
-    var autocompletionVariants = function(keyword, callback, self) {
+    var autocompletionVariants = function (keyword, callback, self) {
 
-        SCWeb.core.Server.findIdentifiersSubStr(keyword, function(data) {
+        SCWeb.core.Server.findIdentifiersSubStr(keyword, function (data) {
             keys = [];
             for (key in data) {
                 var list = data[key];
@@ -40,13 +40,13 @@ var scgViewerWindow = function(sandbox) {
             callback(keys);
         });
     };
-    
+
     this.editor.init(
         {
             sandbox: sandbox,
             containerId: sandbox.container,
-            autocompletionVariants : autocompletionVariants,
-            translateToSc: function(scene, callback) {
+            autocompletionVariants: autocompletionVariants,
+            translateToSc: function (scene, callback) {
                 return self.scStructTranslator.translateToSc(callback);
             },
             canEdit: this.sandbox.canEdit(),
@@ -55,21 +55,21 @@ var scgViewerWindow = function(sandbox) {
     );
 
 
-    this.receiveData = function(data) {
+    this.receiveData = function (data) {
         var dfd = new jQuery.Deferred();
-    
+
         /*this.collectTriples(data);
-        this.tree.build(this.triples);*/
+         this.tree.build(this.triples);*/
         this._buildGraph(data);
 
         dfd.resolve();
         return dfd.promise();
     };
 
-    this.collectTriples = function(data) {
+    this.collectTriples = function (data) {
 
         this.triples = [];
-        
+
         var elements = {};
         var edges = [];
         for (var i = 0; i < data.length; i++) {
@@ -93,29 +93,29 @@ var scgViewerWindow = function(sandbox) {
                 if (beginEl && endEl) {
                     founded = true;
                     edges.splice(idx, 1);
-                    
+
                     this.triples.push([beginEl, {type: obj.el_type, addr: obj.id}, endEl]);
-                } 
+                }
             }
         }
 
         alert(this.triples.length);
     };
 
-    this._buildGraph = function(data) {
-        
+    this._buildGraph = function (data) {
+
         var elements = {};
         var edges = new Array();
         for (var i = 0; i < data.length; i++) {
             var el = data[i];
-            
+
             if (elements.hasOwnProperty(el.id))
                 continue;
             if (Object.prototype.hasOwnProperty.call(this.editor.scene.objects, el.id)) {
                 elements[el.id] = this.editor.scene.objects[el.id];
                 continue;
             }
-            
+
             if (el.el_type & sc_type_node || el.el_type & sc_type_link) {
                 var model_node = SCg.Creator.createNode(el.el_type, new SCg.Vector3(10 * Math.random(), 10 * Math.random(), 0), '');
                 this.editor.scene.appendNode(model_node);
@@ -127,7 +127,7 @@ var scgViewerWindow = function(sandbox) {
                 edges.push(el);
             }
         }
-        
+
         // create edges
         var founded = true;
         while (edges.length > 0 && founded) {
@@ -148,27 +148,27 @@ var scgViewerWindow = function(sandbox) {
                     model_edge.setScAddr(obj.id);
                     model_edge.setObjectState(SCgObjectState.FromMemory);
                     elements[obj.id] = model_edge;
-                } 
+                }
             }
         }
-        
+
         if (edges.length > 0)
             alert("error");
-        
+
         this.editor.render.update();
         this.editor.scene.layout();
     };
 
-    this.destroy = function(){
+    this.destroy = function () {
         delete this.editor;
         return true;
     };
 
-    this.getObjectsToTranslate = function() {
+    this.getObjectsToTranslate = function () {
         return this.editor.scene.getScAddrs();
     };
 
-    this.applyTranslation = function(namesMap) {
+    this.applyTranslation = function (namesMap) {
         for (addr in namesMap) {
             var obj = this.editor.scene.getObjectByScAddr(addr);
             if (obj) {
@@ -177,9 +177,9 @@ var scgViewerWindow = function(sandbox) {
         }
         this.editor.render.updateTexts();
     };
-    
-    
-    this.eventStructUpdate = function() {
+
+
+    this.eventStructUpdate = function () {
         self.scStructTranslator.updateFromSc.apply(self.scStructTranslator, arguments);
     };
 
@@ -191,7 +191,6 @@ var scgViewerWindow = function(sandbox) {
 
     this.sandbox.updateContent();
 };
-
 
 
 SCWeb.core.ComponentManager.appendComponentInitialize(SCgComponent);

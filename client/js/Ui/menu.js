@@ -8,23 +8,23 @@ SCWeb.ui.Menu = {
      * - menu_container_id - id of dom element that will contains menu items
      * - menu_commands - object, that represent menu command hierachy (in format returned from server)
      */
-    init: function(params) {
+    init: function (params) {
         var dfd = new jQuery.Deferred();
         var self = this;
-        
+
         this.menu_container_id = '#' + params.menu_container_id;
-        
+
         // register for translation updates
-        SCWeb.core.EventManager.subscribe("translation/get", this, function(objects) {
+        SCWeb.core.EventManager.subscribe("translation/get", this, function (objects) {
             var items = self.getObjectsToTranslate();
             for (var i in items) {
                 objects.push(items[i]);
             }
         });
-        SCWeb.core.EventManager.subscribe("translation/update", this, function(names) {
+        SCWeb.core.EventManager.subscribe("translation/update", this, function (names) {
             self.updateTranslation(names);
         });
-        
+
         context.init({
             //fadeSpeed: 100,
             //filter: null,
@@ -34,21 +34,21 @@ SCWeb.ui.Menu = {
             container: '#main-container'
         });
         context.attach('[sc_addr]', this._contextMenu);
-                
+
         this._build(params.menu_commands);
         dfd.resolve();
         return dfd.promise();
     },
 
-    _build: function(menuData) {
+    _build: function (menuData) {
 
         this._items = [];
 
         var menuHtml = '<ul class="nav navbar-nav">';
 
         //TODO: change to children, remove intermediate 'childs'
-        if(menuData.hasOwnProperty('childs')) {
-            for(i in menuData.childs) {
+        if (menuData.hasOwnProperty('childs')) {
+            for (i in menuData.childs) {
                 var subMenu = menuData.childs[i];
                 menuHtml += this._parseMenuItem(subMenu);
             }
@@ -61,7 +61,7 @@ SCWeb.ui.Menu = {
         this._registerMenuHandler();
     },
 
-    _parseMenuItem: function(item) {
+    _parseMenuItem: function (item) {
 
         this._items.push(item.id);
 
@@ -76,7 +76,7 @@ SCWeb.ui.Menu = {
 
         if (item.hasOwnProperty('childs')) {
             itemHtml += '<ul class="dropdown-menu">';
-            for(i in item.childs) {
+            for (i in item.childs) {
                 var subMenu = item.childs[i];
                 itemHtml += this._parseMenuItem(subMenu);
             }
@@ -85,9 +85,9 @@ SCWeb.ui.Menu = {
         return itemHtml + '</li>';
     },
 
-    _registerMenuHandler: function() {
-                
-        $('.menu-item').click(function() {
+    _registerMenuHandler: function () {
+
+        $('.menu-item').click(function () {
             var sc_addr = $(this).attr('sc_addr');
             if ($(this).hasClass('menu-cmd-atom')) {
                 SCWeb.core.Main.doCommand(sc_addr, SCWeb.core.Arguments._arguments);
@@ -96,33 +96,33 @@ SCWeb.ui.Menu = {
             }
         });
     },
-    
-    _sort: function() {
-        
+
+    _sort: function () {
+
     },
-    
-    _contextMenu: function(target) {
+
+    _contextMenu: function (target) {
         var dfd = new jQuery.Deferred();
         var args = SCWeb.core.Arguments._arguments.slice();
         args.push(target.attr('sc_addr'));
-        SCWeb.core.Server.contextMenu(args, function(data) {
-            
-            var parseMenuItem = function(item, parentSubmenu) {
+        SCWeb.core.Server.contextMenu(args, function (data) {
+
+            var parseMenuItem = function (item, parentSubmenu) {
                 var menu_item = {};
-                menu_item.action = function(e) {
+                menu_item.action = function (e) {
                     SCWeb.core.Main.doCommand(item, args);
                 }
-                
+
                 menu_item.text = item;
                 parentSubmenu.push(menu_item);
             }
-            
+
             var menu = [];
-            for(i in data) {
+            for (i in data) {
                 parseMenuItem(data[i], menu);
             }
-            
-            var applyTranslation = function(item, id, text) {
+
+            var applyTranslation = function (item, id, text) {
                 if (item.text == id) {
                     item.text = text;
                 }
@@ -132,9 +132,9 @@ SCWeb.ui.Menu = {
                     }
                 }
             }
-            
-            SCWeb.core.Server.resolveIdentifiers(data, function(namesMap) {
-                
+
+            SCWeb.core.Server.resolveIdentifiers(data, function (namesMap) {
+
                 for (var itemId in namesMap) {
                     if (namesMap.hasOwnProperty(itemId)) {
                         for (i in menu) {
@@ -142,46 +142,46 @@ SCWeb.ui.Menu = {
                         }
                     }
                 }
-                
+
                 // sort menu
-                menu.sort(function(a, b) {
+                menu.sort(function (a, b) {
                     if (a.text > b.text)
                         return 1;
                     if (a.text < b.text)
                         return -1;
-                    return 0; 
+                    return 0;
                 });
-                
+
                 menu.unshift({
                     text: '<span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span>',
-                    action: function(e) {
+                    action: function (e) {
                         SCWeb.core.Arguments.appendArgument(target.attr('sc_addr'));
                     }
                 });
-                
-                dfd.resolve(menu); 
+
+                dfd.resolve(menu);
             });
         });
-            
+
         return dfd.promise();
     },
-    
+
     // ---------- Translation listener interface ------------
-    updateTranslation: function(namesMap) {
+    updateTranslation: function (namesMap) {
         // apply translation
-        $(this.menu_container_id + ' [sc_addr]').each(function(index, element) {
+        $(this.menu_container_id + ' [sc_addr]').each(function (index, element) {
             var addr = $(element).attr('sc_addr');
-            if(namesMap[addr]) {
+            if (namesMap[addr]) {
                 $(element).text(namesMap[addr]);
             }
         });
-        
+
     },
-    
+
     /**
      * @return Returns list obj sc-elements that need to be translated
      */
-    getObjectsToTranslate: function() {
+    getObjectsToTranslate: function () {
         return this._items;
     }
 };

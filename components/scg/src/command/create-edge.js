@@ -9,7 +9,7 @@ SCgCommandCreateEdge.prototype = {
 
     constructor: SCgCommandCreateEdge,
 
-    undo: function() {
+    undo: function () {
         if (this.edge.is_selected) {
             var idx = this.scene.selected_objects.indexOf(this.edge);
             this.scene.selected_objects.splice(idx, 1);
@@ -20,9 +20,9 @@ SCgCommandCreateEdge.prototype = {
         this.scene.removeObject(this.edge);
     },
 
-    execute: function() {
+    execute: function () {
         var scene = this.scene;
-        if (this.edge == null){
+        if (this.edge == null) {
             this.edge = SCg.Creator.createEdge(this.source, this.target, SCgTypeEdgeNow);
             scene.appendEdge(this.edge);
             var mouse_pos = new SCg.Vector2(scene.mouse_pos.x, scene.mouse_pos.y);

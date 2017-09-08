@@ -12,12 +12,12 @@ SCgCommandChangeContent.prototype = {
 
     constructor: SCgCommandChangeContent,
 
-    undo: function() {
+    undo: function () {
         this.object.setContent(this.oldContent, this.oldType);
         this.object.fileReaderResult = this.oldFileReaderResult;
     },
 
-    execute: function() {
+    execute: function () {
         this.object.setContent(this.newContent, this.newType);
         this.object.fileReaderResult = this.newFileReaderResult;
     }

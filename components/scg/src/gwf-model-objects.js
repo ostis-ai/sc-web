@@ -303,9 +303,11 @@ GwfObjectLink.prototype.parseObject = function (args) {
     function isHTML(str) {
         return /<[a-z][\s\S]*>/i.test(str);
     }
+
     function isFloat(value) {
         return !isNaN(value) && value.toString().indexOf('.') != -1;
     }
+
     var link = args.gwf_object;
     var reader = args.reader;
     this.attributes = reader.fetchAttributes(link, this.requiredAttrs);
@@ -317,7 +319,7 @@ GwfObjectLink.prototype.parseObject = function (args) {
     var content = link.getElementsByTagName("content")[0];
     this.type = reader.fetchAttributes(content, ["type"])["type"];
     var mime_type = reader.fetchAttributes(content, ["mime_type"])["mime_type"];
-    switch (this.type){
+    switch (this.type) {
         case '1':
             this.type = 'string';
             break;
@@ -331,11 +333,11 @@ GwfObjectLink.prototype.parseObject = function (args) {
             console.log('ERROR PARSE TYPE IN GwfObjectLink');
             break;
     }
-    if (this.type != 'html'){
+    if (this.type != 'html') {
         this.content = content.textContent;
-        if (isHTML(this.content)){
+        if (isHTML(this.content)) {
             this.type = 'html';
-        } else if (this.type === 'int32' && isFloat(this.content)){
+        } else if (this.type === 'int32' && isFloat(this.content)) {
             this.type = 'float';
         }
     } else {
@@ -348,9 +350,9 @@ GwfObjectLink.prototype.parseObject = function (args) {
 GwfObjectLink.prototype.buildObject = function (args) {
     var scene = args.scene;
     var link = SCg.Creator.createLink(new SCg.Vector3(this.attributes["x"] + GwfObjectController.getXOffset(),
-                                                      this.attributes["y"] + +GwfObjectController.getYOffset(),
-                                                      0),
-                                      '');
+            this.attributes["y"] + +GwfObjectController.getYOffset(),
+        0),
+        '');
     link.setContent(this.content, this.type);
     scene.appendLink(link);
     scene.appendSelection(link);

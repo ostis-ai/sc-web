@@ -218,16 +218,14 @@ SCWeb.core.ComponentSandbox.prototype.removeChild = function removeChild() {
     this.childs = {};
 };
 
-SCWeb.core.ComponentSandbox.prototype.updateAnswer = function() {
-    var performAnswer = jQuery.proxy(function(answer_addr) {
+SCWeb.core.ComponentSandbox.prototype.updateAnswer = function () {
+    var performAnswer = jQuery.proxy(function (answer_addr) {
         this.addr = answer_addr;
         this.removeChild();
     }, this);
     return SCWeb.core.Main.getTranslatedAnswer(this.command_state)
         .then(performAnswer);
 }
-
-
 
 
 /**

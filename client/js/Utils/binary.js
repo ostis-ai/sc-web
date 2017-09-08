@@ -1,10 +1,10 @@
 /* Object to read/write bynary data
  */
-BinaryData = function(size, data) {
-    
+BinaryData = function (size, data) {
+
 };
 
-BinaryData.prototype.calcSize = function() {
+BinaryData.prototype.calcSize = function () {
 };
 
 /*!
@@ -14,11 +14,11 @@ BinaryData.prototype.calcSize = function() {
  *
  * @returns Returns array, that contains unpacked data
  */
-BinaryData.prototype.unpack = function(fmt, data) {
+BinaryData.prototype.unpack = function (fmt, data) {
 };
 
 /*! Pack data to binary array buffer
  * @param 
  */
-BinaryData.prototype.pack = function(fmt, args) {
+BinaryData.prototype.pack = function (fmt, args) {
 };

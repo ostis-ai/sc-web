@@ -1,4 +1,4 @@
-SCg.Tree = function() {
+SCg.Tree = function () {
     this.triples = [];
     this.root = new SCg.TreeNode();
 };
@@ -6,8 +6,8 @@ SCg.Tree = function() {
 SCg.Tree.prototype = {
     constructor: SCg.Tree,
 
-    build: function(triples) {
-        
+    build: function (triples) {
+
         this.triples = [];
         this.triples = this.triples.concat(triples);
 
@@ -15,11 +15,11 @@ SCg.Tree.prototype = {
         var contours = {};
         for (t in this.triples) {
             var tpl = this.triples[t];
-            
+
             if (tpl[0].type & sc_type_node_struct)
                 contours[tpl[0].addr] = {el: tpl[0], childs: []};
         }
-        
+
         // collect contour elements
         var parentsDict = {};
         for (t in this.triples) {
@@ -41,31 +41,31 @@ SCg.Tree.prototype = {
     /*!
      * Build construction in \p scene
      */
-    output: function(scene) {
-        
+    output: function (scene) {
+
     }
 };
 
 
 // ----------------------------------
-SCg.TreeNode = function() {
+SCg.TreeNode = function () {
     this.childs = [];
     this.parent = null;
 };
 
 SCg.TreeNode.prototype = {
 
-    appendChild: function(child) {
+    appendChild: function (child) {
         if (child.parent)
             child.parent.removeChild(child);
-        
+
         if (SCgDebug.eanbled && this.hasChild(child))
             SCgDebug.error("Duplicate child item");
-        
+
         this.childs.push(child);
     },
 
-    removeChild: function(child) {
+    removeChild: function (child) {
         if (child.parent != this)
             SCgDebug.error("Item not found");
 
@@ -76,7 +76,7 @@ SCg.TreeNode.prototype = {
         child.parent = null;
     },
 
-    hasChild: function(child) {
+    hasChild: function (child) {
         return this.childs.indexOf(child);
     }
 
