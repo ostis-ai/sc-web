@@ -428,17 +428,22 @@ function scgScStructTranslator(_editor, _sandbox) {
                                 int32[0] = parseInt(link.content);
                                 content = int32.buffer;
                                 keynode = window.scKeynodes.binary_int32;
+                            } else if (link.contentType === 'image') {
+                                content = link.fileReaderResult;
+                                keynode = window.scKeynodes.format_png;
+                            } else if (link.contentType === 'html') {
+                                content = link.fileReaderResult;
+                                keynode = window.scKeynodes.format_html;
+                            } else if (link.contentType === 'pdf') {
+                                content = link.fileReaderResult;
+                                keynode = window.scKeynodes.format_pdf;
                             }
 
                             objects.push(link);
 
-                            /// TODO: process errors on set content and arc creation
                             window.sctpClient.set_link_content(r, content);
-                            if (link.contentType === 'html') {
-                                keynode = window.scKeynodes.format_html;
-                                window.sctpClient.create_arc(sc_type_arc_common | sc_type_const, r, keynode).done(function (arc_addr) {
-                                    window.sctpClient.create_arc(sc_type_arc_pos_const_perm, window.scKeynodes.nrel_format, arc_addr).fail(dfd.reject);
-                                }).fail(dfd.reject);
+                            if (link.fileReaderResult) {
+                                window.scHelper.setLinkFormat(r, keynode);
                             } else {
                                 window.sctpClient.create_arc(sc_type_arc_pos_const_perm, keynode, r);
                             }
