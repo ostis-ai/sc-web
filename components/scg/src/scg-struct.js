@@ -157,9 +157,12 @@ function scgScStructTranslator(_editor, _sandbox) {
         if (currentLanguage) {
             window.sctpClient.create_link().done(function (link_addr) {
                 window.sctpClient.set_link_content(link_addr, obj.text).done(function () {
-                    window.sctpClient.create_arc(sc_type_arc_common | sc_type_const, obj.sc_addr, link_addr).done(function (arc_addr) {
-                        window.sctpClient.create_arc(sc_type_arc_pos_const_perm, currentLanguage, link_addr).done(function () {
-                            window.sctpClient.create_arc(sc_type_arc_pos_const_perm, window.scKeynodes.nrel_main_idtf, arc_addr)
+                    window.sctpClient.create_arc(sc_type_arc_common | sc_type_const, obj.sc_addr,
+                        link_addr).done(function (arc_addr) {
+                        window.sctpClient.create_arc(sc_type_arc_pos_const_perm,
+                            currentLanguage, link_addr).done(function () {
+                            window.sctpClient.create_arc(sc_type_arc_pos_const_perm,
+                                window.scKeynodes.nrel_main_idtf, arc_addr)
                                 .done(dfd.resolve)
                                 .fail(dfd.reject);
                         }).fail(dfd.reject);
@@ -178,8 +181,9 @@ function scgScStructTranslator(_editor, _sandbox) {
             if (!obj.sc_addr)
                 throw "Invalid parameter";
 
-            window.sctpClient.iterate_elements(SctpIteratorType.SCTP_ITERATOR_3F_A_F,
-                [sandbox.addr, sc_type_arc_pos_const_perm, obj.sc_addr]).done(function (r) {
+            window.sctpClient.iterate_elements(SctpIteratorType.SCTP_ITERATOR_3F_A_F, [sandbox.addr,
+                sc_type_arc_pos_const_perm, obj.sc_addr
+            ]).done(function (r) {
                 if (r.length == 0) {
                     appendToConstruction(obj);
                 }
@@ -266,7 +270,8 @@ function scgScStructTranslator(_editor, _sandbox) {
                     if (c.sc_addr)
                         dfd.resolve();
                     else {
-                        window.sctpClient.create_node(sc_type_const | sc_type_node | sc_type_node_struct).done(function (node) {
+                        window.sctpClient.create_node(sc_type_const | sc_type_node |
+                            sc_type_node_struct).done(function (node) {
                             c.setScAddr(node);
                             c.setObjectState(SCgObjectState.NewInMemory);
                             objects.push(c);
@@ -327,8 +332,7 @@ function scgScStructTranslator(_editor, _sandbox) {
                                 translatedCount = 0;
                                 window.setTimeout(doIteration, 0);
                             }
-                        }
-                        else
+                        } else
                             window.setTimeout(doIteration, 0);
                     };
 
@@ -371,11 +375,13 @@ function scgScStructTranslator(_editor, _sandbox) {
                 var arcGen = function (contour, child) {
                     var dfd = new jQuery.Deferred();
 
-                    window.sctpClient.iterate_elements(SctpIteratorType.SCTP_ITERATOR_3F_A_F,
-                        [contour.sc_addr, sc_type_arc_pos_const_perm, child.sc_addr])
+                    window.sctpClient.iterate_elements(SctpIteratorType.SCTP_ITERATOR_3F_A_F, [contour.sc_addr,
+                        sc_type_arc_pos_const_perm, child.sc_addr
+                    ])
                         .done(dfd.resolve)
                         .fail(function () {
-                            window.sctpClient.create_arc(sc_type_arc_pos_const_perm, contour.sc_addr, child.sc_addr).done(dfd.resolve).fail(dfd.reject);
+                            window.sctpClient.create_arc(sc_type_arc_pos_const_perm, contour.sc_addr,
+                                child.sc_addr).done(dfd.resolve).fail(dfd.reject);
                         });
 
                     return dfd.promise();
@@ -445,7 +451,8 @@ function scgScStructTranslator(_editor, _sandbox) {
                             if (link.fileReaderResult) {
                                 window.scHelper.setLinkFormat(r, keynode);
                             } else {
-                                window.sctpClient.create_arc(sc_type_arc_pos_const_perm, keynode, r);
+                                window.sctpClient.create_arc(sc_type_arc_pos_const_perm,
+                                    keynode, r);
                             }
                             dfd.resolve();
                         });
