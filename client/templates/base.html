@@ -172,6 +172,11 @@
     <script type="text/javascript">
 
         $(document).ready(function() {
+
+            $('#windows-list').click(function () {
+                $('#static-window-container').toggle();
+            });
+
             SCWeb.ui.Locker.show();
             var params = {
                         menu_container_id: 'menu_container',

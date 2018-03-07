@@ -22,6 +22,7 @@ module.exports = function(grunt) {
                       webCoreCompPath + 'Utils/fqueue.js',
                       webCoreCompPath + 'Utils/binary.js',
                       webCoreCompPath + 'Utils/triples.js',
+                      webCoreCompPath + 'Utils/sc_link_helper.js',
                       webCoreCompPath + 'Core/namespace.js',
                       webCoreCompPath + 'Core/debug.js',
                       webCoreCompPath + 'Core/main.js',

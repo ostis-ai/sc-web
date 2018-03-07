@@ -1,4 +1,6 @@
-var SCg = SCg || {version: "0.1.0"};
+var SCg = SCg || {
+    version: "0.1.0"
+};
 
 SCg.Editor = function () {
 
@@ -33,24 +35,39 @@ SCg.Editor.prototype = {
             'scg-type-arc-common-access': sc_type_arc_access,
             'scg-type-edge-const': sc_type_edge_common | sc_type_const,
             'scg-type-arc-const': sc_type_arc_common | sc_type_const,
-            'scg-type-arc-const-perm-pos-access': sc_type_arc_access | sc_type_const | sc_type_arc_pos | sc_type_arc_perm,
-            'scg-type-arc-const-perm-neg-access': sc_type_arc_access | sc_type_const | sc_type_arc_neg | sc_type_arc_perm,
-            'scg-type-arc-const-perm-fuz-access': sc_type_arc_access | sc_type_const | sc_type_arc_fuz | sc_type_arc_perm,
-            'scg-type-arc-const-temp-pos-access': sc_type_arc_access | sc_type_const | sc_type_arc_pos | sc_type_arc_temp,
-            'scg-type-arc-const-temp-neg-access': sc_type_arc_access | sc_type_const | sc_type_arc_neg | sc_type_arc_temp,
-            'scg-type-arc-const-temp-fuz-access': sc_type_arc_access | sc_type_const | sc_type_arc_fuz | sc_type_arc_temp,
+            'scg-type-arc-const-perm-pos-access': sc_type_arc_access | sc_type_const | sc_type_arc_pos |
+            sc_type_arc_perm,
+            'scg-type-arc-const-perm-neg-access': sc_type_arc_access | sc_type_const | sc_type_arc_neg |
+            sc_type_arc_perm,
+            'scg-type-arc-const-perm-fuz-access': sc_type_arc_access | sc_type_const | sc_type_arc_fuz |
+            sc_type_arc_perm,
+            'scg-type-arc-const-temp-pos-access': sc_type_arc_access | sc_type_const | sc_type_arc_pos |
+            sc_type_arc_temp,
+            'scg-type-arc-const-temp-neg-access': sc_type_arc_access | sc_type_const | sc_type_arc_neg |
+            sc_type_arc_temp,
+            'scg-type-arc-const-temp-fuz-access': sc_type_arc_access | sc_type_const | sc_type_arc_fuz |
+            sc_type_arc_temp,
             'scg-type-edge-var': sc_type_edge_common | sc_type_var,
             'scg-type-arc-var': sc_type_arc_common | sc_type_var,
-            'scg-type-arc-var-perm-pos-access': sc_type_arc_access | sc_type_var | sc_type_arc_pos | sc_type_arc_perm,
-            'scg-type-arc-var-perm-neg-access': sc_type_arc_access | sc_type_var | sc_type_arc_neg | sc_type_arc_perm,
-            'scg-type-arc-var-perm-fuz-access': sc_type_arc_access | sc_type_var | sc_type_arc_fuz | sc_type_arc_perm,
-            'scg-type-arc-var-temp-pos-access': sc_type_arc_access | sc_type_var | sc_type_arc_pos | sc_type_arc_temp,
-            'scg-type-arc-var-temp-neg-access': sc_type_arc_access | sc_type_var | sc_type_arc_neg | sc_type_arc_temp,
-            'scg-type-arc-var-temp-fuz-access': sc_type_arc_access | sc_type_var | sc_type_arc_fuz | sc_type_arc_temp
+            'scg-type-arc-var-perm-pos-access': sc_type_arc_access | sc_type_var | sc_type_arc_pos |
+            sc_type_arc_perm,
+            'scg-type-arc-var-perm-neg-access': sc_type_arc_access | sc_type_var | sc_type_arc_neg |
+            sc_type_arc_perm,
+            'scg-type-arc-var-perm-fuz-access': sc_type_arc_access | sc_type_var | sc_type_arc_fuz |
+            sc_type_arc_perm,
+            'scg-type-arc-var-temp-pos-access': sc_type_arc_access | sc_type_var | sc_type_arc_pos |
+            sc_type_arc_temp,
+            'scg-type-arc-var-temp-neg-access': sc_type_arc_access | sc_type_var | sc_type_arc_neg |
+            sc_type_arc_temp,
+            'scg-type-arc-var-temp-fuz-access': sc_type_arc_access | sc_type_var | sc_type_arc_fuz |
+            sc_type_arc_temp
         };
 
         this.render = new SCg.Render();
-        this.scene = new SCg.Scene({render: this.render, edit: this});
+        this.scene = new SCg.Scene({
+            render: this.render,
+            edit: this
+        });
         this.scene.init();
 
         this.render.scene = this.scene;
@@ -96,7 +113,8 @@ SCg.Editor.prototype = {
                             self.edge_types_panel_content = response;
                         },
                         error: function () {
-                            SCgDebug.error("Error to get edges type change panel");
+                            SCgDebug.error(
+                                "Error to get edges type change panel");
                         },
                         complete: function () {
                             self.bindToolEvents();
@@ -248,7 +266,8 @@ SCg.Editor.prototype = {
                 self.toolClear(),
                 self.toolOpen(),
                 self.toolSave(),
-                self.toolIntegrate()];
+                self.toolIntegrate()
+            ];
             for (var button = 0; button < tools.length; button++) {
                 self.toggleTool(tools[button]);
             }
@@ -277,9 +296,13 @@ SCg.Editor.prototype = {
                 container: container,
                 title: 'Change type',
                 html: true,
-                delay: {show: 500, hide: 100}
+                delay: {
+                    show: 500,
+                    hide: 100
+                }
             }).popover('show');
-            cont.find('.popover-title').append('<button id="scg-type-close" type="button" class="close">&times;</button>');
+            cont.find('.popover-title').append(
+                '<button id="scg-type-close" type="button" class="close">&times;</button>');
             $(container + ' #scg-type-close').click(function () {
                 stop_modal();
             });
@@ -308,9 +331,13 @@ SCg.Editor.prototype = {
                 container: container,
                 title: 'Change type',
                 html: true,
-                delay: {show: 500, hide: 100}
+                delay: {
+                    show: 500,
+                    hide: 100
+                }
             }).popover('show');
-            cont.find('.popover-title').append('<button id="scg-type-close" type="button" class="close">&times;</button>');
+            cont.find('.popover-title').append(
+                '<button id="scg-type-close" type="button" class="close">&times;</button>');
             $(container + ' #scg-type-close').click(function () {
                 stop_modal();
             });
@@ -338,7 +365,9 @@ SCg.Editor.prototype = {
         });
         this.toolChangeIdtf().click(function () {
             self.scene.setModal(SCgModalMode.SCgModalIdtf);
-            $(this).popover({container: container});
+            $(this).popover({
+                container: container
+            });
             $(this).popover('show');
 
             var tool = $(this);
@@ -363,7 +392,8 @@ SCg.Editor.prototype = {
                     if (e.keyCode == KeyCode.Enter) {
                         var obj = self.scene.selected_objects[0];
                         if (obj.text != input.val()) {
-                            self.scene.commandManager.execute(new SCgCommandChangeIdtf(obj, input.val()));
+                            self.scene.commandManager.execute(new SCgCommandChangeIdtf(obj,
+                                input.val()));
                         }
                     }
                     stop_modal();
@@ -384,27 +414,27 @@ SCg.Editor.prototype = {
                 };
 
                 input.typeahead({
-                        minLength: 1,
-                        highlight: true
+                    minLength: 1,
+                    highlight: true
+                }, {
+                    name: 'idtf',
+                    source: function (str, callback) {
+                        self._idtf_item = null;
+                        self.autocompletionVariants(str, callback, {
+                            editor: self
+                        });
                     },
-                    {
-                        name: 'idtf',
-                        source: function (str, callback) {
-                            self._idtf_item = null;
-                            self.autocompletionVariants(str, callback, {editor: self});
-                        },
-                        displayKey: 'name',
-                        templates: {
-                            suggestion: function (item) {
-                                var decorator = types[item.type];
-                                if (decorator)
-                                    return decorator(item.name);
+                    displayKey: 'name',
+                    templates: {
+                        suggestion: function (item) {
+                            var decorator = types[item.type];
+                            if (decorator)
+                                return decorator(item.name);
 
-                                return item.name;
-                            }
+                            return item.name;
                         }
                     }
-                ).bind('typeahead:selected', function (evt, item, dataset) {
+                }).bind('typeahead:selected', function (evt, item, dataset) {
                     if (item && item.addr) {
                         self._idtf_item = item;
                     }
@@ -421,7 +451,8 @@ SCg.Editor.prototype = {
                 }
                 if (self._idtf_item) {
                     window.sctpClient.get_element_type(self._idtf_item.addr).done(function (t) {
-                        self.scene.commandManager.execute(new SCgCommandGetNodeFromMemory(obj,
+                        self.scene.commandManager.execute(new SCgCommandGetNodeFromMemory(
+                            obj,
                             t,
                             input.val(),
                             self._idtf_item.addr,
@@ -457,10 +488,14 @@ SCg.Editor.prototype = {
                 container: container,
                 title: 'Change type',
                 html: true,
-                delay: {show: 500, hide: 100}
+                delay: {
+                    show: 500,
+                    hide: 100
+                }
             }).popover('show');
 
-            cont.find('.popover-title').append('<button id="scg-type-close" type="button" class="close">&times;</button>');
+            cont.find('.popover-title').append(
+                '<button id="scg-type-close" type="button" class="close">&times;</button>');
 
             $(container + ' #scg-type-close').click(function () {
                 stop_modal();
@@ -491,7 +526,9 @@ SCg.Editor.prototype = {
             }
 
             self.scene.setModal(SCgModalMode.SCgModalIdtf);
-            $(this).popover({container: container});
+            $(this).popover({
+                container: container
+            });
             $(this).popover('show');
 
             var input = $(container + ' #scg-set-content-input');
@@ -506,7 +543,8 @@ SCg.Editor.prototype = {
                 if (e.keyCode == KeyCode.Enter || e.keyCode == KeyCode.Escape) {
                     if (e.keyCode == KeyCode.Enter) {
                         var obj = self.scene.selected_objects[0];
-                        if (obj.content != input.val() || obj.contentType != input_content_type.val()) {
+                        if (obj.content != input.val() || obj.contentType != input_content_type
+                                .val()) {
                             self.scene.commandManager.execute(new SCgCommandChangeContent(obj,
                                 input.val(),
                                 input_content_type.val()));
@@ -522,32 +560,27 @@ SCg.Editor.prototype = {
                 var file = input_content[0].files[0];
                 if (file != undefined) {
                     var fileReader = new FileReader();
-                    if (file.type === 'text/html') {
-                        fileReader.onload = function () {
-                            if (obj.content != this.result || obj.contentType != 'html') {
-                                self.scene.commandManager.execute(new SCgCommandChangeContent(obj,
-                                    this.result,
-                                    'html'));
-                            }
-                            stop_modal();
-                        };
-                        fileReader.readAsText(file);
-                    } else {
-                        fileReader.onload = function () {
-                            if (obj.content != this.result || obj.contentType != 'html') {
-                                self.scene.commandManager.execute(new SCgCommandChangeContent(obj,
-                                    '<img src="' + this.result + '" alt="Image">',
-                                    'html'));
-                            }
-                            stop_modal();
-                        };
-                        fileReader.readAsDataURL(file);
-                    }
+                    fileReader.onload = function () {
+                        var scLinkHelper = new ScFileLinkHelper(file, this.result);
+                        if (obj.fileReaderResult != scLinkHelper.fileArrayBuffer || obj.contentType !=
+                            scLinkHelper.type) {
+                            self.scene.commandManager.execute(new SCgCommandChangeContent(
+                                obj,
+                                scLinkHelper.htmlViewResult(),
+                                scLinkHelper.type,
+                                scLinkHelper.fileArrayBuffer
+                            ));
+                        }
+                        stop_modal();
+                    };
+                    fileReader.readAsArrayBuffer(file);
                 } else {
                     if (obj.content != input.val() || obj.contentType != input_content_type.val()) {
                         self.scene.commandManager.execute(new SCgCommandChangeContent(obj,
                             input.val(),
-                            input_content_type.val()));
+                            input_content_type.val(),
+                            null
+                        ));
                     }
                     stop_modal();
                 }
@@ -559,7 +592,8 @@ SCg.Editor.prototype = {
 
         this.toolDelete().click(function () {
             if (self.scene.selected_objects.length > 0) {
-                self.scene.deleteObjects(self.scene.selected_objects.slice(0, self.scene.selected_objects.length));
+                self.scene.deleteObjects(self.scene.selected_objects.slice(0, self.scene.selected_objects
+                    .length));
                 self.scene.clearSelection();
             }
         });
