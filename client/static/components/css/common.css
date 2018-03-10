@@ -67,15 +67,16 @@ div#footer {
 #history-container {
     margin-bottom: 2px;
     border: none;
-    border-top: 1px solid transparent;
-    border-right: 1px solid transparent;
-    border-left: 1px solid transparent;
+    position:absolute;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    top: 0;
 }
 
 #history-items {
     margin-bottom: 0;
     border: none;
-    border-bottom: 1px solid #ddd;
 }
 
 .loading {
