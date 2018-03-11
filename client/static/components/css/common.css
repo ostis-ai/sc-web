@@ -1,15 +1,25 @@
 html {
     height: 100%;
+    overflow: hidden;
 }
-		
+
 body {
-    padding-top: 65px;
-    padding-bottom: 73px;
-    height: 100%;
+    height: 100% !important;
+    display: flex;
+    flex-direction: column;
 }
 
 html.drag {
     cursor: move;
+}
+
+nav#header {
+    margin-bottom: 10px;
+}
+
+div#footer {
+    position: relative;
+    margin-top: 10px;
 }
 
 #sc-ui-locker {
@@ -41,24 +51,32 @@ html.drag {
 #sc-ui-locker-text {
     font-size: 14px;
     color: #000;
-    position:fixed;
+    position: fixed;
     margin-top: 90px;
     margin-left: 23px;
 }
 
 #static-window-container {
-    max-height: calc(100vh - 150px);
     overflow: auto;
-    width: 15vw;
-    position: fixed;
+    padding: 0;
+    margin-right: 10px;
+    flex-grow: 1;
+    width: 0;
 }
 
 #history-container {
-    margin-bottom: 0;
+    margin-bottom: 2px;
+    border: none;
+    position:absolute;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    top: 0;
 }
 
 #history-items {
     margin-bottom: 0;
+    border: none;
 }
 
 .loading {
@@ -69,23 +87,29 @@ html.drag {
 
 .main-container {
     position: relative;
-    height: 100%;
+    padding-right: 10px;
+    padding-left: 10px;
+    display: flex;
+    flex-grow: 1;
 }
 
 #window-header-tools {
     position: absolute;
-    top: 16px;
+    top: 20px;
     right: 30px;
     z-index: 900;
 }
 
 #static-window-container ~ #window-container {
-    margin-left: 16vw;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 4;
+    width: 0;
 }
 
 #static-window-container[style*="display: none;"] ~ #window-container {
-    margin-left: 0vw;
-    width: 100%;
+    margin-left: 0;
 }
 
 .hidden {
@@ -95,7 +119,6 @@ html.drag {
 .no_display {
     display: none;
 }
-
 
 .task_icon.active {
     background-image: url('../images/task-cog.gif');
@@ -107,7 +130,6 @@ html.drag {
     margin-top: 12px;
     margin-left: 10px;
     text-align: center;
-
     background-image: url('../images/task-complete.png');
 }
 
@@ -116,7 +138,7 @@ html.drag {
     margin-left: -4px;
     vertical-align: middle;
     font-size: 10px;
-    color:  #aaa;
+    color: #aaa;
 }
 
 .help-button {
@@ -132,7 +154,7 @@ html.drag {
 
 .argument-container {
     float: left;
-    margin: 8px 0px 0px 8px;
+    margin: 8px 0 0 8px;
 }
 
 .argument-container.over {
@@ -150,12 +172,11 @@ html.drag {
 }
 
 .argument-item {
-    /*max-width: 250px;*/
     max-height: 32px;
 }
 
 .resolve-idtf-anim {
-    
+
     height: 6px;
     width: 18px;
     max-height: 6px;
@@ -166,24 +187,31 @@ html.drag {
 
 /* --- window --- */
 .sc-window {
-    height: 100%;
+    flex-grow: 1;
+    margin-bottom: 0;
 }
 
 .sc-window .panel-body {
-    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     overflow-y: auto;
-    min-height: calc(100vh - 150px);
+    padding: 10px;
+    box-sizing: content-box;
+}
+
+.sc-window .panel-body > * {
+    /*It is necessary for the element inside the panel_body to be stretched in height*/
+    display: block;
 }
 
 /* --- search --- */
 .search-processing {
     position: relative;
-    right: 0px;
+    right: 0;
     background: #fff url("../images/search-cog.gif") no-repeat right center;
-}
-
-.tt-dropdown-menu {
-
 }
 
 .tt-dropdown-menu .tt-dataset-idtf {
@@ -191,12 +219,13 @@ html.drag {
     border: 1px solid #a3a3a3;
     border-radius: 5px;
     -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .05);
-          box-shadow: inset 0 1px 1px rgba(0, 0, 0, .05);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .05);
     overflow-y: scroll;
     overflow-x: hidden;
     max-width: 250px;
     max-height: 400px;
 }
+
 .tt-dropdown-menu .tt-dataset-idtf .tt-suggestion {
     display: inline-block;
     max-width: 450px !important;
@@ -230,7 +259,7 @@ html.drag {
 }
 
 /* --- main --- */
-.tabs-data-container{
+.tabs-data-container {
     height: 100%;
 }
 
@@ -249,10 +278,8 @@ html.drag {
 }
 
 .auth-user-image {
-
     width: 32px;
     height: 32px;
-
     margin-top: -5px;
     margin-right: 5px;
 }
@@ -264,7 +291,7 @@ html.drag {
 }
 
 .auth-user-login {
-        margin-left: 5px;
+    margin-left: 5px;
 }
 
 /* --- history --- */
@@ -275,11 +302,10 @@ html.drag {
 
 .history-item:hover {
     background: #ddd;
-    
 }
 
 .history-item-name {
-        margin-left: 10px;
+    margin-left: 10px;
 }
 
 .histoy-item-btn {
@@ -395,14 +421,9 @@ html.drag {
     opacity: 0.7;
 }
 
-.sc-content-binary {
-    
-}
-
 .sc-contour {
     border: solid 1px #96a399;
     background-color: #fdfdfd;
-    
     padding: 3px;
     border-radius: 8px;
     position: relative;
@@ -411,11 +432,12 @@ html.drag {
 
 /* --- typeahead fix --- */
 .twitter-typeahead {
-  width: 100%;
+    width: 100%;
 }
+
 .input-group .twitter-typeahead {
-  display: table-cell !important;
-  float: left;
+    display: table-cell !important;
+    float: left;
 }
 
 /* --- print --- */
@@ -425,8 +447,8 @@ html.drag {
     }
 
     body {
-       font: 8pt Georgia, "Times New Roman", Times, serif !important;
-       line-height: 1.3;
+        font: 8pt Georgia, "Times New Roman", Times, serif !important;
+        line-height: 1.3;
     }
 
 }
@@ -435,7 +457,6 @@ html.drag {
 div[class="tooltip-inner"] {
     max-width: 350px;
 }
-
 
 /* --- auth --- */
 #auth-user-panel {

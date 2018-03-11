@@ -6,8 +6,6 @@
   -ms-user-select: none;
   -o-user-select: none;
   user-select: none;
-  min-height: 650px;
-  height: calc(100vh - 150px);
 }
 
 .SCgText {
@@ -257,7 +255,7 @@ path.SCgBusPath {
 }
 
 .scg-tools-panel img {
-    width: 32px;
+    width: 30px;
 }
 
 #scg-set-content-input {
