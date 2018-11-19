@@ -1,5 +1,13 @@
-SCWeb.ui.SearchPanel = {
+const searchByKeyWord = (event, item) => {
+    if (item && item.addr) {
+        SCWeb.core.Main.doDefaultCommand([item.addr]);
+    }
+    event.stopPropagation();
+    $('.typeahead').val('');
+    $('.tt-dropdown-menu').hide();
+};
 
+SCWeb.ui.SearchPanel = {
     init: function () {
         var dfd = new jQuery.Deferred();
         var self = this;
@@ -57,15 +65,10 @@ SCWeb.ui.SearchPanel = {
                 }
             }
         ).bind('typeahead:selected', function (evt, item, dataset) {
-            if (item && item.addr) {
-                SCWeb.core.Main.doDefaultCommand([item.addr]);
-            }
-            evt.stopPropagation();
-            $('.typeahead').val('');
+            searchByKeyWord(event, item);
         }).keypress(function (event) {
-            if (event.which == 13) {
-                SCWeb.core.Main.doTextCommand($(this).val());
-                $('#search-input').val('');
+            if (event.which === 13) {
+                searchByKeyWord(event, keys[0]);
             }
         });
 
