@@ -1,3 +1,11 @@
+function isTripleSystem(set, triple) {
+    return set[triple[0].addr] || set[triple[1].addr] || set[triple[2].addr];
+}
+
+function removeSystemTriples(set, triples) {
+    return triples.filter((triple) => !isTripleSystem(set, triple));
+}
+
 SCs.Viewer = function () {
 
     this.sandbox = null;
@@ -19,9 +27,18 @@ SCs.Viewer = function () {
         this.output.init(this.tree, sandbox.container, this.getKeynode, this.sandbox.generateWindowContainer);
     };
 
+    this.getSystemSet = function () {
+        const set = {};
+        set[this.getKeynode('lang_en')] = true;
+        set[this.getKeynode('lang_ru')] = true;
+        set[this.getKeynode('nrel_system_identifier')] = true;
+        return set;
+    };
+
     this.appendData = function (data) {
         var self = this;
         data = JSON.parse(data);
+        data.triples = removeSystemTriples(this.getSystemSet(), data.triples);
         this.tree.build(data.keywords, data.triples);
         $(self.containerId).html($(self.containerId).html() + self.output.toHtml());
 

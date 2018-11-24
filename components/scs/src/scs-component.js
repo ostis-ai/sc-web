@@ -5,7 +5,14 @@ SCsComponent = {
         return new SCsViewer(sandbox);
     },
     getRequestKeynodes: function () {
-        var keynodes = ['nrel_section_base_order', 'rrel_key_sc_element', 'nrel_key_sc_element_base_order', 'scg_code'];
+        var keynodes = [
+            'nrel_section_base_order',
+            'rrel_key_sc_element',
+            'nrel_key_sc_element_base_order',
+            'scg_code',
+            'lang_en',
+            'lang_ru',
+        ];
         return keynodes.concat(SCs.SCnSortOrder);
     }
 };
