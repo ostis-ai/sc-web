@@ -13,7 +13,7 @@ SCs.Viewer = function () {
     this.getKeynode = null;
     this.tree = null;
     this.output = null;
-    this.expertModeEnabled = true;
+    this.expertModeEnabled = false;
 
 
     this.init = function (sandbox, keynode_func) {
