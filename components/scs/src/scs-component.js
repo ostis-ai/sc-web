@@ -46,7 +46,7 @@ var SCsViewer = function (sandbox) {
 
     const hideSystemDataIfNecessary = ({triples, ...data}, expertModeEnabled = false) => {
         if (expertModeEnabled) {
-            return data;
+            return {triples, ...data};
         } else {
             return {triples: removeSystemTriples(getSystemSet(), triples), ...data}
         }
@@ -56,7 +56,6 @@ var SCsViewer = function (sandbox) {
         this.expertModeEnabled = true;
         this.sandbox.removeChild();
         this.receiveData(this.data);
-        this.sandbox.updateContent();
     };
 
     SCWeb.core.EventManager.subscribe("expert_mode_enabled", this, this.expertModeEnabledCallback);
@@ -64,7 +63,6 @@ var SCsViewer = function (sandbox) {
         this.expertModeEnabled = false;
         this.sandbox.removeChild();
         this.receiveData(this.data);
-        this.sandbox.updateContent();
     };
 
     SCWeb.core.EventManager.subscribe("expert_mode_disabled", this, this.expertModeDisabledCallback);

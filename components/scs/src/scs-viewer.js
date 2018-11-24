@@ -8,16 +8,18 @@ SCs.Viewer = function () {
     this.expertModeEnabled = false;
 
 
+    const buildOutput = () => {
+        this.tree = new SCs.SCnTree();
+        this.tree.init(null, this.getKeynode);
+
+        this.output = new SCs.SCnOutput();
+        this.output.init(this.tree, this.sandbox.container, this.getKeynode, this.sandbox.generateWindowContainer);
+    };
+
     this.init = function (sandbox, keynode_func) {
         this.sandbox = sandbox;
         this.containerId = '#' + sandbox.container;
         this.getKeynode = keynode_func;
-
-        this.tree = new SCs.SCnTree();
-        this.tree.init(null, keynode_func);
-
-        this.output = new SCs.SCnOutput();
-        this.output.init(this.tree, sandbox.container, this.getKeynode, this.sandbox.generateWindowContainer);
     };
 
     this.getSystemSet = function () {
@@ -30,8 +32,9 @@ SCs.Viewer = function () {
 
     this.appendData = function (data) {
         var self = this;
+        buildOutput();
         this.tree.build(data.keywords, data.triples);
-        $(self.containerId).html($(self.containerId).html() + self.output.toHtml());
+        $(self.containerId).html(self.output.toHtml());
 
         $(self.containerId + ' .sc-contour > .scs-scn-view-toogle-button').click(function () {
             var button = $(this);
