@@ -17,6 +17,16 @@ SCsComponent = {
     }
 };
 
+
+function isTripleSystem(set, triple) {
+    return set[triple[0].addr] || set[triple[1].addr] || set[triple[2].addr];
+}
+
+function removeSystemTriples(set, triples) {
+    return triples.filter((triple) => !isTripleSystem(set, triple));
+}
+
+
 var SCsViewer = function (sandbox) {
     this.objects = new Array();
     this.addrs = new Array();
@@ -26,8 +36,24 @@ var SCsViewer = function (sandbox) {
     this.container = '#' + sandbox.container;
     this.sandbox = sandbox;
 
+    const getSystemSet = () => {
+        const set = {};
+        set[this.sandbox.getKeynode('lang_en')] = true;
+        set[this.sandbox.getKeynode('lang_ru')] = true;
+        set[this.sandbox.getKeynode('nrel_system_identifier')] = true;
+        return set;
+    };
+
+    const hideSystemDataIfNecessary = ({triples, ...data}, expertModeEnabled = false) => {
+        if (expertModeEnabled) {
+            return data;
+        } else {
+            return {triples: removeSystemTriples(getSystemSet(), triples), ...data}
+        }
+    };
+
     this.expertModeEnabledCallback = function () {
-        this.viewer.expertModeEnabled = true;
+        this.expertModeEnabled = true;
         this.sandbox.removeChild();
         this.receiveData(this.data);
         this.sandbox.updateContent();
@@ -35,7 +61,7 @@ var SCsViewer = function (sandbox) {
 
     SCWeb.core.EventManager.subscribe("expert_mode_enabled", this, this.expertModeEnabledCallback);
     this.expertModeDisabledCallback = function () {
-        this.viewer.expertModeEnabled = false;
+        this.expertModeEnabled = false;
         this.sandbox.removeChild();
         this.receiveData(this.data);
         this.sandbox.updateContent();
@@ -46,20 +72,11 @@ var SCsViewer = function (sandbox) {
     // ---- window interface -----
     this.receiveData = function (data) {
         this.data = data;
+        data = JSON.parse(data);
+        data = hideSystemDataIfNecessary(data, this.expertModeEnabled);
         this.viewer.appendData(data);
-
-        var dfd = new jQuery.Deferred();
-
-        $.when(this.sandbox.createViewersForScLinks(this.viewer.getLinks())).then(
-            function () {
-                dfd.resolve();
-            },
-            function () {
-                dfd.reject();
-            });
-        return dfd.promise();
+        return $.when(this.sandbox.createViewersForScLinks(this.viewer.getLinks()));
     };
-
 
     this.updateTranslation = function (namesMap) {
         // apply translation
