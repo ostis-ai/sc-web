@@ -26,6 +26,23 @@ var SCsViewer = function (sandbox) {
     this.container = '#' + sandbox.container;
     this.sandbox = sandbox;
 
+    this.expertModeEnabledCallback = function () {
+        this.viewer.expertModeEnabled = true;
+        this.sandbox.removeChild();
+        this.receiveData(this.data);
+        this.sandbox.updateContent();
+    };
+
+    SCWeb.core.EventManager.subscribe("expert_mode_enabled", this, this.expertModeEnabledCallback);
+    this.expertModeDisabledCallback = function () {
+        this.viewer.expertModeEnabled = false;
+        this.sandbox.removeChild();
+        this.receiveData(this.data);
+        this.sandbox.updateContent();
+    };
+
+    SCWeb.core.EventManager.subscribe("expert_mode_disabled", this, this.expertModeDisabledCallback);
+
     // ---- window interface -----
     this.receiveData = function (data) {
         this.data = data;

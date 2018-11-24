@@ -7,21 +7,23 @@ $(document).ready(function () {
     c.onclick = function () {
         if (c.checked) {
             document.getElementsByClassName("mode-switching-panel")[0].style.display = "";
+            SCWeb.core.EventManager.emit("expert_mode_disabled");
         } else {
             document.getElementsByClassName("mode-switching-panel")[0].style.display = "none";
+            SCWeb.core.EventManager.emit("expert_mode_enabled");
         }
     };
-    button = document.querySelector('#button-for-view-advanced-elements');
-    button.onclick = async () => {
-        var cont_idtf = document.getElementById("input-for-view-advanced-elements").value;
-        const addr = await scKeynodes.resolveKeynode(cont_idtf);
-        const for_remove = await  new Promise((resolve, reject) => getElementsForRemove(addr).then(resolve, reject));
-        SCWeb.core.Main.doDefaultCommand([for_remove]); // для отображения на ui результата работы функции
-    }
+    // button = document.querySelector('#button-for-view-advanced-elements');
+    // button.onclick = async () => {
+    //     var cont_idtf = document.getElementById("input-for-view-advanced-elements").value;
+    //     const addr = await scKeynodes.resolveKeynode(cont_idtf);
+    //     const for_remove = await  new Promise((resolve, reject) => getElementsForRemove(addr).then(resolve, reject));
+    //     SCWeb.core.Main.doDefaultCommand([for_remove]); // для отображения на ui результата работы функции
+    // }
 });
 
 // button.onclick = getElementsForRemove(cont_idtf);
-export function getElementsForRemove(addr) {
+function getElementsForRemove(addr) {
     var for_remove = new Set(); //удаляемые элементы
     var dfd = $.Deferred();
     //создание узла, содержащего удаляемые элементы

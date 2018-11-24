@@ -13,6 +13,7 @@ SCs.Viewer = function () {
     this.getKeynode = null;
     this.tree = null;
     this.output = null;
+    this.expertModeEnabled = true;
 
 
     this.init = function (sandbox, keynode_func) {
@@ -38,7 +39,9 @@ SCs.Viewer = function () {
     this.appendData = function (data) {
         var self = this;
         data = JSON.parse(data);
-        data.triples = removeSystemTriples(this.getSystemSet(), data.triples);
+        if (!this.expertModeEnabled) {
+            data.triples = removeSystemTriples(this.getSystemSet(), data.triples);
+        }
         this.tree.build(data.keywords, data.triples);
         $(self.containerId).html($(self.containerId).html() + self.output.toHtml());
 

@@ -43,7 +43,9 @@ module.exports = function(grunt) {
                       webCoreCompPath + 'Ui/argumentspanel.js',
                       webCoreCompPath + 'Ui/windowmanager.js',
                       webCoreCompPath + 'Ui/OpenComponentHandler.js',
-                      webCoreCompPath + 'Ui/userpanel.js'],
+                      webCoreCompPath + 'Ui/userpanel.js',
+                      webCoreCompPath + 'Ui/RemoveElements.js',
+                ],
                 dest: clientJsDirPath + 'sc-web-core.js',
             },
             github: {
