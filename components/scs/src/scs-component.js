@@ -17,6 +17,26 @@ SCsComponent = {
     }
 };
 
+function reverseMap(map) {
+    const result = {};
+    for (const key in map) {
+        result[map[key]] = key;
+    }
+    return result;
+}
+
+function getTriplesJsonFoDebug({keywords, triples, ...data}, translationMap) {
+    const reverseKeynodes = reverseMap(scKeynodes);
+    const renameScAddr = ({addr, ...data}) => ({
+        addr: reverseKeynodes[addr] ||
+        translationMap[addr] ||
+        addr,
+        ...data
+    });
+    const renamedKeywords = keywords.map(renameScAddr);
+    const renamedTriples = triples.map((triple) => triple.map(renameScAddr));
+    return {keywords: renamedKeywords, triples: renamedTriples, ...data};
+}
 
 function isTripleSystem(set, triple) {
     return set[triple[0].addr] || set[triple[1].addr] || set[triple[2].addr];
@@ -25,14 +45,6 @@ function isTripleSystem(set, triple) {
 function removeSystemTriples(set, triples) {
     return triples.filter((triple) => !isTripleSystem(set, triple));
 }
-
-function getTriplesJsonFoDebug({keywords, triples, ...data}, translationMap) {
-    const renameScAddr = ({addr, ...data}) => ({addr: translationMap[addr] || addr, ...data});
-    const renamedKeywords = keywords.map(renameScAddr);
-    const renamedTriples = triples.map((triple) => triple.map(renameScAddr));
-    return {keywords: renamedKeywords, triples: renamedTriples, ...data};
-}
-
 
 var SCsViewer = function (sandbox) {
     this.objects = new Array();
