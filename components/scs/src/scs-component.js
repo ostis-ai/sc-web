@@ -26,6 +26,13 @@ function removeSystemTriples(set, triples) {
     return triples.filter((triple) => !isTripleSystem(set, triple));
 }
 
+function getTriplesJsonFoDebug({keywords, triples, ...data}, translationMap) {
+    const renameScAddr = ({addr, ...data}) => ({addr: translationMap[addr] || addr, ...data});
+    const renamedKeywords = keywords.map(renameScAddr);
+    const renamedTriples = triples.map((triple) => triple.map(renameScAddr));
+    return {keywords: renamedKeywords, triples: renamedTriples, ...data};
+}
+
 
 var SCsViewer = function (sandbox) {
     this.objects = new Array();
@@ -80,6 +87,7 @@ var SCsViewer = function (sandbox) {
 
     this.updateTranslation = function (namesMap) {
         // apply translation
+        console.log(getTriplesJsonFoDebug(JSON.parse(this.data), namesMap));
         $(this.sandbox.container_selector).each(function (index, element) {
             var addr = $(element).attr('sc_addr');
             if (!$(element).hasClass('sc-content') && !$(element).hasClass('sc-contour') &&
