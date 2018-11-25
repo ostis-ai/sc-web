@@ -51,7 +51,7 @@ var SCsViewer = function (sandbox) {
         return set;
     };
 
-    const hideSystemDataIfNecessary = ({triples, ...data}, expertModeEnabled = false) => {
+    const hideSystemDataIfNecessary = ({triples, ...data}, expertModeEnabled = SCWeb.core.ExpertModeEnabled) => {
         if (expertModeEnabled) {
             return {triples, ...data};
         } else {
@@ -60,7 +60,6 @@ var SCsViewer = function (sandbox) {
     };
 
     this.expertModeEnabledCallback = function () {
-        this.expertModeEnabled = true;
         this.sandbox.removeChild();
         this.receiveData(this.data);
         this.sandbox.translate();
@@ -68,7 +67,6 @@ var SCsViewer = function (sandbox) {
 
     SCWeb.core.EventManager.subscribe("expert_mode_enabled", this, this.expertModeEnabledCallback);
     this.expertModeDisabledCallback = function () {
-        this.expertModeEnabled = false;
         this.sandbox.removeChild();
         this.receiveData(this.data);
         this.sandbox.translate();
@@ -80,7 +78,7 @@ var SCsViewer = function (sandbox) {
     this.receiveData = function (data) {
         this.data = data;
         data = JSON.parse(data);
-        data = hideSystemDataIfNecessary(data, this.expertModeEnabled);
+        data = hideSystemDataIfNecessary(data);
         this.viewer.appendData(data);
         return $.when(this.sandbox.createViewersForScLinks(this.viewer.getLinks()));
     };
