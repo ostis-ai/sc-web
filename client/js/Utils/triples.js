@@ -2,11 +2,13 @@ TripleUtils = function () {
     this.outputEdges = {};
     this.inputEdges = {};
     this.types = {};
+    this.triples = []
 };
 
 TripleUtils.prototype = {
 
     appendTriple: function (tpl) {
+        this.triples.push(tpl);
         this.types[tpl[0].addr] = tpl[0].type;
         this.types[tpl[1].addr] = tpl[1].type;
         this.types[tpl[2].addr] = tpl[2].type;
@@ -26,17 +28,17 @@ TripleUtils.prototype = {
      * @returns {src: number, edge: number, trg: number}
      */
     getEdge: function (lookupEdgeAddr) {
-        return this.outputEdges.find(({edge}) => edge === lookupEdgeAddr);
+        return this.triples.find(([src, {addr}, trg]) => addr == lookupEdgeAddr);
     },
 
     /*! Search all constructions, that equal to template. 
      * @returns If something found, then returns list of results; otherwise returns null
      */
     find5_f_a_a_a_f: function (addr1, type2, type3, type4, addr5) {
-        var res = null;
+        var res = [];
         // iterate all output edges from addr1
         var list = this.outputEdges[addr1];
-        if (!list) return null;
+        if (!list) return [];
         for (l in list) {
             var edge = list[l];
             if (this._compareType(type2, this._getType(edge.edge)) && this._compareType(type3, this._getType(edge.trg))) {
@@ -64,9 +66,9 @@ TripleUtils.prototype = {
 
     find5_f_a_f_a_f: function (addr1, type2, addr3, type4, addr5) {
         var list = this.inputEdges[addr3];
-        if (!list) return null;
+        if (!list) return [];
 
-        var res = null;
+        var res = [];
         for (l in list) {
             var edge = list[l];
             if (this._compareType(type2, this._getType(edge.edge)) && (addr1 === edge.src)) {
@@ -90,11 +92,28 @@ TripleUtils.prototype = {
         }
     },
 
+    find5_a_a_f_a_f: function (type1, type2, addr3, type4, addr5) {
+        const list = this.find3_f_a_a(addr5, type4, type2);
+        if (!list) return [];
+        const res = [];
+        for (const [src5, edge4, edge] of list) {
+            const [src1, edge2, trg3] = this.getEdge(edge.addr);
+            if (this._compareType(type1, src1.type) &&
+                this._compareType(type2, edge2.type) &&
+                addr3 === trg3.addr &&
+                this._compareType(type4, edge4.type) &&
+                addr5 === src5.addr) {
+                res.push([src1, edge2, trg3, edge4, src5]);
+            }
+        }
+        return res;
+    },
+
     find3_f_a_f: function (addr1, type2, addr3) {
         var list = this.inputEdges[addr3];
-        if (!list) return null;
+        if (!list) return [];
 
-        var res = null;
+        var res = [];
         for (l in list) {
             var edge = list[l];
             if (this._compareType(type2, edge.edge) && (addr1 === edge.src)) {
@@ -116,9 +135,9 @@ TripleUtils.prototype = {
     find3_f_a_a: function (addr1, type2, type3) {
         // iterate elements
         var list = this.outputEdges[addr1];
-        if (!list) return null;
+        if (!list) return [];
 
-        var res = null;
+        var res = [];
         for (l in list) {
             var edge = list[l];
             if (this._compareType(type2, this._getType(edge.edge)) && this._compareType(type3, this._getType(edge.trg))) {
