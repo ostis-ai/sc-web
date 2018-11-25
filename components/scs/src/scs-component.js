@@ -38,12 +38,55 @@ function getTriplesJsonFoDebug({keywords, triples, ...data}, translationMap) {
     return {keywords: renamedKeywords, triples: renamedTriples, ...data};
 }
 
-function isTripleSystem(set, triple) {
-    return set[triple[0].addr] || set[triple[1].addr] || set[triple[2].addr];
+const getSystemSet = (getKeynode) => {
+    const set = {};
+    set[getKeynode('lang_en')] = true;
+    set[getKeynode('lang_ru')] = true;
+    set[getKeynode('nrel_system_identifier')] = true;
+    return set;
+};
+
+function isNotTripleSystem(isAddrSystem, triple) {
+    return !isAddrSystem(triple[0].addr) &&
+        !isAddrSystem(triple[1].addr) &&
+        !isAddrSystem(triple[2].addr);
 }
 
-function removeSystemTriples(set, triples) {
-    return triples.filter((triple) => !isTripleSystem(set, triple));
+/**
+ * Remove constructions
+ * ... => nrel_sys_identifier: [*   *];;
+ * @param getKeynode
+ * @param triples
+ * @param data
+ */
+function removeNrelSysIdentifier(getKeynode, {triples, ...data}) {
+    let tripleUtils = new TripleUtils();
+    for (const triple of triples) {
+        tripleUtils.appendTriple(triple);
+    }
+    const arcsToRemove = [];
+    const sysIdentifierTriples = tripleUtils.find3_f_a_a(getKeynode('nrel_system_identifier'),
+        sc_type_arc_pos_const_perm,
+        sc_type_arc_common);
+    for (const triple of sysIdentifierTriples) {
+        arcsToRemove.push(triple[1].addr);
+        arcsToRemove.push(triple[2].addr);
+    }
+    return {
+        triples: triples.filter(isNotTripleSystem.bind(undefined,
+            Array.prototype.includes.bind(arcsToRemove))),
+        ...data
+    };
+}
+
+function removeSystemTriples(getKeynode, data) {
+    let systemSet = getSystemSet(getKeynode);
+    return removeNrelSysIdentifier(getKeynode, data);
+    // let filteredTriples = triples.filter(isNotTripleSystem.bind(undefined, (addr) => systemSet[addr]));
+    // return {
+    //     triples: filteredTriples,
+    //     ...data
+    // };
 }
 
 var SCsViewer = function (sandbox) {
@@ -55,19 +98,11 @@ var SCsViewer = function (sandbox) {
     this.container = '#' + sandbox.container;
     this.sandbox = sandbox;
 
-    const getSystemSet = () => {
-        const set = {};
-        set[this.sandbox.getKeynode('lang_en')] = true;
-        set[this.sandbox.getKeynode('lang_ru')] = true;
-        set[this.sandbox.getKeynode('nrel_system_identifier')] = true;
-        return set;
-    };
-
-    const hideSystemDataIfNecessary = ({triples, ...data}, expertModeEnabled = SCWeb.core.ExpertModeEnabled) => {
+    const hideSystemDataIfNecessary = (data, expertModeEnabled = SCWeb.core.ExpertModeEnabled) => {
         if (expertModeEnabled) {
-            return {triples, ...data};
+            return data;
         } else {
-            return {triples: removeSystemTriples(getSystemSet(), triples), ...data}
+            return removeSystemTriples(this.sandbox.getKeynode.bind(this.sandbox), data);
         }
     };
 

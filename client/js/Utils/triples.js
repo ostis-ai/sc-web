@@ -20,6 +20,15 @@ TripleUtils.prototype = {
         this._removeInputEdge(tpl[2].addr, tpl[1].addr);
     },
 
+    /**
+     *
+     * @param lookupEdgeAddr
+     * @returns {src: number, edge: number, trg: number}
+     */
+    getEdge: function (lookupEdgeAddr) {
+        return this.outputEdges.find(({edge}) => edge === lookupEdgeAddr);
+    },
+
     /*! Search all constructions, that equal to template. 
      * @returns If something found, then returns list of results; otherwise returns null
      */
