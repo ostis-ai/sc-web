@@ -43,174 +43,28 @@ function getTriplesJsonFoDebug({keywords, triples, ...data}, translationMap, key
     return {keywords: renamedKeywords, triples: renamedTriples, ...data};
 }
 
-const getSystemSet = (getKeynode) => {
-    const set = {};
-    set[getKeynode('lang_en')] = true;
-    set[getKeynode('lang_ru')] = true;
-    set[getKeynode('nrel_system_identifier')] = true;
-    return set;
-};
-
-function isNotTripleSystem(isAddrSystem, triple) {
-    return !isAddrSystem(triple[0].addr) &&
-        !isAddrSystem(triple[1].addr) &&
-        !isAddrSystem(triple[2].addr);
-}
-
-/**
- * Remove constructions
- * ... => nrel_sys_identifier: [*   *];;
- * @param getKeynode
- * @param triples
- * @param data
- */
-function removeNrelSysIdentifier(getKeynode, {triples, ...data}) {
-    let tripleUtils = new TripleUtils();
-    for (const triple of triples) {
-        tripleUtils.appendTriple(triple);
-    }
-    const arcsToRemove = [];
-    const sysIdentifierTriples = tripleUtils.find3_f_a_a(getKeynode('nrel_system_identifier'),
-        sc_type_arc_pos_const_perm,
-        sc_type_arc_common);
-    for (const triple of sysIdentifierTriples) {
-        arcsToRemove.push(triple[1].addr);
-        arcsToRemove.push(triple[2].addr);
-    }
-    return {
-        triples: triples.filter(isNotTripleSystem.bind(undefined,
-            Array.prototype.includes.bind(arcsToRemove))),
-        ...data
-    };
-}
-
-/**
- * nrel_boolean
- * <- rrel_key_sc_element:
- ...
- (*
- <- definition;;
- <= nrel_sc_text_translation:
- ...
- (*
- -> rrel_example:
- "file://content_html/definition_for_boolean.html"
- (* <- lang_ru;; *);;
- *);;
- *);
- *
- * ===>
- * nrel_boolean
- * (*
- * "file://content_html/definition_for_boolean.html"
- *   (* <- lang_ru;; *);;
- * *)
-
- * @param getKeynode
- * @param data
- * @returns {{triples}}
- */
-function transformKeyScElement(getKeynode, {triples, ...data}) {
-    const rrelKeyScElement = getKeynode("rrel_key_sc_element");
-    const nrelScTextTranslation = getKeynode("nrel_sc_text_translation");
-    const rrelExample = getKeynode("rrel_example");
-    const arcsToRemove = [];
-    const newTriples = [];
-    let countOfElement = 0;
-    let tripleUtils = new TripleUtils();
-    for (const triple of triples) {
-        tripleUtils.appendTriple(triple);
-    }
-    for (const triple of tripleUtils.find3_f_a_a(
-        rrelKeyScElement,
-        sc_type_arc_pos_const_perm,
-        sc_type_arc_pos_const_perm)) {
-        arcsToRemove.push(triple[1], triple[2]);
-        const [src, edge, trg] = tripleUtils.getEdge(triple[2].addr);
-        const nodeToMerge = trg;
-        for (const triple2 of tripleUtils.find5_a_a_f_a_f(
-            sc_type_node,
-            sc_type_arc_common,
-            src.addr,
-            sc_type_arc_pos_const_perm,
-            nrelScTextTranslation
-        )) {
-            arcsToRemove.push(triple2[1], triple2[3]);
-            for (const triple3 of tripleUtils.find5_f_a_a_a_f(
-                triple2[0].addr,
-                sc_type_arc_pos_const_perm,
-                0,
-                sc_type_arc_pos_const_perm,
-                rrelExample
-            )) {
-                arcsToRemove.push(triple3[1], triple3[3]);
-                const trgNodeToMerge = triple3[2];
-                newTriples.push([
-                    nodeToMerge,
-                    {
-                        addr: "merge_key_sc_element_" + countOfElement++,
-                        type: sc_type_arc_pos_const_perm
-                    },
-                    trgNodeToMerge,
-                ])
-            }
-
-        }
-    }
-
-    const arcsToRemoveAddrs = arcsToRemove.map(({addr}) => addr);
-    const triples1 = triples.filter(isNotTripleSystem.bind(undefined,
-        Array.prototype.includes.bind(arcsToRemoveAddrs)))
-        .concat(newTriples);
-    return {
-        triples: triples1,
-        ...data
-    }
-}
-
-function removeSystemTriples(getKeynode, data) {
-    let filteredData = removeNrelSysIdentifier(getKeynode, data);
-    return transformKeyScElement(getKeynode, filteredData);
-}
-
 var SCsViewer = function (sandbox) {
-    this.objects = new Array();
-    this.addrs = new Array();
+    this.objects = [];
+    this.addrs = [];
     this.sc_links = {}; // map of sc-link objects key:addr, value: object
     this.data = null;
 
     this.container = '#' + sandbox.container;
     this.sandbox = sandbox;
 
-    const hideSystemDataIfNecessary = (data, expertModeEnabled = SCWeb.core.ExpertModeEnabled) => {
-        if (expertModeEnabled) {
-            return data;
-        } else {
-            const getKeynode = (keynode) => scKeynodes[keynode] || this.sandbox.getKeynode(keynode);
-            return removeSystemTriples(getKeynode, data);
-        }
-    };
-
-    this.expertModeEnabledCallback = function () {
+    ExpertModeManager.setSandbox(sandbox); // TODO: think about restruct ExpertModeManager for removing this
+    SCWeb.core.EventManager.subscribe("expert_mode_changed", this, () => {
         this.sandbox.removeChild();
         this.receiveData(this.data);
         this.sandbox.translate();
-    };
-
-    SCWeb.core.EventManager.subscribe("expert_mode_enabled", this, this.expertModeEnabledCallback);
-    this.expertModeDisabledCallback = function () {
-        this.sandbox.removeChild();
-        this.receiveData(this.data);
-        this.sandbox.translate();
-    };
-
-    SCWeb.core.EventManager.subscribe("expert_mode_disabled", this, this.expertModeDisabledCallback);
+    });
 
     // ---- window interface -----
+    const getKeynode = (keynode) => scKeynodes[keynode] || this.sandbox.getKeynode(keynode);
     this.receiveData = function (data) {
         this.data = data;
         data = JSON.parse(data);
-        data = hideSystemDataIfNecessary(data);
+        data = ExpertModeManager.applyExpertMode(data, getKeynode);
         this.viewer.appendData(data);
         return $.when(this.sandbox.createViewersForScLinks(this.viewer.getLinks()));
     };
