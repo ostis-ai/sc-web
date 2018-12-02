@@ -51,8 +51,7 @@ var SCsViewer = function (sandbox) {
 
     this.container = '#' + sandbox.container;
     this.sandbox = sandbox;
-
-    ExpertModeManager.setSandbox(sandbox); // TODO: think about restruct ExpertModeManager for removing this
+    this.expertModeModeManager = new ExpertModeManager(sandbox);
     SCWeb.core.EventManager.subscribe("expert_mode_changed", this, () => {
         this.sandbox.removeChild();
         this.receiveData(this.data);
@@ -60,11 +59,10 @@ var SCsViewer = function (sandbox) {
     });
 
     // ---- window interface -----
-    const getKeynode = (keynode) => scKeynodes[keynode] || this.sandbox.getKeynode(keynode);
     this.receiveData = function (data) {
         this.data = data;
         data = JSON.parse(data);
-        data = ExpertModeManager.applyExpertMode(data, getKeynode);
+        data = this.expertModeModeManager.applyExpertMode(data);
         this.viewer.appendData(data);
         return $.when(this.sandbox.createViewersForScLinks(this.viewer.getLinks()));
     };

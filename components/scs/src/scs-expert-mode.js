@@ -1,25 +1,25 @@
-const applyExpertMode = (data, expertModeEnabled = SCWeb.core.ExpertModeEnabled) => {
-    return expertModeEnabled ? data : this.removeNotExpertData(data);
-};
+class ExpertModeManager {
 
-const ExpertModeManager = {
-    sandbox: null,
-    setSandbox: (sandbox) => this.sandbox = sandbox,
+    constructor(sandbox) {
+        this.sandbox = sandbox;
+    }
 
-    applyExpertMode: (data, expertModeEnabled = SCWeb.core.ExpertModeEnabled) => {
+    applyExpertMode(data, expertModeEnabled = SCWeb.core.ExpertModeEnabled) {
         return expertModeEnabled ? data : this.removeNotExpertData(data);
-    },
+    };
 
-    removeNotExpertData: (data) => {
+    removeNotExpertData(data) {
         return this.removeSystemTriples(data);
-    },
+    };
 
-    removeSystemTriples: (data) => {
+    removeSystemTriples(data) {
         let filteredData = this.removeNrelSysIdentifier(data);
         return this.transformKeyScElement(filteredData);
-    },
+    };
 
-    getKeyNode: (keynode) => scKeynodes[keynode] || this.sandbox.getKeynode(keynode),
+    getKeynode(keynode) {
+        return scKeynodes[keynode] || this.sandbox.getKeynode(keynode);
+    }
 
     /**
      * Remove constructions
@@ -27,7 +27,7 @@ const ExpertModeManager = {
      * @param triples
      * @param data
      */
-    removeNrelSysIdentifier: ({triples, ...data}) => {
+    removeNrelSysIdentifier({triples, ...data}) {
         let tripleUtils = new TripleUtils();
         for (const triple of triples) {
             tripleUtils.appendTriple(triple);
@@ -45,13 +45,13 @@ const ExpertModeManager = {
                 Array.prototype.includes.bind(arcsToRemove))),
             ...data
         };
-    },
+    };
 
-    isNotTripleSystem: (isAddrSystem, triple) => {
+    isNotTripleSystem(isAddrSystem, triple) {
         return !isAddrSystem(triple[0].addr) &&
             !isAddrSystem(triple[1].addr) &&
             !isAddrSystem(triple[2].addr);
-    },
+    };
 
     /**
      * nrel_boolean
@@ -79,7 +79,7 @@ const ExpertModeManager = {
      * @param data
      * @returns {{triples}}
      */
-    transformKeyScElement: ({triples, ...data}) => {
+    transformKeyScElement({triples, ...data}) {
         const rrelKeyScElement = this.getKeynode("rrel_key_sc_element");
         const nrelScTextTranslation = this.getKeynode("nrel_sc_text_translation");
         const rrelExample = this.getKeynode("rrel_example");
@@ -128,12 +128,12 @@ const ExpertModeManager = {
         }
 
         const arcsToRemoveAddrs = arcsToRemove.map(({addr}) => addr);
-        const triples1 = triples.filter(isNotTripleSystem.bind(undefined,
+        const triples1 = triples.filter(this.isNotTripleSystem.bind(undefined,
             Array.prototype.includes.bind(arcsToRemoveAddrs)))
             .concat(newTriples);
         return {
             triples: triples1,
             ...data
         }
-    },
-};
+    };
+}
