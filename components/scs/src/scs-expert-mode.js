@@ -13,39 +13,56 @@ class ExpertModeManager {
     };
 
     removeSystemTriples(data) {
-        let filteredData = this.removeNrelSysIdentifier(data);
+        let filteredData = this.filterData(data);
         return this.transformKeyScElement(filteredData);
+    };
+
+    filterData(data) {
+        data = this.removeTriplesByIdentifier('nrel_system_identifier', sc_type_arc_common, data);
+        data = this.removeTriplesWithNotChosenLanguage(data);
+        return data;
+    };
+
+    removeTriplesWithNotChosenLanguage(data) {
+        let currentLanguageAddr = SCWeb.core.Translation.getCurrentLanguage();
+        let langToRemove = 'lang_en';
+        if (this.getKeynode(langToRemove) == currentLanguageAddr) {
+            langToRemove = 'lang_ru';
+        }
+        return this.removeTriplesByIdentifier(langToRemove, sc_type_link, data);
     };
 
     getKeynode(keynode) {
         return scKeynodes[keynode] || this.sandbox.getKeynode(keynode);
-    }
+    };
 
     /**
      * Remove constructions
      * ... => nrel_sys_identifier: [*   *];;
+     * @param identifier
+     * @param type
      * @param triples
      * @param data
      */
-    removeNrelSysIdentifier({triples, ...data}) {
-        let tripleUtils = new TripleUtils();
-        for (const triple of triples) {
-            tripleUtils.appendTriple(triple);
-        }
-        const arcsToRemove = [];
-        const sysIdentifierTriples = tripleUtils.find3_f_a_a(this.getKeynode('nrel_system_identifier'),
-            sc_type_arc_pos_const_perm,
-            sc_type_arc_common);
-        for (const triple of sysIdentifierTriples) {
-            arcsToRemove.push(triple[1].addr);
-            arcsToRemove.push(triple[2].addr);
-        }
-        return {
-            triples: triples.filter(this.isNotTripleSystem.bind(undefined,
-                Array.prototype.includes.bind(arcsToRemove))),
-            ...data
-        };
-    };
+     removeTriplesByIdentifier(identifier, type, {triples, ...data}) {
+         let tripleUtils = new TripleUtils();
+         for (const triple of triples) {
+             tripleUtils.appendTriple(triple);
+         }
+         const arcsToRemove = [];
+         const foundTriples = tripleUtils.find3_f_a_a(this.getKeynode(identifier),
+             sc_type_arc_pos_const_perm,
+             type);
+         for (const triple of foundTriples) {
+             arcsToRemove.push(triple[1].addr);
+             arcsToRemove.push(triple[2].addr);
+         }
+         return {
+             triples: triples.filter(this.isNotTripleSystem.bind(undefined,
+                 Array.prototype.includes.bind(arcsToRemove))),
+             ...data
+         };
+     };
 
     isNotTripleSystem(isAddrSystem, triple) {
         return !isAddrSystem(triple[0].addr) &&
