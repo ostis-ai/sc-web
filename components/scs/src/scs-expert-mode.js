@@ -1,3 +1,7 @@
+const expertSystemIdList = [
+    'nrel_system_identifier'
+];
+
 class ExpertModeManager {
 
     constructor(sandbox) {
@@ -5,47 +9,59 @@ class ExpertModeManager {
     }
 
     applyExpertMode(data, expertModeEnabled = SCWeb.core.ExpertModeEnabled) {
-        return expertModeEnabled ? data : this.removeNotExpertData(data);
+        return expertModeEnabled ? data : this.removeExpertData(data);
     };
 
-    removeNotExpertData(data) {
-        return this.removeSystemTriples(data);
+    removeExpertData(data) {
+        this.initTripleUtils(data);
+        return this.applyFilters(data);
     };
 
-    removeSystemTriples(data) {
-        let filteredData = this.removeNrelSysIdentifier(data);
-        return this.transformKeyScElement(filteredData);
-    };
+    initTripleUtils(data) {
+        this.tripleUtils = new TripleUtils();
+        data.triples.forEach((triple) => this.tripleUtils.appendTriple(triple));
+    }
 
-    getKeynode(keynode) {
-        return scKeynodes[keynode] || this.sandbox.getKeynode(keynode);
+    applyFilters({triples, ...data}) {
+        let filteredTriples = triples;
+        const filters = [
+            (data) => this.removeExpertSystemIdTriples(data),
+            (data) => this.transformKeyScElement(data),
+        ];
+        filters.forEach(filter => filteredTriples = filter(filteredTriples));
+        return {
+            triples: filteredTriples,
+            ...data
+        };
     }
 
     /**
      * Remove constructions
-     * ... => nrel_sys_identifier: [*   *];;
+     * ... => [expertSystemId]: ...;;
      * @param triples
-     * @param data
+     * @return filteredTriples
      */
-    removeNrelSysIdentifier({triples, ...data}) {
-        let tripleUtils = new TripleUtils();
-        for (const triple of triples) {
-            tripleUtils.appendTriple(triple);
-        }
-        const arcsToRemove = [];
-        const sysIdentifierTriples = tripleUtils.find3_f_a_a(this.getKeynode('nrel_system_identifier'),
-            sc_type_arc_pos_const_perm,
-            sc_type_arc_common);
-        for (const triple of sysIdentifierTriples) {
-            arcsToRemove.push(triple[1].addr);
-            arcsToRemove.push(triple[2].addr);
-        }
-        return {
-            triples: triples.filter(this.isNotTripleSystem.bind(undefined,
-                Array.prototype.includes.bind(arcsToRemove))),
-            ...data
-        };
+    removeExpertSystemIdTriples(triples) {
+        const expertSystemIdTriples = this.findExpertSystemIdTriples();
+        const arcsToRemove = expertSystemIdTriples.map(triple => [triple[1].addr, triple[2].addr]).flat();
+        return triples.filter(triple => this.isNotTripleSystem(addr => arcsToRemove.includes(addr), triple));
     };
+
+    findExpertSystemIdTriples() {
+        return expertSystemIdList
+            .map(systemId => {
+                const keynode = this.getKeynode(systemId);
+                const triples = [
+                    this.tripleUtils.find3_f_a_a(keynode, sc_type_arc_pos_const_perm, sc_type_arc_common),
+                ];
+                return triples.flat();
+            })
+            .flat()
+    }
+
+    getKeynode(keynode) {
+        return scKeynodes[keynode] || this.sandbox.getKeynode(keynode);
+    }
 
     isNotTripleSystem(isAddrSystem, triple) {
         return !isAddrSystem(triple[0].addr) &&
@@ -71,33 +87,28 @@ class ExpertModeManager {
      * ===>
      * nrel_boolean
      * (*
-     * "file://content_html/definition_for_boolean.html"
+     * <= rrel_key_sc_element: "file://content_html/definition_for_boolean.html"
      *   (* <- lang_ru;; *);;
      * *)
 
-     * @param getKeynode
-     * @param data
-     * @returns {{triples}}
+     * @param triples
+     * @returns filteredTriples
      */
-    transformKeyScElement({triples, ...data}) {
+    transformKeyScElement(triples) {
         const rrelKeyScElement = this.getKeynode("rrel_key_sc_element");
         const nrelScTextTranslation = this.getKeynode("nrel_sc_text_translation");
         const rrelExample = this.getKeynode("rrel_example");
         const arcsToRemove = [];
         const newTriples = [];
         let countOfElement = 0;
-        let tripleUtils = new TripleUtils();
-        for (const triple of triples) {
-            tripleUtils.appendTriple(triple);
-        }
-        for (const triple of tripleUtils.find3_f_a_a(
+        for (const triple of this.tripleUtils.find3_f_a_a(
             rrelKeyScElement,
             sc_type_arc_pos_const_perm,
             sc_type_arc_pos_const_perm)) {
             arcsToRemove.push(triple[1], triple[2]);
-            const [src, edge, trg] = tripleUtils.getEdge(triple[2].addr);
+            const [src, edge, trg] = this.tripleUtils.getEdge(triple[2].addr);
             const nodeToMerge = trg;
-            for (const triple2 of tripleUtils.find5_a_a_f_a_f(
+            for (const triple2 of this.tripleUtils.find5_a_a_f_a_f(
                 sc_type_node,
                 sc_type_arc_common,
                 src.addr,
@@ -105,7 +116,7 @@ class ExpertModeManager {
                 nrelScTextTranslation
             )) {
                 arcsToRemove.push(triple2[1], triple2[3]);
-                for (const triple3 of tripleUtils.find5_f_a_a_a_f(
+                for (const triple3 of this.tripleUtils.find5_f_a_a_a_f(
                     triple2[0].addr,
                     sc_type_arc_pos_const_perm,
                     0,
@@ -131,9 +142,6 @@ class ExpertModeManager {
         const triples1 = triples.filter(this.isNotTripleSystem.bind(undefined,
             Array.prototype.includes.bind(arcsToRemoveAddrs)))
             .concat(newTriples);
-        return {
-            triples: triples1,
-            ...data
-        }
+        return triples1;
     };
 }
