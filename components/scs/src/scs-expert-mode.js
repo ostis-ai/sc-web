@@ -59,6 +59,15 @@ class ExpertModeManager {
             .flat()
     }
 
+    removeTriplesWithNotChosenLanguage(data) {
+        let currentLanguageAddr = SCWeb.core.Translation.getCurrentLanguage();
+        let langToRemove = 'lang_en';
+        if (this.getKeynode(langToRemove) == currentLanguageAddr) {
+            langToRemove = 'lang_ru';
+        }
+        return this.removeTriplesByIdentifier(langToRemove, sc_type_link, data);
+    };
+
     getKeynode(keynode) {
         return scKeynodes[keynode] || this.sandbox.getKeynode(keynode);
     }
