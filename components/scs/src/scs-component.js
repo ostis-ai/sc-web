@@ -58,6 +58,12 @@ var SCsViewer = function (sandbox) {
         this.sandbox.translate();
     });
 
+    SCWeb.core.EventManager.subscribe("translation/changed_language", this, () => {
+        this.sandbox.removeChild();
+        this.receiveData(this.data);
+        this.sandbox.translate();
+    });
+
     // ---- window interface -----
     this.receiveData = function (data) {
         this.data = data;

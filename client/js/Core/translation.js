@@ -80,8 +80,8 @@ SCWeb.core.Translation = {
     },
 
     fireLanguageChanged: function (lang_addr) {
-        SCWeb.core.EventManager.emit("translation/changed_language", lang_addr);
         this.current_lang = lang_addr;
+        SCWeb.core.EventManager.emit("translation/changed_language", lang_addr);
     },
 
     /** Collect objects for translation
