@@ -29,7 +29,7 @@ class ExpertModeManager {
             (triples) => this.removeTriplesWithNotCurrentLanguage(triples),
             (triples) => this.removeCurrentLanguageNode(triples),
             (triples) => this.removeExpertSystemIdTriples(triples),
-            (triples) => this.transformScTextTranslation(triples),
+            (triples) => this.transformKeyScElement(triples),
         ];
         filters.forEach(filter => filteredTriples = filter(filteredTriples));
         return {
@@ -109,22 +109,17 @@ class ExpertModeManager {
      * @param triples
      * @returns filteredTriples
      */
-    transformScTextTranslation(triples) {
-        const nrelTextTranslation = this.getKeynode("nrel_sc_text_translation");
+    transformKeyScElement(triples) {
+        // TODO: Need to be refactored
+        const rrelKeyScElement = this.getKeynode("rrel_key_sc_element");
+        const nrelScTextTranslation = this.getKeynode("nrel_sc_text_translation");
         const rrelExample = this.getKeynode("rrel_example");
         const arcsToRemove = [];
         const newTriples = [];
-        this.tripleUtils
-            .find3_f_a_a(nrelTextTranslation, sc_type_arc_pos_const_perm, sc_type_arc_common)
-            .forEach(triple => {
-                const [exampleNode, textTranslationArc, nodeForReplace] = this.tripleUtils.getEdge(triple[2].addr);
-                arcsToRemove.push(triple[1], triple[2]);
-
-            });
         for (const triple of this.tripleUtils.find3_f_a_a(
-            nrelTextTranslation,
+            rrelKeyScElement,
             sc_type_arc_pos_const_perm,
-            sc_type_arc_common)) {
+            sc_type_arc_pos_const_perm)) {
             const [src, edge, trg] = this.tripleUtils.getEdge(triple[2].addr);
             const nodeToMerge = trg;
             for (const triple2 of this.tripleUtils.find5_a_a_f_a_f(
@@ -132,7 +127,7 @@ class ExpertModeManager {
                 sc_type_arc_common,
                 src.addr,
                 sc_type_arc_pos_const_perm,
-                nrelTextTranslation
+                nrelScTextTranslation
             )) {
                 arcsToRemove.push(triple2[1], triple2[2], triple2[3]);
                 for (const triple3 of this.tripleUtils.find5_f_a_a_a_f(
