@@ -27,6 +27,7 @@ SCWeb.ui.Core = {
             SCWeb.ui.LanguagePanel.init(data),
             SCWeb.ui.WindowManager.init(data),
             SCWeb.ui.SearchPanel.init(),
+            SCWeb.ui.ExpertModePanel.init(),
             SCWeb.ui.KeyboardHandler.init(SCWeb.ui.WindowManager),
             self.resolveElementsAddr('body')
         ).done(function () {
@@ -103,7 +104,7 @@ SCWeb.ui.Core = {
         return dfd.promise();
     },
 
-    /*! Returns selector to select all elements, that has sc_addr in specified window, excluding all 
+    /*! Returns selector to select all elements, that has sc_addr in specified window, excluding all
      * sc_addr elements in child windows
      */
     selectorWindowScAddr: function (windowId) {
