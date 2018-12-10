@@ -43,7 +43,10 @@ module.exports = function(grunt) {
                       webCoreCompPath + 'Ui/argumentspanel.js',
                       webCoreCompPath + 'Ui/windowmanager.js',
                       webCoreCompPath + 'Ui/OpenComponentHandler.js',
-                      webCoreCompPath + 'Ui/userpanel.js'],
+                      webCoreCompPath + 'Ui/userpanel.js',
+                      webCoreCompPath + 'Ui/expertmodepanel.js',
+                      webCoreCompPath + 'Ui/ExpertModeHandler.js',
+                ],
                 dest: clientJsDirPath + 'sc-web-core.js',
             },
             github: {
@@ -99,6 +102,7 @@ module.exports = function(grunt) {
                       scsDirPath + 'src/scn-output.js',
                       scsDirPath + 'src/scn-tree.js',
                       scsDirPath + 'src/scn-highlighter.js',
+                      scsDirPath + 'src/scs-expert-mode.js',
                       scsDirPath + 'src/scs-component.js'],
                 dest: scsDirPath + 'static/components/js/scs/scs.js'
             },

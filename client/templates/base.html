@@ -79,8 +79,19 @@
             </a>
             {% end %}
         </div>
-        
+
+        <div id="expert_mode_container" class="navbar-left">
+          <label class="switch">
+            <input type="checkbox" id="mode-switching-checkbox">
+            <span class="slider round"></span>
+          </label>
+          <label for="mode-switching-checkbox" class="normalLabel">
+            <!-- expert mode text will be placed here -->
+          </label>
+        </div>
+
         <div id="language-panel">
+            
             <form class="navbar-form navbar-right" sc_control_sys_idtf="ui_control_select_idtf_mode">
                 <select id="language-select" class="form-control" style="width: 150px;">
                 </select>
@@ -105,7 +116,7 @@
             </div>
         </div>
         <div id="window-header-tools" class="pull-right">
-            <div class="btn-group">
+            <div class="btn-group mode-switching-panel">    <!-- mode-switching-panel -->
                 <button type="button" class="btn btn-success ">
                     <span class="glyphicon glyphicon-font"></span>
                 </button>
@@ -181,7 +192,7 @@
             });
         });
 
-        
+
     </script>
 
 
@@ -190,7 +201,7 @@
     <div id="sc-ui-locker-icon"></div>   
 </div>
 
-
+<div id="sctp-reconnection"></div>
 </body>
 {% end %}
 
