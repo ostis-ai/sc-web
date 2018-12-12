@@ -25,13 +25,10 @@ class ExpertModeManager {
 
     applyFilters({triples, ...data}) {
         let filteredTriples = triples;
-        const filters = [
-            (triples) => this.removeTriplesWithNotCurrentLanguage(triples),
-            (triples) => this.removeCurrentLanguageNode(triples),
-            (triples) => this.removeExpertSystemIdTriples(triples),
-            (triples) => this.transformKeyScElement(triples),
-        ];
-        filters.forEach(filter => filteredTriples = filter(filteredTriples));
+        filteredTriples = this.removeTriplesWithNotCurrentLanguage(filteredTriples);
+        filteredTriples = this.removeCurrentLanguageNode(filteredTriples);
+        filteredTriples = this.removeExpertSystemIdTriples(filteredTriples);
+        filteredTriples = this.transformKeyScElement(filteredTriples);
         return {
             triples: filteredTriples,
             ...data
@@ -57,9 +54,9 @@ class ExpertModeManager {
     removeTriplesBySystemIdList(systemIdList, triples, withChild = true) {
         const expertSystemIdTriples = this.findExpertSystemIdTriples(systemIdList);
         const arcsToRemove = expertSystemIdTriples
-            .map(triple => withChild ? [triple[1].addr, triple[2].addr] : triple[1].addr)
-            .flat();
-        return this.removeArcs(arcsToRemove, triples);
+            .map(triple => withChild ? [triple[1].addr, triple[2].addr] : [triple[1].addr]);
+        const flatArray = [].concat.apply([], arcsToRemove);
+        return this.removeArcs(flatArray, triples);
     }
 
     removeArcs(arcsToRemove, triples) {
@@ -67,15 +64,14 @@ class ExpertModeManager {
     }
 
     findExpertSystemIdTriples(systemIdList) {
-        const thirdElementTypeList = [sc_type_arc_common, sc_type_link];
-        return systemIdList
-            .map(systemId => {
-                const keynode = this.getKeynode(systemId);
-                return thirdElementTypeList
-                    .map(type => this.tripleUtils.find3_f_a_a(keynode, sc_type_arc_pos_const_perm, type))
-                    .flat();
-            })
-            .flat()
+        let systemIdTriples = systemIdList
+            .map(this.getKeynode.bind(this))
+            .map(keynode => {
+                const arcTriples = this.tripleUtils.find3_f_a_a(keynode, sc_type_arc_pos_const_perm, sc_type_arc_common);
+                const linkTriples = this.tripleUtils.find3_f_a_a(keynode, sc_type_arc_pos_const_perm, sc_type_link);
+                return [].concat(arcTriples, linkTriples);
+            });
+        return [].concat.apply([], systemIdTriples);
     }
 
     getKeynode(keynode) {

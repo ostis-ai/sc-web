@@ -14,8 +14,7 @@ removeNrelSystemIdentification = function ({triples, ...data}, nrelSystemIdentif
     const nrelSystemIdentifierTriples = tripleUtils.find3_f_a_a(nrelSystemIdentifier, 0, 0);
     let newVar = {
         ...data,
-        triples: removeSystemTriples(nrelSystemIdentifierTriples.flat(), triples),
+        triples: removeSystemTriples([].concat.apply([], nrelSystemIdentifierTriples)),
     };
-    console.log(newVar);
     return newVar;
 }
