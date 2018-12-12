@@ -13,26 +13,33 @@ class ExpertModeManager {
         return expertModeEnabled ? data : this.removeExpertData(data);
     }
 
-    removeExpertData(data) {
-        this.initTripleUtils(data);
-        return this.applyFilters(data);
-    }
-
-    initTripleUtils(data) {
-        this.tripleUtils = new TripleUtils();
-        data.triples.forEach((triple) => this.tripleUtils.appendTriple(triple));
-    }
-
-    applyFilters({triples, ...data}) {
-        let filteredTriples = triples;
-        filteredTriples = this.removeTriplesWithNotCurrentLanguage(filteredTriples);
-        filteredTriples = this.removeCurrentLanguageNode(filteredTriples);
-        filteredTriples = this.removeExpertSystemIdTriples(filteredTriples);
-        filteredTriples = this.transformKeyScElement(filteredTriples);
+    removeExpertData({triples, ...data}) {
+        this.initTripleUtils(triples);
         return {
-            triples: filteredTriples,
+            triples: this.applyFilters(triples),
             ...data
         };
+    }
+
+    initTripleUtils(triples) {
+        delete this.tripleUtils;
+        this.tripleUtils = new TripleUtils();
+        triples.forEach((triple) => this.tripleUtils.appendTriple(triple));
+    }
+
+    applyFilters(triples) {
+        let filteredTriples = triples;
+        const filters = [
+            (triples) => this.removeTriplesWithNotCurrentLanguage(triples),
+            (triples) => this.removeCurrentLanguageNode(triples),
+            (triples) => this.removeExpertSystemIdTriples(triples),
+            (triples) => this.transformKeyScElement(triples),
+        ];
+        filters.forEach(filter => {
+            this.initTripleUtils(filteredTriples);
+            filteredTriples = filter(filteredTriples)
+        });
+        return filteredTriples
     }
 
     removeTriplesWithNotCurrentLanguage(triples) {
@@ -85,67 +92,62 @@ class ExpertModeManager {
     }
 
     /**
-     * nrel_boolean
+     * sourceNode
      * <- rrel_key_sc_element:
-     ...
+     translationNode
      (*
      <= nrel_sc_text_translation:
-     ...
+     preLinkNode
      (*
-     -> rrel_example: "file://content_html/definition_for_boolean.html";;
+     -> linkNode;;
      *);;
      *);
      *
      * ===>
-     * nrel_boolean
+     * sourceNode
      * (*
-     *  <- rrel_key_sc_element: "file://content_html/definition_for_boolean.html";;
+     *  <- rrel_key_sc_element: linkNode;;
      * *)
 
      * @param triples
      * @returns filteredTriples
      */
     transformKeyScElement(triples) {
-        // TODO: Need to be refactored
         const rrelKeyScElement = this.getKeynode("rrel_key_sc_element");
-        const nrelScTextTranslation = this.getKeynode("nrel_sc_text_translation");
-        const rrelExample = this.getKeynode("rrel_example");
         const arcsToRemove = [];
         const newTriples = [];
-        for (const triple of this.tripleUtils.find3_f_a_a(
-            rrelKeyScElement,
-            sc_type_arc_pos_const_perm,
-            sc_type_arc_pos_const_perm)) {
-            const [src, edge, trg] = this.tripleUtils.getEdge(triple[2].addr);
-            const nodeToMerge = trg;
-            for (const triple2 of this.tripleUtils.find5_a_a_f_a_f(
-                sc_type_node,
-                sc_type_arc_common,
-                src.addr,
-                sc_type_arc_pos_const_perm,
-                nrelScTextTranslation
-            )) {
-                arcsToRemove.push(triple2[1], triple2[2], triple2[3]);
-                for (const triple3 of this.tripleUtils.find5_f_a_a_a_f(
-                    triple2[0].addr,
-                    sc_type_arc_pos_const_perm,
-                    0,
-                    sc_type_arc_pos_const_perm,
-                    rrelExample
-                )) {
-                    arcsToRemove.push(triple3[1], triple3[3]);
-                    const trgNodeToMerge = triple3[2];
-                    newTriples.push([
-                        trgNodeToMerge,
-                        edge,
-                        nodeToMerge,
-                    ]);
+        this.tripleUtils
+            .find3_f_a_a(rrelKeyScElement, sc_type_arc_pos_const_perm, sc_type_arc_pos_const_perm)
+            .forEach(triple => {
+                const [translationNode, edge, sourceNode] = this.tripleUtils.getEdge(triple[2].addr);
+                const preLinkNode = this.findPreLinkNodeTriple(translationNode);
+                if (preLinkNode) {
+                    arcsToRemove.push(preLinkNode[1], preLinkNode[2], preLinkNode[3]);
+                    const linkNodeTriple = this.findLinkNodeTriple(preLinkNode[0]);
+                    if (linkNodeTriple) {
+                        arcsToRemove.push(linkNodeTriple[1]);
+                        newTriples.push([linkNodeTriple[2], edge, sourceNode]);
+                    }
                 }
-
-            }
-        }
+            });
 
         const arcsToRemoveAddrs = arcsToRemove.map(({addr}) => addr);
         return this.removeArcs(arcsToRemoveAddrs, triples).concat(newTriples);
+    }
+
+    findPreLinkNodeTriple(translationNode) {
+        const nrelScTextTranslation = this.getKeynode("nrel_sc_text_translation");
+        const triples = this.tripleUtils.find5_a_a_f_a_f(
+            sc_type_node,
+            sc_type_arc_common,
+            translationNode.addr,
+            sc_type_arc_pos_const_perm,
+            nrelScTextTranslation);
+        return triples.length && triples[0];
+    }
+
+    findLinkNodeTriple(preLinkNode) {
+        const triples = this.tripleUtils.find3_f_a_a(preLinkNode.addr, sc_type_arc_pos_const_perm, sc_type_link);
+        return triples.length && triples[0];
     }
 }
