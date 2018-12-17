@@ -64,7 +64,7 @@ SCWeb.ui.SearchPanel = {
                     }
                 }
             }
-        ).bind('typeahead:selected', function (evt, item, dataset) {
+        ).bind('typeahead:selected', function (event, item, dataset) {
             searchByKeyWord(event, item);
         }).keypress(function (event) {
             if (event.which === 13) {
