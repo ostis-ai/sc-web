@@ -11,6 +11,7 @@ SCWeb.core.Translation = {
 
     listeners: [],
     current_lang: null,
+    languages: null,
 
     /** Updates all translations
      */
@@ -69,6 +70,14 @@ SCWeb.core.Translation = {
                 callback();
             });
         });
+    },
+
+    getLanguages() {
+        return this.languages;
+    },
+
+    setLanguages(languages) {
+        this.languages = languages;
     },
 
     /** Fires translation update event

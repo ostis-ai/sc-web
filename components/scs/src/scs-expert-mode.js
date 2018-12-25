@@ -1,12 +1,10 @@
 const expertSystemIdList = ['nrel_system_identifier'];
 
-// TODO: Found this list in project and remove from this
-const languages = ['lang_ru', 'lang_en'];
-
 class ExpertModeManager {
 
     constructor(sandbox) {
         this.sandbox = sandbox;
+        this.languages = sandbox.getLanguages();
     }
 
     applyExpertMode(data, expertModeEnabled = SCWeb.core.ExpertModeEnabled) {
@@ -43,15 +41,15 @@ class ExpertModeManager {
     }
 
     removeTriplesWithNotCurrentLanguage(triples) {
-        let currentLanguageAddr = SCWeb.core.Translation.getCurrentLanguage();
-        let languageToRemoveList = languages.filter(lang => this.getKeynode(lang) !== currentLanguageAddr);
-        return this.removeTriplesBySystemIdList(languageToRemoveList, triples);
+        let currentLanguageAddr = this.sandbox.getCurrentLanguage();
+        let languageToRemoveList = this.languages.filter(lang => lang !== currentLanguageAddr);
+        return this.removeTriplesByKeynodeList(languageToRemoveList, triples);
     }
 
     removeCurrentLanguageNode(triples) {
-        let currentLanguageAddr = SCWeb.core.Translation.getCurrentLanguage();
-        const currentLanguage = languages.filter(lang => this.getKeynode(lang) === currentLanguageAddr);
-        return this.removeTriplesBySystemIdList(currentLanguage, triples, false);
+        let currentLanguageAddr = this.sandbox.getCurrentLanguage();
+        const currentLanguage = this.languages.filter(lang => lang === currentLanguageAddr);
+        return this.removeTriplesByKeynodeList(currentLanguage, triples, false);
     }
 
     removeExpertSystemIdTriples(triples) {
@@ -59,7 +57,12 @@ class ExpertModeManager {
     }
 
     removeTriplesBySystemIdList(systemIdList, triples, withChild = true) {
-        const expertSystemIdTriples = this.findExpertSystemIdTriples(systemIdList);
+        const keynodeList = systemIdList.map((systemId) => this.getKeynode(systemId));
+        return this.removeTriplesByKeynodeList(keynodeList, triples, withChild);
+    }
+
+    removeTriplesByKeynodeList(keynodeList, triples, withChild = true) {
+        const expertSystemIdTriples = this.findExpertKeynodeTriples(keynodeList);
         const arcsToRemove = expertSystemIdTriples
             .map(triple => withChild ? [triple[1].addr, triple[2].addr] : [triple[1].addr]);
         const flatArray = [].concat.apply([], arcsToRemove);
@@ -70,9 +73,8 @@ class ExpertModeManager {
         return triples.filter(triple => this.isNotTripleSystem(addr => arcsToRemove.includes(addr), triple))
     }
 
-    findExpertSystemIdTriples(systemIdList) {
-        let systemIdTriples = systemIdList
-            .map(this.getKeynode.bind(this))
+    findExpertKeynodeTriples(keynodeList) {
+        let systemIdTriples = keynodeList
             .map(keynode => {
                 const arcTriples = this.tripleUtils.find3_f_a_a(keynode, sc_type_arc_pos_const_perm, sc_type_arc_common);
                 const linkTriples = this.tripleUtils.find3_f_a_a(keynode, sc_type_arc_pos_const_perm, sc_type_link);
@@ -81,8 +83,8 @@ class ExpertModeManager {
         return [].concat.apply([], systemIdTriples);
     }
 
-    getKeynode(keynode) {
-        return scKeynodes[keynode] || this.sandbox.getKeynode(keynode);
+    getKeynode(systemId) {
+        return scKeynodes[systemId] || this.sandbox.getKeynode(systemId);
     }
 
     isNotTripleSystem(isAddrSystem, triple) {

@@ -153,6 +153,7 @@ SCWeb.core.Server = {
                     data['user'] = user;
 
                     window.scHelper.getLanguages().done(function (langs) {
+                        SCWeb.core.Translation.setLanguages(langs);
                         data['languages'] = langs;
 
                         window.scHelper.getOutputLanguages().done(function (out_langs) {
