@@ -131,6 +131,10 @@ SCWeb.core.ComponentSandbox.prototype.getCurrentLanguage = function () {
     return SCWeb.core.Translation.getCurrentLanguage();
 };
 
+SCWeb.core.ComponentSandbox.prototype.getLanguages = function () {
+    return SCWeb.core.Translation.getLanguages();
+};
+
 /*!
  * @param {Array} args Array of sc-addrs of commnad arguments.
  */

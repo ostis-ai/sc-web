@@ -4,7 +4,7 @@ class ExpertModeManager {
 
     constructor(sandbox) {
         this.sandbox = sandbox;
-        this.languages = SCWeb.core.Translation.getLanguages();
+        this.languages = sandbox.getLanguages();
     }
 
     applyExpertMode(data, expertModeEnabled = SCWeb.core.ExpertModeEnabled) {
@@ -41,13 +41,13 @@ class ExpertModeManager {
     }
 
     removeTriplesWithNotCurrentLanguage(triples) {
-        let currentLanguageAddr = SCWeb.core.Translation.getCurrentLanguage();
+        let currentLanguageAddr = this.sandbox.getCurrentLanguage();
         let languageToRemoveList = this.languages.filter(lang => lang !== currentLanguageAddr);
         return this.removeTriplesByKeynodeList(languageToRemoveList, triples);
     }
 
     removeCurrentLanguageNode(triples) {
-        let currentLanguageAddr = SCWeb.core.Translation.getCurrentLanguage();
+        let currentLanguageAddr = this.sandbox.getCurrentLanguage();
         const currentLanguage = this.languages.filter(lang => lang === currentLanguageAddr);
         return this.removeTriplesByKeynodeList(currentLanguage, triples, false);
     }
