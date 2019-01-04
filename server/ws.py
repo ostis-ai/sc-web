@@ -50,8 +50,9 @@ class SocketProxy:
         res = ''
         while (len(res) < dataSize):
             data = self.sock.recv(dataSize - len(res))
+            if not data:
+                raise RuntimeError("Read from broken socket")
             res += data
-            time.sleep(0.001)
         assert len(res) == dataSize
         
         return res
@@ -78,7 +79,9 @@ class SocketProxy:
         cmdCode == sctp.types.SctpCommandType.SCTP_CMD_CREATE_LINK or \
         cmdCode == sctp.types.SctpCommandType.SCTP_CMD_SET_LINK_CONTENT)):
             # send data to socket
-            self.sock.sendall(data)
+            err = self.sock.sendall(data)
+            if err is not None:
+                raise RuntimeError("Write in broken socket")
             # wait answer and send it backward to client
             data = self.receiveData(10)
             cmdCode, cmdId, resCode, resSize = struct.unpack('=BIBI', data)
