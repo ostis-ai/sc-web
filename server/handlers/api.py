@@ -503,12 +503,67 @@ class User(base.BaseHandler):
             # get user sc-addr
             sc_session = logic.ScSession(self, sctp_client, keys)
             user_addr = sc_session.get_sc_addr()
+
+            if sc_session.email:
+                is_authenticated = True
+            else:
+                is_authenticated = False
+
+            roles = []
+
+            if is_authenticated:
+                user_kb_node = sc_session.get_user_kb_node_by_email()
+                if user_kb_node is not None:
+                    roles = self.get_user_roles(sctp_client, user_kb_node, keys)
+
+
             result = {
                         'sc_addr': user_addr.to_int(),
-                        'is_authenticated': False,
+                        'is_authenticated': is_authenticated,
                         'current_lang': sc_session.get_used_language().to_int(),
-                        'default_ext_lang': sc_session.get_default_ext_lang().to_int()
+                        'default_ext_lang': sc_session.get_default_ext_lang().to_int(),
+                        'email': sc_session.email,
+                        'roles': roles
             }
         
             self.set_header("Content-Type", "application/json")
             self.finish(json.dumps(result))
+
+    def get_user_roles(self, sctp_client, user_kb_node, keys):
+        roles = [KeynodeSysIdentifiers.nrel_authorised_user]
+
+        is_manager_role_exist = sctp_client.iterate_elements(
+            SctpIteratorType.SCTP_ITERATOR_5_A_A_F_A_F,
+            ScElementType.sc_type_node | ScElementType.sc_type_const,
+            ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
+            user_kb_node,
+            ScElementType.sc_type_arc_pos_const_perm,
+            keys[KeynodeSysIdentifiers.nrel_manager]
+            )
+
+        is_admin_role_exist = sctp_client.iterate_elements(
+            SctpIteratorType.SCTP_ITERATOR_5_A_A_F_A_F,
+            ScElementType.sc_type_node | ScElementType.sc_type_const,
+            ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
+            user_kb_node,
+            ScElementType.sc_type_arc_pos_const_perm,
+            keys[KeynodeSysIdentifiers.nrel_administrator]
+            )
+
+        is_expert_role_exist = sctp_client.iterate_elements(
+            SctpIteratorType.SCTP_ITERATOR_5_A_A_F_A_F,
+            ScElementType.sc_type_node | ScElementType.sc_type_const,
+            ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
+            user_kb_node,
+            ScElementType.sc_type_arc_pos_const_perm,
+            keys[KeynodeSysIdentifiers.nrel_expert]
+            )
+
+        if is_admin_role_exist:
+            roles.append(KeynodeSysIdentifiers.nrel_administrator)
+        if is_manager_role_exist:
+            roles.append(KeynodeSysIdentifiers.nrel_manager)
+        if is_expert_role_exist:
+            roles.append(KeynodeSysIdentifiers.nrel_expert)
+
+        return roles

@@ -48,6 +48,7 @@ def main():
     tornado.options.define("redis_db_user", default = 1, help = "number of redis database to store user info", type = int)
     tornado.options.define("host", default = "localhost", help = "host name", type = str)
     tornado.options.define("port", default = 8000, help = "host port", type = int)
+    tornado.options.define("auth_redirect_port", default = 80, help = "host port", type = int)
     
     tornado.options.define("google_client_id", default = "", help = "client id for google auth", type = str)
     tornado.options.define("google_client_secret", default = "", help = "client secret for google auth", type = str)
