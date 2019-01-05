@@ -51,6 +51,11 @@ class KeynodeSysIdentifiers:
     nrel_format = 'nrel_format'
     nrel_mimetype = 'nrel_mimetype'
     nrel_email = 'nrel_email'
+    nrel_authorised_user = 'nrel_authorised_user'
+    nrel_registered_user = 'nrel_registered_user'
+    nrel_administrator = 'nrel_administrator'
+    nrel_manager = 'nrel_manager'
+    nrel_expert = 'nrel_expert'
     
     rrel_key_sc_element = 'rrel_key_sc_element'
     sc_definition = 'sc_definition'
@@ -112,4 +117,6 @@ class KeynodeSysIdentifiers:
     format_txt = 'format_txt'
     
     system_element = 'system_element'
+
+    Myself = 'Myself'
     
