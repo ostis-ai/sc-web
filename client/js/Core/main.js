@@ -60,6 +60,12 @@ SCWeb.core.Main = {
                                             SCWeb.ui.WindowManager.appendHistoryItem(question, commandState);
                                             return;
                                         }
+                                        var sys_id = url.searchObject['sys_id'];
+                                        if (sys_id) {
+                                            SCWeb.core.Main.doDefaultCommandWithSystemIdentifier([sys_id]);
+                                            window.history.replaceState(null, null, window.location.pathname);
+                                            return;
+                                        }                                        
                                     }
 
                                     SCWeb.core.Server.resolveScAddr(['ui_start_sc_element'], function (addrs) {
@@ -180,6 +186,21 @@ SCWeb.core.Main = {
             this.doCommand(this.default_cmd, cmd_args);
         }
     },
+    
+    /**
+     * Initiate default user interface command
+     * @param {String} sys_id System identifier
+     */
+    doDefaultCommandWithSystemIdentifier: function (sys_id) {
+        SCWeb.core.Server.resolveScAddr([sys_id], function (addrs) {
+            var resolvedId = addrs[sys_id];
+            if (resolvedId) {
+                SCWeb.core.Main.doDefaultCommand([resolvedId]);
+            } else {
+                SCWeb.core.Main.doDefaultCommandWithSystemIdentifier('ui_start_sc_element');
+            }
+        });      
+    }    
 
 };
 
