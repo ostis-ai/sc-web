@@ -1,6 +1,20 @@
 const searchByKeyWord = (event, item) => {
     if (item && item.addr) {
-        SCWeb.core.Main.doDefaultCommand([item.addr]);
+        if (item.name) {
+            if (/^[A-Za-z0-9_]*$/.test(item.name)) {
+                SCWeb.core.Server.resolveScAddr([item.name], function (addrs) {
+                    if ($.isEmptyObject(addrs)) {
+                        console.log('Given identifier exists in redis db but not in rocksdb');
+                    } else {
+                        SCWeb.core.Main.doDefaultCommand([addrs[item.name]]);
+                    }
+                });
+            } else {
+                console.log('Please note that search can be done by english identifiers only in this version');
+            }
+        } else {
+            SCWeb.core.Main.doDefaultCommand([item.addr]);
+        }
     }
     event.stopPropagation();
     $('.typeahead').val('');
