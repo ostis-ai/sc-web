@@ -50,41 +50,11 @@ SCWeb.core.Main = {
                                 .done(function () {
                                     dfd.resolve();
 
-                                    var url = parseURL(window.location.href);
-
-                                    if (url.searchObject) {
-                                        var question = url.searchObject['question'];
-                                        if (question) {
-                                            /// @todo Check question is realy a question
-                                            var commandState = new SCWeb.core.CommandState(question, null, null);
-                                            SCWeb.ui.WindowManager.appendHistoryItem(question, commandState);
-                                            return;
-                                        }
-                                        var sys_id = url.searchObject['sys_id'];
-                                        if (sys_id) {
-                                            SCWeb.core.Main.doDefaultCommandWithSystemIdentifier([sys_id]);
-                                            window.history.replaceState(null, null, window.location.pathname);
-                                            return;
-                                        }                                        
+                                    const url = parseURL(window.location.href);
+                                    if (url.searchObject && SCWeb.core.Main.pageShowedForUrlParameters(url.searchObject)) {
+                                        return;
                                     }
-
-                                    SCWeb.core.Server.resolveScAddr(['ui_start_sc_element'], function (addrs) {
-
-                                        function start(a) {
-                                            SCWeb.core.Main.doDefaultCommand([a]);
-                                            if (params.first_time)
-                                                $('#help-modal').modal({"keyboard": true});
-                                        }
-
-                                        var argumentAddr = addrs['ui_start_sc_element'];
-                                        window.sctpClient.iterate_elements(SctpIteratorType.SCTP_ITERATOR_3F_A_A, [argumentAddr, sc_type_arc_pos_const_perm, 0])
-                                            .done(function (res) {
-                                                start(res[0][2]);
-                                            }).fail(function () {
-                                            start(argumentAddr);
-                                        });
-
-                                    });
+                                    SCWeb.core.Main.showDefaultPage(params);
                                 });
                         });
                     });
@@ -99,6 +69,70 @@ SCWeb.core.Main = {
 
     _initUI: function () {
 
+    },
+
+    pageShowedForUrlParameters(urlObject) {
+        return SCWeb.core.Main.questionParameterProcessed(urlObject)
+            || SCWeb.core.Main.systemIdentifierParameterProcessed(urlObject)
+            || SCWeb.core.Main.commandParameterProcessed(urlObject);
+    },
+
+    questionParameterProcessed(urlObject) {
+        const question = urlObject['question'];
+        if (question) {
+            /// @todo Check question is realy a question
+            const commandState = new SCWeb.core.CommandState(question, null, null);
+            SCWeb.ui.WindowManager.appendHistoryItem(question, commandState);
+            return true;
+        }
+        return false;
+    },
+
+    systemIdentifierParameterProcessed(urlObject) {
+        const sys_id = urlObject['sys_id'];
+        if (sys_id) {
+            SCWeb.core.Main.doDefaultCommandWithSystemIdentifier([sys_id]);
+            window.history.replaceState(null, null, window.location.pathname);
+            return true;
+        }
+        return false;
+    },
+
+    commandParameterProcessed(urlObject) {
+        const command_identifier = urlObject['command_id'];
+        if (command_identifier) {
+            const parameters = Object.keys(urlObject);
+            const args = [];
+            for (let param of parameters) {
+                if (/^arg/gi.test(param)) {
+                    args.push(urlObject[param]);
+                }
+            }
+            SCWeb.core.Main.doCommandByIdentifier(command_identifier, args);
+            window.history.replaceState(null, null, window.location.pathname);
+            return true;
+        }
+        return false;
+    },
+
+    showDefaultPage: function (params) {
+        SCWeb.core.Server.resolveScAddr(['ui_start_sc_element'], function (addrs) {
+
+            function start(a) {
+                SCWeb.core.Main.doDefaultCommand([a]);
+                if (params.first_time)
+                    $('#help-modal').modal({"keyboard": true});
+            }
+
+            const argumentAddr = addrs['ui_start_sc_element'];
+            window.sctpClient.iterate_elements(SctpIteratorType.SCTP_ITERATOR_3F_A_A, [argumentAddr, sc_type_arc_pos_const_perm, 0])
+                .done(function (res) {
+                    start(res[0][2]);
+                }).fail(function () {
+                start(argumentAddr);
+            });
+
+        });
     },
 
     /**
@@ -125,6 +159,24 @@ SCWeb.core.Main = {
                 alert("There are no any answer. Try another request");
             }
         });
+    },
+
+    /**
+     * Initiate user interface command
+     * @param {String} cmd_identifier system identifier of user command
+     * @param {Array} cmd_args system identifiers of command arguments
+     */
+    doCommandByIdentifier: function (cmd_identifier, cmd_args) {
+        const self = this;
+        SCWeb.core.Arguments.clear();
+        SCWeb.core.Server.resolveScAddr([cmd_identifier].concat(cmd_args), function (result) {
+            const cmd_addr = result[cmd_identifier];
+            const resolved_args = [];
+            cmd_args.forEach(function (argument) {
+                resolved_args.push(result[argument]);
+            })
+            self.doCommand(cmd_addr, resolved_args);
+        })
     },
 
     doCommandWithPromise: function (command_state) {
