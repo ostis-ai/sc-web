@@ -33,7 +33,7 @@ class Keynodes:
         try:
             value = self.keys[name]
         except:
-            value = self.sctp_client.find_element_by_system_identifier(str(name.encode('utf-8')))
+            value = self.sctp_client.find_element_by_system_identifier(name.encode('utf-8'))
             if value is None:
                 raise Exception("Can't resolve keynode '%s'" % name)
             else:

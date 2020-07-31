@@ -9,9 +9,9 @@ from keynodes import KeynodeSysIdentifiers, Keynodes
 from sctp.logic import SctpClientInstance
 from sctp.types import ScAddr, SctpIteratorType, ScElementType
 
-import api_logic as logic
+from . import api_logic as logic
 import time
-import base
+from . import base
 
 
 
@@ -449,7 +449,7 @@ class AddrResolve(base.BaseHandler):
         with SctpClientInstance() as sctp_client:
             res = {}
             for idtf in arguments:
-                addr = sctp_client.find_element_by_system_identifier(str(idtf))
+                addr = sctp_client.find_element_by_system_identifier(str.encode(idtf))
                 if addr is not None:
                     res[idtf] = addr.to_int()
     

@@ -413,8 +413,7 @@ def get_languages_list(keynode_languages, sctp_client):
 @decorators.method_logging
 def do_command(sctp_client, keys, cmd_addr, arguments, handler):
     result = {}
-     
-    
+        
     if cmd_addr is not None:
 
         keynode_ui_rrel_commnad = keys[KeynodeSysIdentifiers.ui_rrel_commnad]
@@ -459,7 +458,7 @@ def do_command(sctp_client, keys, cmd_addr, arguments, handler):
             if arg_arc is None:
                 return serialize_error(handler, 404, 'Error while create "create_instance" command')
 
-            idx_addr = sctp_client.find_element_by_system_identifier(str(u'rrel_%d' % idx))
+            idx_addr = sctp_client.find_element_by_system_identifier(str.encode('rrel_%d' % idx))
             if idx_addr is None:
                 return serialize_error(handler, 404, 'Error while create "create_instance" command')
             idx += 1
@@ -760,7 +759,7 @@ class ScSession:
         self.sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, self.keynodes[KeynodeSysIdentifiers.ui_nrel_user_default_ext_language], arc)
 
     def _find_user_by_system_idtf(self, idtf):
-        value = self.sctp_client.find_element_by_system_identifier(str(idtf.encode('utf-8')))
+        value = self.sctp_client.find_element_by_system_identifier(idtf.encode('utf-8'))
         return value
     
     def _create_user_with_system_idtf(self, idtf):
@@ -770,7 +769,7 @@ class ScSession:
         user_node = self.sctp_client.create_node(ScElementType.sc_type_node | ScElementType.sc_type_const)
         self.sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_user, user_node)
         
-        res = self.sctp_client.set_system_identifier(user_node, str(idtf.encode('utf-8')))
+        res = self.sctp_client.set_system_identifier(user_node, idtf.encode('utf-8'))
         
         return user_node
 

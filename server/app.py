@@ -59,7 +59,7 @@ def main():
     tornado.options.define("user_key_expire_time", default = 600, help = "user key expire time in seconds", type = int)
     tornado.options.define("super_emails", default = "", help = "email of site super administrator (maximum rights)", type = list)
     tornado.options.define("db_path", default = "data.db", help = "path to database file", type = str)
-    
+
     tornado.options.define("cfg", default = "server.conf", help = "path to configuration file", type = str)
 
     tornado.options.parse_command_line()
