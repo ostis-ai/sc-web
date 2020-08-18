@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import tornado.web
-import base
+from . import base
 import decorators
 
 

@@ -25,10 +25,10 @@ class User:
 
 class BaseHandler(tornado.web.RequestHandler):
     
-    cookie_user_key = u'user_key'
+    cookie_user_key = 'user_key'
     
     def get_current_user(self):
-        key = self.get_secure_cookie(self.cookie_user_key, None, 1)
+        key = self.get_secure_cookie(str.encode(self.cookie_user_key), None, 1)
         
         database = db.DataBase()
         u = database.get_user_by_key(key)

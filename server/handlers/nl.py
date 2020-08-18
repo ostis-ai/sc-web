@@ -2,7 +2,7 @@
 
 import apiai
 import json
-import base
+from . import base
 import decorators
 
 import tornado.web
@@ -12,7 +12,7 @@ from sctp.logic import SctpClientInstance
 from sctp.types import ScAddr, SctpIteratorType, ScElementType
 
 
-import api_logic as logic
+from . import api_logic as logic
 
 
 @decorators.class_logging

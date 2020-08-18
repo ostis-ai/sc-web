@@ -52,7 +52,7 @@ class DataBase:
                  self.RIGHTS_SUPER: 'super'
                 }
         
-        for i in xrange(256):
+        for i in range(256):
             n = None
             try:
                 n = names[i]

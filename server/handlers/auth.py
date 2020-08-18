@@ -4,7 +4,7 @@ import tornado.auth
 import tornado.options
 import tornado.web
 import json
-import base
+from . import base
 import db
 import decorators
 
@@ -12,7 +12,7 @@ from keynodes import KeynodeSysIdentifiers, Keynodes
 from sctp.logic import SctpClientInstance
 from sctp.types import ScAddr, SctpIteratorType, ScElementType
 
-import api_logic as logic
+from . import api_logic as logic
 
 
 @decorators.class_logging
@@ -162,7 +162,7 @@ class GoogleOAuth2LoginHandler(base.BaseHandler,
         self.settings[self._OAUTH_SETTINGS_KEY]['key'] = tornado.options.options.google_client_id
         self.settings[self._OAUTH_SETTINGS_KEY]['secret'] = tornado.options.options.google_client_secret
                 
-        print self.request.uri
+        print(self.request.uri)
                 
         uri = 'http://' + tornado.options.options.host
         uri += ':'
