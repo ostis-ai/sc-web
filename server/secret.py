@@ -18,7 +18,7 @@ def get_secret():
             try:
                 import random
                 SECRET_KEY = base64.b64encode(uuid.uuid4().bytes + uuid.uuid4().bytes)
-                secret = file(SECRET_FILE, 'w')
+                secret = open(SECRET_FILE, 'wb')
                 secret.write(SECRET_KEY)
                 secret.close()
             except IOError:
