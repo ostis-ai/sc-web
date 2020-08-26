@@ -1,11 +1,29 @@
 const searchByKeyWord = (event, item) => {
-    if (item && item.addr) {
+    if (item.addr) {
         SCWeb.core.Main.doDefaultCommand([item.addr]);
+    } else if (item.name) {
+        if (/^[A-Za-z0-9_ ]*$/.test(item.name)) {
+            searchByIdentifier(item.name);
+        } else {
+            console.log('Please note that search can be done by english identifiers only in this version');
+        }
+    } else {
+        searchByIdentifier(item);
     }
     event.stopPropagation();
     $('.typeahead').val('');
     $('.tt-dropdown-menu').hide();
 };
+
+const searchByIdentifier = (identifier) => {
+    SCWeb.core.Server.resolveScAddr([identifier], function (addrs) {
+        if ($.isEmptyObject(addrs)) {
+            console.log('Given identifier exists in redis db but not in rocksdb');
+        } else {
+            SCWeb.core.Main.doDefaultCommand([addrs[identifier]]);
+        }
+    });
+}
 
 SCWeb.ui.SearchPanel = {
     init: function () {
@@ -23,8 +41,9 @@ SCWeb.ui.SearchPanel = {
             {
                 name: 'idtf',
                 source: function (query, cb) {
-                    $('#search-input').addClass('search-processing');
-                    SCWeb.core.Server.findIdentifiersSubStr(query, function (data) {
+                    //$('#search-input').addClass('search-processing');
+                    // TODO implement for rocksdb
+/*                    SCWeb.core.Server.findIdentifiersSubStr(query, function (data) {
                         keys = [];
 
                         var addValues = function (key) {
@@ -43,7 +62,7 @@ SCWeb.ui.SearchPanel = {
 
                         cb(keys);
                         $('#search-input').removeClass('search-processing');
-                    });
+                    });*/
                 },
                 displayKey: 'name',
                 templates: {
@@ -68,7 +87,7 @@ SCWeb.ui.SearchPanel = {
             searchByKeyWord(event, item);
         }).keypress(function (event) {
             if (event.which === 13) {
-                searchByKeyWord(event, keys[0]);
+                searchByKeyWord(event, $('#search-input').val());
             }
         });
 

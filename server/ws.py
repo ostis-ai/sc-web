@@ -6,7 +6,7 @@ import struct
 import socket
 import time
 import json
-import thread
+import _thread
 
 import db
 import handlers.base as base
@@ -30,12 +30,12 @@ class SocketProxy:
             host = tornado.options.options['sctp_host']
             port = tornado.options.options['sctp_port']
             self.sock.connect((host, port))
-        except Exception, e:
-            print "can't connect to %s:%d. Exception type is %s" % (host, port, `e`)
+        except Exception as e:
+            print("can't connect to %s:%d. Exception type is %s" % (host, port, e))
 
         self.registered_events = []
         self.recieved_events = []
-        self.events_lock = thread.allocate_lock()
+        self.events_lock = _thread.allocate_lock()
         self.write_rights = write_rights
 
     def destroy(self):
@@ -47,7 +47,7 @@ class SocketProxy:
         self.events_lock.release()
         
     def receiveData(self, dataSize):
-        res = ''
+        res = b''
         while (len(res) < dataSize):
             data = self.sock.recv(dataSize - len(res))
             if not data:
@@ -58,8 +58,7 @@ class SocketProxy:
         return res
 
     def send(self, message):
-
-        data = str(message)
+        data = message
         # get cmd code
         cmdCode, flag, cmdId, size = struct.unpack_from('=BBII', data)
 

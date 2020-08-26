@@ -25,7 +25,6 @@ import socket
 import struct
 import time
 import decorators
-import thread, threading
 
 from sctp.types import ScAddr, SctpIteratorType, ScStatItem, SctpCommandType, SctpResultCode
 
@@ -55,7 +54,7 @@ class SctpClient:
         self.shutdown()    
                 
     def receiveData(self, dataSize):
-        res = ''
+        res = b''
         while (len(res) < dataSize):
             data = self.sock.recv(dataSize - len(res))
             res += data
@@ -72,8 +71,8 @@ class SctpClient:
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             self.sock.connect((host, port))
-        except Exception, e:
-            print "can't connect to %s:%d. Exception type is %s" % (host, port, `e`)
+        except Exception as e:
+            print("can't connect to %s:%d. Exception type is %s" % (host, port, e))
         
     def shutdown(self):
         """Close network session
@@ -376,9 +375,9 @@ class SctpClient:
             return None
 
         results = []
-        for idx in xrange(res_count):
+        for idx in range(res_count):
             result_item = []
-            for j in xrange(params_count):
+            for j in range(params_count):
                 addr_data = self.receiveData(4)
                 addr = ScAddr(0, 0)
                 addr.seg, addr.offset = struct.unpack('=HH', addr_data)
