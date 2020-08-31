@@ -324,7 +324,7 @@ class IdtfFind(base.BaseHandler):
             if data not in array:
                 if len(array) > 0:
                     idx = 0
-                    max_n = 100
+                    max_n = tornado.options.options.idtf_search_limit
                     inserted = False
                     for idx in range(len(array)):
                         if len(array[idx][1]) > len(data[1]):

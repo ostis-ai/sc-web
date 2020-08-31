@@ -26,9 +26,9 @@ class RocksdbReader:
 
     def read_rocksdb(self, rocksdb_fm_path):
         """read db and fill self.sys, self.main and self.common lists by addrs"""
+        print("Reading db ...")
         self.test_connection_sctp()
 
-        print("Reading db ...")
         time_start = time.perf_counter()
 
         opts = rocksdb.Options()
@@ -81,7 +81,7 @@ class RocksdbReader:
                 byte_border += 4
 
     def test_connection_sctp(self):
-        """Check connection to sctp. If connection refused, we can't process db"""
+        """Check connection to sctp. If connection refused, stop server"""
         try:
             with SctpClientInstance() as sctp_client:
                 keys = Keynodes(sctp_client)

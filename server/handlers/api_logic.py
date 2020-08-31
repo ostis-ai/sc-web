@@ -336,21 +336,21 @@ def get_by_identifier_translated(used_lang, keys, sctp_client, idtf):
     
     links = sctp_client.find_links_with_content(idtf)
     if links:
-        for l in links:
-            for k in keynode_idtfs:
+        for link in links:
+            for keynode_idtf in keynode_idtfs:
                 elements = sctp_client.iterate_elements(SctpIteratorType.SCTP_ITERATOR_5_A_A_F_A_F,
                                                         0,
                                                         ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
-                                                        l,
+                                                        link,
                                                         ScElementType.sc_type_arc_pos_const_perm,
-                                                        k)
+                                                        keynode_idtf)
 
                 if elements is not None:
                     # check if founded main identifier is for used language
                     langs = sctp_client.iterate_elements(SctpIteratorType.SCTP_ITERATOR_3F_A_F,
                                                         used_lang,
                                                         ScElementType.sc_type_arc_pos_const_perm,
-                                                        l)
+                                                        link)
                     if langs is not None:
                         return elements[0][0]
 
