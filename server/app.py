@@ -14,6 +14,7 @@ import admin.main as admin
 import admin.users as admin_users
 import ws, db
 import logger_sc
+from reader_rocksdb import RocksdbReader
 
 is_closing = False
 
@@ -70,6 +71,11 @@ def main():
     database = db.DataBase()
     database.init()
 
+    # preparing for search
+    rocksdb_fm_path = os.path.abspath("../../kb.bin/file_memory")
+    reader = RocksdbReader()
+    reader.read_rocksdb(rocksdb_fm_path)
+
     # prepare logger
     logger_sc.init()
 
@@ -92,7 +98,7 @@ def main():
             (r"/api/languages/", api.Languages),
             (r"/api/languages/set/", api.LanguageSet),
             
-            (r"/api/idtf/find/", api.IdtfFind),
+            (r"/api/idtf/find/", api.IdtfFind, dict(sys=reader.sys, main=reader.main, common=reader.common)),
             (r"/api/idtf/resolve/", api.IdtfResolve),
             
             (r"/api/addr/resolve/", api.AddrResolve),

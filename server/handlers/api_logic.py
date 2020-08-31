@@ -260,6 +260,26 @@ def find_translation_with_format(construction_addr, format_addr, keynode_nrel_fo
 
 
 @decorators.method_logging
+def get_by_system_identifier(keys, sctp_client, idtf):
+    keynode_nrel_system_identifier = keys[KeynodeSysIdentifiers.nrel_system_identifier]
+    links = sctp_client.find_links_with_content(idtf)
+    if links:
+        for l in links:
+            elements = sctp_client.iterate_elements(
+                                                    SctpIteratorType.SCTP_ITERATOR_5_A_A_F_A_F,
+                                                    0,
+                                                    ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
+                                                    l,
+                                                    ScElementType.sc_type_arc_pos_const_perm,
+                                                    keynode_nrel_system_identifier
+                                                    )
+            if elements is not None:
+                return elements[0][0]
+
+    return None
+
+
+@decorators.method_logging
 def get_identifier_translated(addr, used_lang, keys, sctp_client):
     keynode_nrel_main_idtf = keys[KeynodeSysIdentifiers.nrel_main_idtf]
     keynode_nrel_system_identifier = keys[KeynodeSysIdentifiers.nrel_system_identifier]
@@ -310,29 +330,31 @@ def get_identifier_translated(addr, used_lang, keys, sctp_client):
 @decorators.method_logging
 def get_by_identifier_translated(used_lang, keys, sctp_client, idtf):
     
-    keynode_nrel_main_idtf = keys[KeynodeSysIdentifiers.nrel_main_idtf]
+    keynode_idtfs = []
+    keynode_idtfs.append(keys[KeynodeSysIdentifiers.nrel_main_idtf])
+    keynode_idtfs.append(keys[KeynodeSysIdentifiers.nrel_idtf])
     
     links = sctp_client.find_links_with_content(idtf)
     if links:
         for l in links:
-            elements = sctp_client.iterate_elements(SctpIteratorType.SCTP_ITERATOR_5_A_A_F_A_F,
-                                            0,
-                                            ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
-                                            l,
-                                            ScElementType.sc_type_arc_pos_const_perm,
-                                            keynode_nrel_main_idtf)
-            if elements is not None:
-                # check if founded main identifier is for used language
-                langs = sctp_client.iterate_elements(
-                                                     SctpIteratorType.SCTP_ITERATOR_3F_A_F,
-                                                     used_lang,
-                                                     ScElementType.sc_type_arc_pos_const_perm,
-                                                     l
-                                                     )
-                if langs is not None:
-                    return elements[0][0]
+            for k in keynode_idtfs:
+                elements = sctp_client.iterate_elements(SctpIteratorType.SCTP_ITERATOR_5_A_A_F_A_F,
+                                                        0,
+                                                        ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
+                                                        l,
+                                                        ScElementType.sc_type_arc_pos_const_perm,
+                                                        k)
 
-    return sctp_client.find_element_by_system_identifier(idtf)
+                if elements is not None:
+                    # check if founded main identifier is for used language
+                    langs = sctp_client.iterate_elements(SctpIteratorType.SCTP_ITERATOR_3F_A_F,
+                                                        used_lang,
+                                                        ScElementType.sc_type_arc_pos_const_perm,
+                                                        l)
+                    if langs is not None:
+                        return elements[0][0]
+
+    return None
 
 
 @decorators.method_logging

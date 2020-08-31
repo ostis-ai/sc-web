@@ -2,7 +2,6 @@
 
 import tornado.web
 import json
-import redis
 import decorators
 
 from keynodes import KeynodeSysIdentifiers, Keynodes
@@ -91,7 +90,7 @@ class ContextMenu(base.BaseHandler):
         
         
 class CmdDo(base.BaseHandler):
-    
+
     #@tornado.web.asynchronous
     def post(self):
         result = '[]'
@@ -111,13 +110,11 @@ class CmdDo(base.BaseHandler):
                         arguments.append(arg)
                     else:
                         return logic.serialize_error(404, "Invalid argument: %s" % arg)
-    
                 first = False
                 idx += 1
 
             keys = Keynodes(sctp_client)
             result = logic.do_command(sctp_client, keys, cmd_addr, arguments, self)
-                 
             self.set_header("Content-Type", "application/json")
             self.finish(json.dumps(result))
         
@@ -305,83 +302,57 @@ class LanguageSet(base.BaseHandler):
             self.finish()
 
 
-@decorators.class_logging
 class IdtfFind(base.BaseHandler):
     
+    def initialize(self, sys, main, common):
+        self.sys = sys
+        self.main = main
+        self.common = common
+
+    @decorators.method_logging
     #@tornado.web.asynchronous
     def get(self):
-        result = None
-    
+        result = {}
+        result['main'] = []
+        result['common'] = []
+        result['sys'] = []
     
         # get arguments
         substr = self.get_argument('substr', None)
-        
-        # connect to redis an try to find identifiers
-        r = redis.StrictRedis(host = tornado.options.options.redis_host, 
-                              port = tornado.options.options.redis_port,
-                              db = tornado.options.options.redis_db_idtf)
-        result = {}
-        sys = []
-        main = []
-        common = []
-        max_n = tornado.options.options.idtf_serach_limit
-        
-        def appendSorted(array, data):
-            if len(array) > 0:
-                idx = 0
-                inserted = False
-                for idx in xrange(len(array)):
-                    if len(array[idx][1]) > len(data[1]):
-                        array.insert(idx, data)
-                        inserted = True
-                        break;
-                    idx = idx + 1
-                
-                if not inserted and len(array) < max_n:
-                    array.append(data)
-                
-                if (len(array) > max_n):
-                    array.pop()
-            else:
-                array.append(data)
-        
-        # first of all need to find system identifiers
-        cursor = 0
-        while True:
-            reply = r.scan(cursor, u"idtf:*%s*" % substr, 1000)
-            if not reply or len(reply) == 0:
-                break
-            cursor = int(reply[0])
-            
-            for idtf in reply[1]:
-                if len(sys) == max_n and len(main) == max_n and len(common) == max_n:
-                    break
-                
-                rep = r.get(idtf)
-                utf = idtf.decode('utf-8')
-                addr = ScAddr.parse_binary(rep)
-                if utf.startswith(u"idtf:sys:") and len(sys) < max_n:
-                    appendSorted(sys, [addr.to_int(), utf[9:]])
-                elif utf.startswith(u"idtf:main:") and len(main) < max_n:
-                    appendSorted(main, [addr.to_int(), utf[10:]])
-                elif utf.startswith(u"idtf:common:") and len(common) < max_n:
-                    appendSorted(common, [addr.to_int(), utf[12:]])
 
-            if cursor == 0:
-                break
-                                
-        with SctpClientInstance() as sctp_client:
-            keys = Keynodes(sctp_client)
-            keynode_nrel_main_idtf = keys[KeynodeSysIdentifiers.nrel_main_idtf]
-            keynode_nrel_system_identifier = keys[KeynodeSysIdentifiers.nrel_system_identifier]
-            keynode_nrel_idtf = keys[KeynodeSysIdentifiers.nrel_idtf]
-                        
-            result['sys'] = sys
-            result['main'] = main
-            result['common'] = common
-            
-            self.set_header("Content-Type", "application/json")
-            self.finish(json.dumps(result))
+        def appendSorted(array, data):
+            if data not in array:
+                if len(array) > 0:
+                    idx = 0
+                    max_n = 100
+                    inserted = False
+                    for idx in range(len(array)):
+                        if len(array[idx][1]) > len(data[1]):
+                            array.insert(idx, data)
+                            inserted = True
+                            break;
+                        idx = idx + 1
+
+                    if not inserted and len(array) < max_n:
+                        array.append(data)
+
+                    if (len(array) > max_n):
+                        array.pop()
+                else:
+                    array.append(data)
+
+        for i in self.main:
+            if substr in i[1]:
+                appendSorted(result['main'], i)
+        for i in self.common:
+            if substr in i[1]:
+                appendSorted(result['common'], i)
+        for i in self.sys:
+            if substr in i[1]:
+                appendSorted(result['sys'], i)
+
+        self.set_header("Content-Type", "application/json")
+        self.finish(json.dumps(result))
 
 
 @decorators.class_logging
@@ -406,8 +377,7 @@ class IdtfResolve(base.BaseHandler):
             
             sc_session = logic.ScSession(self, sctp_client, keys)
             used_lang = sc_session.get_used_language()
-            
-    
+
             result = {}
             # get requested identifiers for arguments
             for addr_str in arguments:
