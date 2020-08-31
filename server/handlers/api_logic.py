@@ -264,12 +264,12 @@ def get_by_system_identifier(keys, sctp_client, idtf):
     keynode_nrel_system_identifier = keys[KeynodeSysIdentifiers.nrel_system_identifier]
     links = sctp_client.find_links_with_content(idtf)
     if links:
-        for l in links:
+        for link in links:
             elements = sctp_client.iterate_elements(
                                                     SctpIteratorType.SCTP_ITERATOR_5_A_A_F_A_F,
                                                     0,
                                                     ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
-                                                    l,
+                                                    link,
                                                     ScElementType.sc_type_arc_pos_const_perm,
                                                     keynode_nrel_system_identifier
                                                     )
