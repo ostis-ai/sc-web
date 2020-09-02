@@ -117,21 +117,19 @@
         </div>
         <div id="window-header-tools" class="pull-right">
             <div class="btn-group mode-switching-panel">    <!-- mode-switching-panel -->
-                <button type="button" class="btn btn-success ">
-                    <span class="glyphicon glyphicon-font"></span>
+                <button type="button" class="btn btn-default" id="windows-list">
+                    <span class="glyphicon glyphicon-resize-full"></span>
                 </button>
-                <button type="button" class="histoy-item-btn btn btn-success" data-toggle="dropdown" sc_control_sys_idtf="ui_control_select_window_type">
+                <button type="button" class="histoy-item-btn btn btn-default" data-toggle="dropdown"
+                        sc_control_sys_idtf="ui_control_select_window_type">
                     <span class="glyphicon glyphicon-list-alt"></span>
                 </button>
                 <ul id="history-item-langs" class="dropdown-menu" role="menu">{# languages will be added #}</ul>
                 
-                <button type="button" class="btn btn-primary" id="windows-list">
-                    <span class="glyphicon glyphicon-th-large"></span>
-                </button>
                 <button type="button" class="btn btn-default" id="history-item-print" sc_control_sys_idtf="ui_control_print_window_content">
                     <span class="glyphicon glyphicon-print"></span>
                 </button>
-                <button type="button" class="btn btn-default" id="history-item-link" data-container="body" data-toggle="popover" data-placement="bottom">
+                <button type="button" class="btn btn-default" id="history-item-link" data-container="body" data-toggle="popover" data-trigger="focus" data-placement="bottom">
                     <span class="glyphicon glyphicon-link"></span>
                 </button>
             </div>
@@ -180,6 +178,7 @@
 
             $('#windows-list').click(function () {
                 $('#static-window-container').toggle();
+                $(this).find('span').toggleClass('glyphicon-resize-small').toggleClass('glyphicon-resize-full');
             });
 
             SCWeb.ui.Locker.show();
