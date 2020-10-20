@@ -597,20 +597,20 @@ def do_command(sctp_client, keys, cmd_addr, arguments, handler):
                         if input_arcs:
                             for arc in input_arcs:
                                 for l in langs:
-                                    if not generated.has_key(str(l)) and arc[0] == l:
+                                    if str(l) not in generated and arc[0] == l:
                                         lang_idtfs = identifiers[str(l)]
                                         # get content of link
                                         data = sctp_client.get_link_content(t[2]).decode('utf-8')
                                         if data:
-                                            for idx in xrange(len(arguments)):
+                                            for idx in range(len(arguments)):
                                                 value = arguments[idx].to_id()
-                                                if lang_idtfs.has_key(str(arguments[idx])):
+                                                if str(arguments[idx]) in lang_idtfs:
                                                     value = lang_idtfs[str(arguments[idx])]
                                                 data = data.replace(u'$ui_arg_%d' % (idx + 1), value)
 
                                             # generate identifier
                                             idtf_link = sctp_client.create_link()
-                                            sctp_client.set_link_content(idtf_link, str(data.encode('utf-8')))
+                                            sctp_client.set_link_content(idtf_link, data.encode('utf-8'))
                                             sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, l,
                                                                    idtf_link)
 
