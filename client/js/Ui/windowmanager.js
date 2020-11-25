@@ -180,7 +180,7 @@ SCWeb.ui.WindowManager = {
         var f = function (addr, is_struct) {
             var id = self.hash_addr(question_addr, command_state.format);
             if (!self.isWindowExist(id)) {
-                var window_id = 'window_' + question_addr + "_format_" + command_state.format;
+                var window_id = 'window_' + question_addr;
                 var window_html = '<div class="panel panel-default sc-window" id="' + id + '" sc_addr="' + question_addr + '" sc-addr-fmt="' + command_state.format + '">' +
                     '<div class="panel-body" id="' + window_id + '"></div>'
                 '</div>';
