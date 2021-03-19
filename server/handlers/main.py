@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 
-import tornado.web
 from . import base
 import decorators
 
 
 @decorators.class_logging
 class MainHandler(base.BaseHandler):
-    @tornado.web.asynchronous
     def get(self):
         first_time = self.get_cookie("first_time", "!")
         self.set_cookie("first_time", "0")

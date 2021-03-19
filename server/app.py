@@ -5,6 +5,7 @@ import tornado.web
 import tornado.options
 import secret
 import os
+import logging
 
 from handlers.main import MainHandler
 from handlers.nl import NaturalLanguageSearch
@@ -37,6 +38,8 @@ class NoCacheStaticHandler(tornado.web.StaticFileHandler):
 
 def main():
     
+    logging.getLogger('asyncio').setLevel(logging.WARNING)
+
     tornado.options.define("static_path", default = "../client/static", help = "path to static files directory", type = str)
     tornado.options.define("templates_path", default = "../client/templates", help = "path to template files directory", type = str)
     tornado.options.define("sctp_port", default = 55770, help = "port of sctp server", type = int)
