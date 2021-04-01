@@ -14,7 +14,6 @@ class UsersInfo(base.BaseHandler):
     
     @tornado.web.authenticated
     @decorators.requestAdmin
-    @tornado.web.asynchronous
     def get(self):
         start = int(self.get_argument(u'p', 0))
                 
@@ -28,7 +27,6 @@ class UserSetRights(base.BaseHandler):
     
     @tornado.web.authenticated
     @decorators.requestAdmin
-    @tornado.web.asynchronous
     def put(self):
         user_id = int(self.get_argument(u'id', -1))
         if user_id < 0:
@@ -70,8 +68,6 @@ class UserListRights(base.BaseHandler):
     
     @tornado.web.authenticated
     @decorators.requestAdmin
-    @tornado.web.asynchronous
     def get(self):
         database = db.DataBase()
         self.finish(json.dumps(list(map(lambda r: {'value': r.rights, 'name': r.name}, database.list_rights()))))
-        
