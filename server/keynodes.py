@@ -109,6 +109,7 @@ class KeynodeSysIdentifiers:
     scg_code = 'scg_code'
     scs_code = 'scs_code'
     scn_code = 'scn_code'
+    plain_text = 'plain_text'
     
     # formats
     format_scs = 'format_scs'
