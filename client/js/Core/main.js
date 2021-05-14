@@ -1,6 +1,6 @@
 var scHelper = null;
 var scKeynodes = null;
-
+const currentYear = new Date().getFullYear();
 
 SCWeb.core.Main = {
 
@@ -131,7 +131,7 @@ SCWeb.core.Main = {
                 }).fail(function () {
                 start(argumentAddr);
             });
-
+            $('.copyright').text(`Copyright © 2012 - ${currentYear} OSTIS`);
         });
     },
 
