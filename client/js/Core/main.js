@@ -90,9 +90,22 @@ SCWeb.core.Main = {
 
     systemIdentifierParameterProcessed(urlObject) {
         const sys_id = urlObject['sys_id'];
+        const scg_view = urlObject['scg_view'];
         if (sys_id) {
             SCWeb.core.Main.doDefaultCommandWithSystemIdentifier([sys_id]);
             window.history.replaceState(null, null, window.location.pathname);
+            if (scg_view != undefined){
+                $('#window-header-tools').hide();
+                $('#static-window-container').hide();
+                $('#header').hide();
+                $('#footer').hide();
+                setTimeout(function(){
+                    $('#window-container').children().children().children().children().hide();
+                    $('.sc-contour').css({'height':'97%','width':'97%','position':'absolute'});
+                    $('.scs-scn-view-toogle-button').hide();
+                    $('.scs-scn-view-toogle-button').click();
+                }, 1000)
+            }
             return true;
         }
         return false;
