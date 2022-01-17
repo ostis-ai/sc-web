@@ -104,6 +104,8 @@ SCWeb.core.Main = {
                     $('#window-container').children().children().children().children().hide();
                     $('.sc-contour').css({'height':'97%','width':'97%','position':'absolute'});
                     $('.scs-scn-view-toogle-button').hide().click();
+                    $("[id*='tools-']").parent().css("height", "100%");
+                    $("[id*='tools-']").parent().parent().css("height", "100%");
                 });
             }
             return true;
