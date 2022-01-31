@@ -166,7 +166,7 @@ SCWeb.core.Main = {
                 }).fail(function () {
                 start(argumentAddr);
             });
-            $('.copyright').text(`Copyright © 2012 - ${currentYear} OSTIS`);
+            $('.copyright').text(`Copyright © 2021 - ${currentYear} OSTIS`);
         });
     },
 
