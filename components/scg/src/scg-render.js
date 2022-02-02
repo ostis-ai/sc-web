@@ -201,7 +201,7 @@ SCg.Render.prototype = {
                 .attr('xlink:href', function (d) {
                     return '#' + SCgAlphabet.getDefId(d.sc_type);
                 })
-                .attr('class', 'ui-no-tooltip');
+                .attr('class', 'sc-no-default-cmd ui-no-tooltip');
         };
 
 
