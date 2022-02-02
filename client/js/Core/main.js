@@ -1,6 +1,6 @@
 var scHelper = null;
 var scKeynodes = null;
-
+const currentYear = new Date().getFullYear();
 
 SCWeb.core.Main = {
 
@@ -90,12 +90,47 @@ SCWeb.core.Main = {
 
     systemIdentifierParameterProcessed(urlObject) {
         const sys_id = urlObject['sys_id'];
+        const scg_view = urlObject['scg_structure_view_only'];
         if (sys_id) {
             SCWeb.core.Main.doDefaultCommandWithSystemIdentifier([sys_id]);
             window.history.replaceState(null, null, window.location.pathname);
+            if (scg_view){
+                $('#window-header-tools').hide();
+                $('#static-window-container').hide();
+                $('#header').hide();
+                $('#footer').hide();
+                $('#window-container').css({'padding-right':'', 'padding-left':''});
+                this.waitForElm('.sc-contour').then(() => {
+                    $('#window-container').children().children().children().children().hide();
+                    $('.sc-contour').css({'height':'97%','width':'97%','position':'absolute'});
+                    $('.scs-scn-view-toogle-button').hide().click();
+                    $("[id*='tools-']").parent().css("height", "100%");
+                    $("[id*='tools-']").parent().parent().css("height", "100%");
+                });
+            }
             return true;
         }
         return false;
+    },
+
+    waitForElm(selector) {
+        return new Promise(resolve => {
+            if (document.querySelector(selector)) {
+                return resolve(document.querySelector(selector));
+            }
+    
+            const observer = new MutationObserver(mutations => {
+                if (document.querySelector(selector)) {
+                    resolve(document.querySelector(selector));
+                    observer.disconnect();
+                }
+            });
+    
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+        });
     },
 
     commandParameterProcessed(urlObject) {
@@ -131,7 +166,7 @@ SCWeb.core.Main = {
                 }).fail(function () {
                 start(argumentAddr);
             });
-
+            $('.copyright').text(`Copyright © 2021 - ${currentYear} OSTIS`);
         });
     },
 

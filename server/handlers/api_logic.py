@@ -739,20 +739,9 @@ class ScSession:
     def get_default_ext_lang(self):
         """Returns sc-addr of default external language
         """
-        results = self.sctp_client.iterate_elements(
-            SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
-            self.get_sc_addr(),
-            ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
-            ScElementType.sc_type_node | ScElementType.sc_type_const,
-            ScElementType.sc_type_arc_pos_const_perm,
-            self.keynodes[KeynodeSysIdentifiers.ui_nrel_user_default_ext_language]
-        )
 
-        if results:
-            return results[0][2]
-
-        # setup default language
-        _lang = self.keynodes[KeynodeSysIdentifiers.scs_code]
+        # setup scg as default language
+        _lang = self.keynodes[KeynodeSysIdentifiers.scg_code]
         self.set_default_ext_lang(_lang)
 
         return _lang
