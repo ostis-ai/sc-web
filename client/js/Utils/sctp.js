@@ -351,26 +351,38 @@ SctpClient.prototype.connect = function (url, success) {
 
         emit_events();
     };
+
     this.socket.onmessage = function (e) {
         console.log('message', e.data);
     };
+
     this.socket.onclose = function (e) {
         var CLOSE_NORMAL = 1000;
         var CLOSE_GOING_AWAY = 1001;
         console.log('Closed websocket connection');
         if (!(e.code == CLOSE_NORMAL || e.code == CLOSE_GOING_AWAY)) {
             $('#sc-ui-locker').removeClass('shown');
-            alert("WebSocket closed");
+            console.log("WebSocket closed. Reconnecting...");
+            self.reconnect();
         }
     };
+
     this.socket.onerror = function (e) {
         console.log('WebSocket Error ' + e);
         $('#sc-ui-locker').removeClass('shown');
-        alert('WebSocket error');
+        self.reconnect();
     };
 
 };
 
+SctpClient.prototype.reconnect = function () {
+    SctpClientCreate().done(function (client) {
+        window.sctpClient = client;
+        window.scHelper = new ScHelper(window.sctpClient);
+        window.scKeynodes = new ScKeynodes(window.scHelper);
+        window.scKeynodes.init();
+    });
+};
 
 SctpClient.prototype._push_task = function (task) {
     this.task_queue.push(task);
