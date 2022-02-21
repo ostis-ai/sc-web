@@ -362,15 +362,13 @@ SctpClient.prototype.connect = function (url, success) {
         console.log('Closed websocket connection');
         if (!(e.code == CLOSE_NORMAL || e.code == CLOSE_GOING_AWAY)) {
             $('#sc-ui-locker').removeClass('shown');
-            console.log("WebSocket closed. Reconnecting...");
-            self.reconnect();
+            console.log("WebSocket closed");
         }
     };
 
     this.socket.onerror = function (e) {
         console.log('WebSocket Error ' + e);
         $('#sc-ui-locker').removeClass('shown');
-        self.reconnect();
     };
 
 };
