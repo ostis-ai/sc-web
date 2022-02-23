@@ -235,3 +235,30 @@ class LogOut(base.BaseHandler):
 
                     if results and results[0] and results[0][1]:
                         sctp_client.erase_element(results[0][1])
+
+
+@decorators.class_logging
+class SignIn(base.BaseHandler):
+    def get(self):
+        database = db.DataBase()
+
+        user = self.get_argument('user', False)
+        print(user)
+
+
+@decorators.class_logging
+class SignOut(base.BaseHandler):
+    pass
+
+
+@decorators.class_logging
+class AddUser(base.BaseHandler):
+    def post(self):
+        database = db.DataBase()
+        username = self.get_argument('user', False)
+        pass_hash = self.get_argument('pass', False)
+        email = self.get_argument('email', False)
+        if not (username and pass_hash and email):
+            raise tornado.web.HTTPError(500, 'Add user is failed')
+        else:
+            database.add_user(username, pass_hash, email)

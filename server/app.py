@@ -112,7 +112,10 @@ def main():
             
             (r"/auth/google$", auth.GoogleOAuth2LoginHandler),
             (r"/auth/logout$", auth.LogOut),
-            
+            (r"/auth/signin$", auth.SignIn),
+            (r"/auth/signout$", auth.SignOut),
+            (r"/auth/add_user$", auth.AddUser),
+
             (r"/admin$", admin.MainHandler),
             (r"/admin/users/get$", admin_users.UsersInfo),
             (r"/admin/users/set_rights$", admin_users.UserSetRights),

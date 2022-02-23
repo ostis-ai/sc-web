@@ -14,17 +14,18 @@ Base = declarative_base()
 
 class Role(Base):
     __tablename__ = 'role'
-    id = Column(Integer, primary_key = True)
+    id = Column(Integer, primary_key=True)
     rights = Column(Integer)
-    name = Column(String(128), unique = True)
+    name = Column(String(128), unique=True)
 
 class User(Base):
     __tablename__ = 'user'
-    id = Column(Integer, primary_key = True, unique = True)
-    name = Column(String(255), nullable = False)
-    email = Column(String(255), nullable = False, unique = True)
+    id = Column(Integer, primary_key=True, unique=True)
+    name = Column(String(255), nullable=False)
+    pass_hash = Column(String(255), nullable=False)
+    email = Column(String(255), nullable=False, unique=True)
     avatar = Column(String(1024))
-    key = Column(String(32), nullable = False, unique = True)
+    key = Column(String(32), nullable=False, unique=True)
     role = Column(Integer)
 
 
@@ -69,7 +70,7 @@ class DataBase:
         return self.session
     
     def create_user_key(self):
-        return unicode(uuid.uuid4()) + unicode(int(time.time()))
+        return str(uuid.uuid4()) + str(int(time.time()))
     
     def new_expire_time(self):
         return datetime.date.fromtimestamp(time.time() + tornado.options.options.user_key_expire_time)
@@ -96,11 +97,12 @@ class DataBase:
         self._session().merge(u)
         self._session().commit()
     
-    def add_user(self, name, email, avatar = None, role = 0):
+    def add_user(self, name, pass_hash, email, avatar = None, role = 0):
         key = self.create_user_key()
-        new_user = User(name = unicode(name), 
-                        email = unicode(email), 
-                        avatar = unicode(avatar),
+        new_user = User(name = str(name),
+                        pass_hash = str(pass_hash),
+                        email = str(email),
+                        avatar = str(avatar),
                         key = key,
                         role = role)
         self._session().add(new_user)
