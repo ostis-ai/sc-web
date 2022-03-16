@@ -19,4 +19,4 @@ To install current module on debian based distros you may use internal scripts. 
 ```
 
 ### Running
-To run ostis web interface you should build knowledge base and run sctp server. You can do it by running `./build_kb.sh` and `./run_sctp.sh` in installed [sc-machine](https://github.com/ostis-ai/sc-machine) module.
+To run ostis web interface you should build knowledge base and run sctp server. You can do it by running `./build_kb.sh` and `./run_sctp.sh` in [ostis-web-platform](https://github.com/ostis-ai/ostis-web-platform) module.
