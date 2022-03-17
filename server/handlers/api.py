@@ -2,6 +2,10 @@
 
 import tornado.web
 import json
+
+from sc_client import client
+from sc_client.models import ScIdtfResolveParams
+
 import decorators
 
 from keynodes import KeynodeSysIdentifiers, Keynodes
@@ -416,15 +420,16 @@ class AddrResolve(base.BaseHandler):
             first = False
             idx += 1
 
-        with SctpClientInstance() as sctp_client:
-            res = {}
-            for idtf in arguments:
-                addr = sctp_client.find_element_by_system_identifier(str.encode(idtf))
-                if addr is not None:
-                    res[idtf] = addr.to_int()
+        res = {}
+        resolve_keynodes_params = map(lambda x: ScIdtfResolveParams(idtf=x), arguments)
+        addrs = client.resolve_keynodes(*resolve_keynodes_params)
+        for i in range(len(addrs)):
+            addr = addrs[i]
+            if addr is not None:
+                res[arguments[i]] = addr.value
     
-            self.set_header("Content-Type", "application/json")
-            self.finish(json.dumps(res))
+        self.set_header("Content-Type", "application/json")
+        self.finish(json.dumps(res))
 
 
 @decorators.class_logging

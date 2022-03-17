@@ -16,7 +16,8 @@ import admin.main as admin
 import admin.users as admin_users
 import ws, db
 import logger_sc
-from reader_rocksdb import RocksdbReader
+from db_reader import Reader
+from sc_client import client
 
 is_closing = False
 
@@ -93,6 +94,7 @@ def main():
     # prepare logger
     logger_sc.init()
 
+    client.connect("ws://localhost:8090/ws_json")
     rules = [
             (r"/", MainHandler),
 
