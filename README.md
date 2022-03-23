@@ -19,7 +19,7 @@ You can install deps with
 ```
 
 ### Building
-To install current module on debian based distros you may use internal scripts. Run
+To install current module you may use internal scripts. Run
 
 ```shell
     cd scripts
