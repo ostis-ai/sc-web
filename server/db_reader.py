@@ -1,19 +1,41 @@
 import multiprocessing
+import os
+
+import tornado.options
 
 from keynodes import KeynodeSysIdentifiers, Keynodes
 from sctp.logic import SctpClientInstance
 from sctp.types import ScAddr, SctpIteratorType, ScElementType
 from handlers import api_logic as logic
 
-import rocksdb
 import time
 import concurrent.futures
 
 from progress.bar import IncrementalBar
 
 
-class RocksdbReader:
-    addr_postfix = "_addrs"
+def get_languages():
+    founded_langs = []
+    try:
+        with SctpClientInstance() as sctp_client:
+            keys = Keynodes(sctp_client)
+            languages_iter = sctp_client.iterate_elements(
+                SctpIteratorType.SCTP_ITERATOR_3F_A_A,
+                keys[KeynodeSysIdentifiers.languages],
+                ScElementType.sc_type_arc_pos_const_perm,
+                ScElementType.sc_type_node_class | ScElementType.sc_type_const
+            )
+            if not languages_iter:
+                print(f"Natural languages not found in KB")
+                return founded_langs
+            for lang_iter in languages_iter:
+                founded_langs.append(lang_iter[2])
+    except BrokenPipeError as e:
+        quit()
+    return founded_langs
+
+
+class Reader:
     long_content = None
 
     def __init__(self):
@@ -23,29 +45,19 @@ class RocksdbReader:
         self.addr = []
         self.long_content_counter = 0
         self.content_len_max = 200
+        self.fm_path = os.path.abspath(tornado.options.options.fm_path)
 
-    def read_rocksdb(self, rocksdb_fm_path):
+    def read_from_file(self):
         """read db and fill self.sys, self.main and self.common lists by addrs"""
         print("Reading db ...")
 
         time_start = time.perf_counter()
-
-        opts = rocksdb.Options()
-        opts.create_if_missing = False
-        opts.compression = rocksdb.CompressionType.snappy_compression
-        rdb = rocksdb.DB(rocksdb_fm_path, opts, read_only=True)
-        it = rdb.iteritems()
-        it.seek_to_first()
-        items = list(it)
-
-        for item in items:
-            self.form_addr_list(item)
-
+        self.form_addr_list()
         bar = IncrementalBar("Processing", max=100, suffix='%(percent)d%%')
         index = 0
         progress = int(len(self.addr) // 100)
         optimal_threads_count = 2 * multiprocessing.cpu_count() + 1
-        languages = self.get_languages()
+        languages = get_languages()
         with concurrent.futures.ThreadPoolExecutor(max_workers=optimal_threads_count) as executor:
             future_sort = {executor.submit(self.sorter, languages, addr): addr for addr in self.addr}
             for future in concurrent.futures.as_completed(future_sort):
@@ -63,28 +75,18 @@ class RocksdbReader:
         loaded_elems = len(self.sys) + len(self.main) + len(self.common)
         print(f"{loaded_elems} elems loaded in {time_taken} second(s)")
 
-    def form_addr_list(self, item):
-        """fill self.addr list by addrs from db"""
-        key = item[0].decode('utf-8')
-        if key.endswith(self.addr_postfix):
-            val = item[1]
-            encoded_addrs = val[8:]
-            addrs_count = val[0]
-            byte_border = 0
-            for _ in range(addrs_count):
-                decoded_addr = ScAddr.parse_binary(encoded_addrs[byte_border: byte_border + 4])
+    def form_addr_list(self):
+        with open(self.fm_path, "rb") as file:
+            encoded_addrs = file.read()
+        byte_border = 0
+        while byte_border < len(encoded_addrs):
+            addr = encoded_addrs[byte_border: byte_border + 4]
+            decoded_hash = int.from_bytes(addr, byteorder="big", signed=False)
+            decoded_addr = ScAddr.from_int(decoded_hash)
+            if decoded_addr and decoded_addr.to_int() != 0:
                 self.addr.append(decoded_addr)
-                byte_border += 4
-
-    def get_languages(self):
-        try:
-            with SctpClientInstance() as sctp_client:
-                keys = Keynodes(sctp_client)
-                lang_en = keys[KeynodeSysIdentifiers.lang_en]
-                lang_ru = keys[KeynodeSysIdentifiers.lang_ru]
-                return [lang_en, lang_ru]
-        except BrokenPipeError as e:
-            quit()
+            byte_border += 4
+        print(len(self.addr))
 
     def sorter(self, languages, node_addr):
         with SctpClientInstance() as sctp_client:
@@ -105,7 +107,7 @@ class RocksdbReader:
                 else:
                     self.common.append([node_addr.to_int(), link_content_decoded])
 
-    def update():
+    def update(self):
         # call after changing db
         # should update lists for searching new elems
         pass
