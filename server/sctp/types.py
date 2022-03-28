@@ -165,8 +165,8 @@ class ScAddr:
     def parse_binary(data):
         
         try:
-            seg, offset = struct.unpack('=HH', data)
-            return ScAddr (seg, offset) 
+            offset, seg = struct.unpack('=HH', data)
+            return ScAddr (seg, offset)
         except:
             return None
 

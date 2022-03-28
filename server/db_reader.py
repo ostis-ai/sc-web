@@ -81,12 +81,10 @@ class Reader:
         byte_border = 0
         while byte_border < len(encoded_addrs):
             addr = encoded_addrs[byte_border: byte_border + 4]
-            decoded_hash = int.from_bytes(addr, byteorder="big", signed=False)
-            decoded_addr = ScAddr.from_int(decoded_hash)
+            decoded_addr = ScAddr.parse_binary(addr)
             if decoded_addr and decoded_addr.to_int() != 0:
                 self.addr.append(decoded_addr)
             byte_border += 4
-        print(len(self.addr))
 
     def sorter(self, languages, node_addr):
         with SctpClientInstance() as sctp_client:
