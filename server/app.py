@@ -15,7 +15,7 @@ import admin.main as admin
 import admin.users as admin_users
 import ws, db
 import logger_sc
-from reader_rocksdb import RocksdbReader
+from db_reader import Reader
 
 is_closing = False
 
@@ -63,6 +63,7 @@ def main():
     tornado.options.define("user_key_expire_time", default = 600, help = "user key expire time in seconds", type = int)
     tornado.options.define("super_emails", default = "", help = "email of site super administrator (maximum rights)", type = list)
     tornado.options.define("db_path", default = "data.db", help = "path to database file", type = str)
+    tornado.options.define("fm_path", default = "../../kb.bin/links.scdb", help = "path to memory file for indexation", type = str)
 
     tornado.options.define("cfg", default = "server.conf", help = "path to configuration file", type = str)
 
@@ -75,9 +76,8 @@ def main():
     database.init()
 
     # preparing for search
-    rocksdb_fm_path = os.path.abspath("../../kb.bin/file_memory")
-    reader = RocksdbReader()
-    reader.read_rocksdb(rocksdb_fm_path)
+    reader = Reader()
+    reader.read_from_file()
 
     # prepare logger
     logger_sc.init()
