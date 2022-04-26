@@ -6,6 +6,7 @@ import tornado.options
 import secret
 import os
 import logging
+import configparser
 
 from handlers.main import MainHandler
 from handlers.nl import NaturalLanguageSearch
@@ -65,11 +66,14 @@ def main():
     tornado.options.define("db_path", default = "data.db", help = "path to database file", type = str)
     tornado.options.define("fm_path", default = "../../kb.bin/links.scdb", help = "path to memory file for indexation", type = str)
 
-    tornado.options.define("cfg", default = "server.conf", help = "path to configuration file", type = str)
+    tornado.options.define("cfg", default = "", help = "path to configuration file", type = str)
 
+    #parse config
     tornado.options.parse_command_line()
-    if os.path.exists(tornado.options.options.cfg):
-        tornado.options.parse_config_file(tornado.options.options.cfg)
+    config = None
+    if tornado.options.options.cfg != "":
+        config = configparser.ConfigParser()
+        config.read(tornado.options.options.cfg)
 
     # prepare database
     database = db.DataBase()
