@@ -903,13 +903,13 @@ SctpClient.prototype.get_statistics = function () {
     throw "Not implemented";
 };
 
-SctpClientCreate = function () {
-    var dfd = jQuery.Deferred();
-
-    var sctp_client = new SctpClient();
-    sctp_client.connect('/sctp', function () {
-        dfd.resolve(sctp_client);
-    });
-
-    return dfd.promise();
-};
+// SctpClientCreate = function () {
+//     var dfd = jQuery.Deferred();
+//
+//     var sctp_client = new SctpClient();
+//     sctp_client.connect('/sctp', function () {
+//         dfd.resolve(sctp_client);
+//     });
+//
+//     return dfd.promise();
+// };
