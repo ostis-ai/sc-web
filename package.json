@@ -2,7 +2,8 @@
   "name": "sc-web",
   "version": "1.0.0",
   "dependencies": {
-    "grunt": "^1.0.1"
+    "grunt": "^1.0.1",
+    "@ostis/sc-core": "^0.3.0"
   },
   "devDependencies": {
     "grunt-contrib-concat": "^1.0.1",
