@@ -2,6 +2,17 @@ var scHelper = null;
 var scKeynodes = null;
 const currentYear = new Date().getFullYear();
 
+function SctpClientCreate() {
+    let res, rej;
+    let result = new Promise((resolve, reject)=> {
+        res = resolve;
+        rej = reject;
+    })
+    let onDisconnect = () => console.log("Disconnected");
+    let sctpClient = new sc.ScNet("ws://localhost:8090/ws_json", () => res(sctpClient), onDisconnect, rej);
+    return result;
+}
+
 SCWeb.core.Main = {
 
     window_types: [],
@@ -22,13 +33,13 @@ SCWeb.core.Main = {
         //SCWeb.ui.Locker.show();
 
         SCWeb.core.Server._initialize();
-        SctpClientCreate().done(function (client) {
+        SctpClientCreate().then(function (client) {
 
             window.sctpClient = client;
             window.scHelper = new ScHelper(window.sctpClient);
             window.scKeynodes = new ScKeynodes(window.scHelper);
 
-            window.scKeynodes.init().done(function () {
+            window.scKeynodes.init().then(function () {
                 window.scHelper.init().done(function () {
 
                     if (window._unit_tests)
