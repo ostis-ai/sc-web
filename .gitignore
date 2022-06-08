@@ -41,7 +41,6 @@ settings_local.py
 *db
 repo
 
-server/server.conf
 server/secret.txt
 
 
