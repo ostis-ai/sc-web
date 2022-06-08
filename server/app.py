@@ -6,6 +6,7 @@ import tornado.options
 import secret
 import os
 import logging
+import configparser
 
 from handlers.main import MainHandler
 from handlers.nl import NaturalLanguageSearch
@@ -64,18 +65,28 @@ def main():
     tornado.options.define("super_emails", default = "", help = "email of site super administrator (maximum rights)", type = list)
     tornado.options.define("db_path", default = "data.db", help = "path to database file", type = str)
 
-    tornado.options.define("cfg", default = "server.conf", help = "path to configuration file", type = str)
+    tornado.options.define("cfg", default = "", help = "path to configuration file", type = str)
 
+    #parse config
     tornado.options.parse_command_line()
-    if os.path.exists(tornado.options.options.cfg):
-        tornado.options.parse_config_file(tornado.options.options.cfg)
-
+    config = None
+    if tornado.options.options.cfg != "":
+        config = configparser.ConfigParser()
+        config.read(tornado.options.options.cfg)
+    
     # prepare database
     database = db.DataBase()
     database.init()
 
     # preparing for search
-    rocksdb_fm_path = os.path.abspath("../../kb.bin/file_memory")
+    rocksdb_fm_path = os.path.abspath(
+        os.path.join(
+            # path to the config file, excluding filename
+            os.path.dirname(tornado.options.options.cfg),
+            config['Repo']['Path'],
+            "kb.bin/file_memory"
+        )
+    ) if config != None else "../../kb.bin/file_memory"
     reader = RocksdbReader()
     reader.read_rocksdb(rocksdb_fm_path)
 
