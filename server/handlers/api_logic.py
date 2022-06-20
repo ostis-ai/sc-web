@@ -751,7 +751,7 @@ class ScSession:
         if results:
             return results[0][2]
         # setup default language
-        _lang = self.keynodes[KeynodeSysIdentifiers.scs_code]
+        _lang = self.keynodes[KeynodeSysIdentifiers.scn_code]
         self.set_default_ext_lang(_lang)
 
         return _lang

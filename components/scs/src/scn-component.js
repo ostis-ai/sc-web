@@ -1,8 +1,8 @@
-SCsComponent = {
-    ext_lang: 'scs_code',
-    formats: ['format_scs_json'],
+SCnComponent = {
+    ext_lang: 'scn_code',
+    formats: ['format_scs_json'], // server side format to translate sc to format that processing Viewer
     factory: function (sandbox) {
-        return new SCsViewer(sandbox);
+        return new SCnViewer(sandbox);
     },
     getRequestKeynodes: function () {
         var keynodes = [
@@ -43,7 +43,7 @@ function getTriplesJsonFoDebug({keywords, triples, ...data}, translationMap, key
     return {keywords: renamedKeywords, triples: renamedTriples, ...data};
 }
 
-var SCsViewer = function (sandbox) {
+var SCnViewer = function (sandbox) {
     this.objects = [];
     this.addrs = [];
     this.sc_links = {}; // map of sc-link objects key:addr, value: object
@@ -117,4 +117,4 @@ $(document).ready(function () {
 });
 
 
-SCWeb.core.ComponentManager.appendComponentInitialize(SCsComponent);
+SCWeb.core.ComponentManager.appendComponentInitialize(SCnComponent);
