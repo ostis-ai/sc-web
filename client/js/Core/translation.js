@@ -16,24 +16,22 @@ SCWeb.core.Translation = {
     /** Updates all translations
      */
     update: function () {
-        var dfd = new jQuery.Deferred();
+        return new Promise((resolve, reject) => {
+            // collect objects, that need to be translated
+            var objects = this.collectObjects();
 
-        // collect objects, that need to be translated
-        var objects = this.collectObjects();
-
-        // @todo need to remove duplicates from object list
-        // translate
-        var self = this;
-        $.when(this.translate(objects)).then(
-            function (namesMap) {
-                self.fireUpdate(namesMap);
-                dfd.resolve();
-            },
-            function () {
-                dfd.reject();
-            });
-
-        return dfd.promise();
+            // @todo need to remove duplicates from object list
+            // translate
+            var self = this;
+            this.translate(objects).then(
+              function (namesMap) {
+                  self.fireUpdate(namesMap);
+                  resolve();
+              },
+              function () {
+                  reject();
+              });
+        })
     },
 
     getCurrentLanguage: function () {
@@ -47,14 +45,12 @@ SCWeb.core.Translation = {
      * If there are no key in returned object, then identifier wasn't found
      */
     translate: function (objects) {
-        var dfd = new jQuery.Deferred();
-
-        var self = this;
-        SCWeb.core.Server.resolveIdentifiers(objects, function (namesMap) {
-            dfd.resolve(namesMap);
-        });
-
-        return dfd.promise();
+        return new Promise((resolve)=>{
+            var self = this;
+            SCWeb.core.Server.resolveIdentifiers(objects, function (namesMap) {
+                resolve(namesMap);
+            });
+        })
     },
 
     /** Change translation language
@@ -65,7 +61,7 @@ SCWeb.core.Translation = {
         var self = this;
         SCWeb.core.Server.setLanguage(lang_addr, function () {
             self.fireLanguageChanged(lang_addr);
-            $.when(self.translate(self.collectObjects())).done(function (namesMap) {
+            self.translate(self.collectObjects()).then(function (namesMap) {
                 self.fireUpdate(namesMap);
                 callback();
             });

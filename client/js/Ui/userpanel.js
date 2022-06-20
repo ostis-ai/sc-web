@@ -9,29 +9,28 @@ SCWeb.ui.UserPanel = {
      * - current_lang - sc-addr of used natural language
      */
     init: function (params) {
-        var dfd = new jQuery.Deferred();
+        return new Promise(resolve => {
+            this.is_authenticated = params.user.is_authenticated;
+            this.user_sc_addr = params.user.sc_addr;
+            this.lang_mode_sc_addr = params.user.current_lang;
+            this.default_ext_lang_sc_addr = params.user.default_ext_lang
 
-        this.is_authenticated = params.user.is_authenticated;
-        this.user_sc_addr = params.user.sc_addr;
-        this.lang_mode_sc_addr = params.user.current_lang;
-        this.default_ext_lang_sc_addr = params.user.default_ext_lang
+            if (this.is_authenticated) {
+                $('#auth-user-name').attr('sc_addr', this.user_sc_addr).text(this.user_sc_addr);
+                $('#auth-user-lang').attr('sc_addr', this.lang_mode_sc_addr).text(this.lang_mode_sc_addr);
+                $('#auth-user-ext-lang').attr('sc_addr', this.default_ext_lang_sc_addr).text(this.default_ext_lang_sc_addr);
+            }
 
-        if (this.is_authenticated) {
-            $('#auth-user-name').attr('sc_addr', this.user_sc_addr).text(this.user_sc_addr);
-            $('#auth-user-lang').attr('sc_addr', this.lang_mode_sc_addr).text(this.lang_mode_sc_addr);
-            $('#auth-user-ext-lang').attr('sc_addr', this.default_ext_lang_sc_addr).text(this.default_ext_lang_sc_addr);
-        }
-
-        // listen translation events
-        SCWeb.core.EventManager.subscribe("translation/update", this, this.updateTranslation);
-        SCWeb.core.EventManager.subscribe("translation/get", this, function (objects) {
-            $('#auth-user-panel [sc_addr]').each(function (index, element) {
-                objects.push($(element).attr('sc_addr'));
+            // listen translation events
+            SCWeb.core.EventManager.subscribe("translation/update", this, this.updateTranslation);
+            SCWeb.core.EventManager.subscribe("translation/get", this, function (objects) {
+                $('#auth-user-panel [sc_addr]').each(function (index, element) {
+                    objects.push($(element).attr('sc_addr'));
+                });
             });
-        });
 
-        dfd.resolve();
-        return dfd.promise();
+            resolve();
+        })
     },
 
     // ---------- Translation listener interface ------------

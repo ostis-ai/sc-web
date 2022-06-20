@@ -3,41 +3,41 @@ SCWeb.ui.ArgumentsPanel = {
 
     init: function () {
         this.argument_add_state = false;
-        var dfd = new jQuery.Deferred();
-
         var self = this;
-        // listen events from arguments
-        SCWeb.core.EventManager.subscribe("arguments/add", this, this.onArgumentAppended);
-        SCWeb.core.EventManager.subscribe("arguments/remove", this, this.onArgumentRemoved);
-        SCWeb.core.EventManager.subscribe("arguments/clear", this, this.onArgumentsCleared);
+        return new Promise((resolve, reject)=>{
+
+            // listen events from arguments
+            SCWeb.core.EventManager.subscribe("arguments/add", this, this.onArgumentAppended);
+            SCWeb.core.EventManager.subscribe("arguments/remove", this, this.onArgumentRemoved);
+            SCWeb.core.EventManager.subscribe("arguments/clear", this, this.onArgumentsCleared);
 
 
-        // listen events from translation
-        SCWeb.core.EventManager.subscribe("translation/update", this, this.updateTranslation);
-        SCWeb.core.EventManager.subscribe("translation/get", this, function (objects) {
-            var items = self.getObjectsToTranslate();
-            for (var i in items) {
-                objects.push(items[i]);
-            }
-        });
+            // listen events from translation
+            SCWeb.core.EventManager.subscribe("translation/update", this, this.updateTranslation);
+            SCWeb.core.EventManager.subscribe("translation/get", this, function (objects) {
+                var items = self.getObjectsToTranslate();
+                for (var i in items) {
+                    objects.push(items[i]);
+                }
+            });
 
-        $('#arguments_clear_button').click(function () {
-            if (self.isArgumentAddState())
-                return;
-            SCWeb.core.Arguments.clear();
-        });
-        $('#arguments_add_button').click(function () {
-            self.argument_add_state = !self.argument_add_state;
-            self.updateArgumentAddState();
-        });
+            $('#arguments_clear_button').click(function () {
+                if (self.isArgumentAddState())
+                    return;
+                SCWeb.core.Arguments.clear();
+            });
+            $('#arguments_add_button').click(function () {
+                self.argument_add_state = !self.argument_add_state;
+                self.updateArgumentAddState();
+            });
 
-        $(document).on("click", ".argument-item", function (event) {
-            var idx = $(this).attr('arg_idx');
-            SCWeb.core.Arguments.removeArgumentByIndex(parseInt(idx));
-        });
+            $(document).on("click", ".argument-item", function (event) {
+                var idx = $(this).attr('arg_idx');
+                SCWeb.core.Arguments.removeArgumentByIndex(parseInt(idx));
+            });
 
-        dfd.resolve();
-        return dfd.promise();
+            resolve();
+        })
     },
 
     isArgumentAddState: function () {
@@ -72,7 +72,7 @@ SCWeb.ui.ArgumentsPanel = {
         $(this._container).append(new_button);
 
         // translate added argument
-        $.when(SCWeb.core.Translation.translate([argument])).done(function (namesMap) {
+        SCWeb.core.Translation.translate([argument]).then(function (namesMap) {
 
             var value = argument;
             if (namesMap[argument]) {

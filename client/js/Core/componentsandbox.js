@@ -236,15 +236,14 @@ SCWeb.core.ComponentSandbox.prototype.updateAnswer = function () {
  * Create viewers for specified sc-links
  * @param {Object} containers_map Map of viewer containers (key: sc-link addr, value: id of container)
  */
-SCWeb.core.ComponentSandbox.prototype.createViewersForScLinks = function (containers_map) {
-    var dfd = new jQuery.Deferred();
-    var self = this;
-    SCWeb.ui.WindowManager.createViewersForScLinks(containers_map).done(function (windows) {
-        self._appendChilds(windows);
-        dfd.resolve(windows);
-    }).fail(dfd.reject);
-
-    return dfd.promise();
+SCWeb.core.ComponentSandbox.prototype.createViewersForScLinks = async function (containers_map) {
+    return new Promise((resolve, reject)=>{
+        var self = this;
+        SCWeb.ui.WindowManager.createViewersForScLinks(containers_map).then(function (windows) {
+            self._appendChilds(windows);
+            resolve(windows);
+        }).catch(reject);
+    })
 };
 
 /**
@@ -261,8 +260,7 @@ SCWeb.core.ComponentSandbox.prototype.createViewersForScStructs = function (cont
  * {String} contentType type of content data (@see SctpClient.getLinkContent). If it's null, then
  * data will be returned as string
  */
-SCWeb.core.ComponentSandbox.prototype.updateContent = function (contentType) {
-    var dfd = new jQuery.Deferred();
+SCWeb.core.ComponentSandbox.prototype.updateContent = async function (contentType) {
     var self = this;
 
     if (this.is_struct && this.eventStructUpdate) {
@@ -280,23 +278,9 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = function (contentType) {
             });
     }
     else {
-        window.sctpClient.get_link_content(this.addr, contentType)
-            .done(function (data) {
-                $.when(self.onDataAppend(data)).then(
-                    function () {
-                        dfd.resolve();
-                    },
-                    function () {
-                        dfd.reject();
-                    }
-                );
-            })
-            .fail(function () {
-                dfd.reject();
-            });
+        let content = await sctpClient.GetLinkContents([new sc.ScAddr(this.addr)]);
+        await self.onDataAppend(content[0].data);
     }
-
-    return dfd.promise();
 };
 
 // ------ Translation ---------
@@ -361,13 +345,13 @@ SCWeb.core.ComponentSandbox.prototype.onWindowActiveChanged = function (is_activ
 // --------- Data -------------
 SCWeb.core.ComponentSandbox.prototype.onDataAppend = function (data) {
     if (this.eventDataAppend) {
-        return $.when(this.eventDataAppend(data)).done(() => this.translate());
+        return this.eventDataAppend(data).then(() => this.translate());
     } else {
-        return $.Deferred().resolve().promise()
+        return Promise.resolve();
     }
 };
 
 SCWeb.core.ComponentSandbox.prototype.translate = function () {
     return SCWeb.core.Translation.translate(this.getObjectsToTranslate())
-        .done((namesMap) => this.updateTranslation(namesMap));
+        .then((namesMap) => this.updateTranslation(namesMap));
 };

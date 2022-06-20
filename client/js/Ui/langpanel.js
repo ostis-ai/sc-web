@@ -7,39 +7,38 @@ SCWeb.ui.LanguagePanel = {
      * - languages - list of available natural languages
      */
     init: function (params) {
-        var dfd = new jQuery.Deferred();
-        this.languages = params.languages;
+        return new Promise(resolve => {
+            this.languages = params.languages;
 
-        var html = '';
-        for (i in this.languages) {
-            var addr = this.languages[i];
+            var html = '';
+            for (i in this.languages) {
+                var addr = this.languages[i];
 
-            html += '<option sc_addr="' + addr + '">' + addr + '</option>';
-        }
+                html += '<option sc_addr="' + addr + '">' + addr + '</option>';
+            }
 
-        // append languages to select
-        $('#language-select').html(html)
-            .val(params.user.current_lang)
-            .change(function () {
-                SCWeb.ui.Locker.show();
-                var addr = $('#language-select option:selected').attr("sc_addr");
-                $('#language-select').attr('disabled', true);
-                SCWeb.core.Translation.setLanguage(addr, function () {
-                    $('#language-select').removeAttr('disabled', true);
-                    SCWeb.ui.Locker.hide();
+            // append languages to select
+            $('#language-select').html(html)
+              .val(params.user.current_lang)
+              .change(function () {
+                  SCWeb.ui.Locker.show();
+                  var addr = $('#language-select option:selected').attr("sc_addr");
+                  $('#language-select').attr('disabled', true);
+                  SCWeb.core.Translation.setLanguage(addr, function () {
+                      $('#language-select').removeAttr('disabled', true);
+                      SCWeb.ui.Locker.hide();
+                  });
+              });
+
+            // listen translation events
+            SCWeb.core.EventManager.subscribe("translation/update", this, this.updateTranslation);
+            SCWeb.core.EventManager.subscribe("translation/get", this, function (objects) {
+                $('#language-select [sc_addr]').each(function (index, element) {
+                    objects.push($(element).attr('sc_addr'));
                 });
             });
-
-        // listen translation events
-        SCWeb.core.EventManager.subscribe("translation/update", this, this.updateTranslation);
-        SCWeb.core.EventManager.subscribe("translation/get", this, function (objects) {
-            $('#language-select [sc_addr]').each(function (index, element) {
-                objects.push($(element).attr('sc_addr'));
-            });
-        });
-
-        dfd.resolve();
-        return dfd.promise();
+            resolve();
+        })
     },
 
 

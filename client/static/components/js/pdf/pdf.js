@@ -113,35 +113,35 @@ var PdfViewer = function(sandbox) {
 
     // ---- window interface -----
     this.receiveData = function(data) {
-        var dfd = new jQuery.Deferred();
+      return new Promise(resolve => {
 
         $(this.container).empty();
-        
-        var uniqId = Math.floor(Math.random() * (100000 - 0) + 0);  
+
+        var uniqId = Math.floor(Math.random() * (100000 - 0) + 0);
         var viewer = new Viewer();
-	
+
         self.createHtml(uniqId, this.container);
-        
-        $('#pdf_next_page' + uniqId).click(function(){
-           viewer.nextPage();
+
+        $('#pdf_next_page' + uniqId).click(function () {
+          viewer.nextPage();
         });
-        
-        $('#pdf_prev_page' + uniqId).click(function(){
-            viewer.prevPage();
+
+        $('#pdf_prev_page' + uniqId).click(function () {
+          viewer.prevPage();
         });
-        
-        $('#pdf_go_to_page_button' + uniqId).click(function(){
-            viewer.goToPage();
+
+        $('#pdf_go_to_page_button' + uniqId).click(function () {
+          viewer.goToPage();
         });
-        
-        $('#pdf_canvas' + uniqId).click(function(){
-            window.open(location.origin + "/" + data);
+
+        $('#pdf_canvas' + uniqId).click(function () {
+          window.open(location.origin + "/" + data);
         });
-        
+
         viewer.viewPdf(data, uniqId);
-        
-        dfd.resolve();
-        return dfd.promise();
+
+        resolve();
+      });
     };
     
         

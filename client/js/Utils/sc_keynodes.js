@@ -40,7 +40,8 @@ ScKeynodes.prototype.init = async function () {
     'format_pdf',
     'format_png',
     'format_html',
-    'nrel_format']
+    'nrel_format',
+    'ui_start_sc_element']
   );
 };
 
@@ -59,7 +60,7 @@ ScKeynodes.prototype.resolveKeynode = async function (sys_idtf, property) {
     let addr = result[x];
     if (addr.isValid()) {
       console.log('Resolved keynode: ' + x + ' = ' + addr.value);
-      this[sys_idtf] = addr;
+      this[x] = addr.value;
     } else {
       throw "Can't resolve keynode " + x;
     }
