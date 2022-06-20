@@ -103,7 +103,7 @@ module.exports = function(grunt) {
                       scsDirPath + 'src/scn-tree.js',
                       scsDirPath + 'src/scn-highlighter.js',
                       scsDirPath + 'src/scs-expert-mode.js',
-                      scsDirPath + 'src/scs-component.js'],
+                      scsDirPath + 'src/scn-component.js'],
                 dest: scsDirPath + 'static/components/js/scs/scs.js'
             },
         },

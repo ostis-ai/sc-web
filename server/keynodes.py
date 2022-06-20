@@ -107,7 +107,6 @@ class KeynodeSysIdentifiers:
     
     # external languages
     scg_code = 'scg_code'
-    scs_code = 'scs_code'
     scn_code = 'scn_code'
     
     # formats
