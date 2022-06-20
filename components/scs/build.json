@@ -10,7 +10,7 @@
 	"src/scn-highlighter.js"    
         ],
 	
-	"component": "src/scs-component.js",
+	"component": "src/scn-component.js",
 
 	"target": "static/components/js/scs/scs.js"
 }
