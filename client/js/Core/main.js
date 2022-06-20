@@ -27,55 +27,53 @@ SCWeb.core.Main = {
      * - menu_container_id - id of dom element, that will contains menu items
      */
     init: function (params) {
-        var dfd = new jQuery.Deferred();
+        return new Promise((resolve, reject)=>{
 
-        var self = this;
-        //SCWeb.ui.Locker.show();
+            var self = this;
+            //SCWeb.ui.Locker.show();
 
-        SCWeb.core.Server._initialize();
-        SctpClientCreate().then(function (client) {
+            SCWeb.core.Server._initialize();
+            SctpClientCreate().then(function (client) {
 
-            window.sctpClient = client;
-            window.scHelper = new ScHelper(window.sctpClient);
-            window.scKeynodes = new ScKeynodes(window.scHelper);
+                window.sctpClient = client;
+                window.scHelper = new ScHelper(window.sctpClient);
+                window.scKeynodes = new ScKeynodes(window.scHelper);
 
-            window.scKeynodes.init().then(function () {
-                window.scHelper.init().done(function () {
+                window.scKeynodes.init().then(function () {
+                    window.scHelper.init().then(function () {
 
-                    if (window._unit_tests)
-                        window._unit_tests();
+                        if (window._unit_tests)
+                            window._unit_tests();
 
-                    $.when(SCWeb.ui.TaskPanel.init()).done(function () {
-                        SCWeb.core.Server.init(function (data) {
-                            self.menu_commands = data.menu_commands;
-                            self.user = data.user;
+                        SCWeb.ui.TaskPanel.init().then(function () {
+                            SCWeb.core.Server.init(function (data) {
+                                self.menu_commands = data.menu_commands;
+                                self.user = data.user;
 
-                            data.menu_container_id = params.menu_container_id;
+                                data.menu_container_id = params.menu_container_id;
 
-                            SCWeb.core.Translation.fireLanguageChanged(self.user.current_lang);
+                                SCWeb.core.Translation.fireLanguageChanged(self.user.current_lang);
 
-                            $.when(SCWeb.ui.Core.init(data),
-                                SCWeb.core.ComponentManager.init(),
-                                SCWeb.core.Translation.update()
-                            )
-                                .done(function () {
-                                    dfd.resolve();
+                                Promise.all([SCWeb.ui.Core.init(data),
+                                    SCWeb.core.ComponentManager.init(),
+                                    SCWeb.core.Translation.update()
+                                ])
+                                  .then(function () {
+                                      resolve();
 
-                                    const url = parseURL(window.location.href);
-                                    if (url.searchObject && SCWeb.core.Main.pageShowedForUrlParameters(url.searchObject)) {
-                                        return;
-                                    }
-                                    SCWeb.core.Main.showDefaultPage(params);
-                                });
+                                      const url = parseURL(window.location.href);
+                                      if (url.searchObject && SCWeb.core.Main.pageShowedForUrlParameters(url.searchObject)) {
+                                          return;
+                                      }
+                                      SCWeb.core.Main.showDefaultPage(params);
+                                  });
+                            });
                         });
                     });
+
                 });
-
             });
-        });
-
-
-        return dfd.promise();
+        })
     },
 
     _initUI: function () {
@@ -161,24 +159,22 @@ SCWeb.core.Main = {
         return false;
     },
 
-    showDefaultPage: function (params) {
-        SCWeb.core.Server.resolveScAddr(['ui_start_sc_element'], function (addrs) {
+    showDefaultPage: async function (params) {
 
-            function start(a) {
-                SCWeb.core.Main.doDefaultCommand([a]);
-                if (params.first_time)
-                    $('#help-modal').modal({"keyboard": true});
-            }
+        function start(a) {
+            SCWeb.core.Main.doDefaultCommand([a]);
+            if (params.first_time)
+                $('#help-modal').modal({"keyboard": true});
+        }
 
-            const argumentAddr = addrs['ui_start_sc_element'];
-            window.sctpClient.iterate_elements(SctpIteratorType.SCTP_ITERATOR_3F_A_A, [argumentAddr, sc_type_arc_pos_const_perm, 0])
-                .done(function (res) {
-                    start(res[0][2]);
-                }).fail(function () {
-                start(argumentAddr);
-            });
-            $('.copyright').text(`Copyright © 2012 - ${currentYear} OSTIS`);
-        });
+        const argumentAddr = scKeynodes['ui_start_sc_element'];
+        let startScElements = await scHelper.getSetElements(argumentAddr);
+        if (startScElements.length) {
+            start(startScElements[0]);
+        } else {
+            start(argumentAddr);
+        }
+        $('.copyright').text(`Copyright © 2012 - ${currentYear} OSTIS`);
     },
 
     /**

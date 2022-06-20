@@ -4,12 +4,10 @@ SCWeb.ui.TaskPanel = {
     _task_num: 0,
 
     init: function (callback) {
-        var dfd = new jQuery.Deferred();
-
-        SCWeb.core.Server.appendListener(this);
-        dfd.resolve();
-
-        return dfd.promise();
+        return new Promise(resolve => {
+            SCWeb.core.Server.appendListener(this);
+            resolve();
+        })
     },
 
     /*!

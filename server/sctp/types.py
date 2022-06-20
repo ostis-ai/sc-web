@@ -142,11 +142,11 @@ class ScAddr:
         return "%d" % self.to_int()
     
     def to_int(self):
-        return (self.seg | self.offset << 16)
+        return (self.seg << 16 | self.offset )
     
     @staticmethod
     def from_int(addr_int):
-        return ScAddr(addr_int & 0xffff, addr_int >> 16)
+        return ScAddr(addr_int >> 16 & 0xffff, addr_int & 0xffff)
 
     @staticmethod
     def parse_from_string(addr_str):
