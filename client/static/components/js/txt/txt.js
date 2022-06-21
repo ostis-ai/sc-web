@@ -24,7 +24,7 @@ var TextViewer = function(sandbox){
           new sc.ScAddr(self.sandbox.addr)
         );
         template.Triple(
-          scKeynodes.binary_types,
+          new sc.ScAddr(scKeynodes.binary_types),
           sc.ScType.EdgeAccessVarPosPerm,
           "x"
         );
