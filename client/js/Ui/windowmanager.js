@@ -219,9 +219,9 @@ SCWeb.ui.WindowManager = {
 
         if (SCWeb.core.ComponentManager.isStructSupported(command_state.format)) {
             // determine answer structure
-            window.scHelper.getAnswer(question_addr).done(function (addr) {
+            window.scHelper.getAnswer(question_addr).then(function (addr) {
                 f(addr, true);
-            }).fail(function (v) {
+            }).catch(function (v) {
                 translated();
             });
         } else
