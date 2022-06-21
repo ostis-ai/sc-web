@@ -96,24 +96,35 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
         editor.scene.layout();
     };
 
+    let getArc = async (arc) => {
+        let scTemplate = new sc.ScTemplate();
+        scTemplate.Triple(
+          [sc.ScType.Unknown, "src"],
+          new sc.ScAddr(arc),
+          [sc.ScType.Unknown, "target"]
+        );
+        let result = await sctpClient.TemplateSearch(scTemplate);
+        return [result[0].Get("src").value, result[0].Get("target").value];
+    };
+
+    let getElementType = async (el) => {
+        return (await sctpClient.CheckElements([new sc.ScAddr(el)]))[0].value;
+    };
+
     return {
-        update: function (added, element, arc) {
+        update: async function (added, element, arc) {
 
             if (added) {
-                window.sctpClient.get_arc(arc).done(function (r) {
-                    var el = r[1];
-                    window.sctpClient.get_element_type(el).done(function (t) {
-                        arcMapping[arc] = el;
-                        if (t & (sc_type_node | sc_type_link)) {
-                            addTask([el, t]);
-                        } else if (t & sc_type_arc_mask) {
-                            window.sctpClient.get_arc(el).done(function (r) {
-                                addTask([el, t, r[0], r[1]]);
-                            });
-                        } else
-                            throw "Unknown element type " + t;
-                    });
-                });
+                let [_, el] = await getArc(arc);
+                let t = await getElementType(el);
+                arcMapping[arc] = el;
+                if (t & (sc_type_node | sc_type_link)) {
+                    addTask([el, t]);
+                } else if (t & sc_type_arc_mask) {
+                    let [src, target] = await getArc(el);
+                    addTask([el, t, src, target]);
+                } else
+                    throw "Unknown element type " + t;
             } else {
                 var e = arcMapping[arc];
                 if (e)
