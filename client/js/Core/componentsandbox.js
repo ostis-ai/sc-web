@@ -68,20 +68,27 @@ SCWeb.core.ComponentSandbox = function (options) {
     // listen struct changes
     /// @todo possible need to wait event creation
     if (this.is_struct) {
-        window.sctpClient.event_create(SctpEventType.SC_EVENT_ADD_OUTPUT_ARC, this.addr, function (addr, arg) {
-            if (self.eventStructUpdate) {
-                self.eventStructUpdate(true, addr, arg);
-            }
-        }).done(function (id) {
-            self.event_add_element = id;
-        });
-        window.sctpClient.event_create(SctpEventType.SC_EVENT_REMOVE_OUTPUT_ARC, this.addr, function (addr, arg) {
-            if (self.eventStructUpdate) {
-                self.eventStructUpdate(false, addr, arg);
-            }
-        }).done(function (id) {
-            self.event_remove_element = id;
-        });
+        let addArcEventRequest = new sc.ScEventParams(
+          new sc.ScAddr(this.addr),
+          sc.ScEventType.AddOutgoingEdge,
+          (elAddr, edge, otherAddr) => {
+              if (self.eventStructUpdate) {
+                  self.eventStructUpdate(true, elAddr.value, edge.value);
+              }
+          });
+        let removeArcEventRequest = new sc.ScEventParams(
+          new sc.ScAddr(this.addr),
+          sc.ScEventType.RemoveOutgoingEdge,
+          (elAddr, edge, otherAddr) => {
+              if (self.eventStructUpdate) {
+                  self.eventStructUpdate(false, elAddr.value, edge.value);
+              }
+          });
+        sctpClient.EventsCreate([addArcEventRequest, removeArcEventRequest])
+          .then((addArcEvent, removeArcEvent)=>{
+              self.event_add_element = addArcEvent;
+              self.event_remove_element = removeArcEvent;
+          });
     }
 };
 
@@ -99,10 +106,12 @@ SCWeb.core.ComponentSandbox.prototype.destroy = function () {
     }
 
     /// @todo possible need to wait event destroy
+    let events = [];
     if (this.event_add_element)
-        window.sctpClient.event_destroy(this.event_add_element);
+        events.push(this.event_add_element);
     if (this.event_remove_element)
-        window.sctpClient.event_destroy(this.event_remove_element);
+        events.push(this.event_remove_element);
+    sctpClient.EventsDestroy(events);
 };
 
 /**
@@ -264,18 +273,15 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (contentTyp
     var self = this;
 
     if (this.is_struct && this.eventStructUpdate) {
-        window.sctpClient.iterate_elements(SctpIteratorType.SCTP_ITERATOR_3F_A_A,
-            [
-                this.addr,
-                sc_type_arc_pos_const_perm,
-                0
-            ])
-            .done(function (res) {
-                for (idx in res)
-                    self.eventStructUpdate(true, res[idx][0], res[idx][1]);
-
-                dfd.resolve();
-            });
+        let scTemplate = new sc.ScTemplate();
+        scTemplate.Triple(
+          [new sc.ScAddr(this.addr),"src"],
+          [sc.ScType.EdgeAccessVarPosPerm, "edge"],
+          sc.ScType.Unknown);
+        let result = await sctpClient.TemplateSearch(scTemplate);
+        for (let triple of result) {
+          self.eventStructUpdate(true, triple.Get("src").value, triple.Get("edge").value);
+        }
     }
     else {
         let content = await sctpClient.GetLinkContents([new sc.ScAddr(this.addr)]);
