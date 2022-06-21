@@ -107,54 +107,47 @@ ScHelper.prototype.getOutputLanguages = function () {
  * If function fails, then promise rejects
  */
 ScHelper.prototype.getAnswer = function (question_addr) {
-  var dfd = new jQuery.Deferred();
-
-  (function (_question_addr, _self, _dfd) {
-    var fn = this;
-
-    this.timer = window.setTimeout(function () {
-      _dfd.reject();
-
-      window.clearTimeout(fn.timer);
-      delete fn.timer;
-
-      if (fn.event_id) {
-        _self.sctp_client.event_destroy(fn.event_id);
-        delete fn.event_id;
+  // удалять событие через 10 секунд
+  // подписаться на событие
+  //   если событие пришло, проверить что в дугу входит ответ
+  //   зарезолвить промис с ответом
+  // проверить, что конструкция существует
+  return new Promise(async (resolve, reject) => {
+    let event;
+    let timer = setTimeout(async () => {
+      reject();
+      clearTimeout(timer);
+      timer = null;
+      if (event) {
+        this.sctp_client.EventsDestroy(event);
+        event = null;
       }
-    }, 10000);
-
-    _self.sctp_client.event_create(SctpEventType.SC_EVENT_ADD_OUTPUT_ARC, _question_addr, function (addr, arg) {
-      _self.checkEdge(window.scKeynodes.nrel_answer, sc_type_arc_pos_const_perm, arg).done(function () {
-        _self.sctp_client.get_arc(arg).done(function (res) {
-          _dfd.resolve(res[1]);
-        }).fail(function () {
-          _dfd.reject();
-        });
+    }, 10_000);
+    let eventRequest = new sc.ScEventParams(
+      new sc.ScAddr(Number.parseInt(question_addr)),
+      sc.ScEventType.AddOutgoingEdge,
+      async (elAddr, edge, otherAddr) => {
+        let isAnswer = await this.checkEdge(scKeynodes.nrel_answer, sc.ScType.EdgeAccessVarPosPerm, edge);
+        if(isAnswer) {
+          resolve(otherAddr);
+        }
       });
-    }).done(function (res) {
-      fn.event_id = res;
-      _self.sctp_client.iterate_elements(SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
-        [
-          _question_addr,
-          sc_type_arc_common | sc_type_const,
-          sc_type_node, /// @todo possible need node struct
-          sc_type_arc_pos_const_perm,
-          window.scKeynodes.nrel_answer
-        ])
-        .done(function (it) {
-          _self.sctp_client.event_destroy(fn.event_id).fail(function () {
-            /// @todo process fail
-          });
-          _dfd.resolve(it[0][2]);
-
-          window.clearTimeout(fn.timer);
-        });
-    });
-  })(question_addr, this, dfd);
-
-
-  return dfd.promise();
+    event = (await this.sctp_client.EventsCreate([eventRequest]))[0];
+    let scTemplate = new sc.ScTemplate();
+    scTemplate.TripleWithRelation(
+      new sc.ScAddr(Number.parseInt(question_addr)),
+      sc.ScType.EdgeDCommonVar,
+      [sc.ScType.NodeVar, "answer"],
+      sc.ScType.EdgeAccessVarPosPerm,
+      new sc.ScAddr(scKeynodes.nrel_answer)
+    );
+    let templateSearch = await this.sctp_client.TemplateSearch(scTemplate);
+    if (templateSearch.length) {
+      resolve(templateSearch[0].Get("answer").value);
+      this.sctp_client.EventsDestroy([event]);
+      clearTimeout(timer);
+    }
+  });
 };
 
 /*! Function to get system identifier
