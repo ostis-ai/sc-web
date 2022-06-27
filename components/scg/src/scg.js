@@ -444,21 +444,20 @@ SCg.Editor.prototype = {
             }
 
             // process controls
-            $(container + ' #scg-change-idtf-apply').click(function () {
+            $(container + ' #scg-change-idtf-apply').click(async function () {
                 var obj = self.scene.selected_objects[0];
                 if (obj.text != input.val() && !self._idtf_item) {
                     self.scene.commandManager.execute(new SCgCommandChangeIdtf(obj, input.val()));
                 }
                 if (self._idtf_item) {
-                    window.sctpClient.get_element_type(self._idtf_item.addr).done(function (t) {
-                        self.scene.commandManager.execute(new SCgCommandGetNodeFromMemory(
-                            obj,
-                            t,
-                            input.val(),
-                            self._idtf_item.addr,
-                            self.scene));
-                        stop_modal();
-                    });
+                    let [t] = await sctpClient.CheckElements([new sc.ScAddr(self._idtf_item.addr)]);
+                    self.scene.commandManager.execute(new SCgCommandGetNodeFromMemory(
+                        obj,
+                        t.value,
+                        input.val(),
+                        self._idtf_item.addr,
+                        self.scene));
+                    stop_modal();
                 } else
                     stop_modal();
             });
