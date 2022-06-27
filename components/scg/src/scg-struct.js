@@ -151,40 +151,39 @@ function scgScStructTranslator(_editor, _sandbox) {
 
     var scgFromSc = new ScgFromScImpl(sandbox, editor, arcMapping);
 
-    var appendToConstruction = function (obj) {
-        var dfd = new jQuery.Deferred();
-        window.sctpClient.create_arc(sc_type_arc_pos_const_perm, sandbox.addr, obj.sc_addr).done(function (addr) {
-            arcMapping[addr] = obj;
-            dfd.resolve();
-        }).fail(function () {
-            dfd.reject();
-        });
-        return dfd.promise();
+    var appendToConstruction = async function (obj) {
+        let scTemplate = new sc.ScTemplate();
+        scTemplate.Triple(
+          new sc.ScAddr(sandbox.addr),
+          [sc.ScType.EdgeAccessVarPosPerm, 'arc'],
+          new sc.ScAddr(obj.sc_addr)
+        );
+        let result = await sctpClient.TemplateGenerate(scTemplate);
+        arcMapping[result.Get('arc').value] = obj;
     };
 
     var currentLanguage = sandbox.getCurrentLanguage();
-    var translateIdentifier = function (obj) {
-        var dfd = new jQuery.Deferred();
+    var translateIdentifier = async function (obj) {
         if (currentLanguage) {
-            window.sctpClient.create_link().done(function (link_addr) {
-                window.sctpClient.set_link_content(link_addr, obj.text).done(function () {
-                    window.sctpClient.create_arc(sc_type_arc_common | sc_type_const, obj.sc_addr,
-                        link_addr).done(function (arc_addr) {
-                        window.sctpClient.create_arc(sc_type_arc_pos_const_perm,
-                            currentLanguage, link_addr).done(function () {
-                            window.sctpClient.create_arc(sc_type_arc_pos_const_perm,
-                                window.scKeynodes.nrel_main_idtf, arc_addr)
-                                .done(dfd.resolve)
-                                .fail(dfd.reject);
-                        }).fail(dfd.reject);
-                    }).fail(dfd.reject);
-                }).fail(dfd.reject);
-            }).fail(dfd.reject);
-
+            let scTemplate = new sc.ScTemplate();
+            scTemplate.TripleWithRelation(
+              new sc.ScAddr(obj.sc_addr),
+              sc.ScType.EdgeDCommonVar,
+              [sc.ScType.LinkVar, 'link'],
+              sc.ScType.EdgeAccessVarPosPerm,
+              new sc.ScAddr(scKeynodes.nrel_main_idtf)
+            );
+            scTemplate.Triple(
+              new sc.ScAddr(currentLanguage),
+              sc.ScType.EdgeAccessVarPosPerm,
+              'link'
+            );
+            let result = await sctpClient.TemplateGenerate(scTemplate);
+            let linkAddr = result.Get('link');
+            await sctpClient.SetLinkContents([new sc.ScLinkContent(obj.text, sc.ScLinkContentType.String, linkAddr)]);
         } else {
-            dfd.reject();
+            throw new Error();
         }
-        return dfd.promise();
     };
 
     return r = {
@@ -204,7 +203,7 @@ function scgScStructTranslator(_editor, _sandbox) {
             scgFromSc.update(added, element, arc);
         },
 
-        translateToSc: function (callback) {
+        translateToSc: async function (callback) {
             if (!sandbox.is_struct)
                 throw "Invalid state. Trying translate sc-link into sc-memory";
 
@@ -218,13 +217,9 @@ function scgScStructTranslator(_editor, _sandbox) {
 
 
             var appendObjects = function () {
-                $.when.apply($, objects.map(function (obj) {
-                    return appendToConstruction(obj);
-                })).done(function () {
-                    callback(true);
-                }).fail(function () {
-                    callback(false);
-                });
+                Promise.all(objects.map(appendToConstruction))
+                  .then(() => callback(true))
+                  .catch(() => callback(false));
             };
 
             function fireCallback() {
@@ -235,40 +230,21 @@ function scgScStructTranslator(_editor, _sandbox) {
 
 
             /// --------------------
-            var translateNodes = function () {
-                var dfdNodes = new jQuery.Deferred();
-
-                var implFunc = function (node) {
-                    var dfd = new jQuery.Deferred();
-
+            var translateNodes = async function () {
+                var implFunc = async function (node) {
                     if (!node.sc_addr) {
-                        window.sctpClient.create_node(node.sc_type).done(function (r) {
-                            node.setScAddr(r);
-                            node.setObjectState(SCgObjectState.NewInMemory);
-                            objects.push(node);
-                            if (node.text) {
-                                translateIdentifier(node)
-                                    .done(dfd.resolve)
-                                    .fail(dfd.reject);
-                            } else {
-                                dfd.resolve();
-                            }
-                        });
-                    } else {
-                        dfd.resolve();
+                        let scConstruction = new sc.ScConstruction();
+                        scConstruction.CreateNode(new sc.ScType(node.sc_type), "node");
+                        let result = await sctpClient.CreateElements(scConstruction);
+                        node.setScAddr(result[scConstruction.GetIndex("node")].value);
+                        node.setObjectState(SCgObjectState.NewInMemory);
+                        objects.push(node);
+                        if (node.text) {
+                            await translateIdentifier(node);
+                        }
                     }
-
-                    return dfd.promise();
                 }
-
-                var funcs = [];
-                for (var i = 0; i < nodes.length; ++i) {
-                    funcs.push(fQueue.Func(implFunc, [nodes[i]]));
-                }
-
-                fQueue.Queue.apply(this, funcs).done(dfdNodes.resolve).fail(dfdNodes.reject);
-
-                return dfdNodes.promise();
+                return Promise.all(nodes.map(implFunc));
             }
 
             var preTranslateContoursAndBus = function () {
@@ -484,15 +460,12 @@ function scgScStructTranslator(_editor, _sandbox) {
                 return dfdLinks.promise();
             }
 
-            fQueue.Queue(
-                /* Translate nodes */
-                fQueue.Func(translateNodes),
-                fQueue.Func(translateLinks),
-                fQueue.Func(preTranslateContoursAndBus),
-                fQueue.Func(translateEdges),
-                fQueue.Func(translateContours)
-            ).done(fireCallback);
-
+            await translateNodes();
+            await translateLinks();
+            await preTranslateContoursAndBus();
+            await translateEdges();
+            await translateContours();
+            fireCallback();
         }
     };
 };
