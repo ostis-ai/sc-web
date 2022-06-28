@@ -107,11 +107,6 @@ ScHelper.prototype.getOutputLanguages = function () {
  * If function fails, then promise rejects
  */
 ScHelper.prototype.getAnswer = function (question_addr) {
-  // удалять событие через 10 секунд
-  // подписаться на событие
-  //   если событие пришло, проверить что в дугу входит ответ
-  //   зарезолвить промис с ответом
-  // проверить, что конструкция существует
   return new Promise(async (resolve, reject) => {
     let event;
     let timer = setTimeout(async () => {
@@ -148,90 +143,6 @@ ScHelper.prototype.getAnswer = function (question_addr) {
       clearTimeout(timer);
     }
   });
-};
-
-/*! Function to get system identifier
- * @param addr sc-addr of element to get system identifier
- * @returns Returns promise object, that resolves with found system identifier.
- * If there are no system identifier, then promise rejects
- */
-ScHelper.prototype.getSystemIdentifier = function (addr) {
-  var dfd = new jQuery.Deferred();
-
-  var self = this;
-  this.sctp_client.iterate_elements(SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
-    [
-      addr,
-      sc_type_arc_common | sc_type_const,
-      sc_type_link,
-      sc_type_arc_pos_const_perm,
-      window.scKeynodes.nrel_system_identifier
-    ])
-    .done(function (it) {
-      self.sctp_client.get_link_content(it[0][2])
-        .done(function (res) {
-          dfd.resolve(res);
-        })
-        .fail(function () {
-          dfd.reject();
-        });
-    })
-    .fail(function () {
-      dfd.reject()
-    });
-
-  return dfd.promise();
-};
-
-/*! Function to get element identifer
- * @param addr sc-addr of element to get identifier
- * @param lang sc-addr of language
- * @returns Returns promise object, that resolves with found identifier. 
- * If there are no any identifier, then promise rejects
- */
-ScHelper.prototype.getIdentifier = function (addr, lang) {
-  var dfd = new jQuery.Deferred();
-  var self = this;
-
-  var get_sys = function () {
-    self.getSystemIdentifier(addr)
-      .done(function (res) {
-        dfd.resolve(res);
-      })
-      .fail(function () {
-        dfd.reject();
-      });
-  };
-
-  window.sctpClient.iterate_constr(
-    SctpConstrIter(SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
-      [addr,
-        sc_type_arc_common | sc_type_const,
-        sc_type_link,
-        sc_type_arc_pos_const_perm,
-        window.scKeynodes.nrel_main_idtf
-      ],
-      {"x": 2}),
-    SctpConstrIter(SctpIteratorType.SCTP_ITERATOR_3F_A_F,
-      [lang,
-        sc_type_arc_pos_const_perm,
-        "x"
-      ])
-  ).done(function (results) {
-    var link_addr = results.get(0, "x");
-
-    self.sctp_client.get_link_content(link_addr)
-      .done(function (res) {
-        dfd.resolve(res);
-      })
-      .fail(function () {
-        dfd.reject();
-      });
-  }).fail(function () {
-    get_sys();
-  });
-
-  return dfd.promise();
 };
 
 ScHelper.prototype.setLinkFormat = async function (addr, format) {

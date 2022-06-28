@@ -187,18 +187,6 @@ function scgScStructTranslator(_editor, _sandbox) {
     };
 
     return r = {
-        mergedWithMemory: function (obj) {
-            if (!obj.sc_addr)
-                throw "Invalid parameter";
-
-            window.sctpClient.iterate_elements(SctpIteratorType.SCTP_ITERATOR_3F_A_F, [sandbox.addr,
-                sc_type_arc_pos_const_perm, obj.sc_addr
-            ]).done(function (r) {
-                if (r.length == 0) {
-                    appendToConstruction(obj);
-                }
-            });
-        },
         updateFromSc: function (added, element, arc) {
             scgFromSc.update(added, element, arc);
         },
@@ -206,8 +194,6 @@ function scgScStructTranslator(_editor, _sandbox) {
         translateToSc: async function (callback) {
             if (!sandbox.is_struct)
                 throw "Invalid state. Trying translate sc-link into sc-memory";
-
-            var dfdNodes = jQuery.Deferred();
 
             editor.scene.commandManager.clear();
             var nodes = editor.scene.nodes.slice();
