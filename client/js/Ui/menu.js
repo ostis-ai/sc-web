@@ -102,67 +102,67 @@ SCWeb.ui.Menu = {
     },
 
     _contextMenu: function (target) {
-        return new Promise(resolve => {
-            var args = SCWeb.core.Arguments._arguments.slice();
-            args.push(target.attr('sc_addr'));
-            SCWeb.core.Server.contextMenu(args, function (data) {
+        var dfd = new jQuery.Deferred();
+        var args = SCWeb.core.Arguments._arguments.slice();
+        args.push(target.attr('sc_addr'));
+        SCWeb.core.Server.contextMenu(args, function (data) {
 
-                var parseMenuItem = function (item, parentSubmenu) {
-                    var menu_item = {};
-                    menu_item.action = function (e) {
-                        SCWeb.core.Main.doCommand(item, args);
-                    }
-
-                    menu_item.text = item;
-                    parentSubmenu.push(menu_item);
+            var parseMenuItem = function (item, parentSubmenu) {
+                var menu_item = {};
+                menu_item.action = function (e) {
+                    SCWeb.core.Main.doCommand(item, args);
                 }
 
-                var menu = [];
-                for (i in data) {
-                    parseMenuItem(data[i], menu);
-                }
+                menu_item.text = item;
+                parentSubmenu.push(menu_item);
+            }
 
-                var applyTranslation = function (item, id, text) {
-                    if (item.text == id) {
-                        item.text = text;
+            var menu = [];
+            for (i in data) {
+                parseMenuItem(data[i], menu);
+            }
+
+            var applyTranslation = function (item, id, text) {
+                if (item.text == id) {
+                    item.text = text;
+                }
+                if (item.subMenu) {
+                    for (i in item.subMenu) {
+                        applyTranslation(item.subMenu[i], id, text);
                     }
-                    if (item.subMenu) {
-                        for (i in item.subMenu) {
-                            applyTranslation(item.subMenu[i], id, text);
+                }
+            }
+
+            SCWeb.core.Server.resolveIdentifiers(data, function (namesMap) {
+
+                for (var itemId in namesMap) {
+                    if (namesMap.hasOwnProperty(itemId)) {
+                        for (i in menu) {
+                            applyTranslation(menu[i], itemId, namesMap[itemId]);
                         }
                     }
                 }
 
-                SCWeb.core.Server.resolveIdentifiers(data, function (namesMap) {
-
-                    for (var itemId in namesMap) {
-                        if (namesMap.hasOwnProperty(itemId)) {
-                            for (i in menu) {
-                                applyTranslation(menu[i], itemId, namesMap[itemId]);
-                            }
-                        }
-                    }
-
-                    // sort menu
-                    menu.sort(function (a, b) {
-                        if (a.text > b.text)
-                            return 1;
-                        if (a.text < b.text)
-                            return -1;
-                        return 0;
-                    });
-
-                    menu.unshift({
-                        text: '<span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span>',
-                        action: function (e) {
-                            SCWeb.core.Arguments.appendArgument(target.attr('sc_addr'));
-                        }
-                    });
-
-                    resolve(menu);
+                // sort menu
+                menu.sort(function (a, b) {
+                    if (a.text > b.text)
+                        return 1;
+                    if (a.text < b.text)
+                        return -1;
+                    return 0;
                 });
+
+                menu.unshift({
+                    text: '<span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span>',
+                    action: function (e) {
+                        SCWeb.core.Arguments.appendArgument(target.attr('sc_addr'));
+                    }
+                });
+
+                dfd.resolve(menu);
             });
-        })
+        });
+        return dfd.promise();
     },
 
     // ---------- Translation listener interface ------------

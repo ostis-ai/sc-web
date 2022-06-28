@@ -4,13 +4,13 @@ var ScFileLinkTypes = {
     image: "image"
 };
 
-var ScFileLinkHelper = {
-    constructor: function(file, fileArrayBuffer) {
+class ScFileLinkHelper {
+    constructor(file, fileArrayBuffer) {
         this.file = file;
         this.type = this.getFileType();
         this.fileArrayBuffer = fileArrayBuffer;
-    },
-    htmlViewResult: function() {
+    }
+    htmlViewResult() {
         switch (this.type) {
             case ScFileLinkTypes.html:
                 return this.htmlView();
@@ -21,8 +21,8 @@ var ScFileLinkHelper = {
             default:
                 throw "Error in ScFileLinkHelper.htmlViewResult"
         }
-    },
-    getFileType: function() {
+    }
+    getFileType() {
         var type = this.file.type;
         if (type.indexOf(ScFileLinkTypes.image) > -1) {
             return ScFileLinkTypes.image;
@@ -33,14 +33,14 @@ var ScFileLinkHelper = {
         } else {
             throw "Error in ScFileLinkHelper.getFileType"
         }
-    },
-    htmlView: function() {
+    }
+    htmlView() {
         return new TextDecoder().decode(this.fileArrayBuffer);
-    },
-    pdfView: function() {
+    }
+    pdfView() {
         return "[PDF file]";
-    },
-    imageView: function() {
+    }
+    imageView() {
         return '<img src="data:image/png;base64,' + btoa(String.fromCharCode.apply(null, new Uint8Array(this.fileArrayBuffer))) + '" alt="Image">'
     }
 };
