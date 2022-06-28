@@ -234,13 +234,14 @@ ScHelper.prototype.getIdentifier = function (addr, lang) {
   return dfd.promise();
 };
 
-ScHelper.prototype.setLinkFormat = function (addr, format) {
-  var self = this;
-  window.sctpClient.create_arc(sc_type_arc_common | sc_type_const, addr, format).done(function (arc_addr) {
-    window.sctpClient.create_arc(sc_type_arc_pos_const_perm, window.scKeynodes.nrel_format, arc_addr).fail(function () {
-      console.log("Fail in ScHelper.prototype.setLinkFormat create_arc(nrel_format, arc_addr)")
-    });
-  }).fail(function () {
-    console.log("Fail in SScHelper.prototype.setLinkFormat create_arc(addr, format)")
-  });
+ScHelper.prototype.setLinkFormat = async function (addr, format) {
+  let scTemplate = new sc.ScTemplate();
+  scTemplate.TripleWithRelation(
+    new sc.ScAddr(addr),
+    sc.ScType.EdgeDCommonVar,
+    new sc.ScAddr(format),
+    sc.ScType.EdgeAccessVarPosPerm,
+    new sc.ScAddr(scKeynodes.nrel_format)
+  );
+  await sctpClient.TemplateGenerate(scTemplate);
 };
