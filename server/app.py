@@ -88,6 +88,7 @@ def main():
     logger_sc.init()
 
     client.connect("ws://localhost:8090/ws_json")
+    ScKeynodes().resolve_identifiers([KeynodeSysIdentifiers])
     rules = [
             (r"/", MainHandler),
 
