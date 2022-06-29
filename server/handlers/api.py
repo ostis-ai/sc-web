@@ -4,7 +4,9 @@ import tornado.web
 import json
 
 from sc_client import client
-from sc_client.models import ScIdtfResolveParams
+from sc_client.constants.sc_types import NODE_VAR, EDGE_ACCESS_VAR_POS_PERM, EDGE_D_COMMON_VAR
+from sc_client.models import ScIdtfResolveParams, ScTemplate
+from sc_client.sc_keynodes import ScKeynodes
 
 import decorators
 
@@ -376,29 +378,28 @@ class IdtfResolve(base.BaseHandler):
                 arguments.append(arg)
             idx += 1
 
-        with SctpClientInstance() as sctp_client:
-            keys = Keynodes(sctp_client)
-            
-            sc_session = logic.ScSession(self, sctp_client, keys)
-            used_lang = sc_session.get_used_language()
+        keys = ScKeynodes()
 
-            result = {}
-            # get requested identifiers for arguments
-            for addr_str in arguments:
-                addr = ScAddr.parse_from_string(addr_str)
-                if addr is None:
-                    self.clear()
-                    self.set_status(404)
-                    self.finish('Can\'t parse sc-addr from argument: %s' % addr_str)
-                
-                found = False
-    
-                idtf_value = logic.get_identifier_translated(addr, used_lang, keys, sctp_client)
-                if idtf_value:
-                    result[addr_str] = idtf_value
-            
-            self.set_header("Content-Type", "application/json")
-            self.finish(json.dumps(result))
+        sc_session = logic.ScSession(self, keys)
+        used_lang = sc_session.get_used_language()
+
+        result = {}
+        # get requested identifiers for arguments
+        for addr_str in arguments:
+            addr = ScAddr.parse_from_string(addr_str)
+            if addr is None:
+                self.clear()
+                self.set_status(404)
+                self.finish('Can\'t parse sc-addr from argument: %s' % addr_str)
+
+            found = False
+
+            idtf_value = logic.get_identifier_translated(addr, used_lang, keys)
+            if idtf_value:
+                result[addr_str] = idtf_value
+
+        self.set_header("Content-Type", "application/json")
+        self.finish(json.dumps(result))
 
 
 @decorators.class_logging
@@ -470,69 +471,73 @@ class User(base.BaseHandler):
     
     #@tornado.web.asynchronous
     def get(self):
-        result = '{}'
-    
-        with SctpClientInstance() as sctp_client:
-            keys = Keynodes(sctp_client)
-            
-            # get user sc-addr
-            sc_session = logic.ScSession(self, sctp_client, keys)
-            user_addr = sc_session.get_sc_addr()
+        keys = ScKeynodes()
 
-            if sc_session.email:
-                is_authenticated = True
-            else:
-                is_authenticated = False
+        # get user sc-addr
+        sc_session = logic.ScSession(self, keys)
+        user_addr = sc_session.get_sc_addr()
 
-            roles = []
+        if sc_session.email:
+            is_authenticated = True
+        else:
+            is_authenticated = False
 
-            if is_authenticated:
-                user_kb_node = sc_session.get_user_kb_node_by_email()
-                if user_kb_node is not None:
-                    roles = self.get_user_roles(sctp_client, user_kb_node, keys)
+        roles = []
+
+        if is_authenticated:
+            user_kb_node = sc_session.get_user_kb_node_by_email()
+            if user_kb_node is not None:
+                roles = self.get_user_roles(user_kb_node, keys)
 
 
-            result = {
-                        'sc_addr': user_addr.to_int(),
-                        'is_authenticated': is_authenticated,
-                        'current_lang': sc_session.get_used_language().to_int(),
-                        'default_ext_lang': sc_session.get_default_ext_lang().to_int(),
-                        'email': sc_session.email,
-                        'roles': roles
-            }
-        
-            self.set_header("Content-Type", "application/json")
-            self.finish(json.dumps(result))
+        result = {
+                    'sc_addr': user_addr.value,
+                    'is_authenticated': is_authenticated,
+                    'current_lang': sc_session.get_used_language().value,
+                    'default_ext_lang': sc_session.get_default_ext_lang().value,
+                    'email': sc_session.email,
+                    'roles': roles
+        }
 
-    def get_user_roles(self, sctp_client, user_kb_node, keys):
+        self.set_header("Content-Type", "application/json")
+        self.finish(json.dumps(result))
+
+    def get_user_roles(self,  user_kb_node, keys):
         roles = [KeynodeSysIdentifiers.nrel_authorised_user]
 
-        is_manager_role_exist = sctp_client.iterate_elements(
-            SctpIteratorType.SCTP_ITERATOR_5_A_A_F_A_F,
-            ScElementType.sc_type_node | ScElementType.sc_type_const,
-            ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
-            user_kb_node,
-            ScElementType.sc_type_arc_pos_const_perm,
-            keys[KeynodeSysIdentifiers.nrel_manager]
-            )
+        nrel_manager = keys[KeynodeSysIdentifiers.nrel_manager.value]
+        nrel_administrator = keys[KeynodeSysIdentifiers.nrel_administrator]
+        nrel_expert = keys[KeynodeSysIdentifiers.nrel_expert]
 
-        is_admin_role_exist = sctp_client.iterate_elements(
-            SctpIteratorType.SCTP_ITERATOR_5_A_A_F_A_F,
-            ScElementType.sc_type_node | ScElementType.sc_type_const,
-            ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
+        manager_template = ScTemplate()
+        manager_template.triple_with_relation(
+            NODE_VAR,
+            EDGE_D_COMMON_VAR,
             user_kb_node,
-            ScElementType.sc_type_arc_pos_const_perm,
-            keys[KeynodeSysIdentifiers.nrel_administrator]
-            )
+            EDGE_ACCESS_VAR_POS_PERM,
+            nrel_manager
+        )
+        is_manager_role_exist = client.template_search(manager_template)
 
-        is_expert_role_exist = sctp_client.iterate_elements(
-            SctpIteratorType.SCTP_ITERATOR_5_A_A_F_A_F,
-            ScElementType.sc_type_node | ScElementType.sc_type_const,
-            ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
+        admin_template = ScTemplate()
+        admin_template.triple_with_relation(
+            NODE_VAR,
+            EDGE_D_COMMON_VAR,
             user_kb_node,
-            ScElementType.sc_type_arc_pos_const_perm,
-            keys[KeynodeSysIdentifiers.nrel_expert]
-            )
+            EDGE_ACCESS_VAR_POS_PERM,
+            nrel_administrator
+        )
+        is_admin_role_exist = client.template_search(manager_template)
+
+        expert_template = ScTemplate()
+        expert_template.triple_with_relation(
+            NODE_VAR,
+            EDGE_D_COMMON_VAR,
+            user_kb_node,
+            EDGE_ACCESS_VAR_POS_PERM,
+            nrel_expert
+        )
+        is_expert_role_exist = client.template_search(expert_template)
 
         if is_admin_role_exist:
             roles.append(KeynodeSysIdentifiers.nrel_administrator)

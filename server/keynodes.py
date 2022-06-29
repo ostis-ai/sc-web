@@ -20,6 +20,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 """
+from enum import Enum
+
 
 class Keynodes:
     
@@ -40,7 +42,7 @@ class Keynodes:
                 self.keys[name] = value
         return value
 
-class KeynodeSysIdentifiers:
+class KeynodeSysIdentifiers(Enum):
     
     nrel_system_identifier = 'nrel_system_identifier'
     nrel_main_idtf = 'nrel_main_idtf'
