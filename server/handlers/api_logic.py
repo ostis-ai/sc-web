@@ -5,7 +5,7 @@ import uuid, base64, hashlib, time
 import tornado.web
 from sc_client import client
 from sc_client.constants.sc_types import ScType, NODE_VAR, EDGE_ACCESS_VAR_POS_PERM, EDGE_D_COMMON_VAR, LINK_VAR, NODE, \
-    EDGE_ACCESS_CONST_POS_PERM, LINK, EDGE_D_COMMON_CONST
+    EDGE_ACCESS_CONST_POS_PERM, LINK, EDGE_D_COMMON_CONST, NODE_CONST
 from sc_client.models import ScTemplate, ScIdtfResolveParams, ScConstruction, ScLinkContent, ScLinkContentType
 
 from keynodes import KeynodeSysIdentifiers, Keynodes
@@ -213,48 +213,50 @@ def find_cmd_result(command_addr, keynode_ui_nrel_command_result, sctp_client):
 
 
 @decorators.method_logging
-def find_answer(question_addr, keynode_nrel_answer, sctp_client):
-    return sctp_client.iterate_elements(
-        SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
+def find_answer(question_addr, keynode_nrel_answer):
+    template = ScTemplate()
+    template.triple_with_relation(
         question_addr,
-        ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
-        ScElementType.sc_type_node | ScElementType.sc_type_const,
-        ScElementType.sc_type_arc_pos_const_perm,
+        EDGE_D_COMMON_VAR,
+        NODE_VAR,
+        EDGE_ACCESS_VAR_POS_PERM,
         keynode_nrel_answer
     )
+    return client.template_search(template)
 
 
 @decorators.method_logging
-def find_translation(construction_addr, keynode_nrel_translation, sctp_client):
-    return sctp_client.iterate_elements(
-        SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
+def find_translation(construction_addr, keynode_nrel_translation):
+    template = ScTemplate()
+    template.triple_with_relation(
         construction_addr,
-        ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
-        ScElementType.sc_type_link,
-        ScElementType.sc_type_arc_pos_const_perm,
+        EDGE_D_COMMON_VAR,
+        LINK_VAR,
+        EDGE_ACCESS_VAR_POS_PERM,
         keynode_nrel_translation
     )
+    return client.template_search(template)
 
 
 @decorators.method_logging
-def find_translation_with_format(construction_addr, format_addr, keynode_nrel_format, keynode_nrel_translation,
-                                 sctp_client):
-    translations = find_translation(construction_addr, keynode_nrel_translation, sctp_client)
+def find_translation_with_format(construction_addr, format_addr, keynode_nrel_format, keynode_nrel_translation):
+    translations = find_translation(construction_addr, keynode_nrel_translation)
 
-    if translations is None:
+    if not translations:
         return None
 
     for trans in translations:
-        link_addr = trans[2]
+        link_addr = trans.get(2)
         # check format
-        fmt = sctp_client.iterate_elements(
-            SctpIteratorType.SCTP_ITERATOR_3F_A_F,
+        template = ScTemplate()
+        template.triple(
             link_addr,
-            ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
+            EDGE_D_COMMON_VAR,
             format_addr
         )
-        if fmt is not None:
-            return fmt[0][0]
+        fmt = client.template_search(template)
+        if fmt:
+            return fmt[0].get(0)
 
     return None
 
@@ -305,7 +307,7 @@ def get_identifier_translated(addr, used_lang, keys):
     )
     result = client.template_search(main_idtf_template)
     for t in result:
-        return client.get_link_content(t.get('link'))
+        return client.get_link_content(t.get('link'))[0].data
 
     # if identifier not found, then get system identifier
     sys_idtf_template = ScTemplate()
@@ -318,7 +320,7 @@ def get_identifier_translated(addr, used_lang, keys):
     )
     result = client.template_search(sys_idtf_template)
     for t in result:
-        return client.get_link_content(t.get('link'))
+        return client.get_link_content(t.get('link'))[0].data
 
     return None
 
@@ -812,7 +814,7 @@ class ScSession:
         self.sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_user, user_node)
 
         construction = ScConstruction()
-        construction.create_node(NODE, 'user')
+        construction.create_node(NODE_CONST, 'user')
         construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keynode_ui_user, 'user')
         construction.create_link(LINK, ScLinkContent(idtf, ScLinkContentType.STRING.value), 'idtf')
         construction.create_edge(EDGE_D_COMMON_VAR, 'user', 'idtf', 'sys_idtf_edge')

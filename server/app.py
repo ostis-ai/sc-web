@@ -3,6 +3,8 @@
 import tornado.ioloop
 import tornado.web
 import tornado.options
+from sc_client.sc_keynodes import ScKeynodes
+
 import secret
 import os
 import logging
@@ -18,8 +20,10 @@ import ws, db
 import logger_sc
 from db_reader import Reader
 from sc_client import client
+from keynodes import KeynodeSysIdentifiers
 
 is_closing = False
+
 
 def signal_handler(signum, frame):
     global is_closing

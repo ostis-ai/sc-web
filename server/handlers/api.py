@@ -4,15 +4,16 @@ import tornado.web
 import json
 
 from sc_client import client
-from sc_client.constants.sc_types import NODE_VAR, EDGE_ACCESS_VAR_POS_PERM, EDGE_D_COMMON_VAR
-from sc_client.models import ScIdtfResolveParams, ScTemplate
+from sc_client.constants.sc_types import NODE_VAR, EDGE_ACCESS_VAR_POS_PERM, EDGE_D_COMMON_VAR, NODE_CONST, \
+    EDGE_ACCESS_CONST_POS_PERM
+from sc_client.models import ScIdtfResolveParams, ScTemplate, ScAddr, ScConstruction
 from sc_client.sc_keynodes import ScKeynodes
 
 import decorators
 
 from keynodes import KeynodeSysIdentifiers, Keynodes
 from sctp.logic import SctpClientInstance
-from sctp.types import ScAddr, SctpIteratorType, ScElementType
+from sctp.types import SctpIteratorType, ScElementType
 
 from . import api_logic as logic
 import time
@@ -131,83 +132,88 @@ class QuestionAnswerTranslate(base.BaseHandler):
     def post(self):
         with SctpClientInstance() as sctp_client:
 
-            question_addr = ScAddr.parse_from_string(self.get_argument(u'question', None))
-            format_addr = ScAddr.parse_from_string(self.get_argument(u'format', None))
-            
-            keys = Keynodes(sctp_client)
-            keynode_nrel_answer = keys[KeynodeSysIdentifiers.question_nrel_answer]
-            keynode_nrel_translation = keys[KeynodeSysIdentifiers.nrel_translation]
-            keynode_nrel_format = keys[KeynodeSysIdentifiers.nrel_format]
-            keynode_system_element = keys[KeynodeSysIdentifiers.system_element]
-            
+            question_addr = ScAddr(int(self.get_argument(u'question', None)))
+            format_addr = ScAddr(int(self.get_argument(u'format', None)))
+
+            keys = ScKeynodes()
+            keynode_nrel_answer = keys[KeynodeSysIdentifiers.question_nrel_answer.value]
+            keynode_nrel_translation = keys[KeynodeSysIdentifiers.nrel_translation.value]
+            keynode_nrel_format = keys[KeynodeSysIdentifiers.nrel_format.value]
+            keynode_system_element = keys[KeynodeSysIdentifiers.system_element.value]
+            ui_rrel_source_sc_construction = keys[KeynodeSysIdentifiers.ui_rrel_source_sc_construction.value]
+            ui_command_translate_from_sc = keys[KeynodeSysIdentifiers.ui_command_translate_from_sc.value]
+            ui_command_initiated = keys[KeynodeSysIdentifiers.ui_command_initiated.value]
+
             # try to find answer for the question
             wait_time = 0
             wait_dt = 0.1
-            
-            answer = logic.find_answer(question_addr, keynode_nrel_answer, sctp_client)
+
+            answer = logic.find_answer(question_addr, keynode_nrel_answer)
             while answer is None:
                 time.sleep(wait_dt)
                 wait_time += wait_dt
                 if wait_time > tornado.options.options.event_wait_timeout:
                     return logic.serialize_error(self, 404, 'Timeout waiting for answer')
-                
+
                 answer = logic.find_answer(question_addr, keynode_nrel_answer, sctp_client)
-            
+
             if answer is None:
                 return logic.serialize_error(self, 404, 'Answer not found')
-            
-            answer_addr = answer[0][2]
-            
+
+            answer_addr = answer[0].get(2)
+
             # try to find translation to specified format
-            result_link_addr = logic.find_translation_with_format(answer_addr, format_addr, keynode_nrel_format, keynode_nrel_translation, sctp_client)
-            
+            result_link_addr = logic.find_translation_with_format(answer_addr, format_addr, keynode_nrel_format,
+                                                                  keynode_nrel_translation)
+
             # if link addr not found, then run translation of answer to specified format
             if result_link_addr is None:
-                trans_cmd_addr = sctp_client.create_node(ScElementType.sc_type_node | ScElementType.sc_type_const)
-                logic.append_to_system_elements(sctp_client, keynode_system_element, trans_cmd_addr)
-                
-                arc_addr = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, trans_cmd_addr, answer_addr)
-                logic.append_to_system_elements(sctp_client, keynode_system_element, arc_addr)
-                
-                arc_addr = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keys[KeynodeSysIdentifiers.ui_rrel_source_sc_construction], arc_addr)
-                logic.append_to_system_elements(sctp_client, keynode_system_element, arc_addr)
-                
-                arc_addr = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, trans_cmd_addr, format_addr)
-                logic.append_to_system_elements(sctp_client, keynode_system_element, arc_addr)
-                
-                arc_addr = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keys[KeynodeSysIdentifiers.ui_rrel_output_format], arc_addr)
-                logic.append_to_system_elements(sctp_client, keynode_system_element, arc_addr)
-                
-                # add into translation command set
-                arc_addr = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keys[KeynodeSysIdentifiers.ui_command_translate_from_sc], trans_cmd_addr)
-                logic.append_to_system_elements(sctp_client, keynode_system_element, arc_addr)
-                
-                # initialize command
-                arc_addr = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keys[KeynodeSysIdentifiers.ui_command_initiated], trans_cmd_addr)
-                logic.append_to_system_elements(sctp_client, keynode_system_element, arc_addr)
-                
+                construction = ScConstruction()
+                construction.create_node(NODE_CONST, 'trans_cmd_addr')
+                construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'trans_cmd_addr')
+                construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, 'trans_cmd_addr', answer_addr, 'arc_addr')
+                construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_addr')
+                construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, ui_rrel_source_sc_construction, 'arc_addr',
+                                         'arc_addr_2')
+                construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_addr_2')
+                construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, 'trans_cmd_addr', format_addr, 'arc_addr_3')
+                construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_addr_3')
+                ui_rrel_output_format = keys[KeynodeSysIdentifiers.ui_rrel_output_format.value]
+                construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, ui_rrel_output_format, 'arc_addr_3', 'arc_addr_4')
+                construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_addr_4')
+                construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, ui_command_translate_from_sc, 'trans_cmd_addr',
+                                         'arc_addr_5')
+                construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_addr_5')
+                construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, ui_command_initiated, 'trans_cmd_addr',
+                                         'arc_addr_6')
+                construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_addr_6')
+
+                result = client.create_elements(construction)
+
                 # now we need to wait translation result
                 wait_time = 0
-                translation = logic.find_translation_with_format(answer_addr, format_addr, keynode_nrel_format, keynode_nrel_translation, sctp_client)
+                translation = logic.find_translation_with_format(answer_addr, format_addr, keynode_nrel_format,
+                                                                 keynode_nrel_translation)
                 while translation is None:
                     time.sleep(wait_dt)
                     wait_time += wait_dt
                     if wait_time > tornado.options.options.event_wait_timeout:
                         return logic.serialize_error(self, 404, 'Timeout waiting for answer translation')
-     
-                    translation = logic.find_translation_with_format(answer_addr, format_addr, keynode_nrel_format, keynode_nrel_translation, sctp_client)
-                    
+
+                    translation = logic.find_translation_with_format(answer_addr, format_addr, keynode_nrel_format,
+                                                                     keynode_nrel_translation)
+
                 if translation is not None:
                     result_link_addr = translation
-        
+
             # if result exists, then we need to return it content
             if result_link_addr is not None:
-                result = json.dumps({"link": result_link_addr.to_int()})
-        
+                result = json.dumps({"link": result_link_addr.value})
+
             self.set_header("Content-Type", "application/json")
-            self.finish(result) 
-        
-        
+            self.finish(result)
+
+
 class LinkContent(base.BaseHandler):
     
     #@tornado.web.asynchronous
@@ -386,7 +392,8 @@ class IdtfResolve(base.BaseHandler):
         result = {}
         # get requested identifiers for arguments
         for addr_str in arguments:
-            addr = ScAddr.parse_from_string(addr_str)
+            addr = int(addr_str)
+            addr = ScAddr(addr)
             if addr is None:
                 self.clear()
                 self.set_status(404)
