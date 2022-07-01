@@ -82,48 +82,43 @@ class ContextMenu(base.BaseHandler):
     
     #@tornado.web.asynchronous
     def get(self):
-         with SctpClientInstance() as sctp_client:
-            keys = Keynodes(sctp_client)
-            keynode_ui_main_menu = keys[KeynodeSysIdentifiers.ui_main_menu]
-            keynode_ui_external_languages = keys[KeynodeSysIdentifiers.ui_external_languages]
-            keynode_languages = keys[KeynodeSysIdentifiers.languages]
-    
-            # try to find main menu node
-            cmds = []
-            logic.find_atomic_commands(keynode_ui_main_menu, sctp_client, keys, cmds)
-                
-            self.set_header("Content-Type", "application/json")
-            self.finish(json.dumps(cmds))
+        keys = ScKeynodes()
+        keynode_ui_main_menu = keys[KeynodeSysIdentifiers.ui_main_menu.value]
+
+        # try to find main menu node
+        cmds = []
+        logic.find_atomic_commands(keynode_ui_main_menu, keys, cmds)
+
+        self.set_header("Content-Type", "application/json")
+        self.finish(json.dumps(cmds))
         
         
 class CmdDo(base.BaseHandler):
 
     #@tornado.web.asynchronous
     def post(self):
-        result = '[]'
-        
-        with SctpClientInstance() as sctp_client:
-            cmd_addr = ScAddr.parse_from_string(self.get_argument(u'cmd', None))
-            # parse arguments
-            first = True
-            arg = None
-            arguments = []
-            idx = 0
-            while first or (arg is not None):
-                arg = ScAddr.parse_from_string(self.get_argument(u'%d_' % idx, None))
-                if arg is not None:
-                    # check if sc-element exist
-                    if sctp_client.check_element(arg):
-                        arguments.append(arg)
-                    else:
-                        return logic.serialize_error(404, "Invalid argument: %s" % arg)
-                first = False
-                idx += 1
+        cmd_addr = ScAddr(int(self.get_argument(u'cmd', None)))
+        # parse arguments
+        first = True
+        arg = None
+        arguments = []
+        idx = 0
+        while first or (arg is not None):
+            arg = self.get_argument(u'%d_' % idx, None)
+            if arg is not None:
+                arg = ScAddr(int(arg))
+                # check if sc-element exist
+                if client.check_elements(arg)[0].is_valid():
+                    arguments.append(arg)
+                else:
+                    return logic.serialize_error(404, "Invalid argument: %s" % arg)
+            first = False
+            idx += 1
 
-            keys = Keynodes(sctp_client)
-            result = logic.do_command(sctp_client, keys, cmd_addr, arguments, self)
-            self.set_header("Content-Type", "application/json")
-            self.finish(json.dumps(result))
+        keys = ScKeynodes()
+        result = logic.do_command(keys, cmd_addr, arguments, self)
+        self.set_header("Content-Type", "application/json")
+        self.finish(json.dumps(result))
         
         
 class QuestionAnswerTranslate(base.BaseHandler):
@@ -157,7 +152,7 @@ class QuestionAnswerTranslate(base.BaseHandler):
 
                 answer = logic.find_answer(question_addr, keynode_nrel_answer, sctp_client)
 
-            if answer is None:
+            if not answer:
                 return logic.serialize_error(self, 404, 'Answer not found')
 
             answer_addr = answer[0].get(2)
@@ -242,45 +237,45 @@ class LinkFormat(base.BaseHandler):
     
     #@tornado.web.asynchronous
     def post(self):
-   
-        with SctpClientInstance() as sctp_client:
 
-            # parse arguments
-            first = True
-            arg = None
-            arguments = []
-            idx = 0
-            while first or (arg is not None):
-                arg_str = u'%d_' % idx
-                arg = ScAddr.parse_from_string(self.get_argument(arg_str, None))
-                if arg is not None:
-                    arguments.append(arg)
-                first = False
-                idx += 1
-    
-            keys = Keynodes(sctp_client)
-            keynode_nrel_format = keys[KeynodeSysIdentifiers.nrel_format]
-            keynode_format_txt = keys[KeynodeSysIdentifiers.format_txt]
-    
-            result = {}
-            for arg in arguments:
-    
-                # try to resolve format
-                format = sctp_client.iterate_elements(
-                    SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
-                    arg,
-                    ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
-                    ScElementType.sc_type_node | ScElementType.sc_type_const,
-                    ScElementType.sc_type_arc_pos_const_perm,
-                    keynode_nrel_format
-                )
-                if format is not None:
-                    result[arg.to_int()] = format[0][2].to_int()
-                else:
-                    result[arg.to_int()] = keynode_format_txt.to_int()
-    
-            self.set_header("Content-Type", "application/json")
-            self.finish(json.dumps(result))
+        # parse arguments
+        first = True
+        arg = None
+        arguments = []
+        idx = 0
+        while first or (arg is not None):
+            arg_str = u'%d_' % idx
+            arg = self.get_argument(arg_str, None)
+            if arg is not None:
+                arg = ScAddr(int(arg))
+                arguments.append(arg)
+            first = False
+            idx += 1
+
+        keys = ScKeynodes()
+        keynode_nrel_format = keys[KeynodeSysIdentifiers.nrel_format.value]
+        keynode_format_txt = keys[KeynodeSysIdentifiers.format_txt.value]
+
+        result = {}
+        for arg in arguments:
+
+            # try to resolve format
+            template = ScTemplate()
+            template.triple_with_relation(
+                arg,
+                EDGE_D_COMMON_VAR,
+                NODE_VAR,
+                EDGE_ACCESS_VAR_POS_PERM,
+                keynode_nrel_format
+            )
+            format = client.template_search(template)
+            if format:
+                result[arg.value] = format[0].get(2).value
+            else:
+                result[arg.value] = keynode_format_txt.value
+
+        self.set_header("Content-Type", "application/json")
+        self.finish(json.dumps(result))
 
 
 @decorators.class_logging
