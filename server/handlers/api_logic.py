@@ -5,7 +5,7 @@ import uuid, base64, hashlib, time
 import tornado.web
 from sc_client import client
 from sc_client.constants.sc_types import ScType, NODE_VAR, EDGE_ACCESS_VAR_POS_PERM, EDGE_D_COMMON_VAR, LINK_VAR, NODE, \
-    EDGE_ACCESS_CONST_POS_PERM, LINK, EDGE_D_COMMON_CONST, NODE_CONST
+    EDGE_ACCESS_CONST_POS_PERM, LINK, EDGE_D_COMMON_CONST, NODE_CONST, NODE_VAR_CLASS, LINK_CONST
 from sc_client.models import ScTemplate, ScIdtfResolveParams, ScConstruction, ScLinkContent, ScLinkContentType
 
 from keynodes import KeynodeSysIdentifiers, Keynodes
@@ -366,23 +366,25 @@ def get_by_link_addr_translated(used_lang, keys, sctp_client, link):
 
 
 @decorators.method_logging
-def check_command_finished(command_addr, keynode_command_finished, sctp_client):
-    return sctp_client.iterate_elements(
-        SctpIteratorType.SCTP_ITERATOR_3F_A_F,
+def check_command_finished(command_addr, keynode_command_finished):
+    template = ScTemplate()
+    template.triple(
         keynode_command_finished,
-        ScElementType.sc_type_arc_pos_const_perm,
+        EDGE_ACCESS_VAR_POS_PERM,
         command_addr
     )
+    return client.template_search(template)
 
 
 @decorators.method_logging
-def check_command_failed(command_addr, keynode_command_failed, sctp_client):
-    return sctp_client.iterate_elements(
-        SctpIteratorType.SCTP_ITERATOR_3F_A_F,
+def check_command_failed(command_addr, keynode_command_failed):
+    template = ScTemplate()
+    template.triple(
         keynode_command_failed,
-        ScElementType.sc_type_arc_pos_const_perm,
+        EDGE_ACCESS_VAR_POS_PERM,
         command_addr
     )
+    return client.template_search(template)
 
 
 @decorators.method_logging
@@ -425,84 +427,82 @@ def get_link_mime(link_addr, keynode_nrel_format, keynode_nrel_mimetype, sctp_cl
 
 
 @decorators.method_logging
-def get_languages_list(keynode_languages, sctp_client):
-    res_langs = sctp_client.iterate_elements(
-        SctpIteratorType.SCTP_ITERATOR_3F_A_A,
+def get_languages_list(keynode_languages):
+    template = ScTemplate()
+    template.triple(
         keynode_languages,
-        ScElementType.sc_type_arc_pos_const_perm,
-        ScElementType.sc_type_node | ScElementType.sc_type_const
+        EDGE_ACCESS_VAR_POS_PERM,
+        NODE_VAR
     )
+    res_langs = client.template_search(template)
     langs = []
-    if (res_langs is not None):
-        for items in res_langs:
-            langs.append(items[2])
-
+    for items in res_langs:
+        langs.append(items.get(2))
     return langs
 
 
 @decorators.method_logging
-def do_command(sctp_client, keys, cmd_addr, arguments, handler):
+def do_command(keys, cmd_addr, arguments, handler):
     result = {}
 
     if cmd_addr is not None:
 
-        keynode_ui_rrel_commnad = keys[KeynodeSysIdentifiers.ui_rrel_commnad]
-        keynode_ui_rrel_command_arguments = keys[KeynodeSysIdentifiers.ui_rrel_command_arguments]
-        keynode_ui_nrel_command_result = keys[KeynodeSysIdentifiers.ui_nrel_command_result]
-        keynode_ui_command_generate_instance = keys[KeynodeSysIdentifiers.ui_command_generate_instance]
-        keynode_ui_command_initiated = keys[KeynodeSysIdentifiers.ui_command_initiated]
-        keynode_ui_command_finished = keys[KeynodeSysIdentifiers.ui_command_finished]
-        # keynode_ui_command_failed = keys[KeynodeSysIdentifiers.ui_command_failed]
-        keynode_ui_nrel_command_result = keys[KeynodeSysIdentifiers.ui_nrel_command_result]
-        keynode_ui_user = keys[KeynodeSysIdentifiers.ui_user]
-        keynode_nrel_authors = keys[KeynodeSysIdentifiers.nrel_authors]
+        keynode_ui_rrel_commnad = keys[KeynodeSysIdentifiers.ui_rrel_commnad.value]
+        keynode_ui_rrel_command_arguments = keys[KeynodeSysIdentifiers.ui_rrel_command_arguments.value]
+        keynode_ui_nrel_command_result = keys[KeynodeSysIdentifiers.ui_nrel_command_result.value]
+        keynode_ui_command_generate_instance = keys[KeynodeSysIdentifiers.ui_command_generate_instance.value]
+        keynode_ui_command_initiated = keys[KeynodeSysIdentifiers.ui_command_initiated.value]
+        keynode_ui_command_finished = keys[KeynodeSysIdentifiers.ui_command_finished.value]
+        keynode_ui_nrel_command_result = keys[KeynodeSysIdentifiers.ui_nrel_command_result.value]
+        keynode_ui_user = keys[KeynodeSysIdentifiers.ui_user.value]
+        keynode_nrel_authors = keys[KeynodeSysIdentifiers.nrel_authors.value]
 
-        keynode_system_element = keys[KeynodeSysIdentifiers.system_element]
-        keynode_nrel_ui_nrel_command_lang_template = keys[KeynodeSysIdentifiers.nrel_ui_nrel_command_lang_template]
-        keynode_languages = keys[KeynodeSysIdentifiers.languages]
-        keynode_nrel_main_idtf = keys[KeynodeSysIdentifiers.nrel_main_idtf]
+        keynode_system_element = keys[KeynodeSysIdentifiers.system_element.value]
+        keynode_nrel_ui_nrel_command_lang_template = keys[KeynodeSysIdentifiers.nrel_ui_nrel_command_lang_template.value]
+        keynode_languages = keys[KeynodeSysIdentifiers.languages.value]
+        keynode_nrel_main_idtf = keys[KeynodeSysIdentifiers.nrel_main_idtf.value]
 
         # create command in sc-memory
-        inst_cmd_addr = sctp_client.create_node(ScElementType.sc_type_node | ScElementType.sc_type_const)
-        append_to_system_elements(sctp_client, keynode_system_element, inst_cmd_addr)
-        arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_command_generate_instance,
-                                     inst_cmd_addr)
-        append_to_system_elements(sctp_client, keynode_system_element, arc)
-
-        inst_cmd_arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, inst_cmd_addr, cmd_addr)
-        append_to_system_elements(sctp_client, keynode_system_element, inst_cmd_arc)
-        arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_rrel_commnad, inst_cmd_arc)
-        append_to_system_elements(sctp_client, keynode_system_element, arc)
+        construction = ScConstruction()
+        construction.create_node(NODE_CONST, 'inst_cmd_addr')
+        construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'inst_cmd_addr')
+        construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keynode_ui_command_generate_instance, 'inst_cmd_addr',
+                                 'arc_1')
+        construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_1')
+        construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, 'inst_cmd_addr', cmd_addr, 'inst_cmd_arc')
+        construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'inst_cmd_arc')
+        construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keynode_ui_rrel_commnad, 'inst_cmd_arc', 'arc_2')
+        construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_2')
 
         # create arguments
-        args_addr = sctp_client.create_node(ScElementType.sc_type_node | ScElementType.sc_type_const)
-        append_to_system_elements(sctp_client, keynode_system_element, args_addr)
-        args_arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, inst_cmd_addr, args_addr)
-        append_to_system_elements(sctp_client, keynode_system_element, args_arc)
-        arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_rrel_command_arguments,
-                                     args_arc)
-        append_to_system_elements(sctp_client, keynode_system_element, arc)
+        construction.create_node(NODE_CONST, 'args_addr')
+        construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'args_addr')
+        construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, 'inst_cmd_addr', 'args_addr', 'args_arc')
+        construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'args_arc')
+        construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keynode_ui_rrel_command_arguments, 'args_arc', 'arc_3')
+        construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_3')
 
         idx = 1
         for arg in arguments:
-            arg_arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, args_addr, arg)
-            append_to_system_elements(sctp_client, keynode_system_element, arg_arc)
-            if arg_arc is None:
-                return serialize_error(handler, 404, 'Error while create "create_instance" command')
+            arg_arc = 'arg_arc_%d' % idx
+            construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, 'args_addr', arg, arg_arc)
+            construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, arg_arc)
 
-            idx_addr = sctp_client.find_element_by_system_identifier(str.encode('rrel_%d' % idx))
-            if idx_addr is None:
+            idx_addr = client.resolve_keynodes(ScIdtfResolveParams(idtf='rrel_%d' % idx, type=None))[0]
+            if not idx_addr.is_valid():
                 return serialize_error(handler, 404, 'Error while create "create_instance" command')
+            idx_arc_addr = 'idx_arc_addr_%d' % idx
+            construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, idx_addr, arg_arc, idx_arc_addr)
+            construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, idx_arc_addr)
             idx += 1
-            arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, idx_addr, arg_arc)
-            append_to_system_elements(sctp_client, keynode_system_element, arc)
+
+        # initialize command
+        construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keynode_ui_command_initiated, 'inst_cmd_addr')
+        result = client.create_elements(construction)
+        inst_cmd_addr = result[construction.get_index('inst_cmd_addr')]
 
         wait_time = 0
         wait_dt = 0.1
-
-        # initialize command
-        arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_command_initiated,
-                                     inst_cmd_addr)
 
         cmd_finished = False
         cmd_failed = False
@@ -511,67 +511,71 @@ def do_command(sctp_client, keys, cmd_addr, arguments, handler):
             wait_time += wait_dt
             if wait_time > tornado.options.options.event_wait_timeout:
                 return serialize_error(handler, 404, 'Timeout waiting for "create_instance" command finished')
-            cmd_finished = check_command_finished(inst_cmd_addr, keynode_ui_command_finished, sctp_client)
-            # cmd_failed = check_command_failed(inst_cmd_addr, keynode_ui_command_failed, sctp_client)
+            cmd_finished = check_command_finished(inst_cmd_addr, keynode_ui_command_finished)
 
             if cmd_finished or cmd_failed:
-                break;
+                break
 
         if cmd_failed:
             return {}
 
         # get command result
-        cmd_result = sctp_client.iterate_elements(
-            SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
+        template = ScTemplate()
+        template.triple_with_relation(
             inst_cmd_addr,
-            ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
-            ScElementType.sc_type_node | ScElementType.sc_type_const,
-            ScElementType.sc_type_arc_pos_const_perm,
+            EDGE_D_COMMON_VAR,
+            NODE_VAR,
+            EDGE_ACCESS_VAR_POS_PERM,
             keynode_ui_nrel_command_result
         )
+        cmd_result = client.template_search(template)
         if cmd_result is None:
             return serialize_error(handler, 404, 'Can\'t find "create_instance" command result')
 
-        cmd_result = cmd_result[0][2]
+        cmd_result = cmd_result[0].get(2)
 
         # @todo support all possible commands
 
-        sc_session = ScSession(handler, sctp_client, keys)
+        sc_session = ScSession(handler, keys)
         user_node = sc_session.get_sc_addr()
         if not user_node:
             return serialize_error(handler, 404, "Can't resolve user node")
 
         keynode_init_set = None
-        keynode_question = keys[KeynodeSysIdentifiers.question]
+        keynode_question = keys[KeynodeSysIdentifiers.question.value]
 
         # try to find question node
-        question = sctp_client.iterate_elements(
-            SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
+        template = ScTemplate()
+        template.triple_with_relation(
             keynode_question,
-            ScElementType.sc_type_arc_pos_const_perm,
-            ScElementType.sc_type_node | ScElementType.sc_type_const,
-            ScElementType.sc_type_arc_pos_const_perm,
+            EDGE_ACCESS_VAR_POS_PERM,
+            NODE_VAR,
+            EDGE_ACCESS_VAR_POS_PERM,
             cmd_result
         )
+        question = client.template_search(template)
         if question:
-            instance_node = question[0][2]
+            instance_node = question[0].get(2)
             result_key = 'question'
 
-            keynode_init_set = keys[KeynodeSysIdentifiers.question_initiated]
+            keynode_init_set = keys[KeynodeSysIdentifiers.question_initiated.value]
 
-            append_to_system_elements(sctp_client, keynode_system_element, instance_node)
+            construction = ScConstruction()
+            construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, instance_node)
+            client.create_elements(construction)
 
             # generate main identifiers
-            langs = get_languages_list(keynode_languages, sctp_client)
+            langs = get_languages_list(keynode_languages)
             if langs:
-                templates = sctp_client.iterate_elements(
-                    SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
+                template = ScTemplate()
+                template.triple_with_relation(
                     cmd_addr,
-                    ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
-                    ScElementType.sc_type_link,
-                    ScElementType.sc_type_arc_pos_const_perm,
+                    EDGE_D_COMMON_VAR,
+                    LINK_VAR,
+                    EDGE_ACCESS_VAR_POS_PERM,
                     keynode_nrel_ui_nrel_command_lang_template
                 )
+                templates = client.template_search(template)
                 if templates:
                     generated = {}
                     identifiers = {}
@@ -580,78 +584,78 @@ def do_command(sctp_client, keys, cmd_addr, arguments, handler):
                     for l in langs:
                         identifiers[str(l)] = {}
                         for a in arguments:
-                            idtf_value = get_identifier_translated(a, l, keys, sctp_client)
+                            idtf_value = get_identifier_translated(a, l, keys)
                             if idtf_value:
                                 identifiers[str(l)][str(a)] = idtf_value
 
                     for t in templates:
-                        input_arcs = sctp_client.iterate_elements(
-                            SctpIteratorType.SCTP_ITERATOR_3A_A_F,
-                            ScElementType.sc_type_node | ScElementType.sc_type_const | ScElementType.sc_type_node_class,
-                            ScElementType.sc_type_arc_pos_const_perm,
-                            t[2])
+                        template = ScTemplate()
+                        template.triple(
+                            NODE_VAR_CLASS,
+                            EDGE_ACCESS_VAR_POS_PERM,
+                            t.get(2)
+                        )
+                        input_arcs = client.template_search(template)
                         if input_arcs:
                             for arc in input_arcs:
                                 for l in langs:
-                                    if str(l) not in generated and arc[0] == l:
+                                    if str(l) not in generated and arc.get(0) == l:
                                         lang_idtfs = identifiers[str(l)]
                                         # get content of link
-                                        data = sctp_client.get_link_content(t[2]).decode('utf-8')
+                                        data = client.get_link_content(t.get(2))[0].data
                                         if data:
                                             for idx in range(len(arguments)):
-                                                value = arguments[idx].to_id()
+                                                value = arguments[idx].value
                                                 if str(arguments[idx]) in lang_idtfs:
                                                     value = lang_idtfs[str(arguments[idx])]
                                                 data = data.replace(u'$ui_arg_%d' % (idx + 1), value)
 
                                             # generate identifier
-                                            idtf_link = sctp_client.create_link()
-                                            sctp_client.set_link_content(idtf_link, data.encode('utf-8'))
-                                            sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, l,
-                                                                   idtf_link)
-
-                                            bin_arc = sctp_client.create_arc(
-                                                ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
-                                                instance_node, idtf_link)
-                                            sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm,
-                                                                   keynode_nrel_main_idtf, bin_arc)
+                                            construction = ScConstruction()
+                                            construction.create_link(LINK_CONST,
+                                                                     ScLinkContent(data, ScLinkContentType.STRING),
+                                                                     'idtf_link')
+                                            construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, l, 'idtf_link')
+                                            construction.create_edge(EDGE_D_COMMON_CONST, instance_node, 'idtf_link',
+                                                                     'bin_arc')
+                                            construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keynode_nrel_main_idtf,
+                                                                     'bin_arc')
+                                            client.create_elements(construction)
 
                                             generated[str(l)] = True
 
         else:  # check if command
 
-            keynode_command = keys[KeynodeSysIdentifiers.command]
-
-            command = sctp_client.iterate_elements(
-                SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
+            keynode_command = keys[KeynodeSysIdentifiers.command.value]
+            template = ScTemplate()
+            template.triple_with_relation(
                 keynode_command,
-                ScElementType.sc_type_arc_pos_const_perm,
-                ScElementType.sc_type_node | ScElementType.sc_type_const,
-                ScElementType.sc_type_arc_pos_const_perm,
+                EDGE_ACCESS_VAR_POS_PERM,
+                NODE_VAR,
+                EDGE_ACCESS_VAR_POS_PERM,
                 cmd_result
             )
 
+            command = client.template_search(template)
             if command:
-                instance_node = command[0][2]
-                keynode_init_set = keys[KeynodeSysIdentifiers.command_initiated]
+                instance_node = command[0].get(2)
+                keynode_init_set = keys[KeynodeSysIdentifiers.command_initiated.value]
 
             result_key = 'command'
 
-        # create author    
-        #         arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_user, user_node)
-        #         append_to_system_elements(sctp_client, keynode_system_element, arc)
-
-        author_arc = sctp_client.create_arc(ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
-                                            instance_node, user_node)
-        append_to_system_elements(sctp_client, keynode_system_element, author_arc)
-        arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_nrel_authors, author_arc)
-        append_to_system_elements(sctp_client, keynode_system_element, arc)
+        # create author
+        construction = ScConstruction()
+        construction.create_edge(EDGE_D_COMMON_CONST, instance_node, user_node, 'author_arc')
+        construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'author_arc')
+        construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keynode_nrel_authors, 'author_arc', 'arc_1')
+        construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_1')
 
         # initiate instance
-        arc = sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_init_set, instance_node)
-        append_to_system_elements(sctp_client, keynode_system_element, arc)
+        construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keynode_init_set, instance_node, 'arc_2')
+        construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_2')
+        client.create_elements(construction)
 
-        result = {result_key: instance_node.to_id()}
+        result = {result_key: instance_node.value}
 
     return result
 
