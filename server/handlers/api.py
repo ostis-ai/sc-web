@@ -296,15 +296,14 @@ class LanguageSet(base.BaseHandler):
     
     #@tornado.web.asynchronous
     def post(self):
-        lang_addr = ScAddr.parse_from_string(self.get_argument(u'lang_addr', None))
+        lang_addr = ScAddr(int(self.get_argument(u'lang_addr', None)))
         
-        with SctpClientInstance() as sctp_client:
-            keys = Keynodes(sctp_client)
-        
-            sc_session = logic.ScSession(self, sctp_client, keys)
-            sc_session.set_current_lang_mode(lang_addr)
-            
-            self.finish()
+        keys = ScKeynodes()
+
+        sc_session = logic.ScSession(self, keys)
+        sc_session.set_current_lang_mode(lang_addr)
+
+        self.finish()
 
 
 class IdtfFind(base.BaseHandler):

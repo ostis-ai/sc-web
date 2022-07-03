@@ -773,7 +773,7 @@ class ScSession:
         )
         search = client.template_search(template)
         if search:
-            self.sctp_client.erase_element(search[0].get(1))
+            client.delete_elements(search[0].get(1))
 
         construction = ScConstruction()
         construction.create_edge(EDGE_D_COMMON_CONST, self.get_sc_addr(), mode_addr, 'mode_edge')
