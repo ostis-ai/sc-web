@@ -4,6 +4,13 @@ import tornado.auth
 import tornado.options
 import tornado.web
 import json
+
+from sc_client import client
+from sc_client.constants.sc_types import NODE_VAR, EDGE_D_COMMON_VAR, EDGE_ACCESS_VAR_POS_PERM, EDGE_D_COMMON_CONST, \
+    EDGE_ACCESS_CONST_POS_PERM, NODE_CONST, LINK_CONST
+from sc_client.models import ScTemplate, ScConstruction, ScLinkContent, ScLinkContentType
+from sc_client.sc_keynodes import ScKeynodes
+
 from . import base
 import db
 import decorators
@@ -40,15 +47,10 @@ class GoogleOAuth2LoginHandler(base.BaseHandler,
                 if r:
                     role = r.id
             
-            with SctpClientInstance() as sctp_client:
-                keys = Keynodes(sctp_client)
-            
-                sc_session = logic.ScSession(self, sctp_client, keys)
-                            
-                key = database.add_user(name = user['name'], 
-                                        email = email, 
-                                        avatar = user['picture'],
-                                        role = role)
+            key = database.add_user(name = user['name'],
+                                    email = email,
+                                    avatar = user['picture'],
+                                    role = role)
                 
         self.set_secure_cookie(self.cookie_user_key, key, 1)
         self.register_user(email, user_name)
@@ -79,83 +81,79 @@ class GoogleOAuth2LoginHandler(base.BaseHandler,
 
     def register_user(self, email, user_name):
 
-        with SctpClientInstance() as sctp_client:
-            keys = Keynodes(sctp_client)
+        keys = ScKeynodes()
 
-            links = sctp_client.find_links_with_content(str(email))
-            if links and len(links) == 1:
-                user = sctp_client.iterate_elements(
-                                            SctpIteratorType.SCTP_ITERATOR_5_A_A_F_A_F,
-                                            ScElementType.sc_type_node | ScElementType.sc_type_const,
-                                            ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
-                                            links[0],
-                                            ScElementType.sc_type_arc_pos_const_perm,
-                                            keys[KeynodeSysIdentifiers.nrel_email]
-                                            )
-                if user and user[0] and user[0][0]:
-                    results = sctp_client.iterate_elements(
-                            SctpIteratorType.SCTP_ITERATOR_5_F_A_F_A_F,
-                            keys[KeynodeSysIdentifiers.Myself],
-                            ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
-                            user[0][0],
-                            ScElementType.sc_type_arc_pos_const_perm,
-                            keys[KeynodeSysIdentifiers.nrel_registered_user]
-                            )
-
-                    if results is None:
-                        self.gen_registred_user_relation(sctp_client, keys, user[0][0])
-                else:
-                    user_node = self.create_ui_user_node_at_kb(sctp_client, keys, email, user_name)
-                    self.gen_registred_user_relation(sctp_client, keys, user_node)
+        links = client.get_links_by_content(str(email))[0]
+        if links and len(links) == 1:
+            template = ScTemplate()
+            template.triple_with_relation(
+                NODE_VAR,
+                EDGE_D_COMMON_VAR,
+                links[0],
+                EDGE_ACCESS_VAR_POS_PERM,
+                keys[KeynodeSysIdentifiers.nrel_email.value]
+            )
+            user = client.template_search(template)
+            if user and user[0] and user[0].get(0):
+                template.triple_with_relation(
+                    keys[KeynodeSysIdentifiers.Myself.value],
+                    EDGE_D_COMMON_VAR,
+                    user[0].get(0),
+                    EDGE_ACCESS_VAR_POS_PERM,
+                    keys[KeynodeSysIdentifiers.nrel_registered_user.value]
+                )
+                results = client.template_search(template)
+                if not results:
+                    self.gen_registred_user_relation(keys, user[0].get(0))
             else:
-                user_node = self.create_ui_user_node_at_kb(sctp_client, keys, email, user_name)
-                self.gen_registred_user_relation(sctp_client, keys, user_node)
+                user_node = self.create_ui_user_node_at_kb(keys, email, user_name)
+                self.gen_registred_user_relation(keys, user_node)
+        else:
+            user_node = self.create_ui_user_node_at_kb(keys, email, user_name)
+            self.gen_registred_user_relation(keys, user_node)
 
 
-    def create_ui_user_node_at_kb(self, sctp_client, keys, email, userName):
-        user_node = sctp_client.create_node(ScElementType.sc_type_node | ScElementType.sc_type_const)
-
-        sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm,
-                               keys[KeynodeSysIdentifiers.ui_user], user_node)
+    def create_ui_user_node_at_kb(self, keys, email, userName):
+        construction = ScConstruction()
+        construction.create_node(NODE_CONST, 'user_node')
+        construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keys[KeynodeSysIdentifiers.ui_user.value], 'user_node')
 
         # create system_idtf
         sys_idtf = email.split('@')[0]
-        sys_idtf_link = sctp_client.create_link()
-        sctp_client.set_link_content(sys_idtf_link, str(sys_idtf.encode('utf-8')))
-        bin_arc_sys_idtf = sctp_client.create_arc(ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
-                                                  user_node, sys_idtf_link)
-        sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm,
-                               keys[KeynodeSysIdentifiers.nrel_system_identifier], bin_arc_sys_idtf)
+        construction.create_link(LINK_CONST, ScLinkContent(sys_idtf,ScLinkContentType.STRING.value),'sys_idtf_link')
+        construction.create_edge(EDGE_D_COMMON_CONST, 'user_node', 'sys_idtf_link', 'bin_arc_sys_idtf')
+        construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keys[KeynodeSysIdentifiers.nrel_system_identifier.value],
+                                 'bin_arc_sys_idtf')
 
         # create main_idtf (lang_ru)
-        main_idtf_link = sctp_client.create_link()
-        sctp_client.set_link_content(main_idtf_link, str(userName.encode('utf-8')))
-        bin_arc_main_idtf = sctp_client.create_arc(ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
-                                                  user_node, main_idtf_link)
-        sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm,
-                               keys[KeynodeSysIdentifiers.nrel_main_idtf], bin_arc_main_idtf)
-        sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm,
-                               keys[KeynodeSysIdentifiers.lang_ru], main_idtf_link)
+        user_name = str(userName.encode('utf-8'))
+        construction.create_link(LINK_CONST, ScLinkContent(user_name, ScLinkContentType.STRING.value),
+                                 'main_idtf_link')
+        construction.create_edge(EDGE_D_COMMON_CONST, 'user_node', 'main_idtf_link', 'bin_arc_main_idtf')
+        construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keys[KeynodeSysIdentifiers.nrel_main_idtf.value],
+                                 'bin_arc_main_idtf')
+        construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keys[KeynodeSysIdentifiers.lang_ru.value],
+                                 'main_idtf_link')
 
         # create email
-        email_link = sctp_client.create_link()
-        sctp_client.set_link_content(email_link, str(email.encode('utf-8')))
-        bin_arc_email = sctp_client.create_arc(ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
-                                                  user_node, email_link)
-        sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm,
-                               keys[KeynodeSysIdentifiers.nrel_email], bin_arc_email)
+        email = str(email.encode('utf-8'))
+        construction.create_link(LINK_CONST, ScLinkContent(email, ScLinkContentType.STRING.value),
+                                 'email_link')
+        construction.create_edge(EDGE_D_COMMON_CONST, 'user_node', 'email_link', 'bin_arc_email')
+        construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keys[KeynodeSysIdentifiers.nrel_email.value],
+                                 'bin_arc_email')
 
-        return user_node
+        result = client.create_elements(construction)
+        return result[construction.get_index('user_node')]
 
-    def gen_registred_user_relation(self, sctp_client, keys, user):
-        bin_arc_registered = sctp_client.create_arc(ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
-                                             keys[KeynodeSysIdentifiers.Myself], user)
+    def gen_registred_user_relation(self, keys, user):
+        construction = ScConstruction()
+        construction.create_edge(EDGE_D_COMMON_CONST, keys[KeynodeSysIdentifiers.Myself.value], user,
+                                 'bin_arc_registered')
+        construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keys[KeynodeSysIdentifiers.nrel_registered_user.value],
+                                 'bin_arc_registered')
+        client.create_elements(construction)
 
-        sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm,
-                                   keys[KeynodeSysIdentifiers.nrel_registered_user], bin_arc_registered)
-
-
-        
             
     @tornado.gen.coroutine
     def get(self):
@@ -210,28 +208,25 @@ class LogOut(base.BaseHandler):
         self.redirect('/')
 
     def logout_user_from_kb(self):
-            with SctpClientInstance() as sctp_client:
-                keys = Keynodes(sctp_client)
-                sc_session = logic.ScSession(self, sctp_client, keys)
-                links = sctp_client.find_links_with_content(str(sc_session.email))
-                if links and len(links) == 1:
-                    user = sctp_client.iterate_elements(
-                            SctpIteratorType.SCTP_ITERATOR_5_A_A_F_A_F,
-                            ScElementType.sc_type_node | ScElementType.sc_type_const,
-                            ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
-                            links[0],
-                            ScElementType.sc_type_arc_pos_const_perm,
-                            keys[KeynodeSysIdentifiers.nrel_email]
-                        )
-
-                    results = sctp_client.iterate_elements(
-                            SctpIteratorType.SCTP_ITERATOR_5_F_A_F_A_F,
-                            keys[KeynodeSysIdentifiers.Myself],
-                            ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
-                            user[0][0],
-                            ScElementType.sc_type_arc_pos_const_perm,
-                            keys[KeynodeSysIdentifiers.nrel_authorised_user]
-                            )
-
-                    if results and results[0] and results[0][1]:
-                        sctp_client.erase_element(results[0][1])
+            keys = ScKeynodes()
+            sc_session = logic.ScSession(self, keys)
+            links = client.get_links_by_content(sc_session.email)[0]
+            if links and len(links) == 1:
+                template = ScTemplate()
+                template.triple_with_relation(
+                    [NODE_VAR, 'user'],
+                    EDGE_D_COMMON_VAR,
+                    links[0],
+                    EDGE_ACCESS_VAR_POS_PERM,
+                    keys[KeynodeSysIdentifiers.nrel_email.value]
+                )
+                template.triple_with_relation(
+                    keys[KeynodeSysIdentifiers.Myself.value],
+                    [EDGE_D_COMMON_VAR, 'arc'],
+                    'user',
+                    EDGE_ACCESS_VAR_POS_PERM,
+                    keys[KeynodeSysIdentifiers.nrel_authorised_user]
+                )
+                result = client.template_search(template)
+                for items in result:
+                    client.delete_elements(items.get('arc'))
