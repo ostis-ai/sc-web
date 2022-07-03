@@ -82,18 +82,15 @@ class ContextMenu(base.BaseHandler):
     
     #@tornado.web.asynchronous
     def get(self):
-         with SctpClientInstance() as sctp_client:
-            keys = Keynodes(sctp_client)
-            keynode_ui_main_menu = keys[KeynodeSysIdentifiers.ui_main_menu]
-            keynode_ui_external_languages = keys[KeynodeSysIdentifiers.ui_external_languages]
-            keynode_languages = keys[KeynodeSysIdentifiers.languages]
-    
-            # try to find main menu node
-            cmds = []
-            logic.find_atomic_commands(keynode_ui_main_menu, sctp_client, keys, cmds)
-                
-            self.set_header("Content-Type", "application/json")
-            self.finish(json.dumps(cmds))
+        keys = ScKeynodes()
+        keynode_ui_main_menu = keys[KeynodeSysIdentifiers.ui_main_menu.value]
+
+        # try to find main menu node
+        cmds = []
+        logic.find_atomic_commands(keynode_ui_main_menu, keys, cmds)
+
+        self.set_header("Content-Type", "application/json")
+        self.finish(json.dumps(cmds))
         
         
 class CmdDo(base.BaseHandler):

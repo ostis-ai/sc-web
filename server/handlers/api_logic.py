@@ -5,7 +5,7 @@ import uuid, base64, hashlib, time
 import tornado.web
 from sc_client import client
 from sc_client.constants.sc_types import ScType, NODE_VAR, EDGE_ACCESS_VAR_POS_PERM, EDGE_D_COMMON_VAR, LINK_VAR, NODE, \
-    EDGE_ACCESS_CONST_POS_PERM, LINK, EDGE_D_COMMON_CONST, NODE_CONST, NODE_VAR_CLASS, LINK_CONST
+    EDGE_ACCESS_CONST_POS_PERM, LINK, EDGE_D_COMMON_CONST, NODE_CONST, NODE_VAR_CLASS, LINK_CONST, UNKNOWN
 from sc_client.models import ScTemplate, ScIdtfResolveParams, ScConstruction, ScLinkContent, ScLinkContentType
 
 from keynodes import KeynodeSysIdentifiers, Keynodes
@@ -87,46 +87,43 @@ def parse_menu_command(cmd_addr, sctp_client, keys):
 
 
 @decorators.method_logging
-def find_atomic_commands(cmd_addr, sctp_client, keys, commands):
+def find_atomic_commands(cmd_addr, keys, commands):
     """Parse specified command from sc-memory and
         return hierarchy map (with childs), that represent it
         @param cmd_addr: sc-addr of command to parse
         @param sctp_client: sctp client object to work with sc-memory
         @param keys: keynodes object. Used just to prevent new instance creation
     """
-    keynode_ui_user_command_class_atom = keys[KeynodeSysIdentifiers.ui_user_command_class_atom]
-    keynode_ui_user_command_class_noatom = keys[KeynodeSysIdentifiers.ui_user_command_class_noatom]
-    keynode_nrel_ui_commands_decomposition = keys[KeynodeSysIdentifiers.nrel_ui_commands_decomposition]
+    keynode_ui_user_command_class_atom = keys[KeynodeSysIdentifiers.ui_user_command_class_atom.value]
+    keynode_nrel_ui_commands_decomposition = keys[KeynodeSysIdentifiers.nrel_ui_commands_decomposition.value]
 
     # try to find command type
-    if sctp_client.iterate_elements(SctpIteratorType.SCTP_ITERATOR_3F_A_F,
-                                    keynode_ui_user_command_class_atom,
-                                    ScElementType.sc_type_arc_pos_const_perm,
-                                    cmd_addr) is not None:
-        commands.append(cmd_addr.to_id())
+    template = ScTemplate()
+    template.triple(
+        keynode_ui_user_command_class_atom,
+        EDGE_ACCESS_VAR_POS_PERM,
+        cmd_addr
+    )
+    if client.template_search(template):
+        commands.append(cmd_addr.value)
 
     # try to find decomposition
-    decomp = sctp_client.iterate_elements(
-        SctpIteratorType.SCTP_ITERATOR_5_A_A_F_A_F,
-        ScElementType.sc_type_node | ScElementType.sc_type_const,
-        ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
+    template = ScTemplate()
+    template.triple_with_relation(
+        [NODE_VAR, 'decomposition'],
+        EDGE_D_COMMON_VAR,
         cmd_addr,
-        ScElementType.sc_type_arc_pos_const_perm,
+        EDGE_ACCESS_VAR_POS_PERM,
         keynode_nrel_ui_commands_decomposition
     )
-    if decomp is not None:
-
-        # iterate child commands
-        childs = sctp_client.iterate_elements(
-            SctpIteratorType.SCTP_ITERATOR_3F_A_A,
-            decomp[0][0],
-            ScElementType.sc_type_arc_pos_const_perm,
-            0
-        )
-        if childs is not None:
-            child_commands = []
-            for item in childs:
-                find_atomic_commands(item[2], sctp_client, keys, commands)
+    template.triple(
+        'decomposition',
+        EDGE_ACCESS_VAR_POS_PERM,
+        [UNKNOWN, 'child']
+    )
+    children = client.template_search(template)
+    for child in children:
+        find_atomic_commands(child.get('child'), keys, commands)
 
 
 @decorators.method_logging
