@@ -59,25 +59,26 @@ class GoogleOAuth2LoginHandler(base.BaseHandler,
 
     def authorise_user(self, email):
 
-        with SctpClientInstance() as sctp_client:
-            keys = Keynodes(sctp_client)
+        keys = ScKeynodes()
 
-            links = sctp_client.find_links_with_content(str(email))
-            if links and len(links) == 1:
-                user = sctp_client.iterate_elements(
-                                            SctpIteratorType.SCTP_ITERATOR_5_A_A_F_A_F,
-                                            ScElementType.sc_type_node | ScElementType.sc_type_const,
-                                            ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
-                                            links[0],
-                                            ScElementType.sc_type_arc_pos_const_perm,
-                                            keys[KeynodeSysIdentifiers.nrel_email]
-                                            )
-
-                bin_arc_authorised = sctp_client.create_arc(ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
-                                                 keys[KeynodeSysIdentifiers.Myself], user[0][0])
-
-                sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm,
-                                       keys[KeynodeSysIdentifiers.nrel_authorised_user], bin_arc_authorised)
+        links = client.get_links_by_content(email)[0]
+        if links and len(links) == 1:
+            template = ScTemplate()
+            template.triple_with_relation(
+                [NODE_VAR, 'user'],
+                EDGE_D_COMMON_VAR,
+                links[0],
+                EDGE_ACCESS_VAR_POS_PERM,
+                keys[KeynodeSysIdentifiers.nrel_email.value]
+            )
+            users = client.template_search(template)
+            for user in users:
+                construction = ScConstruction()
+                construction.create_edge(EDGE_D_COMMON_CONST, keys[KeynodeSysIdentifiers.Myself.value],
+                                         user.get('user'), 'bin_arc_authorised')
+                construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keys[KeynodeSysIdentifiers.nrel_authorised_user],
+                                         'bin_arc_authorised')
+                client.create_elements(construction)
 
     def register_user(self, email, user_name):
 

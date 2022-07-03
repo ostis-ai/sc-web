@@ -268,18 +268,19 @@ def get_by_system_identifier(sctp_client, idtf):
 
 
 @decorators.method_logging
-def get_by_link_addr(keys, sctp_client, link_addr):
-    keynode_nrel_system_identifier = keys[KeynodeSysIdentifiers.nrel_system_identifier]
-    elements = sctp_client.iterate_elements(
-        SctpIteratorType.SCTP_ITERATOR_5_A_A_F_A_F,
-        0,
-        ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
+def get_by_link_addr(keys, link_addr):
+    keynode_nrel_system_identifier = keys[KeynodeSysIdentifiers.nrel_system_identifier.value]
+    template = ScTemplate()
+    template.triple_with_relation(
+        UNKNOWN,
+        EDGE_D_COMMON_VAR,
         link_addr,
-        ScElementType.sc_type_arc_pos_const_perm,
+        EDGE_ACCESS_VAR_POS_PERM,
         keynode_nrel_system_identifier
     )
-    if elements is not None:
-        return elements[0][0]
+    elements = client.template_search(template)
+    if elements:
+        return elements[0].get(0)
 
     return None
 
@@ -337,27 +338,28 @@ def get_by_identifier_translated(used_lang, keys, sctp_client, idtf):
 
 
 @decorators.method_logging
-def get_by_link_addr_translated(used_lang, keys, sctp_client, link):
+def get_by_link_addr_translated(used_lang, keys, link):
     keynode_idtfs = []
-    keynode_idtfs.append(keys[KeynodeSysIdentifiers.nrel_main_idtf])
-    keynode_idtfs.append(keys[KeynodeSysIdentifiers.nrel_idtf])
+    keynode_idtfs.append(keys[KeynodeSysIdentifiers.nrel_main_idtf.value])
+    keynode_idtfs.append(keys[KeynodeSysIdentifiers.nrel_idtf.value])
 
     for keynode_idtf in keynode_idtfs:
-        elements = sctp_client.iterate_elements(SctpIteratorType.SCTP_ITERATOR_5_A_A_F_A_F,
-                                                0,
-                                                ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
-                                                link,
-                                                ScElementType.sc_type_arc_pos_const_perm,
-                                                keynode_idtf)
-
-        if elements is not None:
-            # check if founded main identifier is for used language
-            langs = sctp_client.iterate_elements(SctpIteratorType.SCTP_ITERATOR_3F_A_F,
-                                                 used_lang,
-                                                 ScElementType.sc_type_arc_pos_const_perm,
-                                                 link)
-            if langs is not None:
-                return elements[0][0]
+        template = ScTemplate()
+        template.triple_with_relation(
+            [UNKNOWN, 'element'],
+            EDGE_D_COMMON_VAR,
+            link,
+            EDGE_ACCESS_VAR_POS_PERM,
+            keynode_idtf
+        )
+        template.triple(
+            used_lang,
+            EDGE_ACCESS_VAR_POS_PERM,
+            link
+        )
+        elements = client.template_search(template)
+        if elements:
+            return elements[0].get('element')
 
     return None
 

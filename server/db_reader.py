@@ -3,6 +3,9 @@ import os
 
 import tornado.options
 
+from sc_client import client
+from sc_client.sc_keynodes import ScKeynodes
+
 from keynodes import KeynodeSysIdentifiers, Keynodes
 from sctp.logic import SctpClientInstance
 from sctp.types import ScAddr, SctpIteratorType, ScElementType
@@ -86,24 +89,32 @@ class Reader:
                 self.addr.append(decoded_addr)
             byte_border += 4
 
+    def get_languages(self):
+        try:
+            keys = ScKeynodes()
+            lang_en = keys[KeynodeSysIdentifiers.lang_en.value]
+            lang_ru = keys[KeynodeSysIdentifiers.lang_ru.value]
+            return [lang_en, lang_ru]
+        except BrokenPipeError as e:
+            quit()
+
     def sorter(self, languages, node_addr):
-        with SctpClientInstance() as sctp_client:
-            keys = Keynodes(sctp_client)
-            link_content = sctp_client.get_link_content(node_addr)
-            if len(link_content) > self.content_len_max:
-                self.long_content_counter += 1
-                return
-            link_content_decoded = link_content.decode('utf-8')
-            idtf_addr = logic.get_by_link_addr(keys, sctp_client, node_addr)
-            if idtf_addr is not None:
-                self.sys.append([idtf_addr.to_int(), link_content_decoded])
-                return
-            for lang in languages:
-                idtf_addr = logic.get_by_link_addr_translated(lang, keys, sctp_client, node_addr)
-                if idtf_addr:
-                    self.main.append([idtf_addr.to_int(), link_content_decoded])
-                else:
-                    self.common.append([node_addr.to_int(), link_content_decoded])
+        keys = ScKeynodes()
+        link_content = client.get_link_content(node_addr)[0]
+        if len(link_content.data) > self.content_len_max:
+            self.long_content_counter += 1
+            return
+        link_content_decoded = link_content.data
+        idtf_addr = logic.get_by_link_addr(keys, node_addr)
+        if idtf_addr is not None:
+            self.sys.append([idtf_addr.value, link_content_decoded])
+            return
+        for lang in languages:
+            idtf_addr = logic.get_by_link_addr_translated(lang, keys, node_addr)
+            if idtf_addr:
+                self.main.append([idtf_addr.value, link_content_decoded])
+            else:
+                self.common.append([node_addr.value, link_content_decoded])
 
     def update(self):
         # call after changing db

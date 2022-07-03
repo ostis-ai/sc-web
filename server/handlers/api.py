@@ -23,60 +23,6 @@ from . import base
 
 # -------------------------------------------        
 
-
-@decorators.class_logging
-class Init(base.BaseHandler):
-    #@tornado.web.asynchronous
-    def get(self):
-        result = '{}'
-    
-        with SctpClientInstance() as sctp_client:
-            keys = Keynodes(sctp_client)
-            keynode_ui_main_menu = keys[KeynodeSysIdentifiers.ui_main_menu]
-            keynode_ui_external_languages = keys[KeynodeSysIdentifiers.ui_external_languages]
-            keynode_languages = keys[KeynodeSysIdentifiers.languages]
-    
-            # try to find main menu node
-            cmds = logic.parse_menu_command(keynode_ui_main_menu, sctp_client, keys)
-            if cmds is None:
-                cmds = {}
-    
-            # try to find available output languages
-            res_out_langs = sctp_client.iterate_elements(
-                SctpIteratorType.SCTP_ITERATOR_3F_A_A,
-                keynode_ui_external_languages,
-                ScElementType.sc_type_arc_pos_const_perm,
-                ScElementType.sc_type_node | ScElementType.sc_type_const
-            )
-    
-            out_langs = []
-            if (res_out_langs is not None):
-                for items in res_out_langs:
-                    out_langs.append(items[2].to_int())
-    
-            # try to find available output natural languages
-            langs = logic.get_languages_list(keynode_languages, sctp_client)
-            langs_str = []
-            for l in langs:
-                langs_str.append(l.to_int())
-            
-            # get user sc-addr
-            sc_session = logic.ScSession(self, sctp_client, keys)
-            user_addr = sc_session.get_sc_addr()
-            result = {'menu_commands': cmds,
-                      'languages': langs_str,
-                      'external_languages': out_langs,
-                      'user': {
-                                'sc_addr': user_addr.to_int(),
-                                'is_authenticated': False,
-                                'current_lang': sc_session.get_used_language().to_int(),
-                                'default_ext_lang': sc_session.get_default_ext_lang().to_int()
-                               }
-            }
-        
-            self.set_header("Content-Type", "application/json")
-            self.finish(json.dumps(result))
-        
         
 class ContextMenu(base.BaseHandler):
     
@@ -206,30 +152,6 @@ class QuestionAnswerTranslate(base.BaseHandler):
         self.set_header("Content-Type", "application/json")
         self.finish(result)
 
-
-class LinkContent(base.BaseHandler):
-    
-    #@tornado.web.asynchronous
-    def get(self):
-
-        with SctpClientInstance() as sctp_client:
-    
-            keys = Keynodes(sctp_client)
-            keynode_nrel_format = keys[KeynodeSysIdentifiers.nrel_format]
-            keynode_nrel_mimetype = keys[KeynodeSysIdentifiers.nrel_mimetype]
-        
-            # parse arguments
-            addr = ScAddr.parse_from_string(self.get_argument('addr', None))        
-            if addr is None:
-                return logic.serialize_error(self, 404, 'Invalid arguments')
-        
-            result = sctp_client.get_link_content(addr)
-            if result is None:
-                return logic.serialize_error(self, 404, 'Content not found')
-        
-            self.set_header("Content-Type", logic.get_link_mime(addr, keynode_nrel_format, keynode_nrel_mimetype, sctp_client))
-            self.finish(result)
-        
         
 class LinkFormat(base.BaseHandler):
     
