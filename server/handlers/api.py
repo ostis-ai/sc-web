@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from typing import List
 
 import tornado.web
 import json
@@ -12,8 +13,6 @@ from sc_client.sc_keynodes import ScKeynodes
 import decorators
 
 from keynodes import KeynodeSysIdentifiers, Keynodes
-from sctp.logic import SctpClientInstance
-from sctp.types import SctpIteratorType, ScElementType
 
 from . import api_logic as logic
 import time
@@ -23,60 +22,6 @@ from . import base
 
 # -------------------------------------------        
 
-
-@decorators.class_logging
-class Init(base.BaseHandler):
-    #@tornado.web.asynchronous
-    def get(self):
-        result = '{}'
-    
-        with SctpClientInstance() as sctp_client:
-            keys = Keynodes(sctp_client)
-            keynode_ui_main_menu = keys[KeynodeSysIdentifiers.ui_main_menu]
-            keynode_ui_external_languages = keys[KeynodeSysIdentifiers.ui_external_languages]
-            keynode_languages = keys[KeynodeSysIdentifiers.languages]
-    
-            # try to find main menu node
-            cmds = logic.parse_menu_command(keynode_ui_main_menu, sctp_client, keys)
-            if cmds is None:
-                cmds = {}
-    
-            # try to find available output languages
-            res_out_langs = sctp_client.iterate_elements(
-                SctpIteratorType.SCTP_ITERATOR_3F_A_A,
-                keynode_ui_external_languages,
-                ScElementType.sc_type_arc_pos_const_perm,
-                ScElementType.sc_type_node | ScElementType.sc_type_const
-            )
-    
-            out_langs = []
-            if (res_out_langs is not None):
-                for items in res_out_langs:
-                    out_langs.append(items[2].to_int())
-    
-            # try to find available output natural languages
-            langs = logic.get_languages_list(keynode_languages, sctp_client)
-            langs_str = []
-            for l in langs:
-                langs_str.append(l.to_int())
-            
-            # get user sc-addr
-            sc_session = logic.ScSession(self, sctp_client, keys)
-            user_addr = sc_session.get_sc_addr()
-            result = {'menu_commands': cmds,
-                      'languages': langs_str,
-                      'external_languages': out_langs,
-                      'user': {
-                                'sc_addr': user_addr.to_int(),
-                                'is_authenticated': False,
-                                'current_lang': sc_session.get_used_language().to_int(),
-                                'default_ext_lang': sc_session.get_default_ext_lang().to_int()
-                               }
-            }
-        
-            self.set_header("Content-Type", "application/json")
-            self.finish(json.dumps(result))
-        
         
 class ContextMenu(base.BaseHandler):
     
@@ -206,30 +151,6 @@ class QuestionAnswerTranslate(base.BaseHandler):
         self.set_header("Content-Type", "application/json")
         self.finish(result)
 
-
-class LinkContent(base.BaseHandler):
-    
-    #@tornado.web.asynchronous
-    def get(self):
-
-        with SctpClientInstance() as sctp_client:
-    
-            keys = Keynodes(sctp_client)
-            keynode_nrel_format = keys[KeynodeSysIdentifiers.nrel_format]
-            keynode_nrel_mimetype = keys[KeynodeSysIdentifiers.nrel_mimetype]
-        
-            # parse arguments
-            addr = ScAddr.parse_from_string(self.get_argument('addr', None))        
-            if addr is None:
-                return logic.serialize_error(self, 404, 'Invalid arguments')
-        
-            result = sctp_client.get_link_content(addr)
-            if result is None:
-                return logic.serialize_error(self, 404, 'Content not found')
-        
-            self.set_header("Content-Type", logic.get_link_mime(addr, keynode_nrel_format, keynode_nrel_mimetype, sctp_client))
-            self.finish(result)
-        
         
 class LinkFormat(base.BaseHandler):
     
@@ -316,11 +237,8 @@ class IdtfFind(base.BaseHandler):
     @decorators.method_logging
     #@tornado.web.asynchronous
     def get(self):
-        result = {}
-        result['main'] = []
-        result['common'] = []
-        result['sys'] = []
-    
+        result = {'main': [], 'common': [], 'sys': []}
+
         # get arguments
         substr = self.get_argument('substr', None)
 
@@ -421,7 +339,7 @@ class AddrResolve(base.BaseHandler):
             idx += 1
 
         res = {}
-        resolve_keynodes_params = map(lambda x: ScIdtfResolveParams(idtf=x), arguments)
+        resolve_keynodes_params = map(lambda x: ScIdtfResolveParams(idtf=x, type=None), arguments)
         addrs = client.resolve_keynodes(*resolve_keynodes_params)
         for i in range(len(addrs)):
             addr = addrs[i]
@@ -485,7 +403,7 @@ class User(base.BaseHandler):
 
         if is_authenticated:
             user_kb_node = sc_session.get_user_kb_node_by_email()
-            if user_kb_node is not None:
+            if user_kb_node:
                 roles = self.get_user_roles(user_kb_node, keys)
 
 
@@ -501,12 +419,12 @@ class User(base.BaseHandler):
         self.set_header("Content-Type", "application/json")
         self.finish(json.dumps(result))
 
-    def get_user_roles(self,  user_kb_node, keys):
-        roles = [KeynodeSysIdentifiers.nrel_authorised_user]
+    def get_user_roles(self,  user_kb_node: ScAddr, keys: ScKeynodes) -> List[str]:
+        roles = [KeynodeSysIdentifiers.nrel_authorised_user.value]
 
         nrel_manager = keys[KeynodeSysIdentifiers.nrel_manager.value]
-        nrel_administrator = keys[KeynodeSysIdentifiers.nrel_administrator]
-        nrel_expert = keys[KeynodeSysIdentifiers.nrel_expert]
+        nrel_administrator = keys[KeynodeSysIdentifiers.nrel_administrator.value]
+        nrel_expert = keys[KeynodeSysIdentifiers.nrel_expert.value]
 
         manager_template = ScTemplate()
         manager_template.triple_with_relation(
@@ -539,10 +457,10 @@ class User(base.BaseHandler):
         is_expert_role_exist = client.template_search(expert_template)
 
         if is_admin_role_exist:
-            roles.append(KeynodeSysIdentifiers.nrel_administrator)
+            roles.append(KeynodeSysIdentifiers.nrel_administrator.value)
         if is_manager_role_exist:
-            roles.append(KeynodeSysIdentifiers.nrel_manager)
+            roles.append(KeynodeSysIdentifiers.nrel_manager.value)
         if is_expert_role_exist:
-            roles.append(KeynodeSysIdentifiers.nrel_expert)
+            roles.append(KeynodeSysIdentifiers.nrel_expert.value)
 
         return roles

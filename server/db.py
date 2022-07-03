@@ -69,7 +69,7 @@ class DataBase:
         return self.session
     
     def create_user_key(self):
-        return unicode(uuid.uuid4()) + unicode(int(time.time()))
+        return str(uuid.uuid4()) + str(int(time.time()))
     
     def new_expire_time(self):
         return datetime.date.fromtimestamp(time.time() + tornado.options.options.user_key_expire_time)
@@ -98,9 +98,9 @@ class DataBase:
     
     def add_user(self, name, email, avatar = None, role = 0):
         key = self.create_user_key()
-        new_user = User(name = unicode(name), 
-                        email = unicode(email), 
-                        avatar = unicode(avatar),
+        new_user = User(name = str(name),
+                        email = str(email),
+                        avatar = str(avatar),
                         key = key,
                         role = role)
         self._session().add(new_user)

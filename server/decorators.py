@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from typing import TypeVar, Callable
 
 import tornado.web
 import logging
@@ -15,7 +16,10 @@ def requestAdmin(method):
     return wrapper
 
 
-def method_logging(func):
+RT = TypeVar('RT')
+
+
+def method_logging(func: Callable[..., RT]) -> Callable[..., RT]:
         @wraps(func)
         def wrapper(*argv):
             logging.debug("- %s" % "call method " + func.__code__.co_name + " in: " +

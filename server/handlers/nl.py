@@ -8,8 +8,6 @@ import decorators
 import tornado.web
 
 from keynodes import Keynodes, KeynodeSysIdentifiers
-from sctp.logic import SctpClientInstance
-from sctp.types import ScAddr, SctpIteratorType, ScElementType
 
 
 from . import api_logic as logic

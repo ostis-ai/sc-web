@@ -1,15 +1,18 @@
 # -*- coding: utf-8 -*-
 
 import uuid, base64, hashlib, time
+from typing import Union, List, Optional, Dict
 
 import tornado.web
 from sc_client import client
 from sc_client.constants.sc_types import ScType, NODE_VAR, EDGE_ACCESS_VAR_POS_PERM, EDGE_D_COMMON_VAR, LINK_VAR, NODE, \
     EDGE_ACCESS_CONST_POS_PERM, LINK, EDGE_D_COMMON_CONST, NODE_CONST, NODE_VAR_CLASS, LINK_CONST, UNKNOWN
-from sc_client.models import ScTemplate, ScIdtfResolveParams, ScConstruction, ScLinkContent, ScLinkContentType
+from sc_client.models import ScTemplate, ScIdtfResolveParams, ScConstruction, ScLinkContent, ScLinkContentType, ScAddr
+from sc_client.sc_keynodes import ScKeynodes
 
 from keynodes import KeynodeSysIdentifiers, Keynodes
 from sctp.types import SctpIteratorType, ScElementType
+from .base import BaseHandler
 import decorators
 
 __all__ = (
@@ -54,9 +57,7 @@ def parse_menu_command(cmd_addr, sctp_client, keys):
                                       cmd_addr) is not None:
         cmd_type = 'cmd_noatom'
 
-    attrs = {}
-    attrs['cmd_type'] = cmd_type
-    attrs['id'] = cmd_addr.to_id()
+    attrs = {'cmd_type': cmd_type, 'id': cmd_addr.to_id()}
 
     # try to find decomposition
     decomp = sctp_client.iterate_elements(
@@ -87,7 +88,7 @@ def parse_menu_command(cmd_addr, sctp_client, keys):
 
 
 @decorators.method_logging
-def find_atomic_commands(cmd_addr, keys, commands):
+def find_atomic_commands(cmd_addr, keys: ScKeynodes, commands: List[ScAddr]):
     """Parse specified command from sc-memory and
         return hierarchy map (with childs), that represent it
         @param cmd_addr: sc-addr of command to parse
@@ -268,24 +269,25 @@ def get_by_system_identifier(sctp_client, idtf):
 
 
 @decorators.method_logging
-def get_by_link_addr(keys, sctp_client, link_addr):
-    keynode_nrel_system_identifier = keys[KeynodeSysIdentifiers.nrel_system_identifier]
-    elements = sctp_client.iterate_elements(
-        SctpIteratorType.SCTP_ITERATOR_5_A_A_F_A_F,
-        0,
-        ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
+def get_by_link_addr(keys, link_addr):
+    keynode_nrel_system_identifier = keys[KeynodeSysIdentifiers.nrel_system_identifier.value]
+    template = ScTemplate()
+    template.triple_with_relation(
+        UNKNOWN,
+        EDGE_D_COMMON_VAR,
         link_addr,
-        ScElementType.sc_type_arc_pos_const_perm,
+        EDGE_ACCESS_VAR_POS_PERM,
         keynode_nrel_system_identifier
     )
-    if elements is not None:
-        return elements[0][0]
+    elements = client.template_search(template)
+    if elements:
+        return elements[0].get(0)
 
     return None
 
 
 @decorators.method_logging
-def get_identifier_translated(addr, used_lang, keys):
+def get_identifier_translated(addr: ScAddr, used_lang: ScAddr, keys: ScKeynodes) -> Optional[str]:
     keynode_nrel_main_idtf = keys[KeynodeSysIdentifiers.nrel_main_idtf.value]
     keynode_nrel_system_identifier = keys[KeynodeSysIdentifiers.nrel_system_identifier.value]
 
@@ -337,27 +339,28 @@ def get_by_identifier_translated(used_lang, keys, sctp_client, idtf):
 
 
 @decorators.method_logging
-def get_by_link_addr_translated(used_lang, keys, sctp_client, link):
+def get_by_link_addr_translated(used_lang, keys, link):
     keynode_idtfs = []
-    keynode_idtfs.append(keys[KeynodeSysIdentifiers.nrel_main_idtf])
-    keynode_idtfs.append(keys[KeynodeSysIdentifiers.nrel_idtf])
+    keynode_idtfs.append(keys[KeynodeSysIdentifiers.nrel_main_idtf.value])
+    keynode_idtfs.append(keys[KeynodeSysIdentifiers.nrel_idtf.value])
 
     for keynode_idtf in keynode_idtfs:
-        elements = sctp_client.iterate_elements(SctpIteratorType.SCTP_ITERATOR_5_A_A_F_A_F,
-                                                0,
-                                                ScElementType.sc_type_arc_common | ScElementType.sc_type_const,
-                                                link,
-                                                ScElementType.sc_type_arc_pos_const_perm,
-                                                keynode_idtf)
-
-        if elements is not None:
-            # check if founded main identifier is for used language
-            langs = sctp_client.iterate_elements(SctpIteratorType.SCTP_ITERATOR_3F_A_F,
-                                                 used_lang,
-                                                 ScElementType.sc_type_arc_pos_const_perm,
-                                                 link)
-            if langs is not None:
-                return elements[0][0]
+        template = ScTemplate()
+        template.triple_with_relation(
+            [UNKNOWN, 'element'],
+            EDGE_D_COMMON_VAR,
+            link,
+            EDGE_ACCESS_VAR_POS_PERM,
+            keynode_idtf
+        )
+        template.triple(
+            used_lang,
+            EDGE_ACCESS_VAR_POS_PERM,
+            link
+        )
+        elements = client.template_search(template)
+        if elements:
+            return elements[0].get('element')
 
     return None
 
@@ -439,7 +442,7 @@ def get_languages_list(keynode_languages):
 
 
 @decorators.method_logging
-def do_command(keys, cmd_addr, arguments, handler):
+def do_command(keys, cmd_addr: ScAddr, arguments: List[ScAddr], handler: BaseHandler):
     result = {}
 
     if cmd_addr is not None:
@@ -575,7 +578,7 @@ def do_command(keys, cmd_addr, arguments, handler):
                 templates = client.template_search(template)
                 if templates:
                     generated = {}
-                    identifiers = {}
+                    identifiers: Dict[str, Dict[str, str]] = {}
 
                     # get identifiers
                     for l in langs:
@@ -605,7 +608,7 @@ def do_command(keys, cmd_addr, arguments, handler):
                                                 value = arguments[idx].value
                                                 if str(arguments[idx]) in lang_idtfs:
                                                     value = lang_idtfs[str(arguments[idx])]
-                                                data = data.replace(u'$ui_arg_%d' % (idx + 1), value)
+                                                data = data.replace(u'$ui_arg_%d' % (idx + 1), str(value))
 
                                             # generate identifier
                                             construction = ScConstruction()
@@ -678,7 +681,7 @@ class ScSession:
         if user is not None:
             self.email = user.email
 
-    def get_user_kb_node_by_email(self):
+    def get_user_kb_node_by_email(self) -> Optional[ScAddr]:
         if self.user is not None:
             links = client.get_links_by_content(str(self.user.email))[0]
             if links and len(links) == 1:
@@ -731,7 +734,7 @@ class ScSession:
             return results[0].get(2)
 
         # setup russian mode by default
-        _lang = self.keynodes[KeynodeSysIdentifiers.lang_ru]
+        _lang = self.keynodes[KeynodeSysIdentifiers.lang_ru.value]
         self.set_current_lang_mode(_lang)
 
         return _lang
@@ -753,7 +756,7 @@ class ScSession:
             return result[0].get(2)
 
         # setup default language
-        _lang = self.keynodes[KeynodeSysIdentifiers.scn_code]
+        _lang = self.keynodes[KeynodeSysIdentifiers.scn_code.value]
         self.set_default_ext_lang(_lang)
 
         return _lang
@@ -812,14 +815,11 @@ class ScSession:
         sys_idtf = self.keynodes[KeynodeSysIdentifiers.nrel_system_identifier.value]
 
         # create user node
-        user_node = self.sctp_client.create_node(ScElementType.sc_type_node | ScElementType.sc_type_const)
-        self.sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_user, user_node)
-
         construction = ScConstruction()
         construction.create_node(NODE_CONST, 'user')
         construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keynode_ui_user, 'user')
         construction.create_link(LINK, ScLinkContent(idtf, ScLinkContentType.STRING.value), 'idtf')
-        construction.create_edge(EDGE_D_COMMON_VAR, 'user', 'idtf', 'sys_idtf_edge')
+        construction.create_edge(EDGE_D_COMMON_CONST, 'user', 'idtf', 'sys_idtf_edge')
         construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, sys_idtf, 'sys_idtf_edge')
         result = client.create_elements(construction)
 
@@ -832,7 +832,8 @@ class ScSession:
         return self._find_user_by_system_idtf("session::" + str(self.session_key))
 
     def _user_hash(self):
-        return hashlib.sha256(self.user.email).hexdigest()
+        email = self.user.email
+        return hashlib.sha256(email.encode()).hexdigest()
 
     def _user_new(self):
         return self._create_user_with_system_idtf("user::" + str(self._user_hash()))

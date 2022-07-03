@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
+from typing import Optional, Awaitable
 
-import tornado
+from tornado import web
 import db
 import decorators
 
@@ -22,13 +23,18 @@ class User:
         return rights >= db.DataBase.RIGHTS_EDITOR
 
 
-
-class BaseHandler(tornado.web.RequestHandler):
+class BaseHandler(web.RequestHandler):
     
+    def data_received(self, chunk: bytes) -> Optional[Awaitable[None]]:
+        raise NotImplementedError()
+
     cookie_user_key = 'user_key'
     
-    def get_current_user(self):
-        key = self.get_secure_cookie(str.encode(self.cookie_user_key), None, 1)
+    def get_current_user(self) -> Optional[User]:
+        key = self.get_secure_cookie(self.cookie_user_key, max_age_days=1)
+        if not key:
+            return None
+        key = key.decode('UTF-8')
         
         database = db.DataBase()
         u = database.get_user_by_key(key)
