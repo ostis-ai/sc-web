@@ -596,7 +596,7 @@ def do_command(keys, cmd_addr, arguments, handler):
                         if input_arcs:
                             for arc in input_arcs:
                                 for l in langs:
-                                    if str(l) not in generated and arc.get(0) == l:
+                                    if str(l) not in generated and arc.get(0).is_equal(l):
                                         lang_idtfs = identifiers[str(l)]
                                         # get content of link
                                         data = client.get_link_content(t.get(2))[0].data
@@ -610,7 +610,8 @@ def do_command(keys, cmd_addr, arguments, handler):
                                             # generate identifier
                                             construction = ScConstruction()
                                             construction.create_link(LINK_CONST,
-                                                                     ScLinkContent(data, ScLinkContentType.STRING),
+                                                                     ScLinkContent(data,
+                                                                                   ScLinkContentType.STRING.value),
                                                                      'idtf_link')
                                             construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, l, 'idtf_link')
                                             construction.create_edge(EDGE_D_COMMON_CONST, instance_node, 'idtf_link',
