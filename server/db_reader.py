@@ -1,14 +1,15 @@
 import multiprocessing
 import os
+import struct
 
 import tornado.options
 
 from sc_client import client
+from sc_client.constants.sc_types import EDGE_ACCESS_VAR_POS_PERM, NODE_CONST_CLASS, NODE_VAR_CLASS
+from sc_client.models import ScTemplate, ScAddr
 from sc_client.sc_keynodes import ScKeynodes
 
 from keynodes import KeynodeSysIdentifiers, Keynodes
-from sctp.logic import SctpClientInstance
-from sctp.types import ScAddr, SctpIteratorType, ScElementType
 from handlers import api_logic as logic
 
 import time
@@ -19,22 +20,19 @@ from progress.bar import IncrementalBar
 
 def get_languages():
     founded_langs = []
-    try:
-        with SctpClientInstance() as sctp_client:
-            keys = Keynodes(sctp_client)
-            languages_iter = sctp_client.iterate_elements(
-                SctpIteratorType.SCTP_ITERATOR_3F_A_A,
-                keys[KeynodeSysIdentifiers.languages],
-                ScElementType.sc_type_arc_pos_const_perm,
-                ScElementType.sc_type_node_class | ScElementType.sc_type_const
-            )
-            if not languages_iter:
-                print(f"Natural languages not found in KB")
-                return founded_langs
-            for lang_iter in languages_iter:
-                founded_langs.append(lang_iter[2])
-    except BrokenPipeError as e:
-        quit()
+    keys = ScKeynodes()
+    template = ScTemplate()
+    template.triple(
+        keys[KeynodeSysIdentifiers.languages.value],
+        EDGE_ACCESS_VAR_POS_PERM,
+        NODE_VAR_CLASS
+    )
+    languages_iter = client.template_search(template)
+    if not languages_iter:
+        print(f"Natural languages not found in KB")
+        return founded_langs
+    for lang_iter in languages_iter:
+        founded_langs.append(lang_iter.get(2))
     return founded_langs
 
 
@@ -64,6 +62,7 @@ class Reader:
         with concurrent.futures.ThreadPoolExecutor(max_workers=optimal_threads_count) as executor:
             future_sort = {executor.submit(self.sorter, languages, addr): addr for addr in self.addr}
             for future in concurrent.futures.as_completed(future_sort):
+                future.result()
                 try:
                     index += 1
                     if index == progress:
@@ -84,19 +83,11 @@ class Reader:
         byte_border = 0
         while byte_border < len(encoded_addrs):
             addr = encoded_addrs[byte_border: byte_border + 4]
-            decoded_addr = ScAddr.parse_binary(addr)
-            if decoded_addr and decoded_addr.to_int() != 0:
+            offset, seg = struct.unpack('=HH', addr)
+            decoded_addr = ScAddr(seg << 16 | offset)
+            if decoded_addr and decoded_addr.is_valid():
                 self.addr.append(decoded_addr)
             byte_border += 4
-
-    def get_languages(self):
-        try:
-            keys = ScKeynodes()
-            lang_en = keys[KeynodeSysIdentifiers.lang_en.value]
-            lang_ru = keys[KeynodeSysIdentifiers.lang_ru.value]
-            return [lang_en, lang_ru]
-        except BrokenPipeError as e:
-            quit()
 
     def sorter(self, languages, node_addr):
         keys = ScKeynodes()

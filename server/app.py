@@ -80,6 +80,9 @@ def main():
         config = configparser.ConfigParser()
         config.read(tornado.options.options.cfg)
 
+    # prepare logger
+    logger_sc.init()
+
     # prepare database
     database = db.DataBase()
     database.init()
@@ -90,8 +93,7 @@ def main():
     reader = Reader()
     reader.read_from_file()
 
-    # prepare logger
-    logger_sc.init()
+
 
 
     rules = [
