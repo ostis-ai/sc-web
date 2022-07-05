@@ -57,9 +57,7 @@ def parse_menu_command(cmd_addr, sctp_client, keys):
                                       cmd_addr) is not None:
         cmd_type = 'cmd_noatom'
 
-    attrs = {}
-    attrs['cmd_type'] = cmd_type
-    attrs['id'] = cmd_addr.to_id()
+    attrs = {'cmd_type': cmd_type, 'id': cmd_addr.to_id()}
 
     # try to find decomposition
     decomp = sctp_client.iterate_elements(
@@ -90,7 +88,7 @@ def parse_menu_command(cmd_addr, sctp_client, keys):
 
 
 @decorators.method_logging
-def find_atomic_commands(cmd_addr, keys, commands):
+def find_atomic_commands(cmd_addr, keys: ScKeynodes, commands: List[ScAddr]):
     """Parse specified command from sc-memory and
         return hierarchy map (with childs), that represent it
         @param cmd_addr: sc-addr of command to parse
@@ -683,7 +681,7 @@ class ScSession:
         if user is not None:
             self.email = user.email
 
-    def get_user_kb_node_by_email(self):
+    def get_user_kb_node_by_email(self) -> Optional[ScAddr]:
         if self.user is not None:
             links = client.get_links_by_content(str(self.user.email))[0]
             if links and len(links) == 1:
@@ -821,7 +819,7 @@ class ScSession:
         construction.create_node(NODE_CONST, 'user')
         construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keynode_ui_user, 'user')
         construction.create_link(LINK, ScLinkContent(idtf, ScLinkContentType.STRING.value), 'idtf')
-        construction.create_edge(EDGE_D_COMMON_VAR, 'user', 'idtf', 'sys_idtf_edge')
+        construction.create_edge(EDGE_D_COMMON_CONST, 'user', 'idtf', 'sys_idtf_edge')
         construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, sys_idtf, 'sys_idtf_edge')
         result = client.create_elements(construction)
 

@@ -93,9 +93,6 @@ def main():
     reader = Reader()
     reader.read_from_file()
 
-
-
-
     rules = [
             (r"/", MainHandler),
 

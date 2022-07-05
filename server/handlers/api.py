@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from typing import List
 
 import tornado.web
 import json
@@ -12,8 +13,6 @@ from sc_client.sc_keynodes import ScKeynodes
 import decorators
 
 from keynodes import KeynodeSysIdentifiers, Keynodes
-from sctp.logic import SctpClientInstance
-from sctp.types import SctpIteratorType, ScElementType
 
 from . import api_logic as logic
 import time
@@ -238,11 +237,8 @@ class IdtfFind(base.BaseHandler):
     @decorators.method_logging
     #@tornado.web.asynchronous
     def get(self):
-        result = {}
-        result['main'] = []
-        result['common'] = []
-        result['sys'] = []
-    
+        result = {'main': [], 'common': [], 'sys': []}
+
         # get arguments
         substr = self.get_argument('substr', None)
 
@@ -343,7 +339,7 @@ class AddrResolve(base.BaseHandler):
             idx += 1
 
         res = {}
-        resolve_keynodes_params = map(lambda x: ScIdtfResolveParams(idtf=x), arguments)
+        resolve_keynodes_params = map(lambda x: ScIdtfResolveParams(idtf=x, type=None), arguments)
         addrs = client.resolve_keynodes(*resolve_keynodes_params)
         for i in range(len(addrs)):
             addr = addrs[i]
@@ -407,7 +403,7 @@ class User(base.BaseHandler):
 
         if is_authenticated:
             user_kb_node = sc_session.get_user_kb_node_by_email()
-            if user_kb_node is not None:
+            if user_kb_node:
                 roles = self.get_user_roles(user_kb_node, keys)
 
 
@@ -423,12 +419,12 @@ class User(base.BaseHandler):
         self.set_header("Content-Type", "application/json")
         self.finish(json.dumps(result))
 
-    def get_user_roles(self,  user_kb_node, keys):
-        roles = [KeynodeSysIdentifiers.nrel_authorised_user]
+    def get_user_roles(self,  user_kb_node: ScAddr, keys: ScKeynodes) -> List[str]:
+        roles = [KeynodeSysIdentifiers.nrel_authorised_user.value]
 
         nrel_manager = keys[KeynodeSysIdentifiers.nrel_manager.value]
-        nrel_administrator = keys[KeynodeSysIdentifiers.nrel_administrator]
-        nrel_expert = keys[KeynodeSysIdentifiers.nrel_expert]
+        nrel_administrator = keys[KeynodeSysIdentifiers.nrel_administrator.value]
+        nrel_expert = keys[KeynodeSysIdentifiers.nrel_expert.value]
 
         manager_template = ScTemplate()
         manager_template.triple_with_relation(
@@ -461,10 +457,10 @@ class User(base.BaseHandler):
         is_expert_role_exist = client.template_search(expert_template)
 
         if is_admin_role_exist:
-            roles.append(KeynodeSysIdentifiers.nrel_administrator)
+            roles.append(KeynodeSysIdentifiers.nrel_administrator.value)
         if is_manager_role_exist:
-            roles.append(KeynodeSysIdentifiers.nrel_manager)
+            roles.append(KeynodeSysIdentifiers.nrel_manager.value)
         if is_expert_role_exist:
-            roles.append(KeynodeSysIdentifiers.nrel_expert)
+            roles.append(KeynodeSysIdentifiers.nrel_expert.value)
 
         return roles

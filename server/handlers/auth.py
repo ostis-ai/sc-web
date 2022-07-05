@@ -16,7 +16,6 @@ import db
 import decorators
 
 from keynodes import KeynodeSysIdentifiers, Keynodes
-from sctp.logic import SctpClientInstance
 from sctp.types import ScAddr, SctpIteratorType, ScElementType
 
 from . import api_logic as logic
@@ -56,7 +55,6 @@ class GoogleOAuth2LoginHandler(base.BaseHandler,
         self.register_user(email, user_name)
         self.authorise_user(email)
 
-
     def authorise_user(self, email):
 
         keys = ScKeynodes()
@@ -76,7 +74,8 @@ class GoogleOAuth2LoginHandler(base.BaseHandler,
                 construction = ScConstruction()
                 construction.create_edge(EDGE_D_COMMON_CONST, keys[KeynodeSysIdentifiers.Myself.value],
                                          user.get('user'), 'bin_arc_authorised')
-                construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keys[KeynodeSysIdentifiers.nrel_authorised_user],
+                construction.create_edge(EDGE_ACCESS_CONST_POS_PERM,
+                                         keys[KeynodeSysIdentifiers.nrel_authorised_user.value],
                                          'bin_arc_authorised')
                 client.create_elements(construction)
 
@@ -113,22 +112,20 @@ class GoogleOAuth2LoginHandler(base.BaseHandler,
             user_node = self.create_ui_user_node_at_kb(keys, email, user_name)
             self.gen_registred_user_relation(keys, user_node)
 
-
-    def create_ui_user_node_at_kb(self, keys, email, userName):
+    def create_ui_user_node_at_kb(self, keys: ScKeynodes, email: str, username: str) -> ScAddr:
         construction = ScConstruction()
         construction.create_node(NODE_CONST, 'user_node')
         construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keys[KeynodeSysIdentifiers.ui_user.value], 'user_node')
 
         # create system_idtf
         sys_idtf = email.split('@')[0]
-        construction.create_link(LINK_CONST, ScLinkContent(sys_idtf,ScLinkContentType.STRING.value),'sys_idtf_link')
+        construction.create_link(LINK_CONST, ScLinkContent(sys_idtf, ScLinkContentType.STRING.value),'sys_idtf_link')
         construction.create_edge(EDGE_D_COMMON_CONST, 'user_node', 'sys_idtf_link', 'bin_arc_sys_idtf')
         construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keys[KeynodeSysIdentifiers.nrel_system_identifier.value],
                                  'bin_arc_sys_idtf')
 
         # create main_idtf (lang_ru)
-        user_name = str(userName.encode('utf-8'))
-        construction.create_link(LINK_CONST, ScLinkContent(user_name, ScLinkContentType.STRING.value),
+        construction.create_link(LINK_CONST, ScLinkContent(username, ScLinkContentType.STRING.value),
                                  'main_idtf_link')
         construction.create_edge(EDGE_D_COMMON_CONST, 'user_node', 'main_idtf_link', 'bin_arc_main_idtf')
         construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keys[KeynodeSysIdentifiers.nrel_main_idtf.value],
@@ -137,7 +134,6 @@ class GoogleOAuth2LoginHandler(base.BaseHandler,
                                  'main_idtf_link')
 
         # create email
-        email = str(email.encode('utf-8'))
         construction.create_link(LINK_CONST, ScLinkContent(email, ScLinkContentType.STRING.value),
                                  'email_link')
         construction.create_edge(EDGE_D_COMMON_CONST, 'user_node', 'email_link', 'bin_arc_email')
@@ -147,7 +143,7 @@ class GoogleOAuth2LoginHandler(base.BaseHandler,
         result = client.create_elements(construction)
         return result[construction.get_index('user_node')]
 
-    def gen_registred_user_relation(self, keys, user):
+    def gen_registred_user_relation(self, keys: ScKeynodes, user: ScAddr):
         construction = ScConstruction()
         construction.create_edge(EDGE_D_COMMON_CONST, keys[KeynodeSysIdentifiers.Myself.value], user,
                                  'bin_arc_registered')
@@ -209,25 +205,25 @@ class LogOut(base.BaseHandler):
         self.redirect('/')
 
     def logout_user_from_kb(self):
-            keys = ScKeynodes()
-            sc_session = logic.ScSession(self, keys)
-            links = client.get_links_by_content(sc_session.email)[0]
-            if links and len(links) == 1:
-                template = ScTemplate()
-                template.triple_with_relation(
-                    [NODE_VAR, 'user'],
-                    EDGE_D_COMMON_VAR,
-                    links[0],
-                    EDGE_ACCESS_VAR_POS_PERM,
-                    keys[KeynodeSysIdentifiers.nrel_email.value]
-                )
-                template.triple_with_relation(
-                    keys[KeynodeSysIdentifiers.Myself.value],
-                    [EDGE_D_COMMON_VAR, 'arc'],
-                    'user',
-                    EDGE_ACCESS_VAR_POS_PERM,
-                    keys[KeynodeSysIdentifiers.nrel_authorised_user]
-                )
-                result = client.template_search(template)
-                for items in result:
-                    client.delete_elements(items.get('arc'))
+        keys = ScKeynodes()
+        sc_session = logic.ScSession(self, keys)
+        links = client.get_links_by_content(sc_session.email)[0]
+        if links and len(links) == 1:
+            template = ScTemplate()
+            template.triple_with_relation(
+                [NODE_VAR, 'user'],
+                EDGE_D_COMMON_VAR,
+                links[0],
+                EDGE_ACCESS_VAR_POS_PERM,
+                keys[KeynodeSysIdentifiers.nrel_email.value]
+            )
+            template.triple_with_relation(
+                keys[KeynodeSysIdentifiers.Myself.value],
+                [EDGE_D_COMMON_VAR, 'arc'],
+                'user',
+                EDGE_ACCESS_VAR_POS_PERM,
+                keys[KeynodeSysIdentifiers.nrel_authorised_user.value]
+            )
+            result = client.template_search(template)
+            for items in result:
+                client.delete_elements(items.get('arc'))
