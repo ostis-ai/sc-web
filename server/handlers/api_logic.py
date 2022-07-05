@@ -733,7 +733,7 @@ class ScSession:
             return results[0].get(2)
 
         # setup russian mode by default
-        _lang = self.keynodes[KeynodeSysIdentifiers.lang_ru]
+        _lang = self.keynodes[KeynodeSysIdentifiers.lang_ru.value]
         self.set_current_lang_mode(_lang)
 
         return _lang
@@ -755,7 +755,7 @@ class ScSession:
             return result[0].get(2)
 
         # setup default language
-        _lang = self.keynodes[KeynodeSysIdentifiers.scn_code]
+        _lang = self.keynodes[KeynodeSysIdentifiers.scn_code.value]
         self.set_default_ext_lang(_lang)
 
         return _lang
@@ -814,9 +814,6 @@ class ScSession:
         sys_idtf = self.keynodes[KeynodeSysIdentifiers.nrel_system_identifier.value]
 
         # create user node
-        user_node = self.sctp_client.create_node(ScElementType.sc_type_node | ScElementType.sc_type_const)
-        self.sctp_client.create_arc(ScElementType.sc_type_arc_pos_const_perm, keynode_ui_user, user_node)
-
         construction = ScConstruction()
         construction.create_node(NODE_CONST, 'user')
         construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keynode_ui_user, 'user')

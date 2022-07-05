@@ -9,7 +9,7 @@ from sc_client.constants.sc_types import EDGE_ACCESS_VAR_POS_PERM, NODE_CONST_CL
 from sc_client.models import ScTemplate, ScAddr
 from sc_client.sc_keynodes import ScKeynodes
 
-from keynodes import KeynodeSysIdentifiers, Keynodes
+from keynodes import KeynodeSysIdentifiers
 from handlers import api_logic as logic
 
 import time
@@ -92,6 +92,8 @@ class Reader:
     def sorter(self, languages, node_addr):
         keys = ScKeynodes()
         link_content = client.get_link_content(node_addr)[0]
+        if not link_content.data:
+            return
         if len(link_content.data) > self.content_len_max:
             self.long_content_counter += 1
             return
