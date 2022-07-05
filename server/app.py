@@ -84,6 +84,8 @@ def main():
     database = db.DataBase()
     database.init()
 
+    client.connect("ws://localhost:8090/ws_json")
+    ScKeynodes().resolve_identifiers([KeynodeSysIdentifiers])
     # preparing for search
     reader = Reader()
     reader.read_from_file()
@@ -91,22 +93,19 @@ def main():
     # prepare logger
     logger_sc.init()
 
-    client.connect("ws://localhost:8090/ws_json")
-    ScKeynodes().resolve_identifiers([KeynodeSysIdentifiers])
+
     rules = [
             (r"/", MainHandler),
 
             (r"/static/(.*)", NoCacheStaticHandler, {"path": tornado.options.options.static_path}),
 
             # api
-            (r"/api/init/", api.Init),
             (r"/api/context/", api.ContextMenu),
             (r"/api/cmd/do/", api.CmdDo),
             (r"/api/cmd/text/", NaturalLanguageSearch),
             
             (r"/api/question/answer/translate/", api.QuestionAnswerTranslate),
             
-            (r"/api/link/content/", api.LinkContent),
             (r"/api/link/format/", api.LinkFormat),
             
             (r"/api/languages/", api.Languages),
