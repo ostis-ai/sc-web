@@ -1,15 +1,18 @@
 # -*- coding: utf-8 -*-
 
 import uuid, base64, hashlib, time
+from typing import Union, List, Optional, Dict
 
 import tornado.web
 from sc_client import client
 from sc_client.constants.sc_types import ScType, NODE_VAR, EDGE_ACCESS_VAR_POS_PERM, EDGE_D_COMMON_VAR, LINK_VAR, NODE, \
     EDGE_ACCESS_CONST_POS_PERM, LINK, EDGE_D_COMMON_CONST, NODE_CONST, NODE_VAR_CLASS, LINK_CONST, UNKNOWN
-from sc_client.models import ScTemplate, ScIdtfResolveParams, ScConstruction, ScLinkContent, ScLinkContentType
+from sc_client.models import ScTemplate, ScIdtfResolveParams, ScConstruction, ScLinkContent, ScLinkContentType, ScAddr
+from sc_client.sc_keynodes import ScKeynodes
 
 from keynodes import KeynodeSysIdentifiers, Keynodes
 from sctp.types import SctpIteratorType, ScElementType
+from .base import BaseHandler
 import decorators
 
 __all__ = (
@@ -286,7 +289,7 @@ def get_by_link_addr(keys, link_addr):
 
 
 @decorators.method_logging
-def get_identifier_translated(addr, used_lang, keys):
+def get_identifier_translated(addr: ScAddr, used_lang: ScAddr, keys: ScKeynodes) -> Optional[str]:
     keynode_nrel_main_idtf = keys[KeynodeSysIdentifiers.nrel_main_idtf.value]
     keynode_nrel_system_identifier = keys[KeynodeSysIdentifiers.nrel_system_identifier.value]
 
@@ -441,7 +444,7 @@ def get_languages_list(keynode_languages):
 
 
 @decorators.method_logging
-def do_command(keys, cmd_addr, arguments, handler):
+def do_command(keys, cmd_addr: ScAddr, arguments: List[ScAddr], handler: BaseHandler):
     result = {}
 
     if cmd_addr is not None:
@@ -577,7 +580,7 @@ def do_command(keys, cmd_addr, arguments, handler):
                 templates = client.template_search(template)
                 if templates:
                     generated = {}
-                    identifiers = {}
+                    identifiers: Dict[str, Dict[str, str]] = {}
 
                     # get identifiers
                     for l in langs:
@@ -607,7 +610,7 @@ def do_command(keys, cmd_addr, arguments, handler):
                                                 value = arguments[idx].value
                                                 if str(arguments[idx]) in lang_idtfs:
                                                     value = lang_idtfs[str(arguments[idx])]
-                                                data = data.replace(u'$ui_arg_%d' % (idx + 1), value)
+                                                data = data.replace(u'$ui_arg_%d' % (idx + 1), str(value))
 
                                             # generate identifier
                                             construction = ScConstruction()
@@ -831,7 +834,8 @@ class ScSession:
         return self._find_user_by_system_idtf("session::" + str(self.session_key))
 
     def _user_hash(self):
-        return hashlib.sha256(self.user.email).hexdigest()
+        email = self.user.email
+        return hashlib.sha256(email.encode()).hexdigest()
 
     def _user_new(self):
         return self._create_user_with_system_idtf("user::" + str(self._user_hash()))
