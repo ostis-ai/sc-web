@@ -1,2 +1,2 @@
 npm install
-grunt build
+npm run build
