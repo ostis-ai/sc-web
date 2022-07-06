@@ -15,6 +15,6 @@
     "grunt-contrib-concat": "^1.0.1",
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-watch": "^1.0.0",
-	"grunt-cli": "^1.4.3"
+    "grunt-cli": "^1.4.3"
   }
 }
