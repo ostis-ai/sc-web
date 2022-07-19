@@ -17,7 +17,6 @@ import handlers.api as api
 import handlers.auth as auth
 import logger_sc
 import secret
-import ws
 from handlers.main import MainHandler
 from handlers.nl import NaturalLanguageSearch
 from keynodes import KeynodeSysIdentifiers
@@ -69,8 +68,6 @@ def main():
     tornado.options.define("super_emails", default="", help="email of site super administrator (maximum rights)",
                            type=list)
     tornado.options.define("db_path", default="data.db", help="path to database file", type=str)
-    tornado.options.define("fm_path", default="../../kb.bin/links.scdb", help="path to memory file for indexation",
-                           type=str)
 
     tornado.options.define("cfg", default="", help="path to configuration file", type=str)
 
@@ -123,8 +120,6 @@ def main():
         (r"/admin/users/get$", admin_users.UsersInfo),
         (r"/admin/users/set_rights$", admin_users.UserSetRights),
         (r"/admin/users/list_rights$", admin_users.UserListRights),
-
-        (r"/sctp", ws.SocketHandler),
     ]
 
     application = tornado.web.Application(
