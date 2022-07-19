@@ -150,7 +150,7 @@ SCWeb.core.ComponentManager = {
      * @param {Object} options          Object that contains creation options:
      *          {String} ext_lang_addr  Sc-addr of window external language
      *          {Integer} addr           Sc-addr of sc-link or sc-structure, that edit or viewed with sandbox
-     *          {Boolean} is_struct     If that paramater is true, then addr is an sc-addr of struct;
+     *          {Boolean} is_struct     If that parameter is true, then addr is an sc-addr of struct;
      *                                  otherwise the last one a sc-addr of sc-link
      *          {String} container      Id of dom object, that will contain window
      *          {Boolean} canEdit       If that value is true, then request editor creation; otherwise - viewer

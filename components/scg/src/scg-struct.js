@@ -98,12 +98,12 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
     let getArc = async (arc) => {
         let scTemplate = new sc.ScTemplate();
         scTemplate.triple(
-          [sc.ScType.Unknown, "src"],
-          new sc.ScAddr(arc),
-          [sc.ScType.Unknown, "target"]
+            [sc.ScType.Unknown, "src"],
+            new sc.ScAddr(arc),
+            [sc.ScType.Unknown, "target"]
         );
-        let result = await sctpClient.TemplateSearch(scTemplate);
-        return [result[0].Get("src").value, result[0].Get("target").value];
+        let result = await scClient.templateSearch(scTemplate);
+        return [result[0].get("src").value, result[0].get("target").value];
     };
 
     let getElementType = async (el) => {
@@ -153,12 +153,12 @@ function scgScStructTranslator(_editor, _sandbox) {
     var appendToConstruction = async function (obj) {
         let scTemplate = new sc.ScTemplate();
         scTemplate.triple(
-          new sc.ScAddr(sandbox.addr),
-          [sc.ScType.EdgeAccessVarPosPerm, 'arc'],
-          new sc.ScAddr(obj.sc_addr)
+            new sc.ScAddr(sandbox.addr),
+            [sc.ScType.EdgeAccessVarPosPerm, 'arc'],
+            new sc.ScAddr(obj.sc_addr)
         );
-        let result = await sctpClient.TemplateGenerate(scTemplate);
-        arcMapping[result.Get('arc').value] = obj;
+        let result = await scClient.templateGenerate(scTemplate);
+        arcMapping[result.get('arc').value] = obj;
     };
 
     var currentLanguage = sandbox.getCurrentLanguage();
@@ -166,16 +166,16 @@ function scgScStructTranslator(_editor, _sandbox) {
         if (currentLanguage) {
             let scTemplate = new sc.ScTemplate();
             scTemplate.tripleWithRelation(
-              new sc.ScAddr(obj.sc_addr),
-              sc.ScType.EdgeDCommonVar,
-              [sc.ScType.LinkVar, 'link'],
-              sc.ScType.EdgeAccessVarPosPerm,
-              new sc.ScAddr(window.scKeynodes['nrel_main_idtf'])
+                new sc.ScAddr(obj.sc_addr),
+                sc.ScType.EdgeDCommonVar,
+                [sc.ScType.LinkVar, 'link'],
+                sc.ScType.EdgeAccessVarPosPerm,
+                new sc.ScAddr(window.scKeynodes['nrel_main_idtf'])
             );
             scTemplate.triple(
-              new sc.ScAddr(currentLanguage),
-              sc.ScType.EdgeAccessVarPosPerm,
-              'link'
+                new sc.ScAddr(currentLanguage),
+                sc.ScType.EdgeAccessVarPosPerm,
+                'link'
             );
             let result = await scClient.templateGenerate(scTemplate);
             let linkAddr = result.get('link');
@@ -203,8 +203,8 @@ function scgScStructTranslator(_editor, _sandbox) {
 
             var appendObjects = function () {
                 Promise.all(objects.map(appendToConstruction))
-                  .then(() => callback(true))
-                  .catch(() => callback(false));
+                    .then(() => callback(true))
+                    .catch(() => callback(false));
             };
 
             function fireCallback() {
@@ -349,50 +349,57 @@ function scgScStructTranslator(_editor, _sandbox) {
             var translateLinks = async function () {
                 var implFunc = async function (link) {
                     if (!link.sc_addr) {
-                      let scConstruction = new sc.ScConstruction();
-                      let data = '';
-                      let type = 1;
-                      var keynode = null;
-                      if (link.contentType === 'float') {
-                          data = link.content;
-                          keynode = window.scKeynodes['binary_float'];
-                          type = sc.ScLinkContentType.Float;
-                      } else if (link.contentType === 'int8') {
-                          data = link.content;
-                          type = sc.ScLinkContentType.Int;
-                          keynode = window.scKeynodes['binary_int8'];
-                      } else if (link.contentType === 'int16') {
-                          data = link.content;
-                          type = sc.ScLinkContentType.Int;
-                          keynode = window.scKeynodes['binary_int16'];
-                      } else if (link.contentType === 'int32') {
-                          data = link.content;
-                          type = sc.ScLinkContentType.Int;
-                          keynode = window.scKeynodes['binary_int32'];
-                      } else if (link.contentType === 'image') {
-                          data = link.fileReaderResult;
-                          type = sc.ScLinkContentType.Binary;
-                          keynode = window.scKeynodes['format_png'];
-                      } else if (link.contentType === 'html') {
-                          data = link.fileReaderResult;
-                          type = sc.ScLinkContentType.String;
-                          keynode = window.scKeynodes['format_html'];
-                      } else if (link.contentType === 'pdf') {
-                          data = link.fileReaderResult;
-                          type = sc.ScLinkContentType.String;
-                          keynode = window.scKeynodes['format_pdf'];
-                      }
-                      let scLinkContent = new sc.ScLinkContent(data, type);
-                      scConstruction.createLink(sc.ScType.LinkConst, scLinkContent, 'link');
-                      let result = await scClient.createElements(scConstruction);
-                      let linkAddr = result[scConstruction.getIndex('link')].value;
-                        scTemplate.triple(
-                          new sc.ScAddr(keynode),
-                          sc.ScType.EdgeAccessVarPosPerm,
-                          new sc.ScAddr(linkAddr)
-                        );
-                        await sctpClient.TemplateGenerate(scTemplate);
-                      }
+                        let scConstruction = new sc.ScConstruction();
+                        let data = '';
+                        let type = 1;
+                        var keynode = null;
+                        if (link.contentType === 'float') {
+                            data = link.content;
+                            keynode = window.scKeynodes['binary_float'];
+                            type = sc.ScLinkContentType.Float;
+                        } else if (link.contentType === 'int8') {
+                            data = link.content;
+                            type = sc.ScLinkContentType.Int;
+                            keynode = window.scKeynodes['binary_int8'];
+                        } else if (link.contentType === 'int16') {
+                            data = link.content;
+                            type = sc.ScLinkContentType.Int;
+                            keynode = window.scKeynodes['binary_int16'];
+                        } else if (link.contentType === 'int32') {
+                            data = link.content;
+                            type = sc.ScLinkContentType.Int;
+                            keynode = window.scKeynodes['binary_int32'];
+                        } else if (link.contentType === 'image') {
+                            data = link.fileReaderResult;
+                            type = sc.ScLinkContentType.Binary;
+                            keynode = window.scKeynodes['format_png'];
+                        } else if (link.contentType === 'html') {
+                            data = link.fileReaderResult;
+                            type = sc.ScLinkContentType.String;
+                            keynode = window.scKeynodes['format_html'];
+                        } else if (link.contentType === 'pdf') {
+                            data = link.fileReaderResult;
+                            type = sc.ScLinkContentType.String;
+                            keynode = window.scKeynodes['format_pdf'];
+                        }
+                        let scLinkContent = new sc.ScLinkContent(data, type);
+                        scConstruction.createLink(sc.ScType.LinkConst, scLinkContent, 'link');
+                        let result = await scClient.createElements(scConstruction);
+                        let linkAddr = result[scConstruction.getIndex('link')].value;
+                        link.setScAddr(linkAddr);
+                        link.setObjectState(SCgObjectState.NewInMemory);
+                        objects.push(link);
+                        if (link.fileReaderResult) {
+                            await scHelper.setLinkFormat(linkAddr, keynode);
+                        } else {
+                            let scTemplate = new sc.ScTemplate();
+                            scTemplate.triple(
+                                new sc.ScAddr(keynode),
+                                sc.ScType.EdgeAccessVarPosPerm,
+                                new sc.ScAddr(linkAddr)
+                            );
+                            await scClient.templateGenerate(scTemplate);
+                        }
                     }
                 }
 

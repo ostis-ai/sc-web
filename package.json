@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "dependencies": {
     "grunt": "^1.0.1",
-    "@ostis/sc-core": "^0.3.0"
+    "ts-sc-client": "^0.2.0"
   },
 
   "scripts": {

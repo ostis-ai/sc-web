@@ -66,9 +66,9 @@ SCWeb.ui.Menu = {
         this._items.push(item.id);
 
         var itemHtml = '';
-        if (item.cmd_type == 'cmd_noatom') {
+        if (item.cmd_type === 'cmd_noatom') {
             itemHtml = '<li class="dropdown"><a sc_addr="' + item.id + '" id="' + item.id + '" class="menu-item menu-cmd-noatom dropdown-toggle" data-toggle="dropdown" href="#" ><span clas="text">' + item.id + '</span><b class="caret"></b></a>';
-        } else if (item.cmd_type == 'cmd_atom') {
+        } else if (item.cmd_type === 'cmd_atom') {
             itemHtml = '<li><a id="' + item.id + '"sc_addr="' + item.id + '" class="menu-item menu-cmd-atom" >' + item.id + '</a>';
         } else {
             itemHtml = '<li><a id="' + item.id + '"sc_addr="' + item.id + '" class="menu-item menu-cmd-keynode" >' + item.id + '</a>';
@@ -123,7 +123,7 @@ SCWeb.ui.Menu = {
             }
 
             var applyTranslation = function (item, id, text) {
-                if (item.text == id) {
+                if (item.text === id) {
                     item.text = text;
                 }
                 if (item.subMenu) {

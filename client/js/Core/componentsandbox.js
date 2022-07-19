@@ -8,12 +8,7 @@ SCWeb.core.CommandState = function (command_addr, command_args, format) {
 
 /**
  * Create new instance of component sandbox.
- * @param {String} container Id of dom object, that will contain component
- * @param {String} addr sc-addr of sc-link or sc-structure, that edit or viewed with sandbox
- * @param {Boolean} is_struct If that value is true, then addr is a sc-addr to viewed structure; otherwise the last one is a sc-link
- * @param {String} format_addr sc-addr of window format
- * @param {String} ext_lang_addr sc-addr of external language
- * @param {Object} keynodes Dictionary that contains keynode addr by system identifiers
+ * @param options
  */
 SCWeb.core.ComponentSandbox = function (options) {
 
@@ -70,7 +65,7 @@ SCWeb.core.ComponentSandbox = function (options) {
     if (this.is_struct) {
         let addArcEventRequest = new sc.ScEventParams(
           new sc.ScAddr(this.addr),
-          sc.ScEventType.AddOutgoingEdge,
+            sc.ScEventType.AddOutgoingEdge,
           (elAddr, edge, otherAddr) => {
               if (self.eventStructUpdate) {
                   self.eventStructUpdate(true, elAddr.value, edge.value);
@@ -84,7 +79,7 @@ SCWeb.core.ComponentSandbox = function (options) {
                   self.eventStructUpdate(false, elAddr.value, edge.value);
               }
           });
-        sctpClient.EventsCreate([addArcEventRequest, removeArcEventRequest])
+        window.scClient.eventsCreate([addArcEventRequest, removeArcEventRequest])
           .then((addArcEvent, removeArcEvent)=>{
               self.event_add_element = addArcEvent;
               self.event_remove_element = removeArcEvent;
@@ -111,7 +106,6 @@ SCWeb.core.ComponentSandbox.prototype.destroy = function () {
         events.push(this.event_add_element);
     if (this.event_remove_element)
         events.push(this.event_remove_element);
-    console.log(events);
     window.scClient.eventsDestroy(events);
 };
 
@@ -267,7 +261,7 @@ SCWeb.core.ComponentSandbox.prototype.createViewersForScStructs = function (cont
 };
 
 /*! Function takes content of sc-link or sctructure from server and call event handlers
- * {String} contentType type of content data (@see SctpClient.getLinkContent). If it's null, then
+ * {String} contentType type of content data (@see scClient.getLinkContent). If it's null, then
  * data will be returned as string
  */
 SCWeb.core.ComponentSandbox.prototype.updateContent = async function (contentType) {
@@ -275,13 +269,13 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (contentTyp
 
     if (this.is_struct && this.eventStructUpdate) {
         let scTemplate = new sc.ScTemplate();
-        scTemplate.Triple(
-          [new sc.ScAddr(this.addr),"src"],
+        scTemplate.triple(
+          [new sc.ScAddr(this.addr), "src"],
           [sc.ScType.EdgeAccessVarPosPerm, "edge"],
-          sc.ScType.Unknown);
-        let result = await sctpClient.TemplateSearch(scTemplate);
+            sc.ScType.Unknown);
+        let result = await window.scClient.templateSearch(scTemplate);
         for (let triple of result) {
-          self.eventStructUpdate(true, triple.Get("src").value, triple.Get("edge").value);
+          self.eventStructUpdate(true, triple.get("src").value, triple.get("edge").value);
         }
     }
     else {
@@ -321,7 +315,7 @@ SCWeb.core.ComponentSandbox.prototype._fireArgumentsChanged = function () {
 /**
  * Calls when new argument added
  * @param {String} argument sc-addr of argument
- * @param {Integer} idx Index of argument
+ * @param {Number} idx Index of argument
  */
 SCWeb.core.ComponentSandbox.prototype.onArgumentAppended = function (argument, idx) {
     this._fireArgumentsChanged();
@@ -330,7 +324,7 @@ SCWeb.core.ComponentSandbox.prototype.onArgumentAppended = function (argument, i
 /**
  * Calls when new argument removed
  * @param {String} argument sc-addr of argument
- * @param {Integer} idx Index of argument
+ * @param {Number} idx Index of argument
  */
 SCWeb.core.ComponentSandbox.prototype.onArgumentRemoved = function (argument, idx) {
     this._fireArgumentsChanged();

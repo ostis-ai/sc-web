@@ -12,14 +12,12 @@
  * - "arguments/clear" - this event emits on arguments clear (all arguments removed at once)
  */
 SCWeb.core.Arguments = {
-
     _arguments: [],
 
     /**
      * Append new argument into the end of list
      *
-     * @param {String}
-     * argument SC-addr of command argument
+     * @param {String} argument SC-addr of command argument
      * @return Returns index of appended argument
      */
     appendArgument: function (argument) {
@@ -35,8 +33,7 @@ SCWeb.core.Arguments = {
     /**
      * Removes first occurrence of specified argument
      *
-     * @param {String}
-     * argument SC-add of argument to remove
+     * @param {String} argument SC-add of argument to remove
      */
     removeArgument: function (argument) {
 
@@ -53,8 +50,7 @@ SCWeb.core.Arguments = {
     /**
      * Remove argument by specified index
      *
-     * @param {Number}
-     * idx Index of argument to remove
+     * @param {Number} idx Index of argument to remove
      */
     removeArgumentByIndex: function (idx) {
 
@@ -78,10 +74,8 @@ SCWeb.core.Arguments = {
     /**
      * Notify listener on argument added
      *
-     * @param {String}
-     * argument Argument, that was added *
-     * @param {Number}
-     * Index of added argument
+     * @param {String} argument Argument, that was added *
+     * @param {Number} idx Index of added argument
      */
     _fireArgumentAppended: function (argument, idx) {
 
@@ -91,10 +85,8 @@ SCWeb.core.Arguments = {
     /**
      * Notify listener on argument removed
      *
-     * @param {String}
-     * argument Argument, that was removed
-     * @param {Number}
-     * Index of removed argument
+     * @param {String} argument Argument, that was removed
+     * @param {Number} idx Index of removed argument
      */
     _fireArgumentRemoved: function (argument, idx) {
 

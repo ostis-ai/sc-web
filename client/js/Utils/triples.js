@@ -28,7 +28,7 @@ TripleUtils.prototype = {
      * @returns {src: number, edge: number, trg: number}
      */
     getEdge: function (lookupEdgeAddr) {
-        return this.triples.find(([src, {addr}, trg]) => addr == lookupEdgeAddr);
+        return this.triples.find(([src, {addr}, trg]) => addr === lookupEdgeAddr);
     },
 
     /*! Search all constructions, that equal to template. 
@@ -47,7 +47,7 @@ TripleUtils.prototype = {
                 if (list2) {
                     for (l2 in list2) {
                         var edge2 = list2[l2];
-                        if (this._compareType(type4, this._getType(edge2.edge)) && (edge2.src == addr5)) {
+                        if (this._compareType(type4, this._getType(edge2.edge)) && (edge2.src === addr5)) {
                             if (!res) res = [];
                             res.push([
                                 {addr: addr1, type: this._getType(addr1)},
@@ -65,10 +65,10 @@ TripleUtils.prototype = {
     },
 
     find5_f_a_f_a_f: function (addr1, type2, addr3, type4, addr5) {
-        var list = this.inputEdges[addr3];
+        const list = this.inputEdges[addr3];
         if (!list) return [];
 
-        var res = [];
+        let res = [];
         for (l in list) {
             var edge = list[l];
             if (this._compareType(type2, this._getType(edge.edge)) && (addr1 === edge.src)) {
@@ -153,11 +153,11 @@ TripleUtils.prototype = {
     },
 
     checkAnyOutputEdge: function (srcAddr) {
-        return this.outputEdges[srcAddr] ? true : false;
+        return !!this.outputEdges[srcAddr];
     },
 
     checkAnyInputEdge: function (trgAddr) {
-        return this.inputEdges[trgAddr] ? true : false;
+        return !!this.inputEdges[trgAddr];
     },
 
     checkAnyOutputEdgeType: function (srcAddr, edgeType) {
@@ -184,7 +184,7 @@ TripleUtils.prototype = {
 
     // just for internal usage
     _compareType: function (it_type, el_type) {
-        return ((it_type & el_type) == it_type);
+        return ((it_type & el_type) === it_type);
     },
 
     _getType: function (addr) {
@@ -206,7 +206,7 @@ TripleUtils.prototype = {
         if (list) {
             for (e in list) {
                 var edge = list[e];
-                if (edge.edge == edgeAddr) {
+                if (edge.edge === edgeAddr) {
                     this.outputEdges.splice(e, 1);
                     return;
                 }
@@ -231,7 +231,7 @@ TripleUtils.prototype = {
         if (list) {
             for (e in list) {
                 var edge = list[e];
-                if (edge.edge == edgeAddr) {
+                if (edge.edge === edgeAddr) {
                     this.inputEdges.splice(e, 1);
                     return;
                 }

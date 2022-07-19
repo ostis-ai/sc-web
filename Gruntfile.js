@@ -13,13 +13,12 @@ module.exports = function(grunt) {
     grunt.initConfig({
         concat: {
             webcore: {
-                src: ["node_modules/@ostis/sc-core/build/sc.js",
+                src: ["node_modules/ts-sc-client/build/sc.js",
                       webCoreCompPath + 'Utils/sc_keynodes.js',
                       webCoreCompPath + 'Utils/utils.js',
                       webCoreCompPath + 'Utils/sc_helper.js',
                       webCoreCompPath + 'Utils/stringview.js',
                       webCoreCompPath + 'Utils/cache.js',
-                      webCoreCompPath + 'Utils/sctp.js',
                       webCoreCompPath + 'Utils/fqueue.js',
                       webCoreCompPath + 'Utils/binary.js',
                       webCoreCompPath + 'Utils/triples.js',

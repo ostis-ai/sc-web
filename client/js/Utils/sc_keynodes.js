@@ -1,6 +1,6 @@
-ScKeynodes = function (helper) {
+let ScKeynodes = function (helper) {
   this.helper = helper;
-  this.sctp_client = helper.sctp_client;
+  this.scClient = helper.scClient;
 };
 
 ScKeynodes.prototype.init = async function () {
@@ -53,9 +53,9 @@ ScKeynodes.prototype.resolveKeynode = async function (sys_idtf, property) {
     sys_idtf = [sys_idtf];
   }
   let request = sys_idtf.map(x => {
-    return {idtf: x, type: sc.ScType.Unknown}
+    return { id: x, type: sc.ScType.Unknown }
   });
-  let result = await this.sctp_client.ResolveKeynodes(request);
+  let result = await this.scClient.resolveKeynodes(request);
   sys_idtf.forEach(x => {
     let addr = result[x];
     if (addr.isValid()) {

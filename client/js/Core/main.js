@@ -1,20 +1,17 @@
-var scHelper = null;
-var scKeynodes = null;
+const scHelper = null;
+const scKeynodes = null;
 const currentYear = new Date().getFullYear();
 
-function SctpClientCreate() {
+function ScClientCreate() {
     let res, rej;
-    let result = new Promise((resolve, reject)=> {
-        res = resolve;
+    let scClient = new sc.ScClient("ws://localhost:8090/ws_json");
+    return new Promise((resolve, reject) => {
+        res = resolve(scClient);
         rej = reject;
-    })
-    let onDisconnect = () => console.log("Disconnected");
-    let sctpClient = new sc.ScNet("ws://localhost:8090/ws_json", () => res(sctpClient), onDisconnect, rej);
-    return result;
+    });
 }
 
 SCWeb.core.Main = {
-
     window_types: [],
     idtf_modes: [],
     menu_commands: {},
@@ -22,21 +19,19 @@ SCWeb.core.Main = {
 
     /**
      * Initialize sc-web core and ui
-     * @param {Object} params Initializetion parameters.
+     * @param {Object} params Initialization parameters.
      * There are required parameters:
-     * - menu_container_id - id of dom element, that will contains menu items
+     * - menu_container_id - id of dom element, that will contain menu items
      */
     init: function (params) {
-        return new Promise((resolve, reject)=>{
-
-            var self = this;
+        return new Promise((resolve)=>{
+            const self = this;
             //SCWeb.ui.Locker.show();
 
             SCWeb.core.Server._initialize();
-            SctpClientCreate().then(function (client) {
-
-                window.sctpClient = client;
-                window.scHelper = new ScHelper(window.sctpClient);
+            ScClientCreate().then(function (client) {
+                window.scClient = client;
+                window.scHelper = new ScHelper(window.scClient);
                 window.scKeynodes = new ScKeynodes(window.scHelper);
 
                 window.scKeynodes.init().then(function () {
@@ -89,7 +84,7 @@ SCWeb.core.Main = {
     questionParameterProcessed(urlObject) {
         const question = urlObject['question'];
         if (question) {
-            /// @todo Check question is realy a question
+            /// @todo Check question is really a question
             const commandState = new SCWeb.core.CommandState(question, null, null);
             SCWeb.ui.WindowManager.appendHistoryItem(question, commandState);
             return true;
@@ -128,7 +123,7 @@ SCWeb.core.Main = {
                 return resolve(document.querySelector(selector));
             }
     
-            const observer = new MutationObserver(mutations => {
+            const observer = new MutationObserver(() => {
                 if (document.querySelector(selector)) {
                     resolve(document.querySelector(selector));
                     observer.disconnect();
@@ -167,8 +162,8 @@ SCWeb.core.Main = {
                 $('#help-modal').modal({"keyboard": true});
         }
 
-        const argumentAddr = scKeynodes['ui_start_sc_element'];
-        let startScElements = await scHelper.getSetElements(argumentAddr);
+        const argumentAddr = window.scKeynodes['ui_start_sc_element'];
+        let startScElements = await window.scHelper.getSetElements(argumentAddr);
         if (startScElements.length) {
             start(startScElements[0]);
         } else {
@@ -178,7 +173,7 @@ SCWeb.core.Main = {
     },
 
     /**
-     * Returns sc-addr of preffered output language for current user
+     * Returns sc-addr of preferred output language for current user
      */
     getDefaultExternalLang: function () {
         return this.user.default_ext_lang;
@@ -192,10 +187,10 @@ SCWeb.core.Main = {
     doCommand: function (cmd_addr, cmd_args) {
         SCWeb.core.Arguments.clear();
         SCWeb.core.Server.doCommand(cmd_addr, cmd_args, function (result) {
-            if (result.question != undefined) {
-                var commandState = new SCWeb.core.CommandState(cmd_addr, cmd_args);
+            if (result.question !== undefined) {
+                const commandState = new SCWeb.core.CommandState(cmd_addr, cmd_args);
                 SCWeb.ui.WindowManager.appendHistoryItem(result.question, commandState);
-            } else if (result.command != undefined) {
+            } else if (result.command !== undefined) {
 
             } else {
                 alert("There are no any answer. Try another request");
@@ -224,9 +219,9 @@ SCWeb.core.Main = {
     doCommandWithPromise: function (command_state) {
         return new Promise(function (resolve, reject) {
             SCWeb.core.Server.doCommand(command_state.command_addr, command_state.command_args, function (result) {
-                if (result.question != undefined) {
+                if (result.question !== undefined) {
                     resolve(result.question)
-                } else if (result.command != undefined) {
+                } else if (result.command !== undefined) {
 
                 } else {
                     reject("There are no any answer. Try another request");
@@ -252,10 +247,10 @@ SCWeb.core.Main = {
 
     doTextCommand: function (query) {
         SCWeb.core.Server.textCommand(query, function (result) {
-            if (result.question != undefined) {
-                var commandState = new SCWeb.core.CommandState(null, null, null);
+            if (result.question !== undefined) {
+                const commandState = new SCWeb.core.CommandState(null, null, null);
                 SCWeb.ui.WindowManager.appendHistoryItem(result.question, commandState);
-            } else if (result.command != undefined) {
+            } else if (result.command !== undefined) {
 
             } else {
                 alert("There are no any answer. Try another request");
@@ -269,7 +264,7 @@ SCWeb.core.Main = {
      */
     doDefaultCommand: function (cmd_args) {
         if (!this.default_cmd) {
-            var self = this;
+            const self = this;
             SCWeb.core.Server.resolveScAddr([this.default_cmd_str], function (addrs) {
                 self.default_cmd = addrs[self.default_cmd_str];
                 if (self.default_cmd) {
@@ -283,11 +278,11 @@ SCWeb.core.Main = {
     
     /**
      * Initiate default user interface command
-     * @param {String} sys_id System identifier
+     * @param {string} sys_id System identifier
      */
     doDefaultCommandWithSystemIdentifier: function (sys_id) {
         SCWeb.core.Server.resolveScAddr([sys_id], function (addrs) {
-            var resolvedId = addrs[sys_id];
+            const resolvedId = addrs[sys_id];
             if (resolvedId) {
                 SCWeb.core.Main.doDefaultCommand([resolvedId]);
             } else {

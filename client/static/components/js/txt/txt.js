@@ -17,7 +17,7 @@ const TextViewer = function(sandbox){
         container.empty();
 
         let template = new sc.ScTemplate();
-        template.Triple(
+        template.triple(
           [sc.ScType.NodeVar, "x"],
           sc.ScType.EdgeAccessVarPosPerm,
           new sc.ScAddr(self.sandbox.addr)
@@ -27,7 +27,7 @@ const TextViewer = function(sandbox){
           sc.ScType.EdgeAccessVarPosPerm,
           "x"
         );
-        let result = await sctpClient.TemplateSearch(template);
+        let result = await scClient.templateSearch(template);
         if (result.length) {
             let type_addr = result[0].get("x");
             let str;

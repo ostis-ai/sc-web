@@ -20,7 +20,7 @@ SCWeb.core.Debug = {
     /**
      * Function to call, when any error occurs
      * @param {SCWeb.core.ErrorCode} code Code of error (error type)
-     * @param
+     * @param message
      */
     error: function (code, message) {
         console.log("Error: " + this.codeToText(code) + ". " + message);

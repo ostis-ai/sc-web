@@ -15,7 +15,7 @@ SCWeb.ui.WindowManager = {
     },
 
     isWindowExist: function (id) {
-        return this.windows.indexOf(id) != -1;
+        return this.windows.indexOf(id) !== -1;
     },
     init: function (params) {
         return new Promise((resolve, reject) => {

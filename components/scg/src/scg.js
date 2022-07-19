@@ -82,7 +82,7 @@ SCg.Editor.prototype = {
         if (params.resolveControls)
             this.resolveControls = params.resolveControls;
 
-        this.canEdit = params.canEdit ? true : false;
+        this.canEdit = !!params.canEdit;
         this.initUI();
 
     },
@@ -450,7 +450,7 @@ SCg.Editor.prototype = {
                     self.scene.commandManager.execute(new SCgCommandChangeIdtf(obj, input.val()));
                 }
                 if (self._idtf_item) {
-                    let [t] = await sctpClient.CheckElements([new sc.ScAddr(self._idtf_item.addr)]);
+                    let [t] = await scClient.CheckElements([new ScAddr(self._idtf_item.addr)]);
                     self.scene.commandManager.execute(new SCgCommandGetNodeFromMemory(
                         obj,
                         t.value,
@@ -504,7 +504,7 @@ SCg.Editor.prototype = {
                 var newType = self.typesMap[$(this).attr('id')];
                 var command = [];
                 self.scene.selected_objects.forEach(function (obj) {
-                    if (obj.sc_type != newType) {
+                    if (obj.sc_type !== newType) {
                         command.push(new SCgCommandChangeType(obj, newType));
                     }
                 });
