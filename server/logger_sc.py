@@ -15,7 +15,8 @@ def init():
 
     output_path = config["Default"]["output_path"] if "output_path" in config["Default"] else DEFAULT_OUTPUT_PATH
     max_bytes = int(config["Default"]["max_bytes"]) if "max_bytes" in config["Default"] else DEFAULT_MAX_BYTES
-    backup_count = int(config["Default"]["backup_count"]) if "backup_count" in config["Default"] else DEFAULT_BACKUP_COUNT
+    backup_count \
+        = int(config["Default"]["backup_count"]) if "backup_count" in config["Default"] else DEFAULT_BACKUP_COUNT
 
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
