@@ -8,10 +8,7 @@ import handlers.base as base
 
 @decorators.class_logging
 class MainHandler(base.BaseHandler):
-    
     @tornado.web.authenticated
     @decorators.requestAdmin
     def get(self):
-        self.render("admin.html", user = self.current_user)
-
-
+        self.render("admin.html", user=self.current_user)
