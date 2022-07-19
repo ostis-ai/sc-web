@@ -8,18 +8,17 @@ import decorators
 
 @decorators.class_logging
 class User:
-    
-    def __init__(self, u, db):
+    def __init__(self, u, database):
         self.email = u.email
         self.name = u.name
         self.avatar = u.avatar
-        self.rights = db.get_user_role(u).rights
+        self.rights = database.get_user_role(u).rights
     
-    def canAdmin(self):
+    def can_admin(self):
         return self.rights >= db.DataBase.RIGHTS_ADMIN
     
     @staticmethod
-    def _canEdit(rights):
+    def _can_edit(rights):
         return rights >= db.DataBase.RIGHTS_EDITOR
 
 
@@ -45,5 +44,4 @@ class BaseHandler(web.RequestHandler):
     
     def get_user_id(self, email):
         pass
-    
     

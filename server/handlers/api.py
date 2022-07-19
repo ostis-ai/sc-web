@@ -5,53 +5,49 @@ import tornado.web
 import json
 
 from sc_client import client
-from sc_client.constants.sc_types import NODE_VAR, EDGE_ACCESS_VAR_POS_PERM, EDGE_D_COMMON_VAR, NODE_CONST, \
-    EDGE_ACCESS_CONST_POS_PERM
+from sc_client.constants import sc_types
 from sc_client.models import ScIdtfResolveParams, ScTemplate, ScAddr, ScConstruction
 from sc_client.sc_keynodes import ScKeynodes
 
 import decorators
 
-from keynodes import KeynodeSysIdentifiers, Keynodes
+from keynodes import KeynodeSysIdentifiers
 
 from . import api_logic as logic
 import time
 from . import base
 
 
+# -------------------------------------------
 
-# -------------------------------------------        
 
-        
 class ContextMenu(base.BaseHandler):
-    
-    #@tornado.web.asynchronous
+    # @tornado.web.asynchronous
     def get(self):
-        keys = ScKeynodes()
-        keynode_ui_main_menu = keys[KeynodeSysIdentifiers.ui_main_menu.value]
+        keynodes = ScKeynodes()
+        keynode_ui_main_menu = keynodes[KeynodeSysIdentifiers.ui_main_menu.value]
 
         # try to find main menu node
         cmds = []
-        logic.find_atomic_commands(keynode_ui_main_menu, keys, cmds)
+        logic.find_atomic_commands(keynode_ui_main_menu, cmds)
 
         self.set_header("Content-Type", "application/json")
         self.finish(json.dumps(cmds))
-        
-        
-class CmdDo(base.BaseHandler):
 
-    #@tornado.web.asynchronous
+
+class CmdDo(base.BaseHandler):
+    # @tornado.web.asynchronous
     def post(self):
         cmd_addr = ScAddr(int(self.get_argument(u'cmd', None)))
         # parse arguments
         first = True
-        arg = None
+        arg = ScAddr(0)
         arguments = []
         idx = 0
-        while first or (arg is not None):
-            arg = self.get_argument(u'%d_' % idx, None)
-            if arg is not None:
-                arg = ScAddr(int(arg))
+        while first or arg.is_valid():
+            arg_hash = self.get_argument(u'%d_' % idx, None)
+            if arg_hash is not None:
+                arg = ScAddr(int(arg_hash))
                 # check if sc-element exist
                 if client.check_elements(arg)[0].is_valid():
                     arguments.append(arg)
@@ -61,39 +57,35 @@ class CmdDo(base.BaseHandler):
             idx += 1
 
         keys = ScKeynodes()
-        result = logic.do_command(keys, cmd_addr, arguments, self)
+        result = logic.do_command(cmd_addr, arguments, self)
         self.set_header("Content-Type", "application/json")
         self.finish(json.dumps(result))
-        
-        
+
+
 class QuestionAnswerTranslate(base.BaseHandler):
-    
-    #@tornado.web.asynchronous
+    # @tornado.web.asynchronous
     def post(self):
         question_addr = ScAddr(int(self.get_argument(u'question', None)))
         format_addr = ScAddr(int(self.get_argument(u'format', None)))
 
-        keys = ScKeynodes()
-        keynode_nrel_answer = keys[KeynodeSysIdentifiers.question_nrel_answer.value]
-        keynode_nrel_translation = keys[KeynodeSysIdentifiers.nrel_translation.value]
-        keynode_nrel_format = keys[KeynodeSysIdentifiers.nrel_format.value]
-        keynode_system_element = keys[KeynodeSysIdentifiers.system_element.value]
-        ui_rrel_source_sc_construction = keys[KeynodeSysIdentifiers.ui_rrel_source_sc_construction.value]
-        ui_command_translate_from_sc = keys[KeynodeSysIdentifiers.ui_command_translate_from_sc.value]
-        ui_command_initiated = keys[KeynodeSysIdentifiers.ui_command_initiated.value]
+        keynodes = ScKeynodes()
+        keynode_system_element = keynodes[KeynodeSysIdentifiers.system_element.value]
+        ui_rrel_source_sc_construction = keynodes[KeynodeSysIdentifiers.ui_rrel_source_sc_construction.value]
+        ui_command_translate_from_sc = keynodes[KeynodeSysIdentifiers.ui_command_translate_from_sc.value]
+        ui_command_initiated = keynodes[KeynodeSysIdentifiers.ui_command_initiated.value]
 
         # try to find answer for the question
         wait_time = 0
         wait_dt = 0.1
 
-        answer = logic.find_answer(question_addr, keynode_nrel_answer)
+        answer = logic.find_answer(question_addr)
         while not answer:
             time.sleep(wait_dt)
             wait_time += wait_dt
             if wait_time > tornado.options.options.event_wait_timeout:
                 return logic.serialize_error(self, 404, 'Timeout waiting for answer')
 
-            answer = logic.find_answer(question_addr, keynode_nrel_answer)
+            answer = logic.find_answer(question_addr)
 
         if not answer:
             return logic.serialize_error(self, 404, 'Answer not found')
@@ -101,45 +93,43 @@ class QuestionAnswerTranslate(base.BaseHandler):
         answer_addr = answer[0].get(2)
 
         # try to find translation to specified format
-        result_link_addr = logic.find_translation_with_format(answer_addr, format_addr, keynode_nrel_format,
-                                                              keynode_nrel_translation)
+        result_link_addr = logic.find_translation_with_format(answer_addr, format_addr)
 
         # if link addr not found, then run translation of answer to specified format
-        if result_link_addr is None:
+        if not result_link_addr.is_valid():
             construction = ScConstruction()
-            construction.create_node(NODE_CONST, 'trans_cmd_addr')
-            construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'trans_cmd_addr')
-            construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, 'trans_cmd_addr', answer_addr, 'arc_addr')
-            construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_addr')
-            construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, ui_rrel_source_sc_construction, 'arc_addr',
-                                     'arc_addr_2')
-            construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_addr_2')
-            construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, 'trans_cmd_addr', format_addr, 'arc_addr_3')
-            construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_addr_3')
-            ui_rrel_output_format = keys[KeynodeSysIdentifiers.ui_rrel_output_format.value]
-            construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, ui_rrel_output_format, 'arc_addr_3', 'arc_addr_4')
-            construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_addr_4')
-            construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, ui_command_translate_from_sc, 'trans_cmd_addr',
-                                     'arc_addr_5')
-            construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_addr_5')
-            construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, ui_command_initiated, 'trans_cmd_addr',
-                                     'arc_addr_6')
-            construction.create_edge(EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_addr_6')
+            construction.create_node(sc_types.NODE_CONST, 'trans_cmd_addr')
+            construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'trans_cmd_addr')
+            construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, 'trans_cmd_addr', answer_addr, 'arc_addr')
+            construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_addr')
+            construction.create_edge(
+                sc_types.EDGE_ACCESS_CONST_POS_PERM, ui_rrel_source_sc_construction, 'arc_addr', 'arc_addr_2')
+            construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_addr_2')
+            construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, 'trans_cmd_addr', format_addr, 'arc_addr_3')
+            construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_addr_3')
+            ui_rrel_output_format = keynodes[KeynodeSysIdentifiers.ui_rrel_output_format.value]
+            construction.create_edge(
+                sc_types.EDGE_ACCESS_CONST_POS_PERM, ui_rrel_output_format, 'arc_addr_3', 'arc_addr_4')
+            construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_addr_4')
+            construction.create_edge(
+                sc_types.EDGE_ACCESS_CONST_POS_PERM, ui_command_translate_from_sc, 'trans_cmd_addr', 'arc_addr_5')
+            construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_addr_5')
+            construction.create_edge(
+                sc_types.EDGE_ACCESS_CONST_POS_PERM, ui_command_initiated, 'trans_cmd_addr', 'arc_addr_6')
+            construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_addr_6')
 
             result = client.create_elements(construction)
 
             # now we need to wait translation result
             wait_time = 0
-            translation = logic.find_translation_with_format(answer_addr, format_addr, keynode_nrel_format,
-                                                             keynode_nrel_translation)
-            while translation is None:
+            translation = logic.find_translation_with_format(answer_addr, format_addr)
+            while not translation.is_valid():
                 time.sleep(wait_dt)
                 wait_time += wait_dt
                 if wait_time > tornado.options.options.event_wait_timeout:
                     return logic.serialize_error(self, 404, 'Timeout waiting for answer translation')
 
-                translation = logic.find_translation_with_format(answer_addr, format_addr, keynode_nrel_format,
-                                                                 keynode_nrel_translation)
+                translation = logic.find_translation_with_format(answer_addr, format_addr)
 
             if translation is not None:
                 result_link_addr = translation
@@ -151,22 +141,22 @@ class QuestionAnswerTranslate(base.BaseHandler):
         self.set_header("Content-Type", "application/json")
         self.finish(result)
 
-        
+
 class LinkFormat(base.BaseHandler):
-    
-    #@tornado.web.asynchronous
+
+    # @tornado.web.asynchronous
     def post(self):
 
         # parse arguments
         first = True
-        arg = None
+        arg = ScAddr(0)
         arguments = []
         idx = 0
-        while first or (arg is not None):
+        while first or arg.is_valid():
             arg_str = u'%d_' % idx
-            arg = self.get_argument(arg_str, None)
-            if arg is not None:
-                arg = ScAddr(int(arg))
+            arg_hash = self.get_argument(arg_str, None)
+            if arg_hash is not None:
+                arg = ScAddr(int(arg_hash))
                 arguments.append(arg)
             first = False
             idx += 1
@@ -182,14 +172,14 @@ class LinkFormat(base.BaseHandler):
             template = ScTemplate()
             template.triple_with_relation(
                 arg,
-                EDGE_D_COMMON_VAR,
-                NODE_VAR,
-                EDGE_ACCESS_VAR_POS_PERM,
+                sc_types.EDGE_D_COMMON_VAR,
+                sc_types.NODE_VAR,
+                sc_types.EDGE_ACCESS_VAR_POS_PERM,
                 keynode_nrel_format
             )
-            format = client.template_search(template)
-            if format:
-                result[arg.value] = format[0].get(2).value
+            format_result = client.template_search(template)
+            if format_result:
+                result[arg.value] = format_result[0].get(2).value
             else:
                 result[arg.value] = keynode_format_txt.value
 
@@ -199,26 +189,20 @@ class LinkFormat(base.BaseHandler):
 
 @decorators.class_logging
 class Languages(base.BaseHandler):
-    
-    #@tornado.web.asynchronous
+    # @tornado.web.asynchronous
     def get(self):
-        
-        with SctpClientInstance() as sctp_client:
-            keys = Keynodes(sctp_client)
-            
-            langs = logic.get_languages_list(keys[KeynodeSysIdentifiers.languages], sctp_client)
-            
-            self.set_header("Content-Type", "application/json")
-            self.finish(json.dumps(langs))
+        langs = logic.get_languages_list()
+
+        self.set_header("Content-Type", "application/json")
+        self.finish(json.dumps(langs))
 
 
 @decorators.class_logging
 class LanguageSet(base.BaseHandler):
-    
-    #@tornado.web.asynchronous
+    # @tornado.web.asynchronous
     def post(self):
         lang_addr = ScAddr(int(self.get_argument(u'lang_addr', None)))
-        
+
         keys = ScKeynodes()
 
         sc_session = logic.ScSession(self, keys)
@@ -228,14 +212,13 @@ class LanguageSet(base.BaseHandler):
 
 
 class IdtfFind(base.BaseHandler):
-    
     def initialize(self, sys, main, common):
         self.sys = sys
         self.main = main
         self.common = common
 
     @decorators.method_logging
-    #@tornado.web.asynchronous
+    # @tornado.web.asynchronous
     def get(self):
         result = {'main': [], 'common': [], 'sys': []}
 
@@ -252,13 +235,13 @@ class IdtfFind(base.BaseHandler):
                         if len(array[idx][1]) > len(data[1]):
                             array.insert(idx, data)
                             inserted = True
-                            break;
+                            break
                         idx = idx + 1
 
                     if not inserted and len(array) < max_n:
                         array.append(data)
 
-                    if (len(array) > max_n):
+                    if len(array) > max_n:
                         array.pop()
                 else:
                     array.append(data)
@@ -279,8 +262,7 @@ class IdtfFind(base.BaseHandler):
 
 @decorators.class_logging
 class IdtfResolve(base.BaseHandler):
-    
-    #@tornado.web.asynchronous
+    # @tornado.web.asynchronous
     def post(self):
         result = None
 
@@ -294,9 +276,7 @@ class IdtfResolve(base.BaseHandler):
                 arguments.append(arg)
             idx += 1
 
-        keys = ScKeynodes()
-
-        sc_session = logic.ScSession(self, keys)
+        sc_session = logic.ScSession(self)
         used_lang = sc_session.get_used_language()
 
         result = {}
@@ -304,14 +284,14 @@ class IdtfResolve(base.BaseHandler):
         for addr_str in arguments:
             addr = int(addr_str)
             addr = ScAddr(addr)
-            if addr is None:
+            if not addr.is_valid():
                 self.clear()
                 self.set_status(404)
                 self.finish('Can\'t parse sc-addr from argument: %s' % addr_str)
 
             found = False
 
-            idtf_value = logic.get_identifier_translated(addr, used_lang, keys)
+            idtf_value = logic.get_identifier_translated(addr, used_lang)
             if idtf_value:
                 result[addr_str] = idtf_value
 
@@ -321,8 +301,7 @@ class IdtfResolve(base.BaseHandler):
 
 @decorators.class_logging
 class AddrResolve(base.BaseHandler):
-    
-    #@tornado.web.asynchronous
+    # @tornado.web.asynchronous
     def post(self):
 
         # parse arguments
@@ -345,15 +324,14 @@ class AddrResolve(base.BaseHandler):
             addr = addrs[i]
             if addr is not None:
                 res[arguments[i]] = addr.value
-    
+
         self.set_header("Content-Type", "application/json")
         self.finish(json.dumps(res))
 
 
 @decorators.class_logging
 class InfoTooltip(base.BaseHandler):
-    
-    #@tornado.web.asynchronous
+    # @tornado.web.asynchronous
     def post(self):
 
         # parse arguments
@@ -361,37 +339,33 @@ class InfoTooltip(base.BaseHandler):
         arg = None
         arguments = []
         idx = 0
-        while first or (arg is not None):
+        while first or arg is not None:
             arg_str = u'%d_' % idx
             arg = self.get_argument(arg_str, None)
             if arg is not None:
                 arguments.append(arg)
             first = False
             idx += 1
-            
-        with SctpClientInstance() as sctp_client:
-                
-            keys = Keynodes(sctp_client)
-            sc_session = logic.ScSession(self, sctp_client, keys)
-    
+
+            sc_session = logic.ScSession(self)
+
             res = {}
             for addr in arguments:
-                tooltip = logic.find_tooltip(ScAddr.parse_from_string(addr), sctp_client, keys, sc_session.get_used_language())
+                tooltip = logic.find_tooltip(ScAddr(int(addr)), sc_session.get_used_language())
                 res[addr] = tooltip
-    
+
             self.set_header("Content-Type", "application/json")
             self.finish(json.dumps(res))
 
 
 @decorators.class_logging
 class User(base.BaseHandler):
-    
-    #@tornado.web.asynchronous
-    def get(self):
-        keys = ScKeynodes()
+    _keynodes = ScKeynodes()
 
+    # @tornado.web.asynchronous
+    def get(self):
         # get user sc-addr
-        sc_session = logic.ScSession(self, keys)
+        sc_session = logic.ScSession(self)
         user_addr = sc_session.get_sc_addr()
 
         if sc_session.email:
@@ -403,58 +377,53 @@ class User(base.BaseHandler):
 
         if is_authenticated:
             user_kb_node = sc_session.get_user_kb_node_by_email()
-            if user_kb_node:
-                roles = self.get_user_roles(user_kb_node, keys)
-
+            if user_kb_node.is_valid():
+                roles = self.get_user_roles(user_kb_node)
 
         result = {
-                    'sc_addr': user_addr.value,
-                    'is_authenticated': is_authenticated,
-                    'current_lang': sc_session.get_used_language().value,
-                    'default_ext_lang': sc_session.get_default_ext_lang().value,
-                    'email': sc_session.email,
-                    'roles': roles
+            'sc_addr': user_addr.value,
+            'is_authenticated': is_authenticated,
+            'current_lang': sc_session.get_used_language().value,
+            'default_ext_lang': sc_session.get_default_ext_lang().value,
+            'email': sc_session.email,
+            'roles': roles
         }
 
         self.set_header("Content-Type", "application/json")
         self.finish(json.dumps(result))
 
-    def get_user_roles(self,  user_kb_node: ScAddr, keys: ScKeynodes) -> List[str]:
+    def get_user_roles(self, user_kb_node: ScAddr) -> List[str]:
         roles = [KeynodeSysIdentifiers.nrel_authorised_user.value]
-
-        nrel_manager = keys[KeynodeSysIdentifiers.nrel_manager.value]
-        nrel_administrator = keys[KeynodeSysIdentifiers.nrel_administrator.value]
-        nrel_expert = keys[KeynodeSysIdentifiers.nrel_expert.value]
 
         manager_template = ScTemplate()
         manager_template.triple_with_relation(
-            NODE_VAR,
-            EDGE_D_COMMON_VAR,
+            sc_types.NODE_VAR,
+            sc_types.EDGE_D_COMMON_VAR,
             user_kb_node,
-            EDGE_ACCESS_VAR_POS_PERM,
-            nrel_manager
+            sc_types.EDGE_ACCESS_VAR_POS_PERM,
+            self._keynodes[KeynodeSysIdentifiers.nrel_manager.value]
         )
-        is_manager_role_exist = client.template_search(manager_template)
+        is_manager_role_exist = bool(client.template_search(manager_template))
 
         admin_template = ScTemplate()
         admin_template.triple_with_relation(
-            NODE_VAR,
-            EDGE_D_COMMON_VAR,
+            sc_types.NODE_VAR,
+            sc_types.EDGE_D_COMMON_VAR,
             user_kb_node,
-            EDGE_ACCESS_VAR_POS_PERM,
-            nrel_administrator
+            sc_types.EDGE_ACCESS_VAR_POS_PERM,
+            self._keynodes[KeynodeSysIdentifiers.nrel_administrator.value]
         )
-        is_admin_role_exist = client.template_search(manager_template)
+        is_admin_role_exist = bool(client.template_search(manager_template))
 
         expert_template = ScTemplate()
         expert_template.triple_with_relation(
-            NODE_VAR,
-            EDGE_D_COMMON_VAR,
+            sc_types.NODE_VAR,
+            sc_types.EDGE_D_COMMON_VAR,
             user_kb_node,
-            EDGE_ACCESS_VAR_POS_PERM,
-            nrel_expert
+            sc_types.EDGE_ACCESS_VAR_POS_PERM,
+            self._keynodes[KeynodeSysIdentifiers.nrel_expert.value]
         )
-        is_expert_role_exist = client.template_search(expert_template)
+        is_expert_role_exist = bool(client.template_search(expert_template))
 
         if is_admin_role_exist:
             roles.append(KeynodeSysIdentifiers.nrel_administrator.value)
