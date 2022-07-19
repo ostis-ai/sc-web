@@ -63,7 +63,6 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
                     }
                 } else if (type & sc_type_link) {
                     var containerId = 'scg-window-' + sandbox.addr + '-' + addr + '-' + new Date().getUTCMilliseconds();
-                    ;
                     var model_link = SCg.Creator.createLink(randomPos(), containerId);
                     editor.scene.appendLink(model_link);
                     editor.scene.objects[addr] = model_link;
@@ -98,7 +97,7 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
 
     let getArc = async (arc) => {
         let scTemplate = new sc.ScTemplate();
-        scTemplate.Triple(
+        scTemplate.triple(
           [sc.ScType.Unknown, "src"],
           new sc.ScAddr(arc),
           [sc.ScType.Unknown, "target"]
@@ -108,7 +107,7 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
     };
 
     let getElementType = async (el) => {
-        return (await sctpClient.CheckElements([new sc.ScAddr(el)]))[0].value;
+        return (await scClient.checkElements([new sc.ScAddr(el)]))[0].value;
     };
 
     return {
@@ -133,7 +132,7 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
         }
     };
 
-};
+}
 
 // ----------------------------------------------------------------------
 
@@ -147,13 +146,13 @@ function scgScStructTranslator(_editor, _sandbox) {
         arcMapping = {};
 
     if (!sandbox.is_struct)
-        throw "Snadbox must to work with sc-struct";
+        throw "Sandbox must to work with sc-struct";
 
     var scgFromSc = new ScgFromScImpl(sandbox, editor, arcMapping);
 
     var appendToConstruction = async function (obj) {
         let scTemplate = new sc.ScTemplate();
-        scTemplate.Triple(
+        scTemplate.triple(
           new sc.ScAddr(sandbox.addr),
           [sc.ScType.EdgeAccessVarPosPerm, 'arc'],
           new sc.ScAddr(obj.sc_addr)
@@ -166,21 +165,21 @@ function scgScStructTranslator(_editor, _sandbox) {
     var translateIdentifier = async function (obj) {
         if (currentLanguage) {
             let scTemplate = new sc.ScTemplate();
-            scTemplate.TripleWithRelation(
+            scTemplate.tripleWithRelation(
               new sc.ScAddr(obj.sc_addr),
               sc.ScType.EdgeDCommonVar,
               [sc.ScType.LinkVar, 'link'],
               sc.ScType.EdgeAccessVarPosPerm,
-              new sc.ScAddr(scKeynodes.nrel_main_idtf)
+              new sc.ScAddr(window.scKeynodes['nrel_main_idtf'])
             );
-            scTemplate.Triple(
+            scTemplate.triple(
               new sc.ScAddr(currentLanguage),
               sc.ScType.EdgeAccessVarPosPerm,
               'link'
             );
-            let result = await sctpClient.TemplateGenerate(scTemplate);
-            let linkAddr = result.Get('link');
-            await sctpClient.SetLinkContents([new sc.ScLinkContent(obj.text, sc.ScLinkContentType.String, linkAddr)]);
+            let result = await scClient.templateGenerate(scTemplate);
+            let linkAddr = result.get('link');
+            await scClient.setLinkContents([new sc.ScLinkContent(obj.text, sc.ScLinkContentType.String, linkAddr)]);
         } else {
             throw new Error();
         }
@@ -220,9 +219,9 @@ function scgScStructTranslator(_editor, _sandbox) {
                 var implFunc = async function (node) {
                     if (!node.sc_addr) {
                         let scConstruction = new sc.ScConstruction();
-                        scConstruction.CreateNode(new sc.ScType(node.sc_type), "node");
-                        let result = await sctpClient.CreateElements(scConstruction);
-                        node.setScAddr(result[scConstruction.GetIndex("node")].value);
+                        scConstruction.createNode(new sc.ScType(node.sc_type), "node");
+                        let result = await scClient.createElements(scConstruction);
+                        node.setScAddr(result[scConstruction.getIndex("node")].value);
                         node.setObjectState(SCgObjectState.NewInMemory);
                         objects.push(node);
                         if (node.text) {
@@ -239,9 +238,9 @@ function scgScStructTranslator(_editor, _sandbox) {
                     if (c.sc_addr)
                         return;
                     let scConstruction = new sc.ScConstruction();
-                    scConstruction.CreateNode(sc.ScType.NodeStruct, 'node');
-                    let result = await sctpClient.CreateElements(scConstruction);
-                    let node = result[scConstruction.GetIndex('node')].value;
+                    scConstruction.createNode(sc.ScType.NodeStruct, 'node');
+                    let result = await scClient.createElements(scConstruction);
+                    let node = result[scConstruction.getIndex('node')].value;
                     c.setScAddr(node);
                     c.setObjectState(SCgObjectState.NewInMemory);
                     objects.push(c);
@@ -303,9 +302,9 @@ function scgScStructTranslator(_editor, _sandbox) {
 
                         if (src && trg) {
                             let scConstruction = new sc.ScConstruction();
-                            scConstruction.CreateEdge(new sc.ScType(edge.sc_type), new sc.ScAddr(src), new sc.ScAddr(trg), 'edge');
-                            let result = await sctpClient.CreateElements(scConstruction);
-                            edge.setScAddr(result[scConstruction.GetIndex('edge')].value);
+                            scConstruction.createEdge(new sc.ScType(edge.sc_type), new sc.ScAddr(src), new sc.ScAddr(trg), 'edge');
+                            let result = await scClient.createElements(scConstruction);
+                            edge.setScAddr(result[scConstruction.getIndex('edge')].value);
                             edge.setObjectState(SCgObjectState.NewInMemory);
                             objects.push(edge);
                             translatedCount++;
@@ -331,8 +330,8 @@ function scgScStructTranslator(_editor, _sandbox) {
                     let edgeExist = await scHelper.checkEdge(contour.sc_addr, sc_type_arc_pos_const_perm, child.sc_addr);
                     if (!edgeExist) {
                         let scConstruction = new sc.ScConstruction();
-                        scConstruction.CreateEdge(sc.ScType.EdgeAccessConstPosPerm, new sc.ScAddr(contour.sc_addr), new sc.ScAddr(child.sc_addr), 'edge');
-                        await sctpClient.CreateElements(scConstruction);
+                        scConstruction.createEdge(sc.ScType.EdgeAccessConstPosPerm, new sc.ScAddr(contour.sc_addr), new sc.ScAddr(child.sc_addr), 'edge');
+                        await scClient.createElements(scConstruction);
                     }
                 };
 
@@ -356,45 +355,38 @@ function scgScStructTranslator(_editor, _sandbox) {
                       var keynode = null;
                       if (link.contentType === 'float') {
                           data = link.content;
-                          keynode = window.scKeynodes.binary_float;
+                          keynode = window.scKeynodes['binary_float'];
                           type = sc.ScLinkContentType.Float;
                       } else if (link.contentType === 'int8') {
                           data = link.content;
                           type = sc.ScLinkContentType.Int;
-                          keynode = window.scKeynodes.binary_int8;
+                          keynode = window.scKeynodes['binary_int8'];
                       } else if (link.contentType === 'int16') {
                           data = link.content;
                           type = sc.ScLinkContentType.Int;
-                          keynode = window.scKeynodes.binary_int16;
+                          keynode = window.scKeynodes['binary_int16'];
                       } else if (link.contentType === 'int32') {
                           data = link.content;
                           type = sc.ScLinkContentType.Int;
-                          keynode = window.scKeynodes.binary_int32;
+                          keynode = window.scKeynodes['binary_int32'];
                       } else if (link.contentType === 'image') {
                           data = link.fileReaderResult;
                           type = sc.ScLinkContentType.Binary;
-                          keynode = window.scKeynodes.format_png;
+                          keynode = window.scKeynodes['format_png'];
                       } else if (link.contentType === 'html') {
                           data = link.fileReaderResult;
                           type = sc.ScLinkContentType.String;
-                          keynode = window.scKeynodes.format_html;
+                          keynode = window.scKeynodes['format_html'];
                       } else if (link.contentType === 'pdf') {
                           data = link.fileReaderResult;
                           type = sc.ScLinkContentType.String;
-                          keynode = window.scKeynodes.format_pdf;
+                          keynode = window.scKeynodes['format_pdf'];
                       }
                       let scLinkContent = new sc.ScLinkContent(data, type);
-                      scConstruction.CreateLink(sc.ScType.LinkConst, scLinkContent, 'link');
-                      let result = await sctpClient.CreateElements(scConstruction);
-                      let linkAddr = result[scConstruction.GetIndex('link')].value;
-                      link.setScAddr(linkAddr);
-                      link.setObjectState(SCgObjectState.NewInMemory);
-                      objects.push(link);
-                      if (link.fileReaderResult) {
-                        await scHelper.setLinkFormat(linkAddr, keynode);
-                      } else {
-                        let scTemplate = new sc.ScTemplate();
-                        scTemplate.Triple(
+                      scConstruction.createLink(sc.ScType.LinkConst, scLinkContent, 'link');
+                      let result = await scClient.createElements(scConstruction);
+                      let linkAddr = result[scConstruction.getIndex('link')].value;
+                        scTemplate.triple(
                           new sc.ScAddr(keynode),
                           sc.ScType.EdgeAccessVarPosPerm,
                           new sc.ScAddr(linkAddr)
@@ -405,7 +397,7 @@ function scgScStructTranslator(_editor, _sandbox) {
                 }
 
                 var funcs = [];
-                for (var i = 0; i < links.length; ++i) {
+                for (let i = 0; i < links.length; ++i) {
                     funcs.push(implFunc(links[i]));
                 }
                 return Promise.all(funcs);
@@ -419,4 +411,4 @@ function scgScStructTranslator(_editor, _sandbox) {
             fireCallback();
         }
     };
-};
+}

@@ -101,7 +101,7 @@ SCWeb.core.ComponentSandbox.prototype = {
  * Destroys component sandbox
  */
 SCWeb.core.ComponentSandbox.prototype.destroy = function () {
-    for (var l in this.listeners) {
+    for (let l in this.listeners) {
         SCWeb.core.EventManager.unsubscribe(this.listeners[l]);
     }
 
@@ -111,7 +111,8 @@ SCWeb.core.ComponentSandbox.prototype.destroy = function () {
         events.push(this.event_add_element);
     if (this.event_remove_element)
         events.push(this.event_remove_element);
-    sctpClient.EventsDestroy(events);
+    console.log(events);
+    window.scClient.eventsDestroy(events);
 };
 
 /**
@@ -284,7 +285,7 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (contentTyp
         }
     }
     else {
-        let content = await sctpClient.GetLinkContents([new sc.ScAddr(this.addr)]);
+        let content = await window.scClient.getLinkContents([new sc.ScAddr(this.addr)]);
         await self.onDataAppend(content[0].data);
     }
 };

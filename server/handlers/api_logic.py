@@ -108,7 +108,7 @@ def parse_menu_command(cmd_addr: ScAddr):
 
 
 @decorators.method_logging
-def find_atomic_commands(cmd_addr: ScAddr, commands: List[ScAddr]):
+def find_atomic_commands(cmd_addr: ScAddr, commands: List[int]):
     """Parse specified command from sc-memory and
         return hierarchy map (with children), that represent it
         @param cmd_addr: sc-addr of command to parse
@@ -124,7 +124,7 @@ def find_atomic_commands(cmd_addr: ScAddr, commands: List[ScAddr]):
         cmd_addr,
     )
     if client.template_search(template):
-        commands.append(cmd_addr)
+        commands.append(cmd_addr.value)
 
     # try to find decomposition
     DECOMPOSITION_NODE = "_decomposition"
@@ -335,7 +335,7 @@ def get_identifier_translated(addr: ScAddr, used_lang: ScAddr) -> str:
     main_idtf_template.triple_with_relation(
         addr,
         sc_types.EDGE_D_COMMON_VAR,
-        [sc_types.LINK_VAR, LINK],
+        [sc_types.LINK, LINK],
         sc_types.EDGE_ACCESS_VAR_POS_PERM,
         keynodes[KeynodeSysIdentifiers.nrel_main_idtf.value],
     )
@@ -345,8 +345,8 @@ def get_identifier_translated(addr: ScAddr, used_lang: ScAddr) -> str:
         LINK,
     )
     result = client.template_search(main_idtf_template)
-    for item in result:
-        return client.get_link_content(item.get(LINK))[0].data
+    if result:
+        return client.get_link_content(result[0].get(LINK))[0].data
 
     # if identifier not found, then get system identifier
     sys_idtf_template = ScTemplate()
@@ -358,8 +358,8 @@ def get_identifier_translated(addr: ScAddr, used_lang: ScAddr) -> str:
         keynodes[KeynodeSysIdentifiers.nrel_system_identifier.value]
     )
     result = client.template_search(sys_idtf_template)
-    for item in result:
-        return client.get_link_content(item.get(LINK))[0].data
+    if result:
+        return client.get_link_content(result[0].get(LINK))[0].data
 
     return ""
 
@@ -617,7 +617,7 @@ def do_command(cmd_addr: ScAddr, arguments: List[ScAddr], handler: BaseHandler):
             client.create_elements(construction)
 
             # generate main identifiers
-            langs = get_languages_list(keynode_languages)
+            langs = get_languages_list()
             if langs:
                 template = ScTemplate()
                 template.triple_with_relation(
@@ -706,14 +706,12 @@ def do_command(cmd_addr: ScAddr, arguments: List[ScAddr], handler: BaseHandler):
         client.create_elements(construction)
 
         result = {result_key: instance_node.value}
-
     return result
 
 
 # -------------- work with session -------------------------
 @decorators.class_logging
 class ScSession:
-
     def __init__(self, handler):
         """Initialize session class with requests.user object
         """

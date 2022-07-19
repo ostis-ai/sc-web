@@ -30,7 +30,6 @@ SCWeb.ui.SearchPanel = {
                   name: 'idtf',
                   source: function (query, cb) {
                       $('#search-input').addClass('search-processing');
-                      // TODO implement for rocksdb
                       SCWeb.core.Server.findIdentifiersSubStr(query, function (data) {
                           keys = [];
 

@@ -114,7 +114,7 @@ ScHelper.prototype.getAnswer = function (question_addr) {
       clearTimeout(timer);
       timer = null;
       if (event) {
-        this.sctp_client.EventsDestroy(event);
+        await this.scClient.eventsDestroy(event.id);
         event = null;
       }
     }, 10_000);
@@ -136,10 +136,10 @@ ScHelper.prototype.getAnswer = function (question_addr) {
       sc.ScType.EdgeAccessVarPosPerm,
       new sc.ScAddr(scKeynodes.nrel_answer)
     );
-    let templateSearch = await this.sctp_client.TemplateSearch(scTemplate);
+    let templateSearch = await this.scClient.templateSearch(template);
     if (templateSearch.length) {
-      resolve(templateSearch[0].Get("answer").value);
-      this.sctp_client.EventsDestroy([event]);
+      resolve(templateSearch[0].get("_answer").value);
+      await this.scClient.eventsDestroy([event.id]);
       clearTimeout(timer);
     }
   });
@@ -154,5 +154,5 @@ ScHelper.prototype.setLinkFormat = async function (addr, format) {
     sc.ScType.EdgeAccessVarPosPerm,
     new sc.ScAddr(scKeynodes.nrel_format)
   );
-  await sctpClient.TemplateGenerate(scTemplate);
+  await scClient.templateGenerate(template);
 };

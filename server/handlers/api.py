@@ -41,13 +41,13 @@ class CmdDo(base.BaseHandler):
         cmd_addr = ScAddr(int(self.get_argument(u'cmd', None)))
         # parse arguments
         first = True
-        arg = ScAddr(0)
+        arg = None
         arguments = []
         idx = 0
-        while first or arg.is_valid():
-            arg_hash = self.get_argument(u'%d_' % idx, None)
-            if arg_hash is not None:
-                arg = ScAddr(int(arg_hash))
+        while first or arg is not None:
+            arg = self.get_argument(u'%d_' % idx, None)
+            if arg is not None:
+                arg = ScAddr(int(arg))
                 # check if sc-element exist
                 if client.check_elements(arg)[0].is_valid():
                     arguments.append(arg)
@@ -56,7 +56,6 @@ class CmdDo(base.BaseHandler):
             first = False
             idx += 1
 
-        keys = ScKeynodes()
         result = logic.do_command(cmd_addr, arguments, self)
         self.set_header("Content-Type", "application/json")
         self.finish(json.dumps(result))
@@ -139,31 +138,28 @@ class QuestionAnswerTranslate(base.BaseHandler):
             result = json.dumps({"link": result_link_addr.value})
 
         self.set_header("Content-Type", "application/json")
+
         self.finish(result)
 
 
 class LinkFormat(base.BaseHandler):
-
     # @tornado.web.asynchronous
     def post(self):
-
         # parse arguments
         first = True
-        arg = ScAddr(0)
+        arg = None
         arguments = []
         idx = 0
-        while first or arg.is_valid():
+        while first or (arg is not None):
             arg_str = u'%d_' % idx
-            arg_hash = self.get_argument(arg_str, None)
-            if arg_hash is not None:
-                arg = ScAddr(int(arg_hash))
-                arguments.append(arg)
+            arg = self.get_argument(arg_str, None)
+            print(arg)
+            if arg is not None:
+                arguments.append(ScAddr(int(arg)))
             first = False
             idx += 1
 
-        keys = ScKeynodes()
-        keynode_nrel_format = keys[KeynodeSysIdentifiers.nrel_format.value]
-        keynode_format_txt = keys[KeynodeSysIdentifiers.format_txt.value]
+        keynodes = ScKeynodes()
 
         result = {}
         for arg in arguments:
@@ -175,13 +171,13 @@ class LinkFormat(base.BaseHandler):
                 sc_types.EDGE_D_COMMON_VAR,
                 sc_types.NODE_VAR,
                 sc_types.EDGE_ACCESS_VAR_POS_PERM,
-                keynode_nrel_format
+                keynodes[KeynodeSysIdentifiers.nrel_format.value]
             )
             format_result = client.template_search(template)
             if format_result:
                 result[arg.value] = format_result[0].get(2).value
             else:
-                result[arg.value] = keynode_format_txt.value
+                result[arg.value] = keynodes[KeynodeSysIdentifiers.format_txt.value].value
 
         self.set_header("Content-Type", "application/json")
         self.finish(json.dumps(result))
@@ -203,20 +199,13 @@ class LanguageSet(base.BaseHandler):
     def post(self):
         lang_addr = ScAddr(int(self.get_argument(u'lang_addr', None)))
 
-        keys = ScKeynodes()
-
-        sc_session = logic.ScSession(self, keys)
+        sc_session = logic.ScSession(self)
         sc_session.set_current_lang_mode(lang_addr)
 
         self.finish()
 
 
 class IdtfFind(base.BaseHandler):
-    def initialize(self, sys, main, common):
-        self.sys = sys
-        self.main = main
-        self.common = common
-
     @decorators.method_logging
     # @tornado.web.asynchronous
     def get(self):
@@ -225,36 +214,19 @@ class IdtfFind(base.BaseHandler):
         # get arguments
         substr = self.get_argument('substr', None)
 
-        def appendSorted(array, data):
-            if data not in array:
-                if len(array) > 0:
-                    idx = 0
-                    max_n = tornado.options.options.idtf_search_limit
-                    inserted = False
-                    for idx in range(len(array)):
-                        if len(array[idx][1]) > len(data[1]):
-                            array.insert(idx, data)
-                            inserted = True
-                            break
-                        idx = idx + 1
+        links_array = client.get_links_by_content_substring(substr)
 
-                    if not inserted and len(array) < max_n:
-                        array.append(data)
+        if links_array:
+            links = links_array[0]
+            if links:
+                contents = client.get_link_content(*links)
+                idtfs = []
+                idx = 0
+                for c in contents:
+                    idtfs.append([links[idx].value, str(c.data)])
+                    idx += 1
 
-                    if len(array) > max_n:
-                        array.pop()
-                else:
-                    array.append(data)
-
-        for i in self.main:
-            if substr in i[1]:
-                appendSorted(result['main'], i)
-        for i in self.common:
-            if substr in i[1]:
-                appendSorted(result['common'], i)
-        for i in self.sys:
-            if substr in i[1]:
-                appendSorted(result['sys'], i)
+                result = {'main': [], 'common': [], 'sys': idtfs}
 
         self.set_header("Content-Type", "application/json")
         self.finish(json.dumps(result))
@@ -264,8 +236,6 @@ class IdtfFind(base.BaseHandler):
 class IdtfResolve(base.BaseHandler):
     # @tornado.web.asynchronous
     def post(self):
-        result = None
-
         # get arguments
         idx = 1
         arguments = []
@@ -288,8 +258,6 @@ class IdtfResolve(base.BaseHandler):
                 self.clear()
                 self.set_status(404)
                 self.finish('Can\'t parse sc-addr from argument: %s' % addr_str)
-
-            found = False
 
             idtf_value = logic.get_identifier_translated(addr, used_lang)
             if idtf_value:

@@ -5,15 +5,14 @@ TextComponent = {
     }
 };
 
-var TextViewer = function(sandbox){
-
+const TextViewer = function(sandbox){
     this.sandbox = sandbox;
     this.container = '#' + sandbox.container;
     
     // ---- window interface -----
     this.receiveData = async (data) => {
-        var container = $(this.container);
-        var self = this;
+        const container = $(this.container);
+        const self = this;
 
         container.empty();
 
@@ -23,27 +22,27 @@ var TextViewer = function(sandbox){
           sc.ScType.EdgeAccessVarPosPerm,
           new sc.ScAddr(self.sandbox.addr)
         );
-        template.Triple(
-          new sc.ScAddr(scKeynodes.binary_types),
+        template.triple(
+          new sc.ScAddr(window.scKeynodes['binary_types']),
           sc.ScType.EdgeAccessVarPosPerm,
           "x"
         );
         let result = await sctpClient.TemplateSearch(template);
         if (result.length) {
-            let type_addr = result[0].Get("x");
-            var str = '';
+            let type_addr = result[0].get("x");
+            let str;
 
-            if (type_addr == scKeynodes.binary_float) {
-                var float32 = new Float32Array(data);
+            if (type_addr === window.scKeynodes['binary_float']) {
+                const float32 = new Float32Array(data);
                 str = float32[0];
-            } else if (type_addr == scKeynodes.binary_int8) {
-                var int8 = new Int8Array(data);
+            } else if (type_addr === window.scKeynodes['binary_int8']) {
+                const int8 = new Int8Array(data);
                 str = int8[0];
-            } else if (type_addr == scKeynodes.binary_int16) {
-                var int16 = new Int16Array(data);
+            } else if (type_addr === window.scKeynodes['binary_int16']) {
+                const int16 = new Int16Array(data);
                 str = int16[0];
-            } else if (type_addr == scKeynodes.binary_int32) {
-                var int32 = new Int32Array(data);
+            } else if (type_addr === window.scKeynodes['binary_int32']) {
+                const int32 = new Int32Array(data);
                 str = int32[0];
             } else {
                 str = ArrayBuffer2String(data);
