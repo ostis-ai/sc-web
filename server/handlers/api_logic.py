@@ -649,7 +649,7 @@ def do_command(cmd_addr: ScAddr, arguments: List[ScAddr], handler: BaseHandler):
                     input_arcs = client.template_search(template)
                     for arc in input_arcs:
                         for lang in langs:
-                            if str(lang) not in generated and arc.get(0).is_equal(lang):
+                            if str(lang) not in generated and arc.get(0).value == lang.value:
                                 lang_idtfs = identifiers[str(lang)]
                                 # get content of link
                                 data = client.get_link_content(template_item.get(2))[0].data

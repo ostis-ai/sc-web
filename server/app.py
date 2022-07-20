@@ -55,7 +55,9 @@ def main():
     tornado.options.define("idtf_search_limit", default=100,
                            help="number of maximum results for searching by identifier", type=int)
     tornado.options.define("host", default="localhost", help="host name", type=str)
-    tornado.options.define("port", default=8001, help="host port", type=int)
+    tornado.options.define("port", default=8000, help="host port", type=int)
+    tornado.options.define("server_host", default="localhost", help="host name", type=str)
+    tornado.options.define("server_port", default=8090, help="host port", type=int)
     tornado.options.define("auth_redirect_port", default=80, help="host port", type=int)
 
     tornado.options.define("google_client_id", default="", help="client id for google auth", type=str)
@@ -84,7 +86,13 @@ def main():
     database = db.DataBase()
     database.init()
 
-    client.connect("ws://localhost:8090/ws_json")
+    options_dict = tornado.options.options
+    server_url = f"ws://{options_dict.server_host}:{options_dict.server_port}/ws_json"
+
+    logging.info(f"Sc-server socket: {server_url}")
+    client.connect(server_url)
+    logging.info(f"Connection OK")
+
     ScKeynodes().resolve_identifiers([KeynodeSysIdentifiers])
 
     rules = [

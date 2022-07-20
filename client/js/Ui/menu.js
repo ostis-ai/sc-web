@@ -123,7 +123,7 @@ SCWeb.ui.Menu = {
             }
 
             var applyTranslation = function (item, id, text) {
-                if (item.text === id) {
+                if (item.text == id) {
                     item.text = text;
                 }
                 if (item.subMenu) {
