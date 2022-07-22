@@ -208,6 +208,7 @@ class IdtfFind(base.BaseHandler):
     @decorators.method_logging
     # @tornado.web.asynchronous
     def get(self):
+        keynodes = ScKeynodes()
         result = {'main': [], 'common': [], 'sys': []}
 
         # get arguments
@@ -219,13 +220,49 @@ class IdtfFind(base.BaseHandler):
             links = links_array[0]
             if links:
                 contents = client.get_link_content(*links)
-                idtfs = []
+                main_idtfs = []
+                system_idtfs = []
+                links_idtfs = []
                 idx = 0
-                for c in contents:
-                    idtfs.append([links[idx].value, str(c.data)])
+                ELEMENT = "_element"
+
+                for link in links:
+                    link_is_used = False
+
+                    template = ScTemplate()
+                    template.triple_with_relation(
+                        [sc_types.UNKNOWN, ELEMENT],
+                        sc_types.EDGE_D_COMMON_VAR,
+                        link,
+                        sc_types.EDGE_ACCESS_VAR_POS_PERM,
+                        keynodes[KeynodeSysIdentifiers.nrel_main_idtf.value],
+                    )
+                    result = client.template_search(template)
+
+                    for item in result:
+                        link_is_used = True
+                        main_idtfs.append([item.get(ELEMENT).value, str(contents[idx].data)])
+
+                    template = ScTemplate()
+                    template.triple_with_relation(
+                        [sc_types.UNKNOWN, ELEMENT],
+                        sc_types.EDGE_D_COMMON_VAR,
+                        link,
+                        sc_types.EDGE_ACCESS_VAR_POS_PERM,
+                        keynodes[KeynodeSysIdentifiers.nrel_system_identifier.value],
+                    )
+                    result = client.template_search(template)
+
+                    for item in result:
+                        link_is_used = True
+                        system_idtfs.append([item.get(ELEMENT).value, str(contents[idx].data)])
+
+                    if not link_is_used:
+                        links_idtfs.append([link.value, str(contents[idx].data)])
+
                     idx += 1
 
-                result = {'main': [], 'common': [], 'sys': idtfs}
+                result = {'main': main_idtfs, 'common': links_idtfs, 'sys': system_idtfs}
 
         self.set_header("Content-Type", "application/json")
         self.finish(json.dumps(result))
