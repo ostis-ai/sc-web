@@ -8,7 +8,7 @@ Current repository contains web interface for ostis platform ([here](https://git
 * nodejs
 * npm
 * grunt-cli
-* python modules: tornado, sqlalchemy, python-rocksdb, progress, numpy, configparser
+* python modules: tornado, sqlalchemy, numpy, configparser, py-sc-client
 
 You can install deps with
 

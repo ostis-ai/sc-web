@@ -11,7 +11,7 @@ DEFAULT_BACKUP_COUNT = 5
 
 def init():
     config = configparser.ConfigParser()
-    config.read(os.path.join(os.getcwd(), "log_config.ini"))
+    config.read(os.path.join(os.getcwd(), "sc-web.ini"))
 
     output_path = config["Default"]["output_path"] if "output_path" in config["Default"] else DEFAULT_OUTPUT_PATH
     max_bytes = int(config["Default"]["max_bytes"]) if "max_bytes" in config["Default"] else DEFAULT_MAX_BYTES

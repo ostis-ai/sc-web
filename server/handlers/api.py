@@ -153,7 +153,6 @@ class LinkFormat(base.BaseHandler):
         while first or (arg is not None):
             arg_str = u'%d_' % idx
             arg = self.get_argument(arg_str, None)
-            print(arg)
             if arg is not None:
                 arguments.append(ScAddr(int(arg)))
             first = False
