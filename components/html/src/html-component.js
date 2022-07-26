@@ -7,7 +7,7 @@ HtmlComponent = {
 
 var HtmlViewer = function(sandbox) {
     this.data = null;
-    this.addrs = new Array();
+    this.addrs = [];
     this.container = '#' + sandbox.container;
     this.sandbox = sandbox;
     $(this.container).addClass("html-window");
@@ -35,15 +35,18 @@ var HtmlViewer = function(sandbox) {
                     scLinksList.push(id);
             }
 
+            const self = this;
+
             // resolve addrs
             SCWeb.core.Server.resolveScAddr(idtfList.concat(scLinksList), $.proxy(function(addrs) {
-                for (idtf in addrs) {
-                    this.addrs.push(addrs[idtf]);
+                for (let idtf in addrs) {
+                    self.addrs.push(addrs[idtf]);
                 }
+                console.log(addrs);
 
                 var sc_elements = $(this.container + ' sc_element');
                 for (var i = 0; i < sc_elements.length; ++i) {
-                    var addr = addrs[ $(sc_elements[i]).attr('sys_idtf')];
+                    var addr = addrs[$(sc_elements[i]).attr('sys_idtf')];
                     if (addr) {
                         $(sc_elements[i]).html('<a href="#" class="sc-element" sc_addr="' + addr + '">' + $(sc_elements[i]).html() + "</a>");
                     } else {
@@ -53,7 +56,7 @@ var HtmlViewer = function(sandbox) {
 
                 var sc_links_el = $(this.container + ' sc_link');
                 for (var i = 0; i < sc_links_el.length; ++i) {
-                    var addr = addrs[ $(sc_links_el[i]).attr('sys_idtf')];
+                    var addr = addrs[$(sc_links_el[i]).attr('sys_idtf')];
                     if (addr) {
                         var containerId = this.sandbox.container + '_' + i;
                         sc_links[containerId] = addr;
@@ -71,7 +74,7 @@ var HtmlViewer = function(sandbox) {
                 //dfd.resolve();
             }, this));
         })
-    },
+    }
 
     // ---- window interface -----
     this.updateTranslation = function(namesMap) {
@@ -82,7 +85,7 @@ var HtmlViewer = function(sandbox) {
                 $(element).text(namesMap[addr]);
             }
         });
-    },
+    }
     
     this.getObjectsToTranslate = function() {
         return this.addrs;

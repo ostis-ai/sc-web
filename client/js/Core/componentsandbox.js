@@ -65,7 +65,7 @@ SCWeb.core.ComponentSandbox = function (options) {
     if (this.is_struct) {
         let addArcEventRequest = new sc.ScEventParams(
           new sc.ScAddr(this.addr),
-            sc.ScEventType.AddOutgoingEdge,
+          sc.ScEventType.AddOutgoingEdge,
           (elAddr, edge, otherAddr) => {
               if (self.eventStructUpdate) {
                   self.eventStructUpdate(true, elAddr.value, edge.value);
