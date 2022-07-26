@@ -107,6 +107,7 @@ def main():
 
         (r"/api/question/answer/translate/", api.QuestionAnswerTranslate),
 
+        (r"/api/link/content/", api.LinkContent),
         (r"/api/link/format/", api.LinkFormat),
 
         (r"/api/languages/", api.Languages),

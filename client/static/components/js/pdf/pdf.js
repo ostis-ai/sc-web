@@ -172,7 +172,7 @@ var PdfViewer = function(sandbox) {
     };
     
     if (this.sandbox.addr) {
-        this.receiveData('api/link/content/?addr=' + this.sandbox.addr);
+        window.scClient.et
     }
 };
 

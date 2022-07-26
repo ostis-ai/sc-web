@@ -142,6 +142,22 @@ class QuestionAnswerTranslate(base.BaseHandler):
         self.finish(result)
 
 
+class LinkContent(base.BaseHandler):
+    # @tornado.web.asynchronous
+    def get(self):
+        # parse arguments
+        addr = ScAddr(int(self.get_argument('addr', None)))
+        if addr is None:
+            return logic.serialize_error(self, 404, 'Invalid arguments')
+
+        result = client.get_link_content(addr)
+        if len(result) == 0:
+            return logic.serialize_error(self, 404, 'Content not found')
+
+        self.set_header("Content-Type", logic.get_link_mime(addr))
+        self.finish(result[0].data)
+
+
 class LinkFormat(base.BaseHandler):
     # @tornado.web.asynchronous
     def post(self):

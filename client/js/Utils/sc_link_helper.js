@@ -43,4 +43,4 @@ class ScFileLinkHelper {
     imageView() {
         return '<img src="data:image/png;base64,' + btoa(String.fromCharCode.apply(null, new Uint8Array(this.fileArrayBuffer))) + '" alt="Image">'
     }
-};
+}
