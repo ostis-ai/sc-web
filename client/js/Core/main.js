@@ -4,7 +4,8 @@ const currentYear = new Date().getFullYear();
 
 function ScClientCreate() {
     let res, rej;
-    let scClient = new sc.ScClient("ws://localhost:8090/ws_json");
+    let serverHost = "ws://localhost:8090/ws_json";
+    let scClient = new sc.ScClient(serverHost);
     return new Promise((resolve, reject) => {
         res = resolve(scClient);
         rej = reject;
