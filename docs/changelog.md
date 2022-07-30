@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Add ctrl+c logic on py-server
 - Add logging levels
 - Add search by content substring through sc-server
 - Add latex docs from OSTIS Standard
