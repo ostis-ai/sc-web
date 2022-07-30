@@ -1,7 +1,18 @@
-## About
+# About
 Current repository contains web interface for ostis platform ([here](https://github.com/ostis-ai) you can find all ostis modules).
 
-## Installation
+# Installation
+## Using Docker
+Building image:
+```sh
+docker build . -t ostis/sc-web
+```
+
+Running image:
+```sh
+docker run --rm -p 8000:8000 -v <path_to_kb_bin>:/ostis/kb.bin ostis/sc-web <any additional arguments to app.py> 
+```
+## Installing manually
 ### Installing requirements:
 * python3
 * pip
