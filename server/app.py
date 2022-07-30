@@ -2,6 +2,7 @@
 
 import configparser
 import logging
+import signal
 from abc import ABC
 
 import tornado.ioloop
@@ -34,6 +35,10 @@ def try_exit():
     if is_closing:
         # clean up here
         tornado.ioloop.IOLoop.instance().stop()
+
+
+def on_shutdown():
+    tornado.ioloop.IOLoop.instance().stop()
 
 
 class NoCacheStaticHandler(tornado.web.StaticFileHandler, ABC):
@@ -79,9 +84,6 @@ def main():
         config = configparser.ConfigParser()
         config.read(tornado.options.options.cfg)
 
-    # prepare logger
-    logger_sc.init()
-
     # prepare database
     database = db.DataBase()
     database.init()
@@ -89,9 +91,13 @@ def main():
     options_dict = tornado.options.options
     server_url = f"ws://{options_dict.server_host}:{options_dict.server_port}/ws_json"
 
-    logging.info(f"Sc-server socket: {server_url}")
+    logger = logging.getLogger()
+    logger.info(f"Sc-server socket: {server_url}")
     client.connect(server_url)
-    logging.info(f"Connection OK")
+    logger.info("Connection: " + "OK" if client.is_connected() else "Error")
+
+    # prepare logger
+    logger_sc.init()
 
     ScKeynodes().resolve_identifiers([KeynodeSysIdentifiers])
 
@@ -146,7 +152,13 @@ def main():
 
     application.listen(tornado.options.options.port)
     tornado.ioloop.PeriodicCallback(try_exit, 1000).start()
-    tornado.ioloop.IOLoop.instance().start()
+    app_instance = tornado.ioloop.IOLoop.instance()
+    signal.signal(signal.SIGINT, lambda sig, frame: app_instance.add_callback_from_signal(on_shutdown))
+    app_instance.start()
+
+    logger.disabled = False
+    logger.info("Close connection with sc-server")
+    client.disconnect()
 
 
 if __name__ == "__main__":
