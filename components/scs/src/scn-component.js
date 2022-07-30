@@ -65,12 +65,12 @@ var SCnViewer = function (sandbox) {
     });
 
     // ---- window interface -----
-    this.receiveData = function (data) {
+    this.receiveData = async (data) => {
         this.data = data;
         data = JSON.parse(data);
         data = this.expertModeModeManager.applyExpertMode(data);
         this.viewer.appendData(data);
-        return $.when(this.sandbox.createViewersForScLinks(this.viewer.getLinks()));
+        return this.sandbox.createViewersForScLinks(this.viewer.getLinks());
     };
 
     this.updateTranslation = function (namesMap) {
@@ -94,7 +94,7 @@ var SCnViewer = function (sandbox) {
         return this.viewer.getAddrs();
     };
 
-    this.sandbox.eventDataAppend = $.proxy(this.receiveData, this);
+    this.sandbox.eventDataAppend = this.receiveData;
     this.sandbox.eventGetObjectsToTranslate = $.proxy(this.getObjectsToTranslate, this);
     this.sandbox.eventApplyTranslation = $.proxy(this.updateTranslation, this);
 

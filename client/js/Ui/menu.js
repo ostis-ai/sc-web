@@ -9,35 +9,35 @@ SCWeb.ui.Menu = {
      * - menu_commands - object, that represent menu command hierachy (in format returned from server)
      */
     init: function (params) {
-        var dfd = new jQuery.Deferred();
-        var self = this;
+        return new Promise(resolve => {
+            var self = this;
 
-        this.menu_container_id = '#' + params.menu_container_id;
+            this.menu_container_id = '#' + params.menu_container_id;
 
-        // register for translation updates
-        SCWeb.core.EventManager.subscribe("translation/get", this, function (objects) {
-            var items = self.getObjectsToTranslate();
-            for (var i in items) {
-                objects.push(items[i]);
-            }
-        });
-        SCWeb.core.EventManager.subscribe("translation/update", this, function (names) {
-            self.updateTranslation(names);
-        });
+            // register for translation updates
+            SCWeb.core.EventManager.subscribe("translation/get", this, function (objects) {
+                var items = self.getObjectsToTranslate();
+                for (var i in items) {
+                    objects.push(items[i]);
+                }
+            });
+            SCWeb.core.EventManager.subscribe("translation/update", this, function (names) {
+                self.updateTranslation(names);
+            });
 
-        context.init({
-            //fadeSpeed: 100,
-            //filter: null,
-            //above: 'auto',
-            preventDoubleContext: true,
-            //compress: false,
-            container: '#main-container'
-        });
-        context.attach('[sc_addr]', this._contextMenu);
+            context.init({
+                //fadeSpeed: 100,
+                //filter: null,
+                //above: 'auto',
+                preventDoubleContext: true,
+                //compress: false,
+                container: '#main-container'
+            });
+            context.attach('[sc_addr]', this._contextMenu);
 
-        this._build(params.menu_commands);
-        dfd.resolve();
-        return dfd.promise();
+            this._build(params.menu_commands);
+            resolve();
+        })
     },
 
     _build: function (menuData) {
@@ -66,9 +66,9 @@ SCWeb.ui.Menu = {
         this._items.push(item.id);
 
         var itemHtml = '';
-        if (item.cmd_type == 'cmd_noatom') {
+        if (item.cmd_type === 'cmd_noatom') {
             itemHtml = '<li class="dropdown"><a sc_addr="' + item.id + '" id="' + item.id + '" class="menu-item menu-cmd-noatom dropdown-toggle" data-toggle="dropdown" href="#" ><span clas="text">' + item.id + '</span><b class="caret"></b></a>';
-        } else if (item.cmd_type == 'cmd_atom') {
+        } else if (item.cmd_type === 'cmd_atom') {
             itemHtml = '<li><a id="' + item.id + '"sc_addr="' + item.id + '" class="menu-item menu-cmd-atom" >' + item.id + '</a>';
         } else {
             itemHtml = '<li><a id="' + item.id + '"sc_addr="' + item.id + '" class="menu-item menu-cmd-keynode" >' + item.id + '</a>';
@@ -162,7 +162,6 @@ SCWeb.ui.Menu = {
                 dfd.resolve(menu);
             });
         });
-
         return dfd.promise();
     },
 

@@ -14,57 +14,55 @@ SCWeb.core.ComponentManager = {
     _keynodes: [],      // array of keynodes that requested by components
 
     init: function () {
-        var dfd = new jQuery.Deferred();
+        return new Promise((resolve, reject)=>{
+            // deffered will be resolved when all component will be registered
+            this._componentCount = this._initialize_queue.length;
 
-        // deffered will be resolved when all component will be registered
-        this._componentCount = this._initialize_queue.length;
-
-        // first of all we need to resolve sc-addrs of keynodes
-        var keynodes = [];
-        for (var i = 0; i < this._initialize_queue.length; i++) {
-            var c = this._initialize_queue[i];
-            keynodes = keynodes.concat(c.formats);
-            if (c.getRequestKeynodes) {
-                keynodes = keynodes.concat(c.getRequestKeynodes());
-            }
-            if (this._initialize_queue[i].ext_lang)
-                keynodes.push(c.ext_lang);
-        }
-
-        var self = this;
-        SCWeb.core.Server.resolveScAddr(keynodes, function (addrs) {
-
-            self._keynodes = addrs;
-            for (var i = 0; i < self._initialize_queue.length; i++) {
-                var comp_def = self._initialize_queue[i];
-
-                var lang_addr = addrs[comp_def.ext_lang];
-                var formats = null;
-                if (lang_addr) {
-                    formats = [];
-                    self._factories_ext_lang[lang_addr] = comp_def;
+            // first of all we need to resolve sc-addrs of keynodes
+            var keynodes = [];
+            for (var i = 0; i < this._initialize_queue.length; i++) {
+                var c = this._initialize_queue[i];
+                keynodes = keynodes.concat(c.formats);
+                if (c.getRequestKeynodes) {
+                    keynodes = keynodes.concat(c.getRequestKeynodes());
                 }
+                if (this._initialize_queue[i].ext_lang)
+                    keynodes.push(c.ext_lang);
+            }
 
-                for (var j = 0; j < comp_def.formats.length; j++) {
-                    var fmt = addrs[comp_def.formats[j]];
+            var self = this;
+            SCWeb.core.Server.resolveScAddr(keynodes, function (addrs) {
 
-                    if (fmt) {
-                        self.registerFactory(fmt, comp_def);
-                        if (formats) {
-                            formats.push(fmt);
+                self._keynodes = addrs;
+                for (var i = 0; i < self._initialize_queue.length; i++) {
+                    var comp_def = self._initialize_queue[i];
+
+                    var lang_addr = addrs[comp_def.ext_lang];
+                    var formats = null;
+                    if (lang_addr) {
+                        formats = [];
+                        self._factories_ext_lang[lang_addr] = comp_def;
+                    }
+
+                    for (var j = 0; j < comp_def.formats.length; j++) {
+                        var fmt = addrs[comp_def.formats[j]];
+
+                        if (fmt) {
+                            self.registerFactory(fmt, comp_def);
+                            if (formats) {
+                                formats.push(fmt);
+                            }
                         }
+                    }
+
+                    if (formats && lang_addr) {
+                        self._ext_langs[lang_addr] = formats;
                     }
                 }
 
-                if (formats && lang_addr) {
-                    self._ext_langs[lang_addr] = formats;
-                }
-            }
-
-            dfd.resolve();
-        });
-
-        return dfd.promise();
+                resolve();
+            });
+        })
     },
 
     /**
@@ -111,41 +109,40 @@ SCWeb.core.ComponentManager = {
      * If window doesn't created, then returns null
      */
     createWindowSandboxByFormat: function (options, callback) {
-        var dfd = new jQuery.Deferred();
-        var comp_def = this._factories_fmt[options.format_addr];
+        return new Promise((resolve, reject) => {
+            var comp_def = this._factories_fmt[options.format_addr];
 
-        if (comp_def) {
-            var sandbox = new SCWeb.core.ComponentSandbox({
-                container: options.container,
-                window_id: options.window_id,
-                addr: options.addr,
-                is_struct: options.is_struct,
-                format_addr: options.format_addr,
-                keynodes: this._keynodes,
-                command_state: options.command_state,
-                canEdit: options.canEdit
-            });
-            if (!comp_def.struct_support && options.is_struct)
-                throw "Component doesn't support structures: " + comp_def;
+            if (comp_def) {
+                var sandbox = new SCWeb.core.ComponentSandbox({
+                    container: options.container,
+                    window_id: options.window_id,
+                    addr: options.addr,
+                    is_struct: options.is_struct,
+                    format_addr: options.format_addr,
+                    keynodes: this._keynodes,
+                    command_state: options.command_state,
+                    canEdit: options.canEdit
+                });
+                if (!comp_def.struct_support && options.is_struct)
+                    throw "Component doesn't support structures: " + comp_def;
 
-            var component = comp_def.factory(sandbox);
-            if (component.editor) {
-                if (component.editor.keyboardCallbacks) {
-                    SCWeb.ui.KeyboardHandler.subscribeWindow(options.window_id, component.editor.keyboardCallbacks);
+                var component = comp_def.factory(sandbox);
+                if (component.editor) {
+                    if (component.editor.keyboardCallbacks) {
+                        SCWeb.ui.KeyboardHandler.subscribeWindow(options.window_id, component.editor.keyboardCallbacks);
+                    }
+                    if (component.editor.openComponentCallbacks) {
+                        SCWeb.ui.OpenComponentHandler.subscribeComponent(options.window_id, component.editor.openComponentCallbacks);
+                    }
                 }
-                if (component.editor.openComponentCallbacks) {
-                    SCWeb.ui.OpenComponentHandler.subscribeComponent(options.window_id, component.editor.openComponentCallbacks);
-                }
+                if (component) {
+                    resolve();
+
+                } else throw "Can't create viewer properly"
+            } else {
+                reject();
             }
-            if (component) {
-                dfd.resolve();
-
-            } else throw "Can't create viewer properly"
-        } else {
-            dfd.reject();
-        }
-
-        return dfd.promise();
+        })
     },
 
     /**
@@ -153,7 +150,7 @@ SCWeb.core.ComponentManager = {
      * @param {Object} options          Object that contains creation options:
      *          {String} ext_lang_addr  Sc-addr of window external language
      *          {Integer} addr           Sc-addr of sc-link or sc-structure, that edit or viewed with sandbox
-     *          {Boolean} is_struct     If that paramater is true, then addr is an sc-addr of struct;
+     *          {Boolean} is_struct     If that parameter is true, then addr is an sc-addr of struct;
      *                                  otherwise the last one a sc-addr of sc-link
      *          {String} container      Id of dom object, that will contain window
      *          {Boolean} canEdit       If that value is true, then request editor creation; otherwise - viewer

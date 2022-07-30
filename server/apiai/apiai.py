@@ -10,7 +10,7 @@ apiai
 This module provides a ApiAI class to manage requests.
 """
 
-try: # Python 3
+try:  # Python 3
     from http.client import HTTPSConnection
 except ImportError:
     from httplib import HTTPSConnection
@@ -19,8 +19,6 @@ import sys
 import json
 import uuid
 import decorators
-from time import gmtime
-from time import strftime
 
 try:
     import urllib.parse
@@ -76,7 +74,8 @@ class ApiAI(object):
         Returns :class:`VoiceRequest <VoiceRequest>` object.
         """
 
-        request = VoiceRequest(self.client_access_token, self.subscribtion_key, self.url, self.__connection__class, self.version, self.session_id)
+        request = VoiceRequest(self.client_access_token, self.subscribtion_key, self.url, self.__connection__class,
+                               self.version, self.session_id)
 
         return request
 
@@ -85,7 +84,8 @@ class ApiAI(object):
         Returns :class:`TextRequest <TextRequest>` object.
         """
 
-        request = TextRequest(self.client_access_token, self.subscribtion_key, self.url, self.__connection__class, self.version, self.session_id)
+        request = TextRequest(self.client_access_token, self.subscribtion_key, self.url, self.__connection__class,
+                              self.version, self.session_id)
 
         return request
 
@@ -93,13 +93,15 @@ class ApiAI(object):
 @decorators.class_logging
 class Serializable(object):
     """Abstract serializable class"""
+
     def to_dict(self):
         raise NotImplementedError()
-        
+
 
 @decorators.class_logging
 class Entry(Serializable):
     """User entry for entity"""
+
     def __init__(self, value, synonyms):
         super(Entry, self).__init__()
 
@@ -111,11 +113,12 @@ class Entry(Serializable):
             'value': self.value,
             'synonyms': self.synonyms
         }
-        
+
 
 @decorators.class_logging
 class Entity(Serializable):
     """User entity for request."""
+
     def __init__(self, name, entries):
         super(Entity, self).__init__()
 
@@ -143,7 +146,6 @@ class Request(object):
 
     __connection__class = None
 
-    
     resetContexts = False
     contexts = []
     sessionId = None
@@ -163,12 +165,12 @@ class Request(object):
         self.url = url
         self.lang = 'en'
 
-        self.timezone = '' #strftime("%z", gmtime())
+        self.timezone = ''  # strftime("%z", gmtime())
 
         self._prepare_request()
 
     def _prepare_entities(self):
-        if self.entities: 
+        if self.entities:
             return list(map(lambda x: x.to_dict(), self.entities))
         return None
 
@@ -268,7 +270,8 @@ class TextRequest(Request):
     ]
 
     def __init__(self, client_access_token, subscribtion_key, url, __connection__class, version, session_id):
-        super(TextRequest, self).__init__(client_access_token, subscribtion_key, url, __connection__class, version, session_id)
+        super(TextRequest, self).__init__(client_access_token, subscribtion_key, url, __connection__class, version,
+                                          session_id)
 
         #: Query parameter, can be string or array of strings.
         self.query = None
@@ -277,7 +280,7 @@ class TextRequest(Request):
         return {
             'Content-Type': 'application/json; charset=utf-8',
             'Content-Length': len(self._prepage_end_request_data())
-            } 
+        }
 
     def _prepage_begin_request_data(self):
         return None
@@ -291,7 +294,7 @@ class TextRequest(Request):
             'timezone': self.timezone,
             'resetContexts': self.resetContexts,
             'entities': self._prepare_entities(),
-            }
+        }
 
         return json.dumps(data)
 
@@ -319,7 +322,8 @@ class VoiceRequest(Request):
     """
 
     def __init__(self, client_access_token, subscribtion_key, url, __connection__class, version, session_id):
-        super(VoiceRequest, self).__init__(client_access_token, subscribtion_key, url, __connection__class, version, session_id)
+        super(VoiceRequest, self).__init__(client_access_token, subscribtion_key, url, __connection__class, version,
+                                           session_id)
         self.query = None
 
     def send(self, chunk):
@@ -335,7 +339,7 @@ class VoiceRequest(Request):
             parts.append(chunk.decode('latin-1'))
         else:
             parts.append(chunk)
-            
+
         parts.append('')
 
         newChunk = '\r\n'.join(parts)
@@ -349,24 +353,23 @@ class VoiceRequest(Request):
             'Content-Type': 'multipart/form-data; boundary=%s' % self.boundary,
             'Transfer-Encoding': 'chunked',
             'Connection': 'keep-alive',
-            } 
+        }
 
     def _prepage_begin_request_data(self):
         data = '--%s\r\n' % self.boundary
         data += 'Content-Disposition: form-data; name="request"\r\n'
         data += "Content-Type: application/json\r\n\r\n"
 
-
         data += json.dumps(
-                {
+            {
                 'lang': self.lang or 'en',
                 'sessionId': self.session_id,
                 'contexts': self.contexts,
                 'timezone': self.timezone,
                 'resetContexts': self.resetContexts,
                 'entities': self._prepare_entities()
-                }
-            )
+            }
+        )
 
         data += '\r\n'
 
@@ -381,4 +384,3 @@ class VoiceRequest(Request):
 
     def _beforegetresponce(self):
         self._connection.send(b('0\r\n\r\n'))
-        

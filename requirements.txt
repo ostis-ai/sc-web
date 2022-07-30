@@ -1,6 +1,5 @@
 tornado
 sqlalchemy
-python-rocksdb
-progress
 numpy
 configparser
+py-sc-client==0.2.0

@@ -25,13 +25,12 @@ var ImageViewer = function(sandbox){
 
     // ---- window interface -----
     this.receiveData = function(data) {
-        var dfd = new jQuery.Deferred();
+        return new Promise(resolve => {
+            $(this.container).empty();
+            $(this.container).append('<img src="' + data + '" style="width: 100%; height: 100%;"></img>');
 
-        $(this.container).empty();
-        $(this.container).append('<img src="' + data + '" style="width: 100%; height: 100%;"></img>');
-
-        dfd.resolve();
-        return dfd.promise();
+            resolve();
+        });
     };
 
     var self = this;

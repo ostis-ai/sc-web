@@ -82,7 +82,7 @@ SCg.Editor.prototype = {
         if (params.resolveControls)
             this.resolveControls = params.resolveControls;
 
-        this.canEdit = params.canEdit ? true : false;
+        this.canEdit = !!params.canEdit;
         this.initUI();
 
     },
@@ -444,21 +444,20 @@ SCg.Editor.prototype = {
             }
 
             // process controls
-            $(container + ' #scg-change-idtf-apply').click(function () {
+            $(container + ' #scg-change-idtf-apply').click(async function () {
                 var obj = self.scene.selected_objects[0];
                 if (obj.text != input.val() && !self._idtf_item) {
                     self.scene.commandManager.execute(new SCgCommandChangeIdtf(obj, input.val()));
                 }
                 if (self._idtf_item) {
-                    window.sctpClient.get_element_type(self._idtf_item.addr).done(function (t) {
-                        self.scene.commandManager.execute(new SCgCommandGetNodeFromMemory(
-                            obj,
-                            t,
-                            input.val(),
-                            self._idtf_item.addr,
-                            self.scene));
-                        stop_modal();
-                    });
+                    let [t] = await scClient.CheckElements([new ScAddr(self._idtf_item.addr)]);
+                    self.scene.commandManager.execute(new SCgCommandGetNodeFromMemory(
+                        obj,
+                        t.value,
+                        input.val(),
+                        self._idtf_item.addr,
+                        self.scene));
+                    stop_modal();
                 } else
                     stop_modal();
             });
@@ -505,7 +504,7 @@ SCg.Editor.prototype = {
                 var newType = self.typesMap[$(this).attr('id')];
                 var command = [];
                 self.scene.selected_objects.forEach(function (obj) {
-                    if (obj.sc_type != newType) {
+                    if (obj.sc_type !== newType) {
                         command.push(new SCgCommandChangeType(obj, newType));
                     }
                 });

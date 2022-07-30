@@ -15,86 +15,86 @@ SCWeb.ui.WindowManager = {
     },
 
     isWindowExist: function (id) {
-        return this.windows.indexOf(id) != -1;
+        return this.windows.indexOf(id) !== -1;
     },
     init: function (params) {
-        var dfd = new jQuery.Deferred();
-        this.ext_langs = params.external_languages;
+        return new Promise((resolve, reject) => {
+            this.ext_langs = params.external_languages;
 
-        this.history_tabs_id = '#history-items';
-        this.history_tabs = $(this.history_tabs_id);
+            this.history_tabs_id = '#history-items';
+            this.history_tabs = $(this.history_tabs_id);
 
-        this.window_container_id = '#window-container';
-        this.window_container = $(this.window_container_id);
+            this.window_container_id = '#window-container';
+            this.window_container = $(this.window_container_id);
 
-        var self = this;
+            var self = this;
 
-        // external language
-        var ext_langs_items = '';
-        for (idx in this.ext_langs) {
-            var addr = this.ext_langs[idx];
-            ext_langs_items += '<li><a href="#" sc_addr="' + addr + '">' + addr + '</a></li>';
-        }
-        $('#history-item-langs').html(ext_langs_items).find('[sc_addr]').click(function (event) {
-
-            if (SCWeb.ui.ArgumentsPanel.isArgumentAddState()) return;
-
-            var question_addr = self.active_history_addr;
-            var lang_addr = $(this).attr('sc_addr');
-
-            var fmt_addr = SCWeb.core.ComponentManager.getPrimaryFormatForExtLang(lang_addr);
-            if (fmt_addr) {
-                var command_state = new SCWeb.core.CommandState(null, null, fmt_addr);
-                var id = self.hash_addr(question_addr, command_state);
-                if (self.isWindowExist(id)) {
-                    self.setWindowActive(id);
-                } else {
-                    self.appendWindow(question_addr, command_state);
-                    self.window_active_formats[question_addr] = command_state.format;
-                    self.windows[self.hash_addr(question_addr, command_state.format)] = question_addr;
-                }
+            // external language
+            var ext_langs_items = '';
+            for (idx in this.ext_langs) {
+                var addr = this.ext_langs[idx];
+                ext_langs_items += '<li><a href="#" sc_addr="' + addr + '">' + addr + '</a></li>';
             }
-        });
+            $('#history-item-langs').html(ext_langs_items).find('[sc_addr]').click(function (event) {
 
-        $('#history-item-print').click(function () {
-            if (SCWeb.ui.ArgumentsPanel.isArgumentAddState()) return;
+                if (SCWeb.ui.ArgumentsPanel.isArgumentAddState()) return;
 
-            // get ctive window data
-            var data = self.window_container.find("#" + self.active_window_id).html();
+                var question_addr = self.active_history_addr;
+                var lang_addr = $(this).attr('sc_addr');
 
-            var html = '<html><head>' + $('head').html() + '</head></html><body>' + data + '</body>';
-            var styles = '';
-
-            var DOCTYPE = "<!DOCTYPE html>"; // your doctype declaration
-            var printPreview = window.open('about:blank', 'print_preview');
-            var printDocument = printPreview.document;
-            printDocument.open();
-            printDocument.write(DOCTYPE +
-                '<html>' +
-                '<head>' + styles + '</head>' +
-                '<body class="print-preview">' + html + '</body>' +
-                '</html>');
-            printDocument.close();
-        });
-
-        $('#history-item-link').popover({
-            content: $.proxy(self.getUrlToCurrentWindow, self)
-        });
-
-        // listen translation events
-        SCWeb.core.EventManager.subscribe("translation/update", this, this.updateTranslation);
-        SCWeb.core.EventManager.subscribe("translation/get", this, function (objects) {
-            $('#window-header-tools [sc_addr]').each(function (index, element) {
-                objects.push($(element).attr('sc_addr'));
+                var fmt_addr = SCWeb.core.ComponentManager.getPrimaryFormatForExtLang(lang_addr);
+                if (fmt_addr) {
+                    var command_state = new SCWeb.core.CommandState(null, null, fmt_addr);
+                    var id = self.hash_addr(question_addr, command_state);
+                    if (self.isWindowExist(id)) {
+                        self.setWindowActive(id);
+                    } else {
+                        self.appendWindow(question_addr, command_state);
+                        self.window_active_formats[question_addr] = command_state.format;
+                        self.windows[self.hash_addr(question_addr, command_state.format)] = question_addr;
+                    }
+                }
             });
-            $('#history-container [sc_addr]').each(function (index, element) {
-                objects.push($(element).attr('sc_addr'));
-            });
-        });
 
-        dfd.resolve();
-        return dfd.promise();
-    },
+            $('#history-item-print').click(function () {
+                if (SCWeb.ui.ArgumentsPanel.isArgumentAddState()) return;
+
+                // get ctive window data
+                var data = self.window_container.find("#" + self.active_window_id).html();
+
+                var html = '<html><head>' + $('head').html() + '</head></html><body>' + data + '</body>';
+                var styles = '';
+
+                var DOCTYPE = "<!DOCTYPE html>"; // your doctype declaration
+                var printPreview = window.open('about:blank', 'print_preview');
+                var printDocument = printPreview.document;
+                printDocument.open();
+                printDocument.write(DOCTYPE +
+                  '<html>' +
+                  '<head>' + styles + '</head>' +
+                  '<body class="print-preview">' + html + '</body>' +
+                  '</html>');
+                printDocument.close();
+            });
+
+            $('#history-item-link').popover({
+                content: $.proxy(self.getUrlToCurrentWindow, self)
+            });
+
+            // listen translation events
+            SCWeb.core.EventManager.subscribe("translation/update", this, this.updateTranslation);
+            SCWeb.core.EventManager.subscribe("translation/get", this, function (objects) {
+                $('#window-header-tools [sc_addr]').each(function (index, element) {
+                    objects.push($(element).attr('sc_addr'));
+                });
+                $('#history-container [sc_addr]').each(function (index, element) {
+                    objects.push($(element).attr('sc_addr'));
+                });
+            });
+
+            resolve();
+        });
+        },
 
     getUrlToCurrentWindow: function () {
         return window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + "/?question=" + this.active_history_addr;
@@ -138,7 +138,7 @@ SCWeb.ui.WindowManager = {
         });
 
         // translate added item
-        $.when(SCWeb.core.Translation.translate([question_addr])).done(function (namesMap) {
+        SCWeb.core.Translation.translate([question_addr]).then(function (namesMap) {
             value = namesMap[question_addr];
             if (value) {
                 $(self.history_tabs_id + " [sc_addr='" + question_addr + "']").text(value);
@@ -219,9 +219,9 @@ SCWeb.ui.WindowManager = {
 
         if (SCWeb.core.ComponentManager.isStructSupported(command_state.format)) {
             // determine answer structure
-            window.scHelper.getAnswer(question_addr).done(function (addr) {
+            window.scHelper.getAnswer(question_addr).then(function (addr) {
                 f(addr, true);
-            }).fail(function (v) {
+            }).catch(function (v) {
                 translated();
             });
         } else
@@ -286,49 +286,48 @@ SCWeb.ui.WindowManager = {
      * @param {Object} containers_map Map of viewer containers (key: sc-link addr, value: id of container)
      */
     createViewersForScLinks: function (containers_map) {
-        var dfd = new jQuery.Deferred();
+        return new Promise((resolve, reject)=>{
 
-        var linkAddrs = [];
-        for (var cntId in containers_map)
-            linkAddrs.push(containers_map[cntId]);
+            var linkAddrs = [];
+            for (var cntId in containers_map)
+                linkAddrs.push(containers_map[cntId]);
 
-        if (linkAddrs.length == 0) {
-            dfd.resolve();
-            return dfd.promise();
-        }
+            if (linkAddrs.length == 0) {
+                resolve();
+                return;
+            }
 
-        (function (containers_map) {
-            SCWeb.core.Server.getLinksFormat(linkAddrs,
-                function (formats) {
+            (function (containers_map) {
+                SCWeb.core.Server.getLinksFormat(linkAddrs,
+                  function (formats) {
 
-                    var result = {};
+                      var result = {};
 
-                    for (var cntId in containers_map) {
-                        var addr = containers_map[cntId];
-                        var fmt = formats[addr];
-                        if (fmt) {
-                            var sandbox = SCWeb.core.ComponentManager.createWindowSandboxByFormat({
-                                format_addr: fmt,
-                                addr: addr,
-                                is_struct: false,
-                                container: cntId,
-                                canEdit: false
-                            });
-                            if (sandbox) {
-                                result[addr] = sandbox;
-                            }
-                        }
-                    }
+                      for (var cntId in containers_map) {
+                          var addr = containers_map[cntId];
+                          var fmt = formats[addr];
+                          if (fmt) {
+                              var sandbox = SCWeb.core.ComponentManager.createWindowSandboxByFormat({
+                                  format_addr: fmt,
+                                  addr: addr,
+                                  is_struct: false,
+                                  container: cntId,
+                                  canEdit: false
+                              });
+                              if (sandbox) {
+                                  result[addr] = sandbox;
+                              }
+                          }
+                      }
 
-                    dfd.resolve(result);
-                },
-                function () {
-                    dfd.reject();
-                }
-            );
-        })(containers_map);
-
-        return dfd.promise();
+                      resolve(result);
+                  },
+                  function () {
+                      reject();
+                  }
+                );
+            })(containers_map);
+        })
     },
 
     /** Create viewers for specified sc-structures

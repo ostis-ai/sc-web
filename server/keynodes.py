@@ -20,28 +20,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with OSTIS. If not, see <http://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 """
+from enum import Enum
 
-class Keynodes:
-    
-    def __init__(self, sctp_client):
-        self.sctp_client = sctp_client
-        self.keys = {}
-        
-    def __getitem__(self, name):
-        
-        value = None
-        try:
-            value = self.keys[name]
-        except:
-            value = self.sctp_client.find_element_by_system_identifier(name.encode('utf-8'))
-            if value is None:
-                raise Exception("Can't resolve keynode '%s'" % name)
-            else:
-                self.keys[name] = value
-        return value
 
-class KeynodeSysIdentifiers:
-    
+class KeynodeSysIdentifiers(Enum):
     nrel_system_identifier = 'nrel_system_identifier'
     nrel_main_idtf = 'nrel_main_idtf'
     nrel_idtf = 'nrel_idtf'
@@ -98,8 +80,7 @@ class KeynodeSysIdentifiers:
     
     ui_rrel_source_sc_construction = 'ui_rrel_source_sc_construction'
     ui_rrel_output_format = 'ui_rrel_output_format'
-    
-    
+
     # languages
     languages = 'languages'
     lang_ru = 'lang_ru'

@@ -6,11 +6,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Add ctrl+c logic on py-server
+- Add logging levels
+- Add search by content substring through sc-server
 - Add latex docs from OSTIS Standard
 
 ### Changed
+- Switch on py-sc-client on py-server and ts-sc-client in js-server
 - Rename `SCsComponent` to `SCnComponent`
 - Change external language from `scs_code` to `scn_code` for `SCsComponent`
+
+### Removed
+- Remove legacy configs, refactor config file
+- Remove db-reader
+- Remove py-sctp-client and js-sctp-client
 
 ## [0.6.1] - 28.04.2022
 ### Added

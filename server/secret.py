@@ -2,15 +2,13 @@
 
 import base64
 import uuid
-import tornado.options
-import os
+
 
 def get_secret():
     global SECRET_KEY
     try:
         SECRET_KEY
     except NameError:
-        
         SECRET_FILE = 'secret.txt'
         try:
             SECRET_KEY = open(SECRET_FILE).read().strip()

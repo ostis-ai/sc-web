@@ -84,7 +84,7 @@ class ExpertModeManager {
     }
 
     getKeynode(systemId) {
-        return scKeynodes[systemId] || this.sandbox.getKeynode(systemId);
+        return window.scKeynodes[systemId] || this.sandbox.getKeynode(systemId);
     }
 
     isNotTripleSystem(isAddrSystem, triple) {

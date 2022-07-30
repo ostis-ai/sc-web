@@ -8,12 +8,7 @@ SCWeb.core.CommandState = function (command_addr, command_args, format) {
 
 /**
  * Create new instance of component sandbox.
- * @param {String} container Id of dom object, that will contain component
- * @param {String} addr sc-addr of sc-link or sc-structure, that edit or viewed with sandbox
- * @param {Boolean} is_struct If that value is true, then addr is a sc-addr to viewed structure; otherwise the last one is a sc-link
- * @param {String} format_addr sc-addr of window format
- * @param {String} ext_lang_addr sc-addr of external language
- * @param {Object} keynodes Dictionary that contains keynode addr by system identifiers
+ * @param options
  */
 SCWeb.core.ComponentSandbox = function (options) {
 
@@ -68,20 +63,27 @@ SCWeb.core.ComponentSandbox = function (options) {
     // listen struct changes
     /// @todo possible need to wait event creation
     if (this.is_struct) {
-        window.sctpClient.event_create(SctpEventType.SC_EVENT_ADD_OUTPUT_ARC, this.addr, function (addr, arg) {
-            if (self.eventStructUpdate) {
-                self.eventStructUpdate(true, addr, arg);
-            }
-        }).done(function (id) {
-            self.event_add_element = id;
-        });
-        window.sctpClient.event_create(SctpEventType.SC_EVENT_REMOVE_OUTPUT_ARC, this.addr, function (addr, arg) {
-            if (self.eventStructUpdate) {
-                self.eventStructUpdate(false, addr, arg);
-            }
-        }).done(function (id) {
-            self.event_remove_element = id;
-        });
+        let addArcEventRequest = new sc.ScEventParams(
+          new sc.ScAddr(this.addr),
+          sc.ScEventType.AddOutgoingEdge,
+          (elAddr, edge, otherAddr) => {
+              if (self.eventStructUpdate) {
+                  self.eventStructUpdate(true, elAddr.value, edge.value);
+              }
+          });
+        let removeArcEventRequest = new sc.ScEventParams(
+          new sc.ScAddr(this.addr),
+          sc.ScEventType.RemoveOutgoingEdge,
+          (elAddr, edge, otherAddr) => {
+              if (self.eventStructUpdate) {
+                  self.eventStructUpdate(false, elAddr.value, edge.value);
+              }
+          });
+        window.scClient.eventsCreate([addArcEventRequest, removeArcEventRequest])
+          .then((addArcEvent, removeArcEvent)=>{
+              self.event_add_element = addArcEvent;
+              self.event_remove_element = removeArcEvent;
+          });
     }
 };
 
@@ -94,15 +96,17 @@ SCWeb.core.ComponentSandbox.prototype = {
  * Destroys component sandbox
  */
 SCWeb.core.ComponentSandbox.prototype.destroy = function () {
-    for (var l in this.listeners) {
+    for (let l in this.listeners) {
         SCWeb.core.EventManager.unsubscribe(this.listeners[l]);
     }
 
     /// @todo possible need to wait event destroy
+    let events = [];
     if (this.event_add_element)
-        window.sctpClient.event_destroy(this.event_add_element);
+        events.push(this.event_add_element);
     if (this.event_remove_element)
-        window.sctpClient.event_destroy(this.event_remove_element);
+        events.push(this.event_remove_element);
+    window.scClient.eventsDestroy(events);
 };
 
 /**
@@ -236,15 +240,14 @@ SCWeb.core.ComponentSandbox.prototype.updateAnswer = function () {
  * Create viewers for specified sc-links
  * @param {Object} containers_map Map of viewer containers (key: sc-link addr, value: id of container)
  */
-SCWeb.core.ComponentSandbox.prototype.createViewersForScLinks = function (containers_map) {
-    var dfd = new jQuery.Deferred();
-    var self = this;
-    SCWeb.ui.WindowManager.createViewersForScLinks(containers_map).done(function (windows) {
-        self._appendChilds(windows);
-        dfd.resolve(windows);
-    }).fail(dfd.reject);
-
-    return dfd.promise();
+SCWeb.core.ComponentSandbox.prototype.createViewersForScLinks = async function (containers_map) {
+    return new Promise((resolve, reject)=>{
+        var self = this;
+        SCWeb.ui.WindowManager.createViewersForScLinks(containers_map).then(function (windows) {
+            self._appendChilds(windows);
+            resolve(windows);
+        }).catch(reject);
+    })
 };
 
 /**
@@ -258,45 +261,27 @@ SCWeb.core.ComponentSandbox.prototype.createViewersForScStructs = function (cont
 };
 
 /*! Function takes content of sc-link or sctructure from server and call event handlers
- * {String} contentType type of content data (@see SctpClient.getLinkContent). If it's null, then
+ * {String} contentType type of content data (@see scClient.getLinkContent). If it's null, then
  * data will be returned as string
  */
-SCWeb.core.ComponentSandbox.prototype.updateContent = function (contentType) {
-    var dfd = new jQuery.Deferred();
+SCWeb.core.ComponentSandbox.prototype.updateContent = async function (contentType) {
     var self = this;
 
     if (this.is_struct && this.eventStructUpdate) {
-        window.sctpClient.iterate_elements(SctpIteratorType.SCTP_ITERATOR_3F_A_A,
-            [
-                this.addr,
-                sc_type_arc_pos_const_perm,
-                0
-            ])
-            .done(function (res) {
-                for (idx in res)
-                    self.eventStructUpdate(true, res[idx][0], res[idx][1]);
-
-                dfd.resolve();
-            });
+        let scTemplate = new sc.ScTemplate();
+        scTemplate.triple(
+          [new sc.ScAddr(this.addr), "src"],
+          [sc.ScType.EdgeAccessVarPosPerm, "edge"],
+            sc.ScType.Unknown);
+        let result = await window.scClient.templateSearch(scTemplate);
+        for (let triple of result) {
+          self.eventStructUpdate(true, triple.get("src").value, triple.get("edge").value);
+        }
     }
     else {
-        window.sctpClient.get_link_content(this.addr, contentType)
-            .done(function (data) {
-                $.when(self.onDataAppend(data)).then(
-                    function () {
-                        dfd.resolve();
-                    },
-                    function () {
-                        dfd.reject();
-                    }
-                );
-            })
-            .fail(function () {
-                dfd.reject();
-            });
+        let content = await window.scClient.getLinkContents([new sc.ScAddr(this.addr)]);
+        await self.onDataAppend(content[0].data);
     }
-
-    return dfd.promise();
 };
 
 // ------ Translation ---------
@@ -330,7 +315,7 @@ SCWeb.core.ComponentSandbox.prototype._fireArgumentsChanged = function () {
 /**
  * Calls when new argument added
  * @param {String} argument sc-addr of argument
- * @param {Integer} idx Index of argument
+ * @param {Number} idx Index of argument
  */
 SCWeb.core.ComponentSandbox.prototype.onArgumentAppended = function (argument, idx) {
     this._fireArgumentsChanged();
@@ -339,7 +324,7 @@ SCWeb.core.ComponentSandbox.prototype.onArgumentAppended = function (argument, i
 /**
  * Calls when new argument removed
  * @param {String} argument sc-addr of argument
- * @param {Integer} idx Index of argument
+ * @param {Number} idx Index of argument
  */
 SCWeb.core.ComponentSandbox.prototype.onArgumentRemoved = function (argument, idx) {
     this._fireArgumentsChanged();
@@ -361,13 +346,13 @@ SCWeb.core.ComponentSandbox.prototype.onWindowActiveChanged = function (is_activ
 // --------- Data -------------
 SCWeb.core.ComponentSandbox.prototype.onDataAppend = function (data) {
     if (this.eventDataAppend) {
-        return $.when(this.eventDataAppend(data)).done(() => this.translate());
+        return this.eventDataAppend(data).then(() => this.translate());
     } else {
-        return $.Deferred().resolve().promise()
+        return Promise.resolve();
     }
 };
 
 SCWeb.core.ComponentSandbox.prototype.translate = function () {
     return SCWeb.core.Translation.translate(this.getObjectsToTranslate())
-        .done((namesMap) => this.updateTranslation(namesMap));
+        .then((namesMap) => this.updateTranslation(namesMap));
 };

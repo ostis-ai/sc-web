@@ -1,13 +1,9 @@
-ScHelper = function (sctp_client) {
-    this.sctp_client = sctp_client;
+let ScHelper = function (scClient) {
+  this.scClient = scClient;
 };
 
 ScHelper.prototype.init = function () {
-    var dfd = new jQuery.Deferred();
-
-    dfd.resolve();
-
-    return dfd.promise();
+  return Promise.resolve();
 };
 
 /*! Check if there are specified arc between two objects
@@ -17,13 +13,14 @@ ScHelper.prototype.init = function () {
  * @returns Function returns Promise object. If sc-edge exists, then it would be resolved; 
  * otherwise it would be rejected
  */
-ScHelper.prototype.checkEdge = function (addr1, type, addr2) {
-    return this.sctp_client.iterate_elements(SctpIteratorType.SCTP_ITERATOR_3F_A_F,
-        [
-            addr1,
-            type,
-            addr2
-        ]);
+ScHelper.prototype.checkEdge = async function (addr1, type, addr2) {
+  let template = new sc.ScTemplate();
+  addr1 = new sc.ScAddr(addr1);
+  type = new sc.ScType(type).changeConst(false);
+  addr2 = new sc.ScAddr(addr2);
+  template.triple(addr1, type, addr2);
+  let result = await this.scClient.templateSearch(template);
+  return result.length !== 0
 };
 
 /*! Function to get elements of specified set
@@ -31,131 +28,69 @@ ScHelper.prototype.checkEdge = function (addr1, type, addr2) {
  * @returns Returns promise objects, that resolved with a list of set elements. If 
  * failed, that promise object rejects
  */
-ScHelper.prototype.getSetElements = function (addr) {
-    var dfd = new jQuery.Deferred();
-
-    this.sctp_client.iterate_elements(SctpIteratorType.SCTP_ITERATOR_3F_A_A,
-        [
-            addr,
-            sc_type_arc_pos_const_perm,
-            sc_type_node | sc_type_const
-        ])
-        .done(function (res) {
-            var langs = [];
-
-            for (r in res) {
-                langs.push(res[r][2]);
-            }
-
-            dfd.resolve(langs);
-
-        }).fail(function () {
-        dfd.reject();
-    });
-
-    return dfd.promise();
+ScHelper.prototype.getSetElements = async function (addr) {
+  let template = new sc.ScTemplate();
+  addr = new sc.ScAddr(addr);
+  template.triple(addr, sc.ScType.EdgeAccessVarPosPerm, sc.ScType.NodeVar);
+  let result = await this.scClient.templateSearch(template);
+  return result.map(x => x.get(2).value);
 };
 
 /*! Function resolve commands hierarchy for main menu.
  * It returns main menu command object, that contains whole hierarchy as a child objects
  */
-ScHelper.prototype.getMainMenuCommands = function () {
+ScHelper.prototype.getMainMenuCommands = async function () {
+  const self = this;
 
-    var self = this;
+  async function determineType(cmd_addr) {
+    let isAtom = await self.checkEdge(
+        window.scKeynodes["ui_user_command_class_atom"], sc.ScType.EdgeAccessConstPosPerm, cmd_addr);
+    if(isAtom) return "cmd_atom";
+    let isNoAtom = await self.checkEdge(
+        window.scKeynodes["ui_user_command_class_noatom"], sc.ScType.EdgeAccessConstPosPerm, cmd_addr);
+    if(isNoAtom) return "cmd_noatom";
+    return 'unknown';
+  }
 
-    function determineType(cmd_addr) {
-        var dfd = new jQuery.Deferred();
-        window.scHelper.checkEdge(
-            window.scKeynodes.ui_user_command_class_atom,
-            sc_type_arc_pos_const_perm,
-            cmd_addr)
-            .done(function () {
-                dfd.resolve('cmd_atom');
-            })
-            .fail(function () {
-                window.scHelper.checkEdge(
-                    window.scKeynodes.ui_user_command_class_noatom,
-                    sc_type_arc_pos_const_perm,
-                    cmd_addr)
-                    .done(function () {
-                        dfd.resolve('cmd_noatom');
-                    })
-                    .fail(function () {
-                        dfd.resolve('unknown');
-                    });
-            });
-
-        return dfd.promise();
+  async function parseCommand(cmd_addr, parent_cmd) {
+    let type = await determineType(cmd_addr);
+    let res = {
+      cmd_type: type,
+      id: cmd_addr
+    }
+    if (parent_cmd) {
+      if (!parent_cmd.hasOwnProperty('childs')) {
+        parent_cmd['childs'] = [];
+      }
+      parent_cmd.childs.push(res);
     }
 
-    function parseCommand(cmd_addr, parent_cmd) {
-        var dfd = new jQuery.Deferred();
+    let decompositionTemplate = new sc.ScTemplate();
+    decompositionTemplate.tripleWithRelation(
+      [sc.ScType.NodeVar, 'decomposition'],
+      sc.ScType.EdgeDCommonVar,
+      new sc.ScAddr(cmd_addr),
+      sc.ScType.EdgeAccessVarPosPerm,
+      new sc.ScAddr(window.scKeynodes["nrel_ui_commands_decomposition"]));
+    decompositionTemplate.triple(
+      'decomposition',
+      sc.ScType.EdgeAccessVarPosPerm,
+      [sc.ScType.NodeVar, 'child_addr']
+    );
+    let decompositionResult = await self.scClient.templateSearch(decompositionTemplate);
+    await Promise.all(decompositionResult.map(x => parseCommand(x.get('child_addr').value, res)));
+    return res;
+  }
 
-        // determine command type
-        determineType(cmd_addr)
-            .done(function (type) {
-                var res = {};
-                res['cmd_type'] = type;
-                res['id'] = cmd_addr;
-
-                if (parent_cmd) {
-                    if (!parent_cmd.hasOwnProperty('childs'))
-                        parent_cmd['childs'] = [];
-
-                    parent_cmd.childs.push(res);
-                }
-
-                // try to find decomposition
-                self.sctp_client.iterate_elements(SctpIteratorType.SCTP_ITERATOR_5A_A_F_A_F,
-                    [
-                        sc_type_node | sc_type_const,
-                        sc_type_arc_common | sc_type_const,
-                        cmd_addr,
-                        sc_type_arc_pos_const_perm,
-                        window.scKeynodes.nrel_ui_commands_decomposition
-                    ])
-                    .done(function (it1) {
-                        // iterate child commands
-                        self.sctp_client.iterate_elements(SctpIteratorType.SCTP_ITERATOR_3F_A_A,
-                            [
-                                it1[0][0],
-                                sc_type_arc_pos_const_perm,
-                                0
-                            ])
-                            .done(function (it2) {
-                                var childsDef = [];
-                                for (idx in it2) {
-                                    childsDef.push(parseCommand(it2[idx][2], res));
-                                }
-
-                                $.when.apply($, childsDef)
-                                    .done(function () {
-                                        dfd.resolve(res);
-                                    });
-                            })
-                            .fail(function () {
-                                dfd.resolve(res);
-                            });
-                    })
-                    .fail(function () {
-                        dfd.resolve(res);
-                    });
-
-            });
-
-        return dfd.promise();
-    }
-
-
-    return parseCommand(window.scKeynodes.ui_main_menu, null);
+  return parseCommand(window.scKeynodes["ui_main_menu"], null);
 };
 
 /*! Function to get available native user languages
  * @returns Returns promise object. It will be resolved with one argument - list of 
- * available user native languages. If funtion failed, then promise object rejects.
+ * available user native languages. If function failed, then promise object rejects.
  */
 ScHelper.prototype.getLanguages = function () {
-    return scHelper.getSetElements(window.scKeynodes.languages);
+  return window.scHelper.getSetElements(window.scKeynodes['languages']);
 };
 
 /*! Function to get list of available output languages
@@ -163,7 +98,7 @@ ScHelper.prototype.getLanguages = function () {
  * failed, then promise rejects
  */
 ScHelper.prototype.getOutputLanguages = function () {
-    return scHelper.getSetElements(window.scKeynodes.ui_external_languages);
+  return window.scHelper.getSetElements(window.scKeynodes['ui_external_languages']);
 };
 
 /*! Function to find answer for a specified question
@@ -172,147 +107,52 @@ ScHelper.prototype.getOutputLanguages = function () {
  * If function fails, then promise rejects
  */
 ScHelper.prototype.getAnswer = function (question_addr) {
-    var dfd = new jQuery.Deferred();
-
-    (function (_question_addr, _self, _dfd) {
-        var fn = this;
-
-        this.timer = window.setTimeout(function () {
-            _dfd.reject();
-
-            window.clearTimeout(fn.timer);
-            delete fn.timer;
-
-            if (fn.event_id) {
-                _self.sctp_client.event_destroy(fn.event_id);
-                delete fn.event_id;
-            }
-        }, 10000);
-
-        _self.sctp_client.event_create(SctpEventType.SC_EVENT_ADD_OUTPUT_ARC, _question_addr, function (addr, arg) {
-            _self.checkEdge(window.scKeynodes.nrel_answer, sc_type_arc_pos_const_perm, arg).done(function () {
-                _self.sctp_client.get_arc(arg).done(function (res) {
-                    _dfd.resolve(res[1]);
-                }).fail(function () {
-                    _dfd.reject();
-                });
-            });
-        }).done(function (res) {
-            fn.event_id = res;
-            _self.sctp_client.iterate_elements(SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
-                [
-                    _question_addr,
-                    sc_type_arc_common | sc_type_const,
-                    sc_type_node, /// @todo possible need node struct
-                    sc_type_arc_pos_const_perm,
-                    window.scKeynodes.nrel_answer
-                ])
-                .done(function (it) {
-                    _self.sctp_client.event_destroy(fn.event_id).fail(function () {
-                        /// @todo process fail
-                    });
-                    _dfd.resolve(it[0][2]);
-
-                    window.clearTimeout(fn.timer);
-                });
-        });
-    })(question_addr, this, dfd);
-
-
-    return dfd.promise();
+  return new Promise(async (resolve, reject) => {
+    let event;
+    let timer = setTimeout(async () => {
+      reject();
+      clearTimeout(timer);
+      timer = null;
+      if (event) {
+        await this.scClient.eventsDestroy(event.id);
+        event = null;
+      }
+    }, 10_000);
+    let eventRequest = new sc.ScEventParams(
+      new sc.ScAddr(Number.parseInt(question_addr)),
+      sc.ScEventType.AddOutgoingEdge,
+      async (elAddr, edge, otherAddr) => {
+        let isAnswer = await this.checkEdge(window.scKeynodes['nrel_answer'], sc.ScType.EdgeAccessVarPosPerm, edge);
+        if (isAnswer) {
+          resolve(otherAddr);
+        }
+      });
+    event = (await this.scClient.eventsCreate([eventRequest]))[0];
+    let template = new sc.ScTemplate();
+    template.tripleWithRelation(
+      new sc.ScAddr(Number.parseInt(question_addr)),
+      sc.ScType.EdgeDCommonVar,
+      [sc.ScType.NodeVar, "_answer"],
+      sc.ScType.EdgeAccessVarPosPerm,
+      new sc.ScAddr(window.scKeynodes['nrel_answer']),
+    );
+    let templateSearch = await this.scClient.templateSearch(template);
+    if (templateSearch.length) {
+      resolve(templateSearch[0].get("_answer").value);
+      await this.scClient.eventsDestroy([event.id]);
+      clearTimeout(timer);
+    }
+  });
 };
 
-/*! Function to get system identifier
- * @param addr sc-addr of element to get system identifier
- * @returns Returns promise object, that resolves with found system identifier.
- * If there are no system identifier, then promise rejects
- */
-ScHelper.prototype.getSystemIdentifier = function (addr) {
-    var dfd = new jQuery.Deferred();
-
-    var self = this;
-    this.sctp_client.iterate_elements(SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
-        [
-            addr,
-            sc_type_arc_common | sc_type_const,
-            sc_type_link,
-            sc_type_arc_pos_const_perm,
-            window.scKeynodes.nrel_system_identifier
-        ])
-        .done(function (it) {
-            self.sctp_client.get_link_content(it[0][2])
-                .done(function (res) {
-                    dfd.resolve(res);
-                })
-                .fail(function () {
-                    dfd.reject();
-                });
-        })
-        .fail(function () {
-            dfd.reject()
-        });
-
-    return dfd.promise();
-};
-
-/*! Function to get element identifer
- * @param addr sc-addr of element to get identifier
- * @param lang sc-addr of language
- * @returns Returns promise object, that resolves with found identifier. 
- * If there are no any identifier, then promise rejects
- */
-ScHelper.prototype.getIdentifier = function (addr, lang) {
-    var dfd = new jQuery.Deferred();
-    var self = this;
-
-    var get_sys = function () {
-        self.getSystemIdentifier(addr)
-            .done(function (res) {
-                dfd.resolve(res);
-            })
-            .fail(function () {
-                dfd.reject();
-            });
-    };
-
-    window.sctpClient.iterate_constr(
-        SctpConstrIter(SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
-            [addr,
-                sc_type_arc_common | sc_type_const,
-                sc_type_link,
-                sc_type_arc_pos_const_perm,
-                window.scKeynodes.nrel_main_idtf
-            ],
-            {"x": 2}),
-        SctpConstrIter(SctpIteratorType.SCTP_ITERATOR_3F_A_F,
-            [lang,
-                sc_type_arc_pos_const_perm,
-                "x"
-            ])
-    ).done(function (results) {
-        var link_addr = results.get(0, "x");
-
-        self.sctp_client.get_link_content(link_addr)
-            .done(function (res) {
-                dfd.resolve(res);
-            })
-            .fail(function () {
-                dfd.reject();
-            });
-    }).fail(function () {
-        get_sys();
-    });
-
-    return dfd.promise();
-};
-
-ScHelper.prototype.setLinkFormat = function (addr, format) {
-    var self = this;
-    window.sctpClient.create_arc(sc_type_arc_common | sc_type_const, addr, format).done(function (arc_addr) {
-        window.sctpClient.create_arc(sc_type_arc_pos_const_perm, window.scKeynodes.nrel_format, arc_addr).fail(function () {
-            console.log("Fail in ScHelper.prototype.setLinkFormat create_arc(nrel_format, arc_addr)")
-        });
-    }).fail(function () {
-        console.log("Fail in SScHelper.prototype.setLinkFormat create_arc(addr, format)")
-    });
+ScHelper.prototype.setLinkFormat = async function (addr, format) {
+  let template = new sc.ScTemplate();
+  template.tripleWithRelation(
+    new sc.ScAddr(addr),
+    sc.ScType.EdgeDCommonVar,
+    new sc.ScAddr(format),
+    sc.ScType.EdgeAccessVarPosPerm,
+    new sc.ScAddr(window.scKeynodes['nrel_format']),
+  );
+  await scClient.templateGenerate(template);
 };
