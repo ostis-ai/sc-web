@@ -11,7 +11,7 @@ DEFAULT_BACKUP_COUNT = 5
 
 def init():
     config = configparser.ConfigParser()
-    config.read(os.path.join(os.getcwd(), "../sc-web.ini"))
+    config.read(os.path.join(os.path.dirname(os.path.abspath(__file__)), "../sc-web.ini"))
 
     group = config["sc-web"]
 
