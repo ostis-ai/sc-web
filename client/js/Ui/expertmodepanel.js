@@ -5,10 +5,10 @@ SCWeb.ui.ExpertModePanel = {
             var expert_mode_identifier = 'ui_expert_mode';
             this.expert_mode_container_id = '#' + 'expert_mode_container';
             var self = this;
-            SCWeb.core.Server.resolveScAddr([expert_mode_identifier], function (addrs) {
+            SCWeb.core.Server.resolveScAddr([expert_mode_identifier]).then(function (addrs) {
                 var expert_mode_sc_addr = addrs[expert_mode_identifier];
                 if (expert_mode_sc_addr) {
-                    SCWeb.core.Server.resolveIdentifiers([expert_mode_sc_addr], function (translation) {
+                    SCWeb.core.Server.resolveIdentifiers([expert_mode_sc_addr]).then(function (translation) {
                         $(self.expert_mode_container_id + ' label.normalLabel').
                         attr('sc_addr', expert_mode_sc_addr).text(translation[expert_mode_sc_addr]);
 

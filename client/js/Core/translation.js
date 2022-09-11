@@ -47,7 +47,7 @@ SCWeb.core.Translation = {
     translate: function (objects) {
         return new Promise((resolve)=>{
             var self = this;
-            SCWeb.core.Server.resolveIdentifiers(objects, function (namesMap) {
+            SCWeb.core.Server.resolveIdentifiers(objects).then(function (namesMap) {
                 resolve(namesMap);
             });
         })

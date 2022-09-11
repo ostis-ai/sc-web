@@ -441,42 +441,6 @@ def append_to_system_elements(keynode_system_element: ScAddr, el: ScAddr) -> Non
 
 
 @decorators.method_logging
-def get_link_mime(link_addr: ScAddr) -> str:
-    keynodes = ScKeynodes()
-    mimetype_str = u'text/plain'
-
-    # determine format and mimetype
-    template = ScTemplate()
-    template.triple_with_relation(
-        link_addr,
-        sc_types.EDGE_D_COMMON_VAR,
-        sc_types.NODE_VAR,
-        sc_types.EDGE_ACCESS_VAR_POS_PERM,
-        keynodes[KeynodeSysIdentifiers.nrel_format.value],
-    )
-    result = client.template_search(template)
-
-    if result:
-        # determine mimetype
-        mimetype_template = ScTemplate()
-        mimetype_template.triple_with_relation(
-            result[0].get(2),
-            sc_types.EDGE_D_COMMON_VAR,
-            sc_types.LINK_VAR,
-            sc_types.EDGE_ACCESS_VAR_POS_PERM,
-            keynodes[KeynodeSysIdentifiers.nrel_mimetype.value],
-        )
-        mimetype_result = client.template_search(mimetype_template)
-
-        if mimetype_result:
-            mime_value = client.get_link_content(mimetype_result[0].get(2))[0].data
-            if mime_value is not None:
-                mimetype_str = mime_value
-
-    return mimetype_str
-
-
-@decorators.method_logging
 def get_languages_list() -> List[ScAddr]:
     keynodes = ScKeynodes()
 

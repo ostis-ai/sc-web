@@ -31,6 +31,9 @@ ScKeynodes.prototype.init = async function () {
     'languages',
     'lang_ru',
 
+    'nrel_format',
+    'format_txt',
+
     'binary_types',
     'binary_float',
     'binary_int8',
@@ -40,7 +43,6 @@ ScKeynodes.prototype.init = async function () {
     'format_pdf',
     'format_png',
     'format_html',
-    'nrel_format',
     'ui_start_sc_element']
   );
 };
