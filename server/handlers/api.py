@@ -3,6 +3,8 @@ from typing import List
 
 import tornado.web
 import json
+import base64
+import binascii
 
 from sc_client import client
 from sc_client.constants import sc_types
@@ -151,11 +153,17 @@ class LinkContent(base.BaseHandler):
             return logic.serialize_error(self, 404, 'Invalid arguments')
 
         result = client.get_link_content(addr)
+        result = result[0].data
+        try:
+            data = base64.b64decode(result, validate=True)
+        except binascii.Error:
+            data = result
+
         if len(result) == 0:
             return logic.serialize_error(self, 404, 'Content not found')
 
         self.set_header("Content-Type", logic.get_link_mime(addr))
-        self.finish(result[0].data)
+        self.finish(data)
 
 
 class LinkFormat(base.BaseHandler):
