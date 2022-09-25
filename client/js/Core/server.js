@@ -172,7 +172,7 @@ SCWeb.core.Server = {
      * @param {Function} callback
      */
     resolveIdentifiers: async function (objects) {
-        if (objects.length === 0) {
+        if (!objects.length) {
             return {};
         }
 
@@ -201,7 +201,7 @@ SCWeb.core.Server = {
             notChecked.push(i);
         }
 
-        if (arguments.length !== 0) { // all results cached
+        if (arguments.length) { // all results cached
             const getIdtf = async function (addr) {
                 const LINK = "_link";
 

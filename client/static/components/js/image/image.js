@@ -49,7 +49,6 @@ const ImageViewer = function (sandbox) {
         return "";
     }
 
-    const self = this;
     if (this.sandbox.addr) {
         window.scClient.getLinkContents([new sc.ScAddr(this.sandbox.addr)]).then((contents) => {
             if (contents.length) {
