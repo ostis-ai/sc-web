@@ -32,6 +32,7 @@ ScKeynodes.prototype.init = async function () {
     'lang_ru',
 
     'nrel_format',
+    'nrel_mimetype',
     'format_txt',
 
     'binary_types',
