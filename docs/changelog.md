@@ -6,12 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Add images mime types handling from kb
 - Add ctrl+c logic on py-server
 - Add logging levels
 - Add search by content substring through sc-server
 - Add latex docs from OSTIS Standard
 
 ### Changed
+- Move links/contents handling from py-server to js-server
 - Switch on py-sc-client on py-server and ts-sc-client in js-server
 - Rename `SCsComponent` to `SCnComponent`
 - Change external language from `scs_code` to `scn_code` for `SCsComponent`
