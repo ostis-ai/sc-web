@@ -10,6 +10,7 @@ import tornado.ioloop
 import tornado.options
 import tornado.web
 from sc_client import client
+from sc_client.constants.exceptions import ServerError
 from sc_client.sc_keynodes import ScKeynodes
 
 import admin.main as admin
@@ -23,13 +24,14 @@ from handlers.main import MainHandler
 from handlers.nl import NaturalLanguageSearch
 from keynodes import KeynodeSysIdentifiers
 
-from os.path import join, abspath, relpath, commonprefix, isdir, isfile, exists, dirname, splitext
+from os.path import join, abspath, commonprefix, isdir, isfile, exists, dirname, splitext
 import re
 
 is_closing = False
 
 REPO_FILE_EXT = ".path"
 REPO_FILE_PATH = join(dirname(abspath(__file__)), "../repo.path")
+
 
 def signal_handler(signum, frame):
     global is_closing
@@ -59,8 +61,10 @@ class NoCacheStaticHandler(tornado.web.StaticFileHandler, ABC):
 def main():
     logging.getLogger('asyncio').setLevel(logging.WARNING)
 
-    tornado.options.define("static_path", default=join(dirname(abspath(__file__)), "../client/static"), help="path to static files directory", type=str)
-    tornado.options.define("templates_path", default=join(dirname(abspath(__file__)),"../client/templates"), help="path to template files directory",
+    tornado.options.define("static_path", default=join(dirname(abspath(__file__)), "../client/static"),
+                           help="path to static files directory", type=str)
+    tornado.options.define("templates_path", default=join(dirname(abspath(__file__)), "../client/templates"),
+                           help="path to template files directory",
                            type=str)
     tornado.options.define("event_wait_timeout", default=10, help="time to wait commands processing", type=int)
     tornado.options.define("idtf_search_limit", default=100,
@@ -106,9 +110,10 @@ def main():
     logger_sc.init()
 
     # load scs required for sc-web server
-    ingestion_results = client.create_elements_by_scs(read_scs_fragments(REPO_FILE_PATH))
-    if False in ingestion_results:
-        logger.error("Error uploading scs files to the sc-server. Exiting...")
+    try:
+        client.create_elements_by_scs(read_scs_fragments(REPO_FILE_PATH))
+    except ServerError as e:
+        logger.error(e)
         exit(1)
 
     ScKeynodes().resolve_identifiers([KeynodeSysIdentifiers])
@@ -172,14 +177,16 @@ def main():
     logger.info("Close connection with sc-server")
     client.disconnect()
 
+
 scs_paths = set()
 scs_exclude_paths = set()
-def search_kb_sources(root_path: str):
 
+
+def search_kb_sources(root_path: str):
     if not exists(root_path):
         print(root_path, "does not exist.")
         exit(1)
-    
+
     elif splitext(root_path)[1] == REPO_FILE_EXT:
         print()
         with open(join(root_path), 'r') as root_file:
@@ -203,7 +210,8 @@ def search_kb_sources(root_path: str):
     else:
         scs_paths.add(root_path)
 
-    return(scs_paths, scs_exclude_paths)
+    return scs_paths, scs_exclude_paths
+
 
 # read scs fragments unless they are excluded by repo.path
 def read_scs_fragments(root_path: str):
@@ -221,26 +229,25 @@ def read_scs_fragments(root_path: str):
                         excluded = True
 
                 if excluded == True:
-                    print("Excluded")
                     continue
                 else:
                     with open(filename, 'r') as f:
                         scs_fragments.append(f.read())
 
         elif isfile(path) and splitext(path)[1] == '.scs':
-            if path not in exclude_paths: 
+            if path not in exclude_paths:
                 with open(path, 'r') as f:
-                        scs_fragments.append(f.read())
+                    scs_fragments.append(f.read())
 
         elif not exists(path):
             print("Error: path '%s' does not exist" % path)
             exit(1)
-        
+
         else:
             continue
-        
+
     return scs_fragments
-            
+
 
 if __name__ == "__main__":
     main()
