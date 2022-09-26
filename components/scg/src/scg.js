@@ -450,7 +450,7 @@ SCg.Editor.prototype = {
                     self.scene.commandManager.execute(new SCgCommandChangeIdtf(obj, input.val()));
                 }
                 if (self._idtf_item) {
-                    let [t] = await scClient.CheckElements([new ScAddr(self._idtf_item.addr)]);
+                    let [t] = await scClient.checkElements([new sc.ScAddr(self._idtf_item.addr)]);
                     self.scene.commandManager.execute(new SCgCommandGetNodeFromMemory(
                         obj,
                         t.value,
