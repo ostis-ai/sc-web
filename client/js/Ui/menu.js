@@ -133,7 +133,7 @@ SCWeb.ui.Menu = {
                 }
             }
 
-            SCWeb.core.Server.resolveIdentifiers(data, function (namesMap) {
+            SCWeb.core.Server.resolveIdentifiers(data).then(function (namesMap) {
 
                 for (var itemId in namesMap) {
                     if (namesMap.hasOwnProperty(itemId)) {

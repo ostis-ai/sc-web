@@ -130,16 +130,10 @@ def main():
 
         (r"/api/question/answer/translate/", api.QuestionAnswerTranslate),
 
-        (r"/api/link/content/", api.LinkContent),
-        (r"/api/link/format/", api.LinkFormat),
-
         (r"/api/languages/", api.Languages),
         (r"/api/languages/set/", api.LanguageSet),
 
         (r"/api/idtf/find/", api.IdtfFind),
-        (r"/api/idtf/resolve/", api.IdtfResolve),
-
-        (r"/api/addr/resolve/", api.AddrResolve),
 
         (r"/api/info/tooltip/", api.InfoTooltip),
 

@@ -60,7 +60,7 @@ SCWeb.ui.Core = {
                           self.tooltip_interval = null;
                           var addr = self.tooltip_element.attr('sc_addr');
                           if (addr) {
-                              SCWeb.core.Server.resolveIdentifiers([addr], function (idf) {
+                              SCWeb.core.Server.resolveIdentifiers([addr]).then(function (idf) {
                                   if (self.tooltip_element) { // check mouseout destroy
                                       self.tooltip_element.tooltip({
                                           placement: 'auto',
@@ -85,7 +85,7 @@ SCWeb.ui.Core = {
                     if (body.hasClass('modal-empty')) {
                         body.addClass('loading');
                         // try to find content
-                        SCWeb.core.Server.resolveScAddr(['ui_start_help'], function (addrs) {
+                        SCWeb.core.Server.resolveScAddr(['ui_start_help']).then(function (addrs) {
                             var a = addrs['ui_start_help'];
                             if (a) {
                                 body.html('<div id="help-modal-content" class="sc-window" sc_addr="' + a + '"> </div>');
@@ -124,7 +124,7 @@ SCWeb.ui.Core = {
                 elements.push($(this));
             });
 
-            SCWeb.core.Server.resolveScAddr(identifiers, function (addrs) {
+            SCWeb.core.Server.resolveScAddr(identifiers).then(function (addrs) {
                 for (e in elements) {
                     var el = elements[e];
                     var addr = addrs[el.attr(attr_name)];

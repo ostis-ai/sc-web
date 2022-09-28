@@ -10,7 +10,7 @@ const searchByKeyWord = (event, item) => {
 };
 
 const searchByIdentifier = (identifier) => {
-    SCWeb.core.Server.resolveScAddr([identifier], function (addrs) {
+    SCWeb.core.Server.resolveScAddr([identifier]).then(function (addrs) {
         SCWeb.core.Main.doDefaultCommand([addrs[identifier]]);
     });
 }
@@ -77,7 +77,7 @@ SCWeb.ui.SearchPanel = {
                 }
             });
 
-            SCWeb.core.Server.resolveScAddr(['nrel_main_idtf', 'nrel_idtf', 'nrel_system_identifier'], function (addrs) {
+            SCWeb.core.Server.resolveScAddr(['nrel_main_idtf', 'nrel_idtf', 'nrel_system_identifier']).then(function (addrs) {
                 keynode_nrel_main_idtf = addrs['nrel_main_idtf'];
                 keynode_nrel_idtf = addrs['nrel_idtf'];
                 keynode_nrel_system_idtf = addrs['nrel_system_identifier'];
