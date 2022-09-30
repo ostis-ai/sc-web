@@ -3,12 +3,10 @@ from typing import List
 
 import tornado.web
 import json
-import base64
-import binascii
 
 from sc_client import client
 from sc_client.constants import sc_types
-from sc_client.models import ScIdtfResolveParams, ScTemplate, ScAddr, ScConstruction
+from sc_client.models import ScTemplate, ScAddr, ScConstruction
 from sc_client.sc_keynodes import ScKeynodes
 
 import decorators
