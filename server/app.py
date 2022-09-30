@@ -70,7 +70,7 @@ def main():
     tornado.options.define("idtf_search_limit", default=100,
                            help="number of maximum results for searching by identifier", type=int)
     tornado.options.define("host", default="localhost", help="host name", type=str)
-    tornado.options.define("port", default=8000, help="host port", type=int)
+    tornado.options.define("port", default=8001, help="host port", type=int)
     tornado.options.define("server_host", default="localhost", help="host name", type=str)
     tornado.options.define("server_port", default=8090, help="host port", type=int)
     tornado.options.define("auth_redirect_port", default=80, help="host port", type=int)
@@ -132,8 +132,6 @@ def main():
 
         (r"/api/languages/", api.Languages),
         (r"/api/languages/set/", api.LanguageSet),
-
-        (r"/api/idtf/find/", api.IdtfFind),
 
         (r"/api/info/tooltip/", api.InfoTooltip),
 

@@ -1,13 +1,13 @@
-const searchByKeyWord = async (event, item) => {
-    if (item.addr) {
-        const searchNodeByIdentifier = async function (addr, identification) {
+const searchByKeyWord = async (event, string) => {
+    if (string) {
+        const searchNodeByIdentifier = async function (linkAddr, identification) {
             const NODE = "_node";
 
             const template = new sc.ScTemplate();
             template.triple(
                 [sc.ScType.Unknown, NODE],
                 sc.ScType.EdgeDCommonVar,
-                new sc.ScAddr(addr),
+                linkAddr,
                 sc.ScType.EdgeAccessVarPosPerm,
                 identification,
             );
@@ -19,29 +19,32 @@ const searchByKeyWord = async (event, item) => {
             return null;
         };
 
-        let addr = await searchNodeByIdentifier(item.addr, window.scKeynodes["nrel_system_identifier"]);
-        if (!addr) {
-            addr = await searchNodeByIdentifier(item.addr, window.scKeynodes["nrel_main_idtf"]);
+        let linkAddrs = await window.scClient.getLinksByContents([string]);
+        let addr = null;
 
-            if (!addr) {
-                addr = item.addr;
+        if (linkAddrs.length) {
+            linkAddrs = linkAddrs[0];
+
+            if (linkAddrs.length)
+            {
+                addr = linkAddrs[0];
+                addr = await searchNodeByIdentifier(addr, window.scKeynodes["nrel_system_identifier"]);
+                if (!addr) {
+                    addr = await searchNodeByIdentifier(addr, window.scKeynodes["nrel_main_idtf"]);
+                }
+
+                if (!addr) {
+                    addr = linkAddrs[0];
+                }
             }
-        }
 
-        SCWeb.core.Main.doDefaultCommand([addr]);
-    } else {
-        searchByIdentifier(item);
+            SCWeb.core.Main.doDefaultCommand([addr]);
+        }
     }
     event.stopPropagation();
     $('.typeahead').val('');
     $('.tt-dropdown-menu').hide();
 };
-
-const searchByIdentifier = (identifier) => {
-    SCWeb.core.Server.resolveScAddr([identifier]).then(function (addrs) {
-        SCWeb.core.Main.doDefaultCommand([addrs[identifier]]);
-    });
-}
 
 SCWeb.ui.SearchPanel = {
     init: function () {
@@ -52,15 +55,17 @@ SCWeb.ui.SearchPanel = {
             },
             {
                   name: 'idtf',
-                  source: function (query, cb) {
+                  source: function (str, cb) {
                       $('#search-input').addClass('search-processing');
-                      SCWeb.core.Server.findIdentifiersSubStr(query, function (list) {
+                      window.scClient.getStringsBySubstrings([str]).then((result) => {
                           let keys = [];
 
-                          if (list) {
-                              for (let idx in list) {
-                                  let value = list[idx];
-                                  keys.push({name: value[1], addr: value[0]});
+                          if (result.length) {
+                              const slice = result[0];
+                              for (let idx in slice) {
+                                  if (slice[idx].length < 30) {
+                                      keys.push(slice[idx]);
+                                  }
                               }
                           }
 
@@ -68,15 +73,14 @@ SCWeb.ui.SearchPanel = {
                           $('#search-input').removeClass('search-processing');
                       });
                   },
-                  displayKey: 'name',
                   templates: {
-                      suggestion: function (item) {
-                          return '<p>' + item.name + '</p>';
+                      suggestion: function (string) {
+                          return '<p>' + string + '</p>';
                       }
                   }
               }
-            ).bind('typeahead:selected', async function (event, item, dataset) {
-                await searchByKeyWord(event, item);
+            ).bind('typeahead:selected', async function (event, string, dataset) {
+                await searchByKeyWord(event, string);
             }).keypress(async function (event) {
                 if (event.which === 13) {
                     await searchByKeyWord(event, $('#search-input').val());

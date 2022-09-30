@@ -166,32 +166,6 @@ class LanguageSet(base.BaseHandler):
         self.finish()
 
 
-class IdtfFind(base.BaseHandler):
-    @decorators.method_logging
-    # @tornado.web.asynchronous
-    def get(self):
-        result = []
-
-        # get arguments
-        substr = self.get_argument('substr', None)
-
-        links_array = client.get_links_by_content_substring(substr)
-
-        if links_array:
-            links = links_array[0]
-            if links:
-                contents = client.get_link_content(*links)
-
-                idx = 0
-                for link in links:
-                    result.append([link.value, str(contents[idx].data)])
-
-                    idx += 1
-
-        self.set_header("Content-Type", "application/json")
-        self.finish(json.dumps(result))
-
-
 @decorators.class_logging
 class InfoTooltip(base.BaseHandler):
     # @tornado.web.asynchronous
