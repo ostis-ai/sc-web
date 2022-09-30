@@ -61,9 +61,11 @@ SCWeb.ui.SearchPanel = {
                           let keys = [];
 
                           if (result.length) {
+                              const maxContentSize = 30;
+
                               const slice = result[0];
                               for (let idx in slice) {
-                                  if (slice[idx].length < 30) {
+                                  if (slice[idx].length < maxContentSize) {
                                       keys.push(slice[idx]);
                                   }
                               }
