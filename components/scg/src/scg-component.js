@@ -25,18 +25,10 @@ var scgViewerWindow = function (sandbox) {
         this.scStructTranslator = new scgScStructTranslator(this.editor, this.sandbox);
     }
 
-    var autocompletionVariants = function (keyword, callback, self) {
-
-        SCWeb.core.Server.findIdentifiersSubStr(keyword, function (data) {
-            keys = [];
-            for (key in data) {
-                var list = data[key];
-                for (idx in list) {
-                    var value = list[idx]
-                    keys.push({name: value[1], addr: value[0], group: key});
-                }
-            }
-
+    const autocompletionVariants = function (keyword, callback) {
+        window.scClient.getLinksContentsByContentSubstrings([keyword]).then((strings) => {
+            const maxContentSize = 200;
+            const keys = strings.length ? strings[0].filter((string) => string.length < maxContentSize) : [];
             callback(keys);
         });
     };
