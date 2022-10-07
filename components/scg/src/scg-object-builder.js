@@ -61,34 +61,25 @@ ScgObjectBuilder = {
         var self = this;
         var edit = this.scene.edit;
         var promises = [];
-        nodes.forEach(function (node) {
-            promises.push(new Promise(function (resolve) {
-                var idtf = node.text;
-                if (idtf != null) {
-                    edit.autocompletionVariants(idtf, function (keys) {
-                        var notFindIdtf = true;
-                        for (var key = 0; key < keys.length; key++) {
-                            if (keys[key].name == idtf && keys[key].addr != null) {
-                                notFindIdtf = false;
-                                var addr = keys[key].addr;
+        nodes.forEach(node => {
+            promises.push(new Promise((resolve) => {
+                const idtf = node.text;
+                if (idtf?.length) {
+                    edit.autocompletionVariants(idtf, (keys) => {
+                        keys.any((string) => idtf === string).then((string) => {
+                            window.scClient.getLinksByContents([string]).then((link) => {
                                 self.commandSetAddrList.push(new SCgCommandGetNodeFromMemory(
                                     node,
                                     node.sc_type,
                                     idtf,
-                                    addr,
+                                    link.value,
                                     self.scene)
                                 );
-                                resolve(node);
-                                break;
-                            }
-                        }
-                        if (notFindIdtf) {
-                            resolve(node);
-                        }
+                            });
+                        });
                     });
-                } else {
-                    resolve(node);
                 }
+                resolve(node);
             }));
         });
         return promises;

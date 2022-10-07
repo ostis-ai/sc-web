@@ -226,14 +226,8 @@ div#footer {
     max-height: 400px;
 }
 
-.tt-dropdown-menu .tt-dataset-idtf .tt-suggestion {
-    display: inline-block;
-    max-width: 450px !important;
-    white-space: normal !important;
-    width: 100%;
-    padding-left: 5px;
-    padding-right: 5px;
-    cursor: pointer;
+.tt-dropdown-menu {
+    max-width: 250px;
 }
 
 .tt-dropdown-menu .tt-dataset-idtf .tt-suggestion p {
