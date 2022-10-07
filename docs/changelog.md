@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add latex docs from OSTIS Standard
 
 ### Changed
+- Move search by substring from py-server to js-server
 - Move links/contents handling from py-server to js-server
 - Switch on py-sc-client on py-server and ts-sc-client in js-server
 - Rename `SCsComponent` to `SCnComponent`
