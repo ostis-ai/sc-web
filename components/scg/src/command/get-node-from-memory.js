@@ -10,7 +10,6 @@ SCgCommandGetNodeFromMemory = function (object, newType, newIdtf, newScAddr, sce
 };
 
 SCgCommandGetNodeFromMemory.prototype = {
-
     constructor: SCgCommandGetNodeFromMemory,
 
     undo: function () {
@@ -30,5 +29,4 @@ SCgCommandGetNodeFromMemory.prototype = {
         this.object.setScAddr(this.newScAddr, true);
         this.object.setScType(this.newType);
     }
-
 };

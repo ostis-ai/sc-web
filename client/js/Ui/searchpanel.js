@@ -13,7 +13,7 @@ const searchNodeByAnyIdentifier = async (string) => {
             );
             let result = await window.scClient.templateSearch(template);
             if (result.length) {
-                return result[0].get(NODE).value;
+                return result[0].get(NODE);
             }
 
             return null;
@@ -45,7 +45,7 @@ const searchNodeByAnyIdentifier = async (string) => {
 const translateByKeyWord = async (event, string) => {
     if (string) {
         searchNodeByAnyIdentifier(string).then((selectedAddr) => {
-            SCWeb.core.Main.doDefaultCommand([selectedAddr]);
+            SCWeb.core.Main.doDefaultCommand([selectedAddr.value]);
         });
     }
     event.stopPropagation();
@@ -57,27 +57,16 @@ SCWeb.ui.SearchPanel = {
     init: function () {
         return new Promise(resolve => {
             $('.typeahead').typeahead({
-                  minLength: 3,
+                  minLength: 1,
                   highlight: true,
             },
             {
                   name: 'idtf',
                   source: function (str, callback) {
                       $('#search-input').addClass('search-processing');
-                      window.scClient.getLinksContentsByContentSubstrings([str]).then((result) => {
-                          let keys = [];
-
-                          if (result.length) {
-                              const maxContentSize = 200;
-
-                              const slice = result[0];
-                              for (let idx in slice) {
-                                  if (slice[idx].length < maxContentSize) {
-                                      keys.push(slice[idx]);
-                                  }
-                              }
-                          }
-
+                      window.scClient.getLinksContentsByContentSubstrings([str]).then((strings) => {
+                          const maxContentSize = 200;
+                          const keys = strings.length ? strings[0].filter((string) => string.length < maxContentSize) : [];
                           callback(keys);
                           $('#search-input').removeClass('search-processing');
                       });

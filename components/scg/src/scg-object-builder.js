@@ -66,16 +66,20 @@ ScgObjectBuilder = {
                 const idtf = node.text;
                 if (idtf?.length) {
                     edit.autocompletionVariants(idtf, (keys) => {
-                        keys.any((string) => idtf === string).then((string) => {
-                            window.scClient.getLinksByContents([string]).then((link) => {
-                                self.commandSetAddrList.push(new SCgCommandGetNodeFromMemory(
-                                    node,
-                                    node.sc_type,
-                                    idtf,
-                                    link.value,
-                                    self.scene)
-                                );
-                            });
+                        keys.some((string) => {
+                            if (idtf === string) {
+                                searchNodeByAnyIdentifier(idtf).then((foundAddr) => {
+                                    self.commandSetAddrList.push(new SCgCommandGetNodeFromMemory(
+                                        node,
+                                        node.sc_type,
+                                        idtf,
+                                        foundAddr.value,
+                                        self.scene)
+                                    );
+                                });
+                                return true;
+                            }
+                            return false
                         });
                     });
                 }

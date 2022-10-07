@@ -27,7 +27,7 @@ var scgViewerWindow = function (sandbox) {
 
     const autocompletionVariants = function (keyword, callback) {
         window.scClient.getLinksContentsByContentSubstrings([keyword]).then((strings) => {
-            const maxContentSize = 200;
+            const maxContentSize = 80;
             const keys = strings.length ? strings[0].filter((string) => string.length < maxContentSize) : [];
             callback(keys);
         });
