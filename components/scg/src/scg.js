@@ -414,7 +414,7 @@ SCg.Editor.prototype = {
                 };
 
                 input.typeahead({
-                    minLength: 3,
+                    minLength: 1,
                     highlight: true
                 }, {
                     name: 'idtf',
@@ -448,10 +448,10 @@ SCg.Editor.prototype = {
                         if (!selectedAddr)
                             stop_modal();
 
-                        const [t] = await scClient.checkElements([new sc.ScAddr(selectedAddr)]);
+                        const [type] = await scClient.checkElements([selectedAddr]);
                         self.scene.commandManager.execute(new SCgCommandGetNodeFromMemory(
                             obj,
-                            t.value,
+                            type.value,
                             self._selectedIdtf,
                             selectedAddr.value,
                             self.scene));
