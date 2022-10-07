@@ -57,7 +57,7 @@ SCWeb.ui.SearchPanel = {
                   name: 'idtf',
                   source: function (str, cb) {
                       $('#search-input').addClass('search-processing');
-                      window.scClient.getStringsBySubstrings([str]).then((result) => {
+                      window.scClient.getLinksContentsByContentSubstrings([str]).then((result) => {
                           let keys = [];
 
                           if (result.length) {
