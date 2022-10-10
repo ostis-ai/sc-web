@@ -6,7 +6,7 @@ The long term idea of this project is to create a universal rendering mechanism 
 
 ## Demo
 
-![sc-web-demo](https://github.com/ostis-ai/ostis-project/raw/sc-web-demo/docs/sc-web-demo.gif)
+![sc-web-demo](https://github.com/ostis-ai/ostis-project/raw/main/docs/sc-web-demo.gif)
 
 ## Quick start
 
