@@ -21,13 +21,13 @@ var PdfViewer = function(sandbox) {
         self.ctx = null;
         self.id = 0;
 
-        self.viewPdf = function (url, id) {
+        self.viewPdf = function (buffer, id) {
             self.id = id;
             self.canvas = document.getElementById('pdf_canvas'  + self.id);
             self.ctx = self.canvas.getContext('2d');
 
             PDFJS.disableWorker = true;
-            PDFJS.getDocument(url).then(function (pdfDoc_) {
+            PDFJS.getDocument(buffer).then(function (pdfDoc_) {
                 self.pdfDoc = pdfDoc_;
 
                 document.getElementById('pdf_page_count' + self.id).textContent = self.pdfDoc.numPages;
@@ -112,9 +112,7 @@ var PdfViewer = function(sandbox) {
     this.sandbox = sandbox;
 
     // ---- window interface -----
-    this.receiveData = function(data) {
-      return new Promise(resolve => {
-
+    this.receiveData = function (data) {
         $(this.container).empty();
 
         var uniqId = Math.floor(Math.random() * (100000 - 0) + 0);
@@ -135,17 +133,13 @@ var PdfViewer = function(sandbox) {
         });
 
         $('#pdf_canvas' + uniqId).click(function () {
-          window.open(location.origin + "/" + data);
         });
 
         viewer.viewPdf(data, uniqId);
-
-        resolve();
-      });
     };
     
         
-    this.createHtml = function(id, container){	
+    this.createHtml = function (id, container) {
        var mainPdfDiv = '<div id="pdf' + id + '"></div>';
        $(container).append(mainPdfDiv);
        
@@ -170,9 +164,27 @@ var PdfViewer = function(sandbox) {
        $('#pdf' + id).append(canvasDiv);       
 
     };
+
+    const base64ToArrayBuffer = function (base64) {
+        const binary_string = window.atob(base64);
+        const len = binary_string.length;
+        const bytes = new Uint8Array(len);
+
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes.buffer;
+    }
     
     if (this.sandbox.addr) {
-        this.receiveData('api/link/content/?addr=' + this.sandbox.addr);
+        window.scClient.getLinkContents([new sc.ScAddr(this.sandbox.addr)]).then((contents) => {
+           if (contents.length) {
+               const base64Pdf = contents[0].data;
+               const buffer = base64ToArrayBuffer(base64Pdf);
+
+               this.receiveData(buffer);
+           }
+        });
     }
 };
 

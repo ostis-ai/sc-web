@@ -298,7 +298,7 @@ SCWeb.ui.WindowManager = {
             }
 
             (function (containers_map) {
-                SCWeb.core.Server.getLinksFormat(linkAddrs,
+                SCWeb.core.Server.getLinksFormat(linkAddrs).then(
                   function (formats) {
 
                       var result = {};
@@ -321,9 +321,6 @@ SCWeb.ui.WindowManager = {
                       }
 
                       resolve(result);
-                  },
-                  function () {
-                      reject();
                   }
                 );
             })(containers_map);

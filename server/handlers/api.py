@@ -3,12 +3,10 @@ from typing import List
 
 import tornado.web
 import json
-import base64
-import binascii
 
 from sc_client import client
 from sc_client.constants import sc_types
-from sc_client.models import ScIdtfResolveParams, ScTemplate, ScAddr, ScConstruction
+from sc_client.models import ScTemplate, ScAddr, ScConstruction
 from sc_client.sc_keynodes import ScKeynodes
 
 import decorators
@@ -144,68 +142,6 @@ class QuestionAnswerTranslate(base.BaseHandler):
         self.finish(result)
 
 
-class LinkContent(base.BaseHandler):
-    # @tornado.web.asynchronous
-    def get(self):
-        # parse arguments
-        addr = ScAddr(int(self.get_argument('addr', None)))
-        if addr is None:
-            return logic.serialize_error(self, 404, 'Invalid arguments')
-
-        result = client.get_link_content(addr)
-        result = result[0].data
-        try:
-            data = base64.b64decode(result, validate=True)
-        except binascii.Error:
-            data = result
-
-        if len(result) == 0:
-            return logic.serialize_error(self, 404, 'Content not found')
-
-        self.set_header("Content-Type", logic.get_link_mime(addr))
-        self.finish(data)
-
-
-class LinkFormat(base.BaseHandler):
-    # @tornado.web.asynchronous
-    def post(self):
-        # parse arguments
-        first = True
-        arg = None
-        arguments = []
-        idx = 0
-        while first or (arg is not None):
-            arg_str = u'%d_' % idx
-            arg = self.get_argument(arg_str, None)
-            if arg is not None:
-                arguments.append(ScAddr(int(arg)))
-            first = False
-            idx += 1
-
-        keynodes = ScKeynodes()
-
-        result = {}
-        for arg in arguments:
-
-            # try to resolve format
-            template = ScTemplate()
-            template.triple_with_relation(
-                arg,
-                sc_types.EDGE_D_COMMON_VAR,
-                sc_types.NODE_VAR,
-                sc_types.EDGE_ACCESS_VAR_POS_PERM,
-                keynodes[KeynodeSysIdentifiers.nrel_format.value]
-            )
-            format_result = client.template_search(template)
-            if format_result:
-                result[arg.value] = format_result[0].get(2).value
-            else:
-                result[arg.value] = keynodes[KeynodeSysIdentifiers.format_txt.value].value
-
-        self.set_header("Content-Type", "application/json")
-        self.finish(json.dumps(result))
-
-
 @decorators.class_logging
 class Languages(base.BaseHandler):
     # @tornado.web.asynchronous
@@ -226,135 +162,6 @@ class LanguageSet(base.BaseHandler):
         sc_session.set_current_lang_mode(lang_addr)
 
         self.finish()
-
-
-class IdtfFind(base.BaseHandler):
-    @decorators.method_logging
-    # @tornado.web.asynchronous
-    def get(self):
-        keynodes = ScKeynodes()
-        result = {'main': [], 'common': [], 'sys': []}
-
-        # get arguments
-        substr = self.get_argument('substr', None)
-
-        links_array = client.get_links_by_content_substring(substr)
-
-        if links_array:
-            links = links_array[0]
-            if links:
-                contents = client.get_link_content(*links)
-                main_idtfs = []
-                system_idtfs = []
-                links_idtfs = []
-                idx = 0
-                ELEMENT = "_element"
-
-                for link in links:
-                    link_is_used = False
-
-                    template = ScTemplate()
-                    template.triple_with_relation(
-                        [sc_types.UNKNOWN, ELEMENT],
-                        sc_types.EDGE_D_COMMON_VAR,
-                        link,
-                        sc_types.EDGE_ACCESS_VAR_POS_PERM,
-                        keynodes[KeynodeSysIdentifiers.nrel_main_idtf.value],
-                    )
-                    result = client.template_search(template)
-
-                    for item in result:
-                        link_is_used = True
-                        main_idtfs.append([item.get(ELEMENT).value, str(contents[idx].data)])
-
-                    template = ScTemplate()
-                    template.triple_with_relation(
-                        [sc_types.UNKNOWN, ELEMENT],
-                        sc_types.EDGE_D_COMMON_VAR,
-                        link,
-                        sc_types.EDGE_ACCESS_VAR_POS_PERM,
-                        keynodes[KeynodeSysIdentifiers.nrel_system_identifier.value],
-                    )
-                    result = client.template_search(template)
-
-                    for item in result:
-                        link_is_used = True
-                        system_idtfs.append([item.get(ELEMENT).value, str(contents[idx].data)])
-
-                    if not link_is_used:
-                        links_idtfs.append([link.value, str(contents[idx].data)])
-
-                    idx += 1
-
-                result = {'main': main_idtfs, 'common': links_idtfs, 'sys': system_idtfs}
-
-        self.set_header("Content-Type", "application/json")
-        self.finish(json.dumps(result))
-
-
-@decorators.class_logging
-class IdtfResolve(base.BaseHandler):
-    # @tornado.web.asynchronous
-    def post(self):
-        # get arguments
-        idx = 1
-        arguments = []
-        arg = ''
-        while arg is not None:
-            arg = self.get_argument(u'%d_' % idx, None)
-            if arg is not None:
-                arguments.append(arg)
-            idx += 1
-
-        sc_session = logic.ScSession(self)
-        used_lang = sc_session.get_used_language()
-
-        result = {}
-        # get requested identifiers for arguments
-        for addr_str in arguments:
-            addr = int(addr_str)
-            addr = ScAddr(addr)
-            if not addr.is_valid():
-                self.clear()
-                self.set_status(404)
-                self.finish('Can\'t parse sc-addr from argument: %s' % addr_str)
-
-            idtf_value = logic.get_identifier_translated(addr, used_lang)
-            if idtf_value:
-                result[addr_str] = idtf_value
-
-        self.set_header("Content-Type", "application/json")
-        self.finish(json.dumps(result))
-
-
-@decorators.class_logging
-class AddrResolve(base.BaseHandler):
-    # @tornado.web.asynchronous
-    def post(self):
-
-        # parse arguments
-        first = True
-        arg = None
-        arguments = []
-        idx = 0
-        while first or (arg is not None):
-            arg_str = u'%d_' % idx
-            arg = self.get_argument(arg_str, None)
-            if arg is not None:
-                arguments.append(arg)
-            first = False
-            idx += 1
-
-        res = {}
-        resolve_keynodes_params = map(lambda x: ScIdtfResolveParams(idtf=x, type=None), arguments)
-        addrs = client.resolve_keynodes(*resolve_keynodes_params)
-        for i in range(len(addrs)):
-            addr = addrs[i]
-            if addr is not None:
-                res[arguments[i]] = addr.value
-
-        self.set_header("Content-Type", "application/json")
-        self.finish(json.dumps(res))
 
 
 @decorators.class_logging

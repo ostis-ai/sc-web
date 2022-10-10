@@ -171,11 +171,9 @@ SCWeb.core.Server = {
      * @param {Array} objects List of sc-addrs to resolve identifiers
      * @param {Function} callback
      */
-    resolveIdentifiers: function (objects, callback) {
-
-        if (objects.length === 0) {
-            callback({});
-            return; // do nothing
+    resolveIdentifiers: async function (objects) {
+        if (!objects.length) {
+            return {};
         }
 
         let self = this;
@@ -185,8 +183,7 @@ SCWeb.core.Server = {
         }
 
         let result = {}, used = {};
-        let arguments = '';
-        let idx = 1;
+        let notChecked = [];
         for (let i in objects) {
             let id = objects[i];
 
@@ -201,34 +198,58 @@ SCWeb.core.Server = {
                 continue;
             }
 
-            if (idx > 1)
-                arguments = arguments + '&';
-            arguments = arguments + idx + '_=' + id;
-            idx++;
+            notChecked.push(i);
         }
 
-        if (arguments.length === 0) { // all results cached
-            callback(result);
-        } else {
+        if (arguments.length) { // all results cached
+            const getIdtf = async function (addr) {
+                const LINK = "_link";
 
-            this._push_task({
-                type: "POST",
-                url: "api/idtf/resolve/",
-                data: arguments,
-                success: function (idtfs) {
-                    for (let k in idtfs) {
-                        if (idtfs.hasOwnProperty(k)) {
-                            result[k] = idtfs[k];
-                        }
-                    }
+                const mainIdtfTemplate = new sc.ScTemplate();
+                mainIdtfTemplate.tripleWithRelation(
+                    addr,
+                    sc.ScType.EdgeDCommonVar,
+                    [sc.ScType.LinkVar, LINK],
+                    sc.ScType.EdgeAccessVarPosPerm,
+                    new sc.ScAddr(window.scKeynodes["nrel_main_idtf"]),
+                );
+                mainIdtfTemplate.triple(
+                    new sc.ScAddr(self._current_language),
+                    sc.ScType.EdgeAccessVarPosPerm,
+                    LINK,
+                );
+                let result = await window.scClient.templateSearch(mainIdtfTemplate);
 
-                    callback(result);
-                },
-                error: function () {
-                    callback({});
+                if (result.length) {
+                    const contents = await window.scClient.getLinkContents([result[0].get(LINK)]);
+                    return contents[0].data;
                 }
-            });
+
+                const sysIdtfTemplate = new sc.ScTemplate();
+                sysIdtfTemplate.tripleWithRelation(
+                    addr,
+                    sc.ScType.EdgeDCommonVar,
+                    [sc.ScType.LinkVar, LINK],
+                    sc.ScType.EdgeAccessVarPosPerm,
+                    new sc.ScAddr(window.scKeynodes["nrel_system_identifier"]),
+                );
+
+                result = await window.scClient.templateSearch(sysIdtfTemplate);
+                if (result.length) {
+                    const contents = await window.scClient.getLinkContents([result[0].get(LINK)]);
+                    return contents[0].data;
+                }
+
+                return "";
+            }
+
+            for (let i in notChecked) {
+                let id = objects[i];
+                result[id] = await getIdtf(new sc.ScAddr(parseInt(id)));
+            }
         }
+
+        return result;
     },
 
     _makeArgumentsList: function (arguments_list) {
@@ -305,46 +326,45 @@ SCWeb.core.Server = {
      * @param {callback} Callback function that calls, when sc-addrs resolved. It
      * takes object that contains map of resolved sc-addrs as parameter
      */
-    resolveScAddr: function (idtfList, callback) {
-        let self = this, arguments = '', need_resolve = [], result = {}, used = {};
+    resolveScAddr: async function (idtfList) {
+        let self = this;
+        let notResolved = [], result = {}, used = {};
 
         for (let i = 0; i < idtfList.length; i++) {
-            const arg = idtfList[i];
+            const idtf = idtfList[i];
 
-            const cached = this._sys_identifiers_cache.get(arg);
+            const cached = this._sys_identifiers_cache.get(idtf);
             if (cached) {
-                result[arg] = cached;
+                result[idtf] = cached;
                 continue;
             }
 
-            if (used[arg]) continue;
-            used[arg] = true;
+            if (used[idtf]) continue;
+            used[idtf] = true;
 
-            arguments += need_resolve.length.toString() + '_=' + arg + '&';
-            need_resolve.push(arg);
+            notResolved.push(idtf);
         }
 
-        if (need_resolve.length === 0) {
-            callback(result);
+        if (notResolved.length === 0) {
+            return result;
         } else {
-            (function (result, arguments, need_resolve, callback) {
-                self._push_task({
-                    type: "POST",
-                    url: "api/addr/resolve/",
-                    data: arguments,
-                    success: function (addrs) {
-                        for (let i in need_resolve) {
-                            const key = need_resolve[i];
-                            const addr = addrs[key];
-                            if (addr) {
-                                self._sys_identifiers_cache.set(key, addr);
-                                result[key] = addr;
-                            }
-                        }
-                        callback(result);
-                    }
-                });
-            })(result, arguments, need_resolve, callback);
+            return await (async function (result, notResolved) {
+                let keynodesData = [];
+
+                for (let i in notResolved) {
+                    const idtf = notResolved[i];
+
+                    if (idtf)
+                        keynodesData.push({id: idtf, type: new sc.ScType()});
+                }
+
+                const addrs = await window.scClient.resolveKeynodes(keynodesData);
+                for (let i in addrs) {
+                    result[i] = addrs[i].value;
+                }
+
+                return result;
+            })(result, notResolved);
         }
     },
 
@@ -355,35 +375,32 @@ SCWeb.core.Server = {
      * resolved sc-links format (key: sc-link addr, value: format addr).
      * @param {Function} error Callback function, that calls on error
      */
-    getLinksFormat: function (links, success, error) {
-        let arguments = '';
+    getLinksFormat: async function (links) {
+        let formats = {}
+
         for (let i = 0; i < links.length; i++) {
-            let arg = links[i];
-            arguments += i.toString() + '_=' + arg + '&';
+            const addrStr = links[i];
+            const addr = new sc.ScAddr(parseInt(addrStr));
+
+            const template = new sc.ScTemplate();
+            template.tripleWithRelation(
+                addr,
+                sc.ScType.EdgeDCommonVar,
+                sc.ScType.NodeVar,
+                sc.ScType.EdgeAccessVarPosPerm,
+                new sc.ScAddr(window.scKeynodes["nrel_format"]),
+            );
+            const format_result = await window.scClient.templateSearch(template);
+
+            if (format_result.length) {
+                formats[addrStr] = format_result[0].get(2).value;
+            }
+            else {
+                formats[addrStr] = window.scKeynodes["format_txt"];
+            }
         }
 
-        this._push_task({
-            type: "POST",
-            url: "api/link/format/",
-            data: arguments,
-            success: success
-        });
-    },
-
-    /**
-     * Returns data of specified content
-     * @param {String} addr sc-addr of sc-link to get data
-     * @param success
-     * @param {Function} error Callback function, that calls on error
-     */
-    getLinkContent: function (addr, success, error) {
-        this._push_task({
-            url: "api/link/content/",
-            type: "GET",
-            data: {"addr": addr},
-            success: success,
-            error: error
-        });
+        return formats;
     },
 
     /**
