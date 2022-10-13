@@ -63,7 +63,7 @@ var HtmlViewer = function(sandbox) {
                     }
                 }
 
-                Promise.all(this.sandbox.createViewersForScLinks(sc_links)).then(
+                this.sandbox.createViewersForScLinks(sc_links).then(
                   function() {
                       resolve();
                   });
