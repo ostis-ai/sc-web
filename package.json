@@ -1,10 +1,10 @@
 {
   "name": "sc-web",
-  "version": "1.0.0",
+  "version": "0.7.0-Rebirth",
   "module": "commonjs",
   "dependencies": {
     "grunt": "^1.0.1",
-    "ts-sc-client": "^0.2.0"
+    "ts-sc-client": "^0.3.0"
   },
 
   "scripts": {

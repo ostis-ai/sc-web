@@ -57,8 +57,8 @@ SCWeb.ui.LanguagePanel = {
 
     updateSearchInput: function () {
         var keynodes = ['ui_control_search'];
-        SCWeb.core.Server.resolveScAddr(keynodes, function (keynodes) {
-            SCWeb.core.Server.resolveIdentifiers(keynodes, function (idf) {
+        SCWeb.core.Server.resolveScAddr(keynodes).then(function (keynodes) {
+            SCWeb.core.Server.resolveIdentifiers([keynodes['ui_control_search']]).then(function (idf) {
                 $("#search-input").attr('placeholder', idf[keynodes['ui_control_search']]);
             });
         })

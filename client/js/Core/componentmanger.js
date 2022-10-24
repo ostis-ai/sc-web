@@ -31,8 +31,7 @@ SCWeb.core.ComponentManager = {
             }
 
             var self = this;
-            SCWeb.core.Server.resolveScAddr(keynodes, function (addrs) {
-
+            SCWeb.core.Server.resolveScAddr(keynodes).then(function (addrs) {
                 self._keynodes = addrs;
                 for (var i = 0; i < self._initialize_queue.length; i++) {
                     var comp_def = self._initialize_queue[i];

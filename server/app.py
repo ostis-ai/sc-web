@@ -73,6 +73,7 @@ def main():
     tornado.options.define("port", default=8000, help="host port", type=int)
     tornado.options.define("server_host", default="localhost", help="host name", type=str)
     tornado.options.define("server_port", default=8090, help="host port", type=int)
+    tornado.options.define("public_url", default="ws://localhost:8090/ws_json", help="public server url", type=str)
     tornado.options.define("auth_redirect_port", default=80, help="host port", type=int)
 
     tornado.options.define("google_client_id", default="", help="client id for google auth", type=str)
@@ -130,16 +131,8 @@ def main():
 
         (r"/api/question/answer/translate/", api.QuestionAnswerTranslate),
 
-        (r"/api/link/content/", api.LinkContent),
-        (r"/api/link/format/", api.LinkFormat),
-
         (r"/api/languages/", api.Languages),
         (r"/api/languages/set/", api.LanguageSet),
-
-        (r"/api/idtf/find/", api.IdtfFind),
-        (r"/api/idtf/resolve/", api.IdtfResolve),
-
-        (r"/api/addr/resolve/", api.AddrResolve),
 
         (r"/api/info/tooltip/", api.InfoTooltip),
 
@@ -164,7 +157,8 @@ def main():
 
         google_oauth={"key": tornado.options.options.google_client_id,
                       "secret": tornado.options.options.google_client_secret
-                      }
+                      },
+        public_url=tornado.options.options.public_url
     )
 
     application.listen(tornado.options.options.port)

@@ -19,9 +19,7 @@ YoutubeLinkViewer.prototype = {
         this.sandbox = sandbox;
         
         if (this.sandbox.addr) {
-            SCWeb.core.Server.getLinkContent(this.sandbox.addr, 
-                                            $.proxy(this.receiveData, this),
-                                            function () {});
+            window.scClient.getLinkContents([this.sandbox.addr]).then($.proxy(this.receiveData, this));
         }
     },
     

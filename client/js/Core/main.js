@@ -4,7 +4,6 @@ const currentYear = new Date().getFullYear();
 
 function ScClientCreate() {
     let res, rej;
-    let serverHost = "ws://localhost:8090/ws_json";
     let scClient = new sc.ScClient(serverHost);
     return new Promise((resolve, reject) => {
         res = resolve(scClient);
@@ -207,7 +206,7 @@ SCWeb.core.Main = {
     doCommandByIdentifier: function (cmd_identifier, cmd_args) {
         const self = this;
         SCWeb.core.Arguments.clear();
-        SCWeb.core.Server.resolveScAddr([cmd_identifier].concat(cmd_args), function (result) {
+        SCWeb.core.Server.resolveScAddr([cmd_identifier].concat(cmd_args)).then(function (result) {
             const cmd_addr = result[cmd_identifier];
             const resolved_args = [];
             cmd_args.forEach(function (argument) {
@@ -266,7 +265,7 @@ SCWeb.core.Main = {
     doDefaultCommand: function (cmd_args) {
         if (!this.default_cmd) {
             const self = this;
-            SCWeb.core.Server.resolveScAddr([this.default_cmd_str], function (addrs) {
+            SCWeb.core.Server.resolveScAddr([this.default_cmd_str]).then(function (addrs) {
                 self.default_cmd = addrs[self.default_cmd_str];
                 if (self.default_cmd) {
                     self.doCommand(self.default_cmd, cmd_args);
@@ -282,7 +281,7 @@ SCWeb.core.Main = {
      * @param {string} sys_id System identifier
      */
     doDefaultCommandWithSystemIdentifier: function (sys_id) {
-        SCWeb.core.Server.resolveScAddr([sys_id], function (addrs) {
+        SCWeb.core.Server.resolveScAddr([sys_id]).then(function (addrs) {
             const resolvedId = addrs[sys_id];
             if (resolvedId) {
                 SCWeb.core.Main.doDefaultCommand([resolvedId]);

@@ -1,42 +1,59 @@
-# About
-Current repository contains web interface for ostis platform ([here](https://github.com/ostis-ai) you can find all ostis modules).
+# SC-Web
+## About
+SC-Web is an intelligent knowledge base user interface. Currently, it is a part of the [OSTIS Web Platform](https://github.com/ostis-ai/ostis-web-platform). 
 
-# Installation
-## Using Docker
-Running image:
-```sh
-docker run --rm -it -p 8000:8000 ostis/sc-web --server_host=... <any other arguments of app.py>
-```
-### Connecting to sc-server 
-You will need to pass `--server_host=<your hostname>` flag to the container. 
-- In case the `sc-server` is running on another machine or container, simply put its hostname in the template. 
-- If you're running `sc-machine` locally, use [this guide](https://www.howtogeek.com/devops/how-to-connect-to-localhost-within-a-docker-container/) to set up connection to your host's `localhost`. Writing `--server_host=localhost` **will not work**. 
+The long term idea of this project is to create a universal rendering mechanism for interfaces defined inside knowledge bases.
 
-In non-production environment it's easier to pass `--network=host` flag to `docker run` command to connect to `sc-server` running locally.
-## Installing manually
-### Installing requirements:
-* python3
-* pip
-* nodejs
-* npm
-* grunt-cli
-* python modules: tornado, sqlalchemy, numpy, configparser, py-sc-client
+## Demo
 
-You can install deps with
+![sc-web-demo](https://github.com/ostis-ai/ostis-project/raw/main/docs/sc-web-demo.gif)
+
+## Quick start
+
+We provide the `ostis/sc-web` Docker image to simplify the integration of this UI with existing OSTIS-systems.
 
 ```sh
-    pip3 install -r requirements.txt
-    cd ./scripts
-    ./install_deps_ubuntu.sh    #for debian based distros
+# Connect to remote sc-server (or another Docker container)
+docker run --rm -it -p 8000:8000 ostis/sc-web:latest --server_host=<ip or hostname>
+# Connect to server hosted on localhost
+docker run --rm -it --network=host ostis/sc-web:latest
 ```
 
-### Building
-To install current module you may use internal scripts. Run
+## Installation
+
+  If you're using Ubuntu, you can install dependencies using our script:
+
+  ```sh
+  cd sc-web/scripts
+  ./install_deps_ubuntu.sh
+  pip3 install -r requirements.txt
+  npm install
+  ```
+
+  Otherwise, the following dependencies should be installed:
+
+  - python3
+  - pip
+  - nodejs
+  - npm
+  - grunt-cli
+  - python modules: tornado, sqlalchemy, numpy, configparser, py-sc-client
+
+  ### Building
 
 ```sh
-    cd scripts
-    ./install.sh
+npm run build
 ```
 
-### Running
-To run ostis web interface you should build knowledge base and run sc server. You can do it by running `./build_kb.sh` and `./run_sc_server.sh` in [ostis-web-platform](https://github.com/ostis-ai/ostis-web-platform) module. After that you should run `./run_scweb.sh` in */scripts* directory.
+  ### Running
+
+  SC-Web requires `sc-server` to be up and running.
+  
+Use included scripts to launch the server:
+
+```sh
+cd sc-web/scripts
+./run_scweb.sh`
+``` 
+
+The UI will listen at localhost:8000.

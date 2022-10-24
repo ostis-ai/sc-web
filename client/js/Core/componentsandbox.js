@@ -176,17 +176,13 @@ SCWeb.core.ComponentSandbox.prototype.getKeynode = function (sys_idtf) {
 };
 
 SCWeb.core.ComponentSandbox.prototype.getIdentifiers = function (addr_list, callback) {
-    SCWeb.core.Server.resolveIdentifiers(addr_list, callback);
+    SCWeb.core.Server.resolveIdentifiers(addr_list).then(callback);
 };
 
 SCWeb.core.ComponentSandbox.prototype.getIdentifier = function (addr, callback) {
-    SCWeb.core.Server.resolveIdentifiers([addr], function (idtfs) {
+    SCWeb.core.Server.resolveIdentifiers([addr]).then(function (idtfs) {
         callback(idtfs[addr]);
     });
-};
-
-SCWeb.core.ComponentSandbox.prototype.getLinkContent = function (addr, callback_success, callback_error) {
-    SCWeb.core.Server.getLinkContent(addr, callback_success, callback_error);
 };
 
 SCWeb.core.ComponentSandbox.prototype.resolveAddrs = function (idtf_list, callback) {
@@ -202,7 +198,7 @@ SCWeb.core.ComponentSandbox.prototype.resolveAddrs = function (idtf_list, callba
             arguments.push(idtf);
     }
 
-    SCWeb.core.Server.resolveScAddr(arguments, function (data) {
+    SCWeb.core.Server.resolveScAddr(arguments).then(function (data) {
 
         for (var key in data) {
             if (data.hasOwnProperty(key))

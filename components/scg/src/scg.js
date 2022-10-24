@@ -419,26 +419,20 @@ SCg.Editor.prototype = {
                 }, {
                     name: 'idtf',
                     source: function (str, callback) {
-                        self._idtf_item = null;
-                        self.autocompletionVariants(str, callback, {
-                            editor: self
-                        });
+                        self._selectedIdtf = null;
+                        self.autocompletionVariants(str, callback);
                     },
-                    displayKey: 'name',
                     templates: {
-                        suggestion: function (item) {
-                            var decorator = types[item.type];
-                            if (decorator)
-                                return decorator(item.name);
-
-                            return item.name;
+                        suggestion: (string) => {
+                            return string;
                         }
                     }
-                }).bind('typeahead:selected', function (evt, item, dataset) {
-                    if (item && item.addr) {
-                        self._idtf_item = item;
+                }).bind('typeahead:selected', (event, string, data) => {
+                    if (string?.length) {
+                        self._selectedIdtf = string;
                     }
-                    evt.stopPropagation();
+                    event.stopPropagation();
+                    input.val(string);
                     $('.typeahead').val('');
                 });
             }
@@ -446,18 +440,23 @@ SCg.Editor.prototype = {
             // process controls
             $(container + ' #scg-change-idtf-apply').click(async function () {
                 var obj = self.scene.selected_objects[0];
-                if (obj.text != input.val() && !self._idtf_item) {
-                    self.scene.commandManager.execute(new SCgCommandChangeIdtf(obj, input.val()));
+                if (obj.text != input.val() && !self._selectedIdtf) {
+                    self.scene.commandManager.execute(new SCgCommandChangeIdtf(obj, self._selectedIdtf));
                 }
-                if (self._idtf_item) {
-                    let [t] = await scClient.checkElements([new sc.ScAddr(self._idtf_item.addr)]);
-                    self.scene.commandManager.execute(new SCgCommandGetNodeFromMemory(
-                        obj,
-                        t.value,
-                        input.val(),
-                        self._idtf_item.addr,
-                        self.scene));
-                    stop_modal();
+                if (self._selectedIdtf) {
+                    searchNodeByAnyIdentifier(self._selectedIdtf).then(async (selectedAddr) => {
+                        if (!selectedAddr)
+                            stop_modal();
+
+                        const [type] = await scClient.checkElements([selectedAddr]);
+                        self.scene.commandManager.execute(new SCgCommandGetNodeFromMemory(
+                            obj,
+                            type.value,
+                            self._selectedIdtf,
+                            selectedAddr.value,
+                            self.scene));
+                        stop_modal();
+                    });
                 } else
                     stop_modal();
             });

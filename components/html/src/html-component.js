@@ -38,11 +38,10 @@ var HtmlViewer = function(sandbox) {
             const self = this;
 
             // resolve addrs
-            SCWeb.core.Server.resolveScAddr(idtfList.concat(scLinksList), $.proxy(function(addrs) {
+            SCWeb.core.Server.resolveScAddr(idtfList.concat(scLinksList)).then($.proxy(function(addrs) {
                 for (let idtf in addrs) {
                     self.addrs.push(addrs[idtf]);
                 }
-                console.log(addrs);
 
                 var sc_elements = $(this.container + ' sc_element');
                 for (var i = 0; i < sc_elements.length; ++i) {
@@ -64,7 +63,7 @@ var HtmlViewer = function(sandbox) {
                     }
                 }
 
-                Promise.all(this.sandbox.createViewersForScLinks(sc_links)).then(
+                this.sandbox.createViewersForScLinks(sc_links).then(
                   function() {
                       resolve();
                   });

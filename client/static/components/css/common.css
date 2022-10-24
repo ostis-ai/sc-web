@@ -226,6 +226,10 @@ div#footer {
     max-height: 400px;
 }
 
+.tt-dropdown-menu {
+    max-width: 250px;
+}
+
 .tt-dropdown-menu .tt-dataset-idtf .tt-suggestion {
     display: inline-block;
     max-width: 450px !important;

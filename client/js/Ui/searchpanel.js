@@ -1,89 +1,91 @@
-const searchByKeyWord = (event, item) => {
-    if (item.addr) {
-        SCWeb.core.Main.doDefaultCommand([item.addr]);
-    } else {
-        searchByIdentifier(item);
+const searchNodeByAnyIdentifier = async (string) => {
+    return new Promise(async (resolve) => {
+        const searchNodeByIdentifier = async function (linkAddr, identification) {
+            const NODE = "_node";
+
+            const template = new sc.ScTemplate();
+            template.triple(
+                [sc.ScType.Unknown, NODE],
+                sc.ScType.EdgeDCommonVar,
+                linkAddr,
+                sc.ScType.EdgeAccessVarPosPerm,
+                identification,
+            );
+            let result = await window.scClient.templateSearch(template);
+            if (result.length) {
+                return result[0].get(NODE);
+            }
+
+            return null;
+        };
+
+        let linkAddrs = await window.scClient.getLinksByContents([string]);
+        let addr = null;
+
+        if (linkAddrs.length) {
+            linkAddrs = linkAddrs[0];
+
+            if (linkAddrs.length) {
+                addr = linkAddrs[0];
+                addr = await searchNodeByIdentifier(addr, window.scKeynodes["nrel_system_identifier"]);
+                if (!addr) {
+                    addr = await searchNodeByIdentifier(addr, window.scKeynodes["nrel_main_idtf"]);
+                }
+
+                if (!addr) {
+                    addr = linkAddrs[0];
+                }
+            }
+
+            resolve(addr);
+        }
+    });
+};
+
+const translateByKeyWord = async (event, string) => {
+    if (string) {
+        searchNodeByAnyIdentifier(string).then((selectedAddr) => {
+            SCWeb.core.Main.doDefaultCommand([selectedAddr.value]);
+        });
     }
     event.stopPropagation();
     $('.typeahead').val('');
     $('.tt-dropdown-menu').hide();
 };
 
-const searchByIdentifier = (identifier) => {
-    SCWeb.core.Server.resolveScAddr([identifier], function (addrs) {
-        SCWeb.core.Main.doDefaultCommand([addrs[identifier]]);
-    });
-}
-
 SCWeb.ui.SearchPanel = {
     init: function () {
         return new Promise(resolve => {
-            var keynode_nrel_main_idtf = null;
-            var keynode_nrel_idtf = null;
-            var keynode_nrel_system_idtf = null;
-
             $('.typeahead').typeahead({
-                  minLength: 3,
+                  minLength: 1,
                   highlight: true,
-              },
-              {
+            },
+            {
                   name: 'idtf',
-                  source: function (query, cb) {
+                  source: function (str, callback) {
                       $('#search-input').addClass('search-processing');
-                      SCWeb.core.Server.findIdentifiersSubStr(query, function (data) {
-                          keys = [];
-
-                          var addValues = function (key) {
-                              var list = data[key];
-                              if (list) {
-                                  for (idx in list) {
-                                      var value = list[idx]
-                                      keys.push({name: value[1], addr: value[0], group: key});
-                                  }
-                              }
-                          }
-
-                          addValues('sys');
-                          addValues('main');
-                          addValues('common');
-
-                          cb(keys);
+                      window.scClient.getLinksContentsByContentSubstrings([str]).then((strings) => {
+                          const maxContentSize = 200;
+                          const keys = strings.length ? strings[0].filter((string) => string.length < maxContentSize) : [];
+                          callback(keys);
                           $('#search-input').removeClass('search-processing');
                       });
                   },
-                  displayKey: 'name',
                   templates: {
-                      suggestion: function (item) {
-
-                          //glyphicon glyphicon-globe
-                          var html = '';
-                          if (item.group === 'common') {
-                              return '<p class="sc-content">' + item.name + '</p>';
-                          } else {
-                              var cl = 'glyphicon glyphicon-user';
-                              if (item.group === 'sys') {
-                                  cl = 'glyphicon glyphicon-globe';
-                              }
-                              return '<p><span class="tt-suggestion-icon ' + cl + '"></span>' + item.name + '</p>';
-                          }
+                      suggestion: function (string) {
+                          return '<p>' + string + '</p>';
                       }
                   }
               }
-            ).bind('typeahead:selected', function (event, item, dataset) {
-                searchByKeyWord(event, item);
-            }).keypress(function (event) {
+            ).bind('typeahead:selected', async function (event, string, dataset) {
+                await translateByKeyWord(event, string);
+            }).keypress(async function (event) {
                 if (event.which === 13) {
-                    searchByKeyWord(event, $('#search-input').val());
+                    await translateByKeyWord(event, $('#search-input').val());
                 }
             });
 
-            SCWeb.core.Server.resolveScAddr(['nrel_main_idtf', 'nrel_idtf', 'nrel_system_identifier'], function (addrs) {
-                keynode_nrel_main_idtf = addrs['nrel_main_idtf'];
-                keynode_nrel_idtf = addrs['nrel_idtf'];
-                keynode_nrel_system_idtf = addrs['nrel_system_identifier'];
-
-                resolve();
-            });
+            resolve();
         })
     },
 
