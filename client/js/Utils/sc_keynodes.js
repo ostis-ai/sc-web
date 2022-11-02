@@ -31,6 +31,7 @@ ScKeynodes.prototype.init = async function () {
     'languages',
     'lang_ru',
     'lang_en',
+    'lang_de',
 
     'nrel_format',
     'nrel_mimetype',
