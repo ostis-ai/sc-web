@@ -122,7 +122,7 @@ SCWeb.core.Main = {
                     $("[id*='tools-']").parent().css("height", "100%");
                     $("[id*='tools-']").parent().parent().css("height", "100%");
 
-                    if (hide_borders === 'true') {
+                    if (hide_borders) {
                         $('.sc-contour').css({'border': 'none'});
                         $('.panel-default').css({'border-color': '#FFFFFF'});
                         $('.main-container').css({'padding-left': '0', 'padding-right': '0'});
@@ -130,7 +130,7 @@ SCWeb.core.Main = {
                 });
 
                 this.waitForElm('.scg-tools-panel').then(() => {
-                    if (hide_tools === 'true') {
+                    if (hide_tools) {
                         $('.scg-tools-panel').css({'display': 'none'});
                     }
                 });
