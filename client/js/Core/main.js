@@ -95,8 +95,15 @@ SCWeb.core.Main = {
     systemIdentifierParameterProcessed(urlObject) {
         const sys_id = urlObject['sys_id'];
         const scg_view = urlObject['scg_structure_view_only'];
+        const lang = urlObject['lang'];
+
         if (sys_id) {
-            SCWeb.core.Main.doDefaultCommandWithSystemIdentifier([sys_id]);
+            const window_lang = window.scKeynodes[lang];
+            if (window_lang) {
+                SCWeb.core.Translation.fireLanguageChanged(window_lang);
+            }
+
+            SCWeb.core.Main.doDefaultCommandWithSystemIdentifier(sys_id);
             window.history.replaceState(null, null, window.location.pathname);
             if (scg_view){
                 $('#window-header-tools').hide();
@@ -104,6 +111,7 @@ SCWeb.core.Main = {
                 $('#header').hide();
                 $('#footer').hide();
                 $('#window-container').css({'padding-right':'', 'padding-left':''});
+
                 this.waitForElm('.sc-contour').then(() => {
                     $('#window-container').children().children().children().children().hide();
                     $('.sc-contour').css({'height':'97%','width':'97%','position':'absolute'});
@@ -275,7 +283,7 @@ SCWeb.core.Main = {
             this.doCommand(this.default_cmd, cmd_args);
         }
     },
-    
+
     /**
      * Initiate default user interface command
      * @param {string} sys_id System identifier
