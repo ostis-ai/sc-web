@@ -106,6 +106,9 @@ SCWeb.core.Main = {
             SCWeb.core.Main.doDefaultCommandWithSystemIdentifier(sys_id);
             window.history.replaceState(null, null, window.location.pathname);
             if (scg_view){
+                const hide_tools = urlObject['hide_tools'];
+                const hide_borders = urlObject['hide_borders'];
+
                 $('#window-header-tools').hide();
                 $('#static-window-container').hide();
                 $('#header').hide();
@@ -118,6 +121,18 @@ SCWeb.core.Main = {
                     $('.scs-scn-view-toogle-button').hide().click();
                     $("[id*='tools-']").parent().css("height", "100%");
                     $("[id*='tools-']").parent().parent().css("height", "100%");
+
+                    if (hide_borders === 'true') {
+                        $('.sc-contour').css({'border': 'none'});
+                        $('.panel-default').css({'border-color': '#FFFFFF'});
+                        $('.main-container').css({'padding-left': '0', 'padding-right': '0'});
+                    }
+                });
+
+                this.waitForElm('.scg-tools-panel').then(() => {
+                    if (hide_tools === 'true') {
+                        $('.scg-tools-panel').css({'display': 'none'});
+                    }
                 });
             }
             return true;
