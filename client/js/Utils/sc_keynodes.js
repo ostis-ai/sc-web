@@ -31,7 +31,6 @@ ScKeynodes.prototype.init = async function () {
     'languages',
     'lang_ru',
     'lang_en',
-    'lang_de',
 
     'nrel_format',
     'nrel_mimetype',
@@ -58,7 +57,7 @@ ScKeynodes.prototype.resolveKeynode = async function (sys_idtf, property) {
     sys_idtf = [sys_idtf];
   }
   let request = sys_idtf.map(x => {
-    return { id: x, type: sc.ScType.Unknown }
+    return { id: x, type: sc.ScType.NodeConst }
   });
   let result = await this.scClient.resolveKeynodes(request);
   sys_idtf.forEach(x => {

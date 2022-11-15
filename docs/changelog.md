@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Add border and tools parameter to view window
 - Add language parameter to view window
 
 ## [0.7.0-Rebirth] - 12.10.2022
