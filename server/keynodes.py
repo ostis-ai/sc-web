@@ -52,6 +52,7 @@ class KeynodeSysIdentifiers(Enum):
     question_nrel_answer = 'nrel_answer'
     question_initiated = 'question_initiated'
     question_search_all_output_arcs = 'question_search_all_output_arcs'
+    question_search_atomic_commands = 'question_search_atomic_commands'
     
     command = 'command'
     command_initiated = 'command_initiated'
@@ -66,7 +67,7 @@ class KeynodeSysIdentifiers(Enum):
     ui_rrel_commnad = 'ui_rrel_command'
     ui_nrel_command_result = 'ui_nrel_command_result'
     ui_nrel_user_answer_formats = 'ui_nrel_user_answer_formats'
-    
+
     ui_command_generate_instance = 'ui_command_generate_instance'
     ui_command_translate_from_sc = 'ui_command_translate_from_sc'
     

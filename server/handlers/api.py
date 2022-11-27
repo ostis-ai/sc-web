@@ -25,14 +25,28 @@ class ContextMenu(base.BaseHandler):
     # @tornado.web.asynchronous
     def get(self):
         keynodes = ScKeynodes()
-        keynode_ui_main_menu = keynodes[KeynodeSysIdentifiers.ui_main_menu.value]
+        keynode_question_search_atomic_commands = keynodes[KeynodeSysIdentifiers.question_search_atomic_commands.value]
 
         # try to find main menu node
         cmds = []
-        logic.find_atomic_commands(keynode_ui_main_menu, cmds)
+        question_addr = logic.do_command(keynode_question_search_atomic_commands, [], self)['question']
+        result = logic.find_answer(question_addr)
+        answer_structure = result[0].get(2)
+
+        template = ScTemplate()
+        template.triple(
+            answer_structure,
+            sc_types.EDGE_ACCESS_VAR_POS_PERM,
+            [sc_types.NODE_VAR, "_atomic_command"]
+        )
+        result = client.template_search(template)
+
+        commands = []
+        for item in result:
+            commands.append(item.get(2))
 
         self.set_header("Content-Type", "application/json")
-        self.finish(json.dumps(cmds))
+        self.finish(json.dumps(commands))
 
 
 class CmdDo(base.BaseHandler):
