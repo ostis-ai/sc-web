@@ -149,46 +149,6 @@ def parse_menu_command(cmd_addr: ScAddr):
 
 
 @decorators.method_logging
-def find_atomic_commands(cmd_addr: ScAddr, commands: List[int]):
-    """Parse specified command from sc-memory and
-        return hierarchy map (with children), that represent it
-        @param cmd_addr: sc-addr of command to parse
-        @param commands: sc-addr of (non) atomic commands to parse
-    """
-    keynodes = ScKeynodes()
-
-    # try to find command type
-    template = ScTemplate()
-    template.triple(
-        keynodes[KeynodeSysIdentifiers.ui_user_command_class_atom.value],
-        sc_types.EDGE_ACCESS_VAR_POS_PERM,
-        cmd_addr,
-    )
-    if client.template_search(template):
-        commands.append(cmd_addr.value)
-
-    # try to find decomposition
-    DECOMPOSITION_NODE = "_decomposition"
-    CHILD_NODE = "_child"
-    template = ScTemplate()
-    template.triple_with_relation(
-        [sc_types.NODE_VAR, DECOMPOSITION_NODE],
-        sc_types.EDGE_D_COMMON_VAR,
-        cmd_addr,
-        sc_types.EDGE_ACCESS_VAR_POS_PERM,
-        keynodes[KeynodeSysIdentifiers.nrel_ui_commands_decomposition.value],
-    )
-    template.triple(
-        DECOMPOSITION_NODE,
-        sc_types.EDGE_ACCESS_VAR_POS_PERM,
-        [sc_types.UNKNOWN, CHILD_NODE],
-    )
-    children = client.template_search(template)
-    for child in children:
-        find_atomic_commands(child.get(CHILD_NODE), commands)
-
-
-@decorators.method_logging
 def find_tooltip(addr: ScAddr, lang) -> str:
     keynodes = ScKeynodes()
 

@@ -27,23 +27,22 @@ class ContextMenu(base.BaseHandler):
         keynodes = ScKeynodes()
         keynode_question_search_atomic_commands = keynodes[KeynodeSysIdentifiers.question_search_atomic_commands.value]
 
-        # try to find main menu node
-        cmds = []
-        question_addr = logic.do_command(keynode_question_search_atomic_commands, [], self)['question']
-        result = logic.find_answer(question_addr)
-        answer_structure = result[0].get(2)
+        question_node = logic.start_agent(self, keynode_question_search_atomic_commands, [])
 
-        template = ScTemplate()
-        template.triple(
-            answer_structure,
-            sc_types.EDGE_ACCESS_VAR_POS_PERM,
-            [sc_types.NODE_VAR, "_atomic_command"]
-        )
-        result = client.template_search(template)
-
+        ans = logic.wait_for_answer_and_find_answer(question_node)
         commands = []
-        for item in result:
-            commands.append(item.get(2))
+        if len(ans) > 0:
+            answer_node = ans[0].get(2)
+            template = ScTemplate()
+            template.triple(
+                answer_node,
+                sc_types.EDGE_ACCESS_VAR_POS_PERM,
+                sc_types.NODE_VAR
+            )
+            result = client.template_search(template)
+
+            for item in result:
+                commands.append(item.get(2).value)
 
         self.set_header("Content-Type", "application/json")
         self.finish(json.dumps(commands))
