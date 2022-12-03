@@ -196,15 +196,15 @@ class InfoTooltip(base.BaseHandler):
             first = False
             idx += 1
 
-            sc_session = logic.ScSession(self)
+        sc_session = logic.ScSession(self)
 
-            res = {}
-            for addr in arguments:
-                tooltip = logic.find_tooltip(ScAddr(int(addr)), sc_session.get_used_language())
-                res[addr] = tooltip
+        res = {}
+        for addr in arguments:
+            tooltip = logic.find_tooltip(ScAddr(int(addr)), sc_session.get_used_language())
+            res[addr] = tooltip
 
-            self.set_header("Content-Type", "application/json")
-            self.finish(json.dumps(res))
+        self.set_header("Content-Type", "application/json")
+        self.finish(json.dumps(res))
 
 
 @decorators.class_logging
