@@ -35,6 +35,47 @@ __all__ = (
 )
 
 
+def start_agent(handler, keynode_agent: ScAddr, args: List[ScAddr]) -> ScAddr:
+    keynodes = ScKeynodes()
+    keynode_question_initiated = keynodes[KeynodeSysIdentifiers.question_initiated.value]
+
+    construction = ScConstruction()
+    question_node = 'question_node'
+    construction.create_node(sc_types.NODE_CONST, question_node)
+    construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_agent, question_node)
+    construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_question_initiated, question_node)
+
+    idx = 1
+    for arg in args:
+        arg_arc = 'arg_arc_%d' % idx
+        construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, 'args_addr', arg, arg_arc)
+
+        idx_addr = client.resolve_keynodes(ScIdtfResolveParams(idtf='rrel_%d' % idx, type=None))[0]
+        if not idx_addr.is_valid():
+            return serialize_error(handler, 404, 'Error while create "create_instance" command')
+
+        construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, idx_addr, arg_arc)
+        idx += 1
+
+    elements = client.create_elements(construction)
+    return elements[construction.get_index(question_node)]
+
+
+@decorators.method_logging
+def wait_for_answer_and_find_answer(question_addr: ScAddr) -> List[ScTemplateResult]:
+    wait_time = 0
+    wait_dt = 0.01
+    while True:
+        answer = find_answer(question_addr)
+        if len(answer) > 0:
+            break
+        time.sleep(wait_dt)
+        wait_time += wait_dt
+        if wait_time > tornado.options.options.event_wait_timeout:
+            break
+    return answer
+
+
 @decorators.method_logging
 def serialize_error(handler, code, message):
     handler.clear()
