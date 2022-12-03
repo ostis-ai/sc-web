@@ -187,7 +187,7 @@ def find_tooltip(addr: ScAddr, lang) -> str:
             for exp_item in explanation_result:
                 for class_keynode in order_list:
                     if exp_item.get(KEY_SC_ELEMENT_CLASS) == class_keynode:
-                        found_map[str(exp_item)].append(node)
+                        found_map[str(class_keynode)].append(node)
 
         for class_keynode in order_list:
             found_list = found_map[str(class_keynode)]
