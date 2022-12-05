@@ -48,6 +48,7 @@ module.exports = function(grunt) {
                       webCoreCompPath + 'Ui/userpanel.js',
                       webCoreCompPath + 'Ui/expertmodepanel.js',
                       webCoreCompPath + 'Ui/ExpertModeHandler.js',
+                      webCoreCompPath + 'Ui/intromodal.js',
                 ],
                 dest: clientJsDirPath + 'sc-web-core.js',
             },
