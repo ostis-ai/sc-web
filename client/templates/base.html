@@ -28,6 +28,22 @@
 
 
 <script>var serverHost = "{{ public_url }}" </script>
+
+<div class="modal-container" id="modal-container">
+    <div class="modal-content">
+        <p class="modal-content-header" id="modal-content-header"></p>
+        <p class="modal-content-text">
+            <span id="modal-content-pre-img-text"></span>
+            <img src="/static/components/images/help-red.png">
+            <span id="modal-content-post-img-text"></span>
+        </p>
+        <div class="modal-content-buttons">
+            <button class="btn modal-content-btn blue-btn"><span class="intro-modal-button-text" id="intro-modal-ok-button"></span></button>
+            <button class="btn modal-content-btn"><span class="intro-modal-button-text" id="intro-modal-dont-show-again-button"></span></button>
+        </div>
+    </div>
+</div>
+
 <nav id="header" class="navbar navbar-default">
     <div class="container-fluid" style="
     padding-left: 0px;
