@@ -1,0 +1,95 @@
+scg-type-edge-common
+=> nrel_main_idtf:
+	[Ребро общего вида] (* <- lang_ru;; *);
+	[Common edge] (* <- lang_en;; *);
+// ---------------------
+scg-type-arc-common
+=> nrel_main_idtf:
+	[Дуга общего вида] (* <- lang_ru;; *);
+	[Common arc] (* <- lang_en;; *);
+// ---------------------
+scg-type-arc-common-access
+=> nrel_main_idtf:
+	[Дуга принадлежности общего вида] (* <- lang_ru;; *);
+	[Common access arc] (* <- lang_en;; *);
+// ---------------------
+scg-type-edge-const
+=> nrel_main_idtf:
+	[Константное ребро] (* <- lang_ru;; *);
+	[Constant edge] (* <- lang_en;; *);
+// ---------------------
+scg-type-arc-const
+=> nrel_main_idtf:
+	[Константная дуга] (* <- lang_ru;; *);
+	[Constant arc] (* <- lang_en;; *);
+// ---------------------
+scg-type-arc-const-perm-pos-access
+=> nrel_main_idtf:
+	[Константная постоянная положительная дуга принадлежности] (* <- lang_ru;; *);
+	[Constant permanent positive access arc] (* <- lang_en;; *);
+// ---------------------
+scg-type-arc-const-perm-neg-access
+=> nrel_main_idtf:
+	[Константная постоянная отрицательная дуга принадлежности] (* <- lang_ru;; *);
+	[Constant permanent negative access arc] (* <- lang_en;; *);
+// ---------------------
+scg-type-arc-const-perm-fuz-access
+=> nrel_main_idtf:
+	[Константная постоянная дуга частичной принадлежности] (* <- lang_ru;; *);
+	[Constant permanent arc of partial access] (* <- lang_en;; *);
+// ---------------------
+scg-type-arc-const-temp-pos-access
+=> nrel_main_idtf:
+	[Константная временная положительная дуга принадлежности] (* <- lang_ru;; *);
+	[Constant temporary positive access arc] (* <- lang_en;; *);
+// ---------------------
+scg-type-arc-const-temp-neg-access
+=> nrel_main_idtf:
+	[Константная временная отрицательная дуга принадлежности] (* <- lang_ru;; *);
+	[Constant temporary negative access arc] (* <- lang_en;; *);
+// ---------------------
+scg-type-arc-const-temp-fuz-access
+=> nrel_main_idtf:
+	[Константная временная дуга частичной принадлежности] (* <- lang_ru;; *);
+	[Constant temporary arc of partial access] (* <- lang_en;; *);
+// ---------------------
+scg-type-edge-var
+=> nrel_main_idtf:
+	[Переменное ребро] (* <- lang_ru;; *);
+	[Variable edge] (* <- lang_en;; *);
+// ---------------------
+scg-type-arc-var
+=> nrel_main_idtf:
+	[Переменная дуга] (* <- lang_ru;; *);
+	[Variable arc] (* <- lang_en;; *);
+// ---------------------
+scg-type-arc-var-perm-pos-access
+=> nrel_main_idtf:
+	[Переменная постоянная положительная дуга принадлежности] (* <- lang_ru;; *);
+	[Variable permanent positive access arc] (* <- lang_en;; *);
+// ---------------------
+scg-type-arc-var-perm-neg-access
+=> nrel_main_idtf:
+	[Переменная постоянная отрицательная дуга принадлежности] (* <- lang_ru;; *);
+	[Variable permanent negative access arc] (* <- lang_en;; *);
+// ---------------------
+scg-type-arc-var-perm-fuz-access
+=> nrel_main_idtf:
+	[Переменная постоянная дуга частичной принадлежности] (* <- lang_ru;; *);
+	[Variable permanent arc of partial access] (* <- lang_en;; *);
+// ---------------------
+scg-type-arc-var-temp-pos-access
+=> nrel_main_idtf:
+	[Переменная временная положительная дуга принадлежности] (* <- lang_ru;; *);
+	[Variable temporary positive access arc] (* <- lang_en;; *);
+// ---------------------
+scg-type-arc-var-temp-neg-access
+=> nrel_main_idtf:
+	[Переменная временная отрицательная дуга принадлежности] (* <- lang_ru;; *);
+	[Variable temporary negative access arc] (* <- lang_en;; *);
+// ---------------------
+scg-type-arc-var-temp-fuz-access
+=> nrel_main_idtf:
+	[Переменная временная дуга частичной принадлежности] (* <- lang_ru;; *);
+	[Variable temporary arc of partial access] (* <- lang_en;; *);
+// ---------------------
