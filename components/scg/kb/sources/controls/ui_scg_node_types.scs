@@ -1,0 +1,90 @@
+scg-type-node
+=> nrel_main_idtf:
+	[Неопределённый узел] (* <- lang_ru;; *);
+	[Undefined node] (* <- lang_en;; *);
+// ---------------------
+scg-type-node-const
+=> nrel_main_idtf:
+	[Константный узел общего вида] (* <- lang_ru;; *);
+	[Common constant node] (* <- lang_en;; *);
+// ---------------------
+scg-type-node-const-group
+=> nrel_main_idtf:
+	[Константный узел типа "класс"] (* <- lang_ru;; *);
+	[Constant class node] (* <- lang_en;; *);
+// ---------------------
+scg-type-node-const-abstract
+=> nrel_main_idtf:
+	[Константный абстрактный узел] (* <- lang_ru;; *);
+	[Constant abstract node] (* <- lang_en;; *);
+// ---------------------
+scg-type-node-const-material
+=> nrel_main_idtf:
+	[Константный узел типа "материал"] (* <- lang_ru;; *); // поправьте, пожалуйста
+	[Constant material node] (* <- lang_en;; *);
+// ---------------------
+scg-type-node-const-norole
+=> nrel_main_idtf:
+	[Константный узел типа "неролевое отношение"] (* <- lang_ru;; *);
+	[Constant norole relation node] (* <- lang_en;; *);
+// ---------------------
+scg-type-node-const-role
+=> nrel_main_idtf:
+	[Константный узел типа "ролевое отношение"] (* <- lang_ru;; *);
+	[Constant role relation node] (* <- lang_en;; *);
+// ---------------------
+scg-type-node-const-struct
+=> nrel_main_idtf:
+	[Константный узел типа "структура"] (* <- lang_ru;; *);
+	[Constant struct node] (* <- lang_en;; *);
+// ---------------------
+scg-type-node-const-tuple
+=> nrel_main_idtf:
+	[Константный узел типа "множество"] (* <- lang_ru;; *);
+	[Constant tuple node] (* <- lang_en;; *);
+// ---------------------
+// ---------------------
+scg-type-node
+=> nrel_main_idtf:
+	[Неопределённый узел] (* <- lang_ru;; *);
+	[Undefined node] (* <- lang_en;; *);
+// ---------------------
+scg-type-node-var
+=> nrel_main_idtf:
+	[Переменный узел общего вида] (* <- lang_ru;; *);
+	[Common variable node] (* <- lang_en;; *);
+// ---------------------
+scg-type-node-var-group
+=> nrel_main_idtf:
+	[Переменный узел типа "класс"] (* <- lang_ru;; *);
+	[Variable class node] (* <- lang_en;; *);
+// ---------------------
+scg-type-node-var-abstract
+=> nrel_main_idtf:
+	[Переменный абстрактный узел] (* <- lang_ru;; *);
+	[Variable abstract node] (* <- lang_en;; *);
+// ---------------------
+scg-type-node-var-material
+=> nrel_main_idtf:
+	[Переменный узел типа "материал"] (* <- lang_ru;; *); // поправьте, пожалуйста
+	[Variable material node] (* <- lang_en;; *);
+// ---------------------
+scg-type-node-var-norole
+=> nrel_main_idtf:
+	[Переменный узел типа "неролевое отношение"] (* <- lang_ru;; *);
+	[Variable norole relation node] (* <- lang_en;; *);
+// ---------------------
+scg-type-node-var-role
+=> nrel_main_idtf:
+	[Переменный узел типа "ролевое отношение"] (* <- lang_ru;; *);
+	[Variable role relation node] (* <- lang_en;; *);
+// ---------------------
+scg-type-node-var-struct
+=> nrel_main_idtf:
+	[Переменный узел типа "структура"] (* <- lang_ru;; *);
+	[Variable struct node] (* <- lang_en;; *);
+// ---------------------
+scg-type-node-var-tuple
+=> nrel_main_idtf:
+	[Переменный узел типа "множество"] (* <- lang_ru;; *);
+	[Variable tuple node] (* <- lang_en;; *);
