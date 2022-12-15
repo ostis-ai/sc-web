@@ -342,7 +342,7 @@ SCWeb.core.ComponentSandbox.prototype.onWindowActiveChanged = function (is_activ
 // --------- Data -------------
 SCWeb.core.ComponentSandbox.prototype.onDataAppend = function (data) {
     if (this.eventDataAppend) {
-        return this.eventDataAppend(data).then(() => this.translate());
+        return this.eventDataAppend(data);
     } else {
         return Promise.resolve();
     }

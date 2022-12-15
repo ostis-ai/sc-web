@@ -50,7 +50,7 @@ SCs.SCnOutput.prototype = {
             output = '<div class="scs-scn-field scs-scn-field-root"><div class="scs-scn-keyword">' + this.treeNodeElementHtml(treeNode, true) + '</div>';
 
             if (treeNode.element.type & sc_type_link) {
-                output += '<div class="scs-scn-field"><div class="scs-scn-field-marker scs-scn-element resolve-idtf-anim">=</div>'
+                output += '<div class="scs-scn-field"><div class="scs-scn-field-marker scs-scn-element">=</div>'
                     //+ '' //sc_addr="' + treeNode.element.addr + '">'
                     + this.treeNodeElementHtml(treeNode);
                 +'</div>';
@@ -60,7 +60,7 @@ SCs.SCnOutput.prototype = {
             var contourTree = this.tree.subtrees[treeNode.element.addr];
             if (contourTree) {
                 output += '<div class="scs-scn-field-marker scs-scn-element">=</div>'
-                    + '<div class="scs-scn-element sc-contour scs-scn-field sc-no-default-cmd ui-no-tooltip" sc_addr="' + treeNode.element.addr + '">'
+                    + '<div class="scs-scn-element sc-contour scs-scn-field sc-no-default-cmd ui-no-tooltip" sc_addr="' + treeNode.element.addr + '">' + this.tree.identifiers[treeNode.element.addr] + '</div>'
                     + '<div class="scs-scn-view-primary">' + this.subtreeToHtml(contourTree) + '</div>'
                     + '<div class="scs-scn-view-external hidden"></div>'
                     + '<button type="button" class="scs-scn-view-toogle-button btn btn-info btn-xs"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></button>'
@@ -88,7 +88,7 @@ SCs.SCnOutput.prototype = {
                     if (attr.a.type & sc_type_var) {
                         sep = '∷';
                     }
-                    output += '<a href="#" class="scs-scn-element scs-scn-highlighted resolve-idtf-anim" sc_addr="' + attr.n.addr + '"></a>' + '<span>' + sep + '</span>';
+                    output += '<a href="#" class="scs-scn-element scs-scn-highlighted" sc_addr="' + attr.n.addr + '">' + this.tree.identifiers[attr.n.addr] + '</a>' + '<span>' + sep + '</span>';
                 }
                 output += '</div>';
             }
@@ -141,14 +141,14 @@ SCs.SCnOutput.prototype = {
             var einfo = this.tree.getEdgeInfo(treeNode.element.addr);
             if (einfo) {
                 var marker = SCs.SCnConnectors[treeNode.element.type];
-                return '(<a href="#" class="scs-scn-element scs-scn-field scs-scn-highlighted resolve-idtf-anim" sc_addr="' + einfo.source.addr + '"></a>\
+                return '(<a href="#" class="scs-scn-element scs-scn-field scs-scn-highlighted" sc_addr="' + einfo.source.addr + '">' + this.tree.identifiers[einfo.source.addr] + '</a>\
                         <a href="#" class="scs-scn-element scs-scn-field scs-scn-highlighted scs-scn-connector" sc_addr="' + treeNode.element.addr + '">'
                     + marker.f + '</a>\
-                        <a href="#" class="scs-scn-element scs-scn-field scs-scn-highlighted resolve-idtf-anim" sc_addr="' + einfo.target.addr + '"></a>)';
+                        <a href="#" class="scs-scn-element scs-scn-field scs-scn-highlighted" sc_addr="' + einfo.target.addr + '">' + this.tree.identifiers[einfo.target.addr] + '</a>)';
             }
         }
 
-        return '<a href="#" class="scs-scn-element scs-scn-field scs-scn-highlighted resolve-idtf-anim" sc_addr="' + treeNode.element.addr + '"></a>';
+        return '<a href="#" class="scs-scn-element scs-scn-field scs-scn-highlighted" sc_addr="' + treeNode.element.addr + '">' + this.tree.identifiers[treeNode.element.addr] + '</a>';
     },
 
     subtreeToHtml: function (subtree) {
