@@ -184,13 +184,13 @@ SCs.SCnTree.prototype = {
             }
 
             this.subtrees[addr] = tree;
-            tree.build(keywordsList, subtree.triples);
+            tree.build(keywordsList, subtree.triples, self.identifiers);
             this.addrs = this.addrs.concat(tree.addrs);
         }
     },
 
     /*! Builds tree based on array of triples
-     * @param {Array} keyords Array of keywords
+     * @param {Array} keywords Array of keywords
      * @param {Array} triples Array of triples
      * @param {Map} identifiers Map of addr identifiers
      */
