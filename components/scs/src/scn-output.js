@@ -64,7 +64,7 @@ SCs.SCnOutput.prototype = {
             var contourTree = this.tree.subtrees[treeNode.element.addr];
             if (contourTree) {
                 output += '<div class="scs-scn-field-marker scs-scn-element">=</div>'
-                    + '<div class="scs-scn-element sc-contour scs-scn-field sc-no-default-cmd ui-no-tooltip" sc_addr="' + treeNode.element.addr + '"></div>'
+                    + '<div class="scs-scn-element sc-contour scs-scn-field sc-no-default-cmd ui-no-tooltip" sc_addr="' + treeNode.element.addr + '">'
                     + '<div class="scs-scn-view-primary">' + this.subtreeToHtml(contourTree) + '</div>'
                     + '<div class="scs-scn-view-external hidden"></div>'
                     + '<button type="button" class="scs-scn-view-toogle-button btn btn-info btn-xs"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></button>'
