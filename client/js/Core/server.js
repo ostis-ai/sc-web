@@ -176,79 +176,75 @@ SCWeb.core.Server = {
             return {};
         }
 
-        let self = this;
+        const self = this;
 
-        function getKey(addr) {
+        const getKey = (addr) => {
             return self._current_language + '/' + addr;
         }
 
         let result = {}, used = {};
         let notChecked = [];
-        for (let i in objects) {
-            let id = objects[i];
-
-            if (used[id]) continue; // skip objects, that was processed
+        objects.forEach(id => {
+            if (used[id]) return; // skip objects, that was processed
             used[id] = true;
 
-            let cached = this._identifiers_cache.get(getKey(id));
+            let cached = self._identifiers_cache.get(getKey(id));
             if (cached) {
                 if (cached !== '.') {
                     result[id] = cached;
                 }
-                continue;
+                return;
             }
 
-            notChecked.push(i);
+            notChecked.push(id);
+        });
+
+        const getIdentifierLink = async function (addr) {
+            const LINK = "_link";
+
+            const mainIdtfTemplate = new sc.ScTemplate();
+            mainIdtfTemplate.tripleWithRelation(
+                addr,
+                sc.ScType.EdgeDCommonVar,
+                [sc.ScType.LinkVar, LINK],
+                sc.ScType.EdgeAccessVarPosPerm,
+                new sc.ScAddr(window.scKeynodes["nrel_main_idtf"]),
+            );
+            mainIdtfTemplate.triple(
+                new sc.ScAddr(self._current_language),
+                sc.ScType.EdgeAccessVarPosPerm,
+                LINK,
+            );
+            let result = await window.scClient.templateSearch(mainIdtfTemplate);
+
+            if (result.length) {
+                return result[0].get(LINK);
+            }
+
+            const sysIdtfTemplate = new sc.ScTemplate();
+            sysIdtfTemplate.tripleWithRelation(
+                addr,
+                sc.ScType.EdgeDCommonVar,
+                [sc.ScType.LinkVar, LINK],
+                sc.ScType.EdgeAccessVarPosPerm,
+                new sc.ScAddr(window.scKeynodes["nrel_system_identifier"]),
+            );
+
+            result = await window.scClient.templateSearch(sysIdtfTemplate);
+            if (result.length) {
+                result[0].get(LINK);
+            }
+
+            return addr;
         }
 
-        if (arguments.length) { // all results cached
-            const getIdtf = async function (addr) {
-                const LINK = "_link";
-
-                const mainIdtfTemplate = new sc.ScTemplate();
-                mainIdtfTemplate.tripleWithRelation(
-                    addr,
-                    sc.ScType.EdgeDCommonVar,
-                    [sc.ScType.LinkVar, LINK],
-                    sc.ScType.EdgeAccessVarPosPerm,
-                    new sc.ScAddr(window.scKeynodes["nrel_main_idtf"]),
-                );
-                mainIdtfTemplate.triple(
-                    new sc.ScAddr(self._current_language),
-                    sc.ScType.EdgeAccessVarPosPerm,
-                    LINK,
-                );
-                let result = await window.scClient.templateSearch(mainIdtfTemplate);
-
-                if (result.length) {
-                    const contents = await window.scClient.getLinkContents([result[0].get(LINK)]);
-                    return contents[0].data;
-                }
-
-                const sysIdtfTemplate = new sc.ScTemplate();
-                sysIdtfTemplate.tripleWithRelation(
-                    addr,
-                    sc.ScType.EdgeDCommonVar,
-                    [sc.ScType.LinkVar, LINK],
-                    sc.ScType.EdgeAccessVarPosPerm,
-                    new sc.ScAddr(window.scKeynodes["nrel_system_identifier"]),
-                );
-
-                result = await window.scClient.templateSearch(sysIdtfTemplate);
-                if (result.length) {
-                    const contents = await window.scClient.getLinkContents([result[0].get(LINK)]);
-                    return contents[0].data;
-                }
-
-                return "";
-            }
-
-            for (let i in notChecked) {
-                let id = objects[i];
-                result[id] = await getIdtf(new sc.ScAddr(parseInt(id)));
-            }
+        if (arguments.length) {
+            const links = await Promise.all(notChecked.map(id => getIdentifierLink(new sc.ScAddr(parseInt(id)))));
+            const contents = await window.scClient.getLinkContents(links);
+            contents.forEach((content, index) => {
+                result[notChecked[index]] = content.data;
+            });
         }
-
         return result;
     },
 
