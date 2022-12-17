@@ -148,18 +148,19 @@
         <div id="window-container" class="col-xs-10 col-sm-10 col-md-10">{# Windows will be added later #}</div>
     </div>
 
+    <div id="arguments_container" class="argument-container">
+        <div class="btn-group display-none" id="arguments-btn-group">
+            <button id="arguments_clear_button" class="btn btn-danger" sc_control_sys_idtf="ui_control_argument_button_clear"><span class="glyphicon glyphicon-remove-sign"></span></button>
+            <!--<button id="arguments_add_button" class="btn btn-success" {#sc_control_sys_idtf="ui_control_argument_button_add"#}><span class="glyphicon glyphicon-plus-sign"></span></button>-->
+        </div>
+        
+        <div id="arguments_buttons" class="btn-group argument-buttons">
+            <!-- Buttons will be inserted on arguments append -->
+        </div>
+    </div>
+
     <div id="footer" class="navbar navbar-default navbar-fixed-bottom">
         <div class="navbar-inner">
-            <div id="arguments_container" class="argument-container">
-                <div class="btn-group">
-                    <button id="arguments_clear_button" class="btn btn-danger" sc_control_sys_idtf="ui_control_argument_button_clear"><span class="glyphicon glyphicon-remove-sign"></span></button>
-                    <!--<button id="arguments_add_button" class="btn btn-success" {#sc_control_sys_idtf="ui_control_argument_button_add"#}><span class="glyphicon glyphicon-plus-sign"></span></button>-->
-                </div>
-                
-                <div id="arguments_buttons" class="btn-group argument-buttons">
-                    <!-- Buttons will be inserted on arguments append -->
-                </div>
-            </div>
             <span class="copyright"></span>
         </div>
     </div>
