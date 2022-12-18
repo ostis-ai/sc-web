@@ -65,7 +65,6 @@ var SCnViewer = function (sandbox) {
     // ---- window interface -----
     this.receiveData = async (data) => {
         this.data = data;
-        console.log(data);
         data = JSON.parse(data);
         data = this.expertModeModeManager.applyExpertMode(data);
         this.viewer.appendData(data);

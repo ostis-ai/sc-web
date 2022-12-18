@@ -44,7 +44,7 @@ SCWeb.ui.WindowManager = {
 
                 var fmt_addr = SCWeb.core.ComponentManager.getPrimaryFormatForExtLang(lang_addr);
                 if (fmt_addr) {
-                    var command_state = new SCWeb.core.CommandState(null, null, fmt_addr);
+                    var command_state = new SCWeb.core.CommandState(null, null, fmt_addr, lang_addr);
                     var id = self.hash_addr(question_addr, command_state);
                     if (self.isWindowExist(id)) {
                         self.setWindowActive(id);
