@@ -32,6 +32,7 @@ SCs.Viewer = function () {
 
     this.appendData = function (data) {
         var self = this;
+        console.log(data);
         buildOutput();
         this.tree.build(data.keywords, data.triples, data.identifiers);
         $(self.containerId).html(self.output.toHtml());

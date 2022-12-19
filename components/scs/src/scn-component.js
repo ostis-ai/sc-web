@@ -19,30 +19,6 @@ SCnComponent = {
     }
 };
 
-function reverseMap(map) {
-    const result = {};
-    for (const key in map) {
-        result[map[key]] = key;
-    }
-    return result;
-}
-
-function getTriplesJsonFoDebug({keywords, triples, ...data}, translationMap, keynodes) {
-    const reverseKeynodes = reverseMap(scKeynodes);
-    const reverseModeKeynodes = reverseMap(keynodes);
-    const renameScAddr = ({addr, ...data}) => ({
-        addr:
-        reverseModeKeynodes[addr] ||
-        reverseKeynodes[addr] ||
-        translationMap[addr] ||
-        addr,
-        ...data
-    });
-    const renamedKeywords = keywords.map(renameScAddr);
-    const renamedTriples = triples.map((triple) => triple.map(renameScAddr));
-    return {keywords: renamedKeywords, triples: renamedTriples, ...data};
-}
-
 var SCnViewer = function (sandbox) {
     this.objects = [];
     this.addrs = [];
@@ -94,8 +70,6 @@ var SCnViewer = function (sandbox) {
     };
 
     this.sandbox.eventDataAppend = this.receiveData;
-    this.sandbox.eventGetObjectsToTranslate = $.proxy(this.getObjectsToTranslate, this);
-    this.sandbox.eventApplyTranslation = $.proxy(this.updateTranslation, this);
 
     this.viewer = new SCs.Viewer();
     this.viewer.init(sandbox, $.proxy(sandbox.getKeynode, sandbox));
@@ -106,7 +80,6 @@ var SCnViewer = function (sandbox) {
 var SCsConnectors = {};
 
 $(document).ready(function () {
-
     SCsConnectors[sc_type_arc_pos_const_perm] = "->";
     SCsConnectors[sc_type_edge_common | sc_type_const] = "==";
     SCsConnectors[sc_type_edge_common | sc_type_var] = "_==";

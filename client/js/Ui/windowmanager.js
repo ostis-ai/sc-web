@@ -117,7 +117,7 @@ SCWeb.ui.WindowManager = {
         // get translation and create window
         var ext_lang_addr = SCWeb.core.Main.getDefaultExternalLang();
         command_state.format = SCWeb.core.ComponentManager.getPrimaryFormatForExtLang(ext_lang_addr);
-        command_state.lang = SCWeb.core.Server._current_language;
+        command_state.lang = SCWeb.core.Translation.getCurrentLanguage();
         if (command_state.format) {
             var id = this.hash_addr(question_addr, command_state.format, command_state.command_args)
             if (this.isWindowExist(id)) {
@@ -209,7 +209,6 @@ SCWeb.ui.WindowManager = {
                 self.showActiveWindow();
                 throw "Error while create window";
             }
-            ;
         };
 
         var translated = function () {
