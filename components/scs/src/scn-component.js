@@ -35,8 +35,12 @@ var SCnViewer = function (sandbox) {
 
     SCWeb.core.EventManager.subscribe("translation/changed_language", this, () => {
         this.sandbox.removeChild();
-        this.receiveData(this.data);
-        this.sandbox.translate();
+        this.sandbox.command_state.lang = SCWeb.core.Translation.getCurrentLanguage();
+        SCWeb.core.Main.getTranslatedAnswer(this.sandbox.command_state).then(link => {
+            window.scClient.getLinkContents([new sc.ScAddr(parseInt(link))]).then(contents => {
+                this.receiveData(contents[0].data);
+            })
+        });
     });
 
     // ---- window interface -----
@@ -47,25 +51,6 @@ var SCnViewer = function (sandbox) {
         this.viewer.appendData(data);
         SCWeb.ui.Locker.hide();
         return this.sandbox.createViewersForScLinks(this.viewer.getLinks());
-    };
-
-    this.updateTranslation = function (namesMap) {
-        $(this.sandbox.container_selector).each(function (index, element) {
-            var addr = $(element).attr('sc_addr');
-            if (!$(element).hasClass('sc-content') && !$(element).hasClass('sc-contour') &&
-                !$(element).hasClass('scs-scn-connector') && ($(element).hasClass('scs-scn-element'))) {
-                $(element).removeClass('resolve-idtf-anim');
-                if (namesMap[addr]) {
-                    $(element).text(namesMap[addr]);
-                } else {
-                    $(element).html('<b>...</b>');
-                }
-            }
-        });
-    };
-
-    this.getObjectsToTranslate = function () {
-        return this.viewer.getAddrs();
     };
 
     this.sandbox.eventDataAppend = this.receiveData;

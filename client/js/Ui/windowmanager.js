@@ -104,6 +104,7 @@ SCWeb.ui.WindowManager = {
     /**
      * Append new tab into history
      * @param {String} question_addr sc-addr of item to append into history
+     * @param command_state
      */
     appendHistoryItem: function (question_addr, command_state) {
         // @todo check if tab exist        
