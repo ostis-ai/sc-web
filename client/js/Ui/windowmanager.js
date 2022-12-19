@@ -106,7 +106,6 @@ SCWeb.ui.WindowManager = {
      * @param {String} question_addr sc-addr of item to append into history
      */
     appendHistoryItem: function (question_addr, command_state) {
-
         // @todo check if tab exist        
         var tab_html = '<a class="list-group-item history-item ui-no-tooltip" sc_addr="' + question_addr + '">' +
             '<p>' + question_addr + '</p>' +
@@ -172,8 +171,8 @@ SCWeb.ui.WindowManager = {
     // ------------ Windows ------------
     /**
      * Append new window
-     * @param {String} addr sc-addr of sc-structure
-     * @param {String} fmt_addr sc-addr of window format
+     * @param question_addr
+     * @param command_state
      */
     appendWindow: function (question_addr, command_state) {
         var self = this;

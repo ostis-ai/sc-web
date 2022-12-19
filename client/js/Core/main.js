@@ -208,6 +208,7 @@ SCWeb.core.Main = {
      * @param {Array} cmd_args Array of sc-addrs with command arguments
      */
     doCommand: function (cmd_addr, cmd_args) {
+        SCWeb.ui.Locker.show();
         SCWeb.core.Arguments.clear();
         SCWeb.core.Server.doCommand(cmd_addr, cmd_args, function (result) {
             if (result.question !== undefined) {

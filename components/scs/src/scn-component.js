@@ -45,6 +45,7 @@ var SCnViewer = function (sandbox) {
         data = JSON.parse(data);
         data = this.expertModeModeManager.applyExpertMode(data);
         this.viewer.appendData(data);
+        SCWeb.ui.Locker.hide();
         return this.sandbox.createViewersForScLinks(this.viewer.getLinks());
     };
 
