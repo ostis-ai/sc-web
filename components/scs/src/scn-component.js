@@ -60,12 +60,12 @@ var SCnViewer = function (sandbox) {
     SCWeb.core.EventManager.subscribe("translation/changed_language", this, () => {
         this.sandbox.removeChild();
         this.receiveData(this.data);
+        this.sandbox.translate();
     });
 
     // ---- window interface -----
     this.receiveData = async (data) => {
         this.data = data;
-        console.log(data);
         data = JSON.parse(data);
         data = this.expertModeModeManager.applyExpertMode(data);
         this.viewer.appendData(data);
@@ -73,7 +73,20 @@ var SCnViewer = function (sandbox) {
     };
 
     this.updateTranslation = function (namesMap) {
-
+        // apply translation
+        // console.log(getTriplesJsonFoDebug(JSON.parse(this.data), namesMap, this.sandbox.keynodes));
+        $(this.sandbox.container_selector).each(function (index, element) {
+            var addr = $(element).attr('sc_addr');
+            if (!$(element).hasClass('sc-content') && !$(element).hasClass('sc-contour') &&
+                !$(element).hasClass('scs-scn-connector') && ($(element).hasClass('scs-scn-element'))) {
+                $(element).removeClass('resolve-idtf-anim');
+                if (namesMap[addr]) {
+                    $(element).text(namesMap[addr]);
+                } else {
+                    $(element).html('<b>...</b>');
+                }
+            }
+        });
     };
 
     this.getObjectsToTranslate = function () {
