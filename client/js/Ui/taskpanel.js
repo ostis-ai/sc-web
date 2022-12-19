@@ -35,6 +35,5 @@ SCWeb.ui.TaskPanel = {
     taskFinished: function () {
         this._task_num--;
         this.updatePanel();
-        //SCWeb.ui.Locker.hide();
     }
 };

@@ -26,7 +26,6 @@ SCWeb.core.Main = {
     init: function (params) {
         return new Promise((resolve)=>{
             const self = this;
-            //SCWeb.ui.Locker.show();
 
             SCWeb.core.Server._initialize();
             ScClientCreate().then(function (client) {
@@ -208,6 +207,7 @@ SCWeb.core.Main = {
      * @param {Array} cmd_args Array of sc-addrs with command arguments
      */
     doCommand: function (cmd_addr, cmd_args) {
+        SCWeb.ui.Locker.show();
         SCWeb.core.Arguments.clear();
         SCWeb.core.Server.doCommand(cmd_addr, cmd_args, function (result) {
             if (result.question !== undefined) {
@@ -218,6 +218,7 @@ SCWeb.core.Main = {
             } else {
                 alert("There are no any answer. Try another request");
             }
+            SCWeb.ui.Locker.hide();
         });
     },
 

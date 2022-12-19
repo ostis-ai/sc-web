@@ -222,6 +222,7 @@ SCWeb.ui.WindowManager = {
             // determine answer structure
             window.scHelper.getAnswer(question_addr).then(function (addr) {
                 f(addr, true);
+                SCWeb.ui.Locker.hide();
             }).catch(function (v) {
                 translated();
             });

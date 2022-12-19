@@ -187,7 +187,7 @@
                         menu_container_id: 'menu_container',
                         {% if first_time == "1" %}first_time: true,{% end %}
                     };
-            $.when(SCWeb.core.Main.init(params)).done(function() {
+            SCWeb.core.Main.init(params).then(()=> {
                 SCWeb.ui.Locker.hide();
             });
         });
