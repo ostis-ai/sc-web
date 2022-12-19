@@ -35,12 +35,8 @@ var SCnViewer = function (sandbox) {
 
     SCWeb.core.EventManager.subscribe("translation/changed_language", this, () => {
         this.sandbox.removeChild();
-        this.sandbox.command_state.lang = SCWeb.core.Translation.getCurrentLanguage();
-        SCWeb.core.Main.getTranslatedAnswer(this.sandbox.command_state).then(link => {
-            window.scClient.getLinkContents([new sc.ScAddr(parseInt(link))]).then(contents => {
-                this.receiveData(contents[0].data);
-            })
-        });
+        this.receiveData(this.data);
+        this.sandbox.translate();
     });
 
     // ---- window interface -----
@@ -53,7 +49,27 @@ var SCnViewer = function (sandbox) {
         return this.sandbox.createViewersForScLinks(this.viewer.getLinks());
     };
 
+    this.updateTranslation = function (namesMap) {
+        $(this.sandbox.container_selector).each(function (index, element) {
+            var addr = $(element).attr('sc_addr');
+            if (!$(element).hasClass('sc-content') && !$(element).hasClass('sc-contour') &&
+                !$(element).hasClass('scs-scn-connector') && ($(element).hasClass('scs-scn-element'))) {
+                if (namesMap[addr]) {
+                    $(element).text(namesMap[addr]);
+                } else {
+                    $(element).html('<b>...</b>');
+                }
+            }
+        });
+    };
+
+    this.getObjectsToTranslate = function () {
+        return this.viewer.getAddrs();
+    };
+
     this.sandbox.eventDataAppend = this.receiveData;
+    this.sandbox.eventGetObjectsToTranslate = $.proxy(this.getObjectsToTranslate, this);
+    this.sandbox.eventApplyTranslation = $.proxy(this.updateTranslation, this);
 
     this.viewer = new SCs.Viewer();
     this.viewer.init(sandbox, $.proxy(sandbox.getKeynode, sandbox));
