@@ -50,8 +50,6 @@ var SCnViewer = function (sandbox) {
     };
 
     this.updateTranslation = function (namesMap) {
-        // apply translation
-        // console.log(getTriplesJsonFoDebug(JSON.parse(this.data), namesMap, this.sandbox.keynodes));
         $(this.sandbox.container_selector).each(function (index, element) {
             var addr = $(element).attr('sc_addr');
             if (!$(element).hasClass('sc-content') && !$(element).hasClass('sc-contour') &&
