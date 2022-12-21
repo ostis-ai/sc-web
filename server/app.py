@@ -49,6 +49,7 @@ def parse_options():
                            help="time period between reconnects to the server in seconds",
                            type=float)
     tornado.options.define("public_url", default="ws://localhost:8090/ws_json", help="public server url", type=str)
+    tornado.options.define("allowed_origins", default="", help="Sets 'access-control-allow-origin' header", type=str)
     tornado.options.define("auth_redirect_port", default=80, help="host port", type=int)
 
     tornado.options.define("google_client_id", default="", help="client id for google auth", type=str)
