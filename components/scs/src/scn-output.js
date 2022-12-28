@@ -30,7 +30,7 @@ SCs.SCnOutput.prototype = {
     },
 
     getIdentifier: function (addr) {
-        return this.tree.identifiers ? this.tree.identifiers[addr] : "...";
+        return this.tree.identifiers && this.tree.identifiers[addr] ? this.tree.identifiers[addr] : "...";
     },
 
     /*! Returns string that contains html representation of scn-tree node
