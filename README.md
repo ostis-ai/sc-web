@@ -26,7 +26,7 @@ docker run --rm -it --network=host ostis/sc-web:latest
   ```sh
   cd sc-web/scripts
   ./install_deps_ubuntu.sh
-  pip3 install -r requirements.txt
+  pip3 install -r ../requirements.txt
   npm install
   ```
 
