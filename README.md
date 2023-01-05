@@ -53,6 +53,19 @@ docker run --rm -it --network=host ostis/sc-web:latest
 npm run build
 ```
 
+  ### Documentation
+
+  Full documentation, including:
+    * core concepts
+    * rationale behind the sc-web
+    * system design
+    * software interfaces
+
+  is redistributed in a form of the [SCn-TeX document](https://github.com/ostis-ai/ostis-web-platform/blob/develop/docs/main.pdf).
+
+  or **alternatively** you can build sc-machine documentation only. To do that refer to the [scn-latex-plugin](https://github.com/ostis-ai/scn-latex-plugin) documentation.
+
+
   ### Running
 
   SC-Web requires `sc-server` to be up and running.
