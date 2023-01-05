@@ -21,6 +21,14 @@ docker run --rm -it --network=host ostis/sc-web:latest
 
 ## Installation
 
+  Clone repo:
+
+  ```sh
+  git clone https://github.com/ostis-ai/sc-web
+  cd sc-web
+  git submodule update --init --recursive
+  ```
+
   If you're using Ubuntu, you can install dependencies using our script:
 
   ```sh
