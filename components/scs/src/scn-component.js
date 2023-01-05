@@ -54,8 +54,9 @@ var SCnViewer = function (sandbox) {
             var addr = $(element).attr('sc_addr');
             if (!$(element).hasClass('sc-content') && !$(element).hasClass('sc-contour') &&
                 !$(element).hasClass('scs-scn-connector') && ($(element).hasClass('scs-scn-element'))) {
+                console.log(namesMap);
                 if (namesMap[addr]) {
-                    $(element).text(namesMap[addr]);
+                    $(element).text(namesMap[addr] ? namesMap[addr] : '<b>...</b>');
                 } else {
                     $(element).html('<b>...</b>');
                 }

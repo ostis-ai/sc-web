@@ -188,7 +188,7 @@ SCWeb.core.Server = {
             if (used[id]) return; // skip objects, that was processed
             used[id] = true;
 
-            let cached = self._identifiers_cache.get(getKey(id));
+            let cached = this._identifiers_cache.get(getKey(id));
             if (cached) {
                 if (cached !== '.') {
                     result[id] = cached;
@@ -235,7 +235,7 @@ SCWeb.core.Server = {
                 result[0].get(LINK);
             }
 
-            return addr;
+            return null;
         }
 
         if (arguments.length) {
