@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Add curl to dependencies installation script
 
+### Changed
+- View identifiers with scn-component from sc-json
+
+### Removed
+- Remove `A` button from main frame
+
 ## [0.7.0-Rebirth] - 12.10.2022
 ### Added
 - Add images mime types handling from kb
