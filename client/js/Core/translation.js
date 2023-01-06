@@ -45,8 +45,7 @@ SCWeb.core.Translation = {
      * If there are no key in returned object, then identifier wasn't found
      */
     translate: function (objects) {
-        return new Promise((resolve)=>{
-            var self = this;
+        return new Promise((resolve) => {
             SCWeb.core.Server.resolveIdentifiers(objects).then(function (namesMap) {
                 resolve(namesMap);
             });

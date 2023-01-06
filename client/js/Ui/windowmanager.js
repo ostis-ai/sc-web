@@ -44,7 +44,7 @@ SCWeb.ui.WindowManager = {
 
                 var fmt_addr = SCWeb.core.ComponentManager.getPrimaryFormatForExtLang(lang_addr);
                 if (fmt_addr) {
-                    var command_state = new SCWeb.core.CommandState(null, null, fmt_addr);
+                    var command_state = new SCWeb.core.CommandState(null, null, fmt_addr, lang_addr);
                     var id = self.hash_addr(question_addr, command_state);
                     if (self.isWindowExist(id)) {
                         self.setWindowActive(id);
@@ -104,9 +104,9 @@ SCWeb.ui.WindowManager = {
     /**
      * Append new tab into history
      * @param {String} question_addr sc-addr of item to append into history
+     * @param command_state
      */
     appendHistoryItem: function (question_addr, command_state) {
-
         // @todo check if tab exist        
         var tab_html = '<a class="list-group-item history-item ui-no-tooltip" sc_addr="' + question_addr + '">' +
             '<p>' + question_addr + '</p>' +
@@ -117,6 +117,7 @@ SCWeb.ui.WindowManager = {
         // get translation and create window
         var ext_lang_addr = SCWeb.core.Main.getDefaultExternalLang();
         command_state.format = SCWeb.core.ComponentManager.getPrimaryFormatForExtLang(ext_lang_addr);
+        command_state.lang = SCWeb.core.Translation.getCurrentLanguage();
         if (command_state.format) {
             var id = this.hash_addr(question_addr, command_state.format, command_state.command_args)
             if (this.isWindowExist(id)) {
@@ -171,8 +172,8 @@ SCWeb.ui.WindowManager = {
     // ------------ Windows ------------
     /**
      * Append new window
-     * @param {String} addr sc-addr of sc-structure
-     * @param {String} fmt_addr sc-addr of window format
+     * @param question_addr
+     * @param command_state
      */
     appendWindow: function (question_addr, command_state) {
         var self = this;
@@ -208,11 +209,10 @@ SCWeb.ui.WindowManager = {
                 self.showActiveWindow();
                 throw "Error while create window";
             }
-            ;
         };
 
         var translated = function () {
-            SCWeb.core.Server.getAnswerTranslated(question_addr, command_state.format, function (d) {
+            SCWeb.core.Server.getAnswerTranslated(question_addr, command_state.format, command_state.lang, function (d) {
                 f(d.link, false);
             });
         };

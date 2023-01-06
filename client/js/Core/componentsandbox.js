@@ -1,9 +1,10 @@
 SCWeb.core.scAddrsDict = {};
 
-SCWeb.core.CommandState = function (command_addr, command_args, format) {
+SCWeb.core.CommandState = function (command_addr, command_args, format, lang) {
     this.command_addr = command_addr;
     this.command_args = command_args || [];
     this.format = format;
+    this.lang = lang
 }
 
 /**
@@ -342,7 +343,7 @@ SCWeb.core.ComponentSandbox.prototype.onWindowActiveChanged = function (is_activ
 // --------- Data -------------
 SCWeb.core.ComponentSandbox.prototype.onDataAppend = function (data) {
     if (this.eventDataAppend) {
-        return this.eventDataAppend(data).then(() => this.translate());
+        return this.eventDataAppend(data);
     } else {
         return Promise.resolve();
     }

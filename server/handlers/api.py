@@ -67,9 +67,14 @@ class QuestionAnswerTranslate(base.BaseHandler):
         question_addr = ScAddr(int(self.get_argument(u'question', None)))
         format_addr = ScAddr(int(self.get_argument(u'format', None)))
 
+        lang_arg = self.get_argument(u'lang', None)
+        if lang_arg:
+            lang_addr = ScAddr(int(lang_arg))
+
         keynodes = ScKeynodes()
         keynode_system_element = keynodes[KeynodeSysIdentifiers.system_element.value]
         ui_rrel_source_sc_construction = keynodes[KeynodeSysIdentifiers.ui_rrel_source_sc_construction.value]
+        ui_rrel_user_lang = keynodes[KeynodeSysIdentifiers.ui_rrel_user_lang.value]
         ui_command_translate_from_sc = keynodes[KeynodeSysIdentifiers.ui_command_translate_from_sc.value]
         ui_command_initiated = keynodes[KeynodeSysIdentifiers.ui_command_initiated.value]
 
@@ -106,10 +111,18 @@ class QuestionAnswerTranslate(base.BaseHandler):
             construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_addr_2')
             construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, 'trans_cmd_addr', format_addr, 'arc_addr_3')
             construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_addr_3')
+
+            if lang_addr:
+                construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, 'trans_cmd_addr', lang_addr, 'arc_addr_4')
+                construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_addr_4')
+
             ui_rrel_output_format = keynodes[KeynodeSysIdentifiers.ui_rrel_output_format.value]
             construction.create_edge(
-                sc_types.EDGE_ACCESS_CONST_POS_PERM, ui_rrel_output_format, 'arc_addr_3', 'arc_addr_4')
-            construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_addr_4')
+                sc_types.EDGE_ACCESS_CONST_POS_PERM, ui_rrel_output_format, 'arc_addr_3', 'arc_addr_3_edge')
+            construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_addr_3_edge')
+            construction.create_edge(
+                sc_types.EDGE_ACCESS_CONST_POS_PERM, ui_rrel_user_lang, 'arc_addr_4', 'arc_addr_4_edge')
+            construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_addr_4_edge')
             construction.create_edge(
                 sc_types.EDGE_ACCESS_CONST_POS_PERM, ui_command_translate_from_sc, 'trans_cmd_addr', 'arc_addr_5')
             construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_addr_5')

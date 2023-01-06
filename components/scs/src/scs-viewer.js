@@ -33,7 +33,7 @@ SCs.Viewer = function () {
     this.appendData = function (data) {
         var self = this;
         buildOutput();
-        this.tree.build(data.keywords, data.triples);
+        this.tree.build(data.keywords, data.triples, data.identifiers);
         $(self.containerId).html(self.output.toHtml());
 
         $(self.containerId + ' .sc-contour > .scs-scn-view-toogle-button').click(function () {
