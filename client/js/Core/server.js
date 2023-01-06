@@ -235,11 +235,14 @@ SCWeb.core.Server = {
                 result[0].get(LINK);
             }
 
-            return null;
+            return addr;
         }
 
         if (arguments.length) {
-            const links = await Promise.all(notChecked.map(id => getIdentifierLink(new sc.ScAddr(parseInt(id)))));
+            const elements = notChecked.map(id => new sc.ScAddr(parseInt(id)));
+            const types = await window.scClient.checkElements(elements);
+            const nodes = elements.filter((_, index) => !types[index].isLink());
+            const links = await Promise.all(nodes.map(node => getIdentifierLink(node)));
             const contents = await window.scClient.getLinkContents(links);
             contents.forEach((content, index) => {
                 result[notChecked[index]] = content.data;
