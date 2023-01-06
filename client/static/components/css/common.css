@@ -487,6 +487,10 @@ div[class="tooltip-inner"] {
   padding-top: 15px;
   padding-bottom: 15px;
 }
+
+#expert_mode_container .normalLabel {
+  cursor: pointer;
+}
 /* The switch - the box around the slider */
 .switch {
   position: relative;

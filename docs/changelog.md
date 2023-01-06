@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add language parameter to view window
 
 ### Fixed
+- Pointer cursor when hovering over expert mode switch label
 - Attribute `sc_control_sys_idtf` for sidebar collapse button
 - Add curl to dependencies installation script
 
