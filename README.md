@@ -21,6 +21,14 @@ docker run --rm -it --network=host ostis/sc-web:latest
 
 ## Installation
 
+  Clone repo:
+
+  ```sh
+  git clone https://github.com/ostis-ai/sc-web
+  cd sc-web
+  git submodule update --init --recursive
+  ```
+
   If you're using Ubuntu, you can install dependencies using our script:
 
   ```sh
@@ -44,6 +52,19 @@ docker run --rm -it --network=host ostis/sc-web:latest
 ```sh
 npm run build
 ```
+
+  ### Documentation
+
+  Full documentation, including:
+    * core concepts
+    * rationale behind the sc-web
+    * system design
+    * software interfaces
+
+  is redistributed in a form of the [SCn-TeX document](https://github.com/ostis-ai/ostis-web-platform/blob/develop/docs/main.pdf).
+
+  or **alternatively** you can build sc-machine documentation only. To do that refer to the [scn-latex-plugin](https://github.com/ostis-ai/scn-latex-plugin) documentation.
+
 
   ### Running
 

@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Add border and tools parameter to view window
 - Add language parameter to view window
+- Build docs in SCn format
 
 ### Fixed
 - Pointer cursor when hovering over expert mode switch label
