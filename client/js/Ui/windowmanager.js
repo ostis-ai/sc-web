@@ -43,8 +43,9 @@ SCWeb.ui.WindowManager = {
                 var lang_addr = $(this).attr('sc_addr');
 
                 var fmt_addr = SCWeb.core.ComponentManager.getPrimaryFormatForExtLang(lang_addr);
+                var lang = SCWeb.core.Translation.getCurrentLanguage();
                 if (fmt_addr) {
-                    var command_state = new SCWeb.core.CommandState(null, null, fmt_addr, lang_addr);
+                    var command_state = new SCWeb.core.CommandState(null, null, fmt_addr, lang);
                     var id = self.hash_addr(question_addr, command_state);
                     if (self.isWindowExist(id)) {
                         self.setWindowActive(id);
@@ -115,9 +116,15 @@ SCWeb.ui.WindowManager = {
         this.history_tabs.prepend(tab_html);
 
         // get translation and create window
-        var ext_lang_addr = SCWeb.core.Main.getDefaultExternalLang();
-        command_state.format = SCWeb.core.ComponentManager.getPrimaryFormatForExtLang(ext_lang_addr);
-        command_state.lang = SCWeb.core.Translation.getCurrentLanguage();
+        if (!command_state.format)
+        {
+            var ext_lang_addr = SCWeb.core.Main.getDefaultExternalLang();
+            command_state.format = SCWeb.core.ComponentManager.getPrimaryFormatForExtLang(ext_lang_addr);
+        }
+
+        if (!command_state.lang)
+            command_state.lang = SCWeb.core.Translation.getCurrentLanguage();
+
         if (command_state.format) {
             var id = this.hash_addr(question_addr, command_state.format, command_state.command_args)
             if (this.isWindowExist(id)) {
@@ -177,7 +184,7 @@ SCWeb.ui.WindowManager = {
      */
     appendWindow: function (question_addr, command_state) {
         var self = this;
-
+        SCWeb.ui.Locker.show();
         var f = function (addr, is_struct) {
             var id = self.hash_addr(question_addr, command_state.format);
             if (!self.isWindowExist(id)) {
@@ -209,6 +216,7 @@ SCWeb.ui.WindowManager = {
                 self.showActiveWindow();
                 throw "Error while create window";
             }
+            SCWeb.ui.Locker.hide();
         };
 
         var translated = function () {

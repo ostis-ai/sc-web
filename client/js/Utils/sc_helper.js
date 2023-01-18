@@ -107,40 +107,28 @@ ScHelper.prototype.getOutputLanguages = function () {
  * If function fails, then promise rejects
  */
 ScHelper.prototype.getAnswer = function (question_addr) {
-  return new Promise(async (resolve, reject) => {
-    let event;
+  return new Promise(async (resolve) => {
+    let template = new sc.ScTemplate();
     let timer = setTimeout(async () => {
       reject();
       clearTimeout(timer);
-      timer = null;
-      if (event) {
-        await this.scClient.eventsDestroy(event.id);
-        event = null;
-      }
+      resolve(null);
     }, 10_000);
-    let eventRequest = new sc.ScEventParams(
-      new sc.ScAddr(Number.parseInt(question_addr)),
-      sc.ScEventType.AddOutgoingEdge,
-      async (elAddr, edge, otherAddr) => {
-        let isAnswer = await this.checkEdge(window.scKeynodes['nrel_answer'], sc.ScType.EdgeAccessVarPosPerm, edge);
-        if (isAnswer) {
-          resolve(otherAddr);
-        }
-      });
-    event = (await this.scClient.eventsCreate([eventRequest]))[0];
-    let template = new sc.ScTemplate();
     template.tripleWithRelation(
-      new sc.ScAddr(Number.parseInt(question_addr)),
+      new sc.ScAddr(parseInt(question_addr)),
       sc.ScType.EdgeDCommonVar,
       [sc.ScType.NodeVar, "_answer"],
       sc.ScType.EdgeAccessVarPosPerm,
       new sc.ScAddr(window.scKeynodes['nrel_answer']),
     );
-    let templateSearch = await this.scClient.templateSearch(template);
-    if (templateSearch.length) {
-      resolve(templateSearch[0].get("_answer").value);
-      await this.scClient.eventsDestroy([event.id]);
-      clearTimeout(timer);
+    let templateSearch = [];
+    while (!templateSearch.length && timer) {
+      templateSearch = await this.scClient.templateSearch(template);
+      if (templateSearch.length) {
+        resolve(templateSearch[0].get("_answer").value);
+        clearTimeout(timer);
+        break;
+      }
     }
   });
 };

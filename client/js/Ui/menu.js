@@ -89,10 +89,12 @@ SCWeb.ui.Menu = {
 
         $('.menu-item').click(function () {
             var sc_addr = $(this).attr('sc_addr');
+            let windowId = SCWeb.ui.WindowManager.getActiveWindowId();
+            let container = document.getElementById(windowId);
             if ($(this).hasClass('menu-cmd-atom')) {
-                SCWeb.core.Main.doCommand(sc_addr, SCWeb.core.Arguments._arguments);
+                SCWeb.core.Main.doCommandWithFormat(sc_addr, SCWeb.core.Arguments._arguments,$(container).attr("sc-addr-fmt"));
             } else if ($(this).hasClass('menu-cmd-keynode')) {
-                SCWeb.core.Main.doDefaultCommand([sc_addr]);
+                SCWeb.core.Main.doDefaultCommandWithFormat([sc_addr],$(container).attr("sc-addr-fmt"));
             }
         });
     },
@@ -109,8 +111,10 @@ SCWeb.ui.Menu = {
 
             var parseMenuItem = function (item, parentSubmenu) {
                 var menu_item = {};
+                let windowId = SCWeb.ui.WindowManager.getActiveWindowId();
+                let container = document.getElementById(windowId);
                 menu_item.action = function (e) {
-                    SCWeb.core.Main.doCommand(item, args);
+                    SCWeb.core.Main.doCommandWithFormat(item, args,$(container).attr("sc-addr-fmt"));
                 }
 
                 menu_item.text = item;

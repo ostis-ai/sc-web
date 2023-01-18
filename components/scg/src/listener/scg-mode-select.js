@@ -75,7 +75,7 @@ SCgSelectListener.prototype = {
             this.scene.commandManager.execute(new SCgWrapperCommand(commands), true);
             this.offsetObject = null;
             this.position = null;
-        } else if (!d3.event.ctrlKey && obj == this.scene.focused_object) {
+        } else if (!d3.event.ctrlKey && obj == this.scene.focused_object && this.scene.selected_objects.length > 1) {
             this.selectObject(obj); // remove multi selection and select object
         }
         this.scene.focused_object = null;
