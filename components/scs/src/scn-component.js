@@ -45,7 +45,6 @@ var SCnViewer = function (sandbox) {
         data = JSON.parse(data);
         data = this.expertModeModeManager.applyExpertMode(data);
         this.viewer.appendData(data);
-        SCWeb.ui.Locker.hide();
         return this.sandbox.createViewersForScLinks(this.viewer.getLinks());
     };
 
@@ -54,7 +53,6 @@ var SCnViewer = function (sandbox) {
             var addr = $(element).attr('sc_addr');
             if (!$(element).hasClass('sc-content') && !$(element).hasClass('sc-contour') &&
                 !$(element).hasClass('scs-scn-connector') && ($(element).hasClass('scs-scn-element'))) {
-                console.log(namesMap);
                 if (namesMap[addr]) {
                     $(element).text(namesMap[addr] ? namesMap[addr] : '<b>...</b>');
                 } else {

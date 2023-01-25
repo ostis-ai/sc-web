@@ -194,6 +194,13 @@ SCg.Render.prototype = {
                     if (d3.event.stopPropagation())
                         d3.event.stopPropagation();
                 })
+                .on("dblclick", d => {
+                    if (d3.event.stopPropagation())
+                        d3.event.stopPropagation();
+                    let windowId = SCWeb.ui.WindowManager.getActiveWindowId();
+                    let container = document.getElementById(windowId);
+                    SCWeb.core.Main.doDefaultCommandWithFormat([d.sc_addr], $(container).attr("sc-addr-fmt"));
+                });
         };
 
         function appendNodeVisual(g) {
