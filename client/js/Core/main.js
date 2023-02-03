@@ -117,9 +117,10 @@ SCWeb.core.Main = {
 
                 this.waitForElm('.sc-contour').then(() => {
                     $('#window-container').children().children().children().children().hide();
-                    $('.sc-contour').css({'height':'97%','width':'97%','position':'absolute'});
+                    $('.sc-contour').css({'height':'93%','width':'96%','position':'absolute', "background-color": "none", "border": "none", "padding": "0px", "border-radius": "none"});
                     $('.scs-scn-view-toogle-button').hide().click();
-                    $("[id*='tools-']").parent().css("height", "100%");
+                    $('.scs-scn-element').css("cursor", "auto !important");
+                    $("[id*='tools-']").parent().css({"height": "100%", "width": "100%"});
                     $("[id*='tools-']").parent().parent().css("height", "100%");
 
                     if (hide_borders) {
