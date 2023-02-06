@@ -3,6 +3,7 @@
 import base64
 import hashlib
 import time
+import threading
 import uuid
 from typing import List, Dict
 
@@ -202,7 +203,8 @@ def find_tooltip(addr: ScAddr, lang) -> str:
                     sc_types.EDGE_ACCESS_VAR_POS_PERM,
                     keynodes[KeynodeSysIdentifiers.nrel_sc_text_translation.value],
                 )
-                translations_result = client.template_search(translations_template)
+                translations_result = client.template_search(
+                    translations_template)
 
                 for translation in translations_result:
                     # find translation to current language
@@ -247,17 +249,26 @@ def find_cmd_result(command_addr: ScAddr) -> List[ScTemplateResult]:
 
 @decorators.method_logging
 def find_answer(question_addr: ScAddr) -> List[ScTemplateResult]:
-    keynodes = ScKeynodes()
+    def _get_answer():
+        keynodes = ScKeynodes()
 
-    template = ScTemplate()
-    template.triple_with_relation(
-        question_addr,
-        sc_types.EDGE_D_COMMON_VAR,
-        sc_types.NODE_VAR,
-        sc_types.EDGE_ACCESS_VAR_POS_PERM,
-        keynodes[KeynodeSysIdentifiers.question_nrel_answer.value],
-    )
-    return client.template_search(template)
+        template = ScTemplate()
+        template.triple_with_relation(
+            question_addr,
+            sc_types.EDGE_D_COMMON_VAR,
+            sc_types.NODE_VAR,
+            sc_types.EDGE_ACCESS_VAR_POS_PERM,
+            keynodes[KeynodeSysIdentifiers.question_nrel_answer.value],
+        )
+        return client.template_search(template)
+
+    wait_dt = 0.01
+    begin_time = time.time()
+    result = _get_answer()
+    while (((begin_time + tornado.options.options.answer_wait_timeout) > time.time()) and result == None):
+        time.sleep(wait_dt)
+        result = _get_answer()
+    return result
 
 
 @decorators.method_logging
@@ -436,7 +447,8 @@ def check_command_failed(command_addr: ScAddr) -> bool:
 @decorators.method_logging
 def append_to_system_elements(keynode_system_element: ScAddr, el: ScAddr) -> None:
     construction = ScConstruction()
-    construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, el)
+    construction.create_edge(
+        sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, el)
     client.create_elements(construction)
 
 
@@ -467,7 +479,8 @@ def do_command(cmd_addr: ScAddr, arguments: List[ScAddr], handler: BaseHandler):
 
         keynode_ui_rrel_commnad = keynodes[KeynodeSysIdentifiers.ui_rrel_commnad.value]
         keynode_ui_rrel_command_arguments = keynodes[KeynodeSysIdentifiers.ui_rrel_command_arguments.value]
-        keynode_ui_command_generate_instance = keynodes[KeynodeSysIdentifiers.ui_command_generate_instance.value]
+        keynode_ui_command_generate_instance = keynodes[
+            KeynodeSysIdentifiers.ui_command_generate_instance.value]
         keynode_ui_command_initiated = keynodes[KeynodeSysIdentifiers.ui_command_initiated.value]
         keynode_ui_nrel_command_result = keynodes[KeynodeSysIdentifiers.ui_nrel_command_result.value]
         keynode_nrel_authors = keynodes[KeynodeSysIdentifiers.nrel_authors.value]
@@ -481,40 +494,56 @@ def do_command(cmd_addr: ScAddr, arguments: List[ScAddr], handler: BaseHandler):
         # create command in sc-memory
         construction = ScConstruction()
         construction.create_node(sc_types.NODE_CONST, 'inst_cmd_addr')
-        construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'inst_cmd_addr')
+        construction.create_edge(
+            sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'inst_cmd_addr')
         construction.create_edge(
             sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_ui_command_generate_instance, 'inst_cmd_addr', 'arc_1')
-        construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_1')
-        construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, 'inst_cmd_addr', cmd_addr, 'inst_cmd_arc')
-        construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'inst_cmd_arc')
-        construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_ui_rrel_commnad, 'inst_cmd_arc', 'arc_2')
-        construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_2')
+        construction.create_edge(
+            sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_1')
+        construction.create_edge(
+            sc_types.EDGE_ACCESS_CONST_POS_PERM, 'inst_cmd_addr', cmd_addr, 'inst_cmd_arc')
+        construction.create_edge(
+            sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'inst_cmd_arc')
+        construction.create_edge(
+            sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_ui_rrel_commnad, 'inst_cmd_arc', 'arc_2')
+        construction.create_edge(
+            sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_2')
 
         # create arguments
         construction.create_node(sc_types.NODE_CONST, 'args_addr')
-        construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'args_addr')
-        construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, 'inst_cmd_addr', 'args_addr', 'args_arc')
-        construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'args_arc')
+        construction.create_edge(
+            sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'args_addr')
+        construction.create_edge(
+            sc_types.EDGE_ACCESS_CONST_POS_PERM, 'inst_cmd_addr', 'args_addr', 'args_arc')
+        construction.create_edge(
+            sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'args_arc')
         construction.create_edge(
             sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_ui_rrel_command_arguments, 'args_arc', 'arc_3')
-        construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_3')
+        construction.create_edge(
+            sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_3')
 
         idx = 1
         for arg in arguments:
             arg_arc = 'arg_arc_%d' % idx
-            construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, 'args_addr', arg, arg_arc)
-            construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, arg_arc)
+            construction.create_edge(
+                sc_types.EDGE_ACCESS_CONST_POS_PERM, 'args_addr', arg, arg_arc)
+            construction.create_edge(
+                sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, arg_arc)
 
-            idx_addr = client.resolve_keynodes(ScIdtfResolveParams(idtf='rrel_%d' % idx, type=None))[0]
+            idx_addr = client.resolve_keynodes(
+                ScIdtfResolveParams(idtf='rrel_%d' % idx, type=None))[0]
             if not idx_addr.is_valid():
                 return serialize_error(handler, 404, 'Error while create "create_instance" command')
             idx_arc_addr = 'idx_arc_addr_%d' % idx
-            construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, idx_addr, arg_arc, idx_arc_addr)
-            construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, idx_arc_addr)
+            construction.create_edge(
+                sc_types.EDGE_ACCESS_CONST_POS_PERM, idx_addr, arg_arc, idx_arc_addr)
+            construction.create_edge(
+                sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, idx_arc_addr)
             idx += 1
 
         # initialize command
-        construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_ui_command_initiated, 'inst_cmd_addr')
+        construction.create_edge(
+            sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_ui_command_initiated, 'inst_cmd_addr')
         result = client.create_elements(construction)
         inst_cmd_addr = result[construction.get_index('inst_cmd_addr')]
 
@@ -577,7 +606,8 @@ def do_command(cmd_addr: ScAddr, arguments: List[ScAddr], handler: BaseHandler):
             keynode_init_set = keynodes[KeynodeSysIdentifiers.question_initiated.value]
 
             construction = ScConstruction()
-            construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, instance_node)
+            construction.create_edge(
+                sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, instance_node)
             client.create_elements(construction)
 
             # generate main identifiers
@@ -616,21 +646,26 @@ def do_command(cmd_addr: ScAddr, arguments: List[ScAddr], handler: BaseHandler):
                             if str(lang) not in generated and arc.get(0).value == lang.value:
                                 lang_idtfs = identifiers[str(lang)]
                                 # get content of link
-                                data = client.get_link_content(template_item.get(2))[0].data
+                                data = client.get_link_content(
+                                    template_item.get(2))[0].data
                                 if data:
                                     for idx in range(len(arguments)):
                                         value = arguments[idx].value
                                         if str(arguments[idx]) in lang_idtfs:
-                                            value = lang_idtfs[str(arguments[idx])]
-                                        data = data.replace(u'$ui_arg_%d' % (idx + 1), str(value))
+                                            value = lang_idtfs[str(
+                                                arguments[idx])]
+                                        data = data.replace(
+                                            u'$ui_arg_%d' % (idx + 1), str(value))
 
                                     # generate identifier
                                     construction = ScConstruction()
                                     construction.create_link(
                                         sc_types.LINK_CONST,
-                                        ScLinkContent(data, ScLinkContentType.STRING.value),
+                                        ScLinkContent(
+                                            data, ScLinkContentType.STRING.value),
                                         'idtf_link')
-                                    construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, lang, 'idtf_link')
+                                    construction.create_edge(
+                                        sc_types.EDGE_ACCESS_CONST_POS_PERM, lang, 'idtf_link')
                                     construction.create_edge(
                                         sc_types.EDGE_D_COMMON_CONST, instance_node, 'idtf_link', 'bin_arc')
                                     construction.create_edge(
@@ -659,14 +694,20 @@ def do_command(cmd_addr: ScAddr, arguments: List[ScAddr], handler: BaseHandler):
 
         # create author
         construction = ScConstruction()
-        construction.create_edge(sc_types.EDGE_D_COMMON_CONST, instance_node, user_node, 'author_arc')
-        construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'author_arc')
-        construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_nrel_authors, 'author_arc', 'arc_1')
-        construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_1')
+        construction.create_edge(
+            sc_types.EDGE_D_COMMON_CONST, instance_node, user_node, 'author_arc')
+        construction.create_edge(
+            sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'author_arc')
+        construction.create_edge(
+            sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_nrel_authors, 'author_arc', 'arc_1')
+        construction.create_edge(
+            sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_1')
 
         # initiate instance
-        construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_init_set, instance_node, 'arc_2')
-        construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_2')
+        construction.create_edge(
+            sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_init_set, instance_node, 'arc_2')
+        construction.create_edge(
+            sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_2')
         client.create_elements(construction)
 
         result = {result_key: instance_node.value}
@@ -718,8 +759,10 @@ class ScSession:
                     self.sc_addr = self._user_new()
             else:
                 if self.session_key is None:
-                    self.session_key = base64.b64encode(uuid.uuid4().bytes + uuid.uuid4().bytes)
-                    self.handler.set_secure_cookie("session_key", self.session_key)
+                    self.session_key = base64.b64encode(
+                        uuid.uuid4().bytes + uuid.uuid4().bytes)
+                    self.handler.set_secure_cookie(
+                        "session_key", self.session_key)
                 self.sc_addr = self._session_get_sc_addr()
                 if not self.sc_addr.is_valid():
                     self.sc_addr = self._session_new_sc_addr()
@@ -790,8 +833,10 @@ class ScSession:
             client.delete_elements(search[0].get(1))
 
         construction = ScConstruction()
-        construction.create_edge(sc_types.EDGE_D_COMMON_CONST, self.get_sc_addr(), mode_addr, 'mode_edge')
-        construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, used_language, 'mode_edge')
+        construction.create_edge(
+            sc_types.EDGE_D_COMMON_CONST, self.get_sc_addr(), mode_addr, 'mode_edge')
+        construction.create_edge(
+            sc_types.EDGE_ACCESS_CONST_POS_PERM, used_language, 'mode_edge')
         client.create_elements(construction)
 
     def set_default_ext_lang(self, lang_addr) -> None:
@@ -812,12 +857,15 @@ class ScSession:
             client.delete_elements(results[0].get(1))
 
         construction = ScConstruction()
-        construction.create_edge(sc_types.EDGE_D_COMMON_CONST, self.get_sc_addr(), lang_addr, 'lang_edge')
-        construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, default_ext_language, 'lang_edge')
+        construction.create_edge(
+            sc_types.EDGE_D_COMMON_CONST, self.get_sc_addr(), lang_addr, 'lang_edge')
+        construction.create_edge(
+            sc_types.EDGE_ACCESS_CONST_POS_PERM, default_ext_language, 'lang_edge')
         client.create_elements(construction)
 
     def _find_user_by_system_idtf(self, idtf) -> ScAddr:
-        value = client.resolve_keynodes(ScIdtfResolveParams(idtf=idtf, type=None))[0]
+        value = client.resolve_keynodes(
+            ScIdtfResolveParams(idtf=idtf, type=None))[0]
         return value
 
     def _create_user_with_system_idtf(self, idtf) -> ScAddr:
@@ -827,10 +875,14 @@ class ScSession:
         # create user node
         construction = ScConstruction()
         construction.create_node(sc_types.NODE_CONST, 'user')
-        construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_ui_user, 'user')
-        construction.create_link(sc_types.LINK_CONST, ScLinkContent(idtf, ScLinkContentType.STRING.value), 'idtf')
-        construction.create_edge(sc_types.EDGE_D_COMMON_CONST, 'user', 'idtf', 'sys_idtf_edge')
-        construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, sys_idtf, 'sys_idtf_edge')
+        construction.create_edge(
+            sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_ui_user, 'user')
+        construction.create_link(sc_types.LINK_CONST, ScLinkContent(
+            idtf, ScLinkContentType.STRING.value), 'idtf')
+        construction.create_edge(
+            sc_types.EDGE_D_COMMON_CONST, 'user', 'idtf', 'sys_idtf_edge')
+        construction.create_edge(
+            sc_types.EDGE_ACCESS_CONST_POS_PERM, sys_idtf, 'sys_idtf_edge')
         result = client.create_elements(construction)
 
         return result[construction.get_index('user')]
