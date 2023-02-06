@@ -133,6 +133,31 @@ ScHelper.prototype.getAnswer = function (question_addr) {
   });
 };
 
+ScHelper.prototype.setMainIdtf = function (addr, idtf, lang) {
+  var self = this;
+
+  window.sctpClient.iterate_constr(
+      SctpConstrIter(SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F,
+          [addr,
+              sc_type_arc_common | sc_type_const,
+              sc_type_link,
+              sc_type_arc_pos_const_perm,
+              window.scKeynodes.nrel_main_idtf
+          ],
+          {"x": 2}),
+      SctpConstrIter(SctpIteratorType.SCTP_ITERATOR_3F_A_F,
+          [lang,
+              sc_type_arc_pos_const_perm,
+              "x"
+          ])
+  ).done(function (results) {
+      var link_addr = results.get(0, "x");
+      self.sctp_client.set_link_content(link_addr, idtf);
+  }).fail(function () {
+      console.log("Fail in ScHelper.prototype.setMainIdtf set_link_content(link_addr, idtf)");
+  });
+}
+
 ScHelper.prototype.setLinkFormat = async function (addr, format) {
   let template = new sc.ScTemplate();
   template.tripleWithRelation(
