@@ -247,17 +247,32 @@ def find_cmd_result(command_addr: ScAddr) -> List[ScTemplateResult]:
 
 @decorators.method_logging
 def find_answer(question_addr: ScAddr) -> List[ScTemplateResult]:
-    keynodes = ScKeynodes()
+    def _get_answer():
+        keynodes = ScKeynodes()
 
-    template = ScTemplate()
-    template.triple_with_relation(
+        template = ScTemplate()
+        template.triple_with_relation(
         question_addr,
         sc_types.EDGE_D_COMMON_VAR,
         sc_types.NODE_VAR,
         sc_types.EDGE_ACCESS_VAR_POS_PERM,
         keynodes[KeynodeSysIdentifiers.question_nrel_answer.value],
-    )
-    return client.template_search(template)
+        )
+        return client.template_search(template)
+        
+
+    wait_time=0
+    wait_dt=0.01
+
+    while True:
+        time.sleep(wait_dt)
+        wait_time += wait_dt
+        if wait_time > tornado.options.options.answer_wait_timeout:
+            return []
+        result=_get_answer()
+
+        if result:
+            return result
 
 
 @decorators.method_logging
