@@ -34,7 +34,14 @@ SCg.Render.prototype = {
             })
             .on('dblclick', function () {
                 self.onMouseDoubleClick(this, self);
+            })
+            .on("mouseleave", function (d) {
+                self.scene.onMouseUpObject(d);
+                if (d3.event.stopPropagation()) d3.event.stopPropagation();
             });
+
+        const svg = document.querySelector("svg.SCgSvg");
+        svg.ondragstart = () => false;
 
         this.scale = 1;
         var self = this;
