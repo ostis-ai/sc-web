@@ -184,7 +184,7 @@ def search_kb_sources(root_path: str):
 
     elif splitext(root_path)[1] == REPO_FILE_EXT:
         print()
-        with open(join(root_path), 'r') as root_file:
+        with open(join(root_path), 'r', encoding='utf-8') as root_file:
             for line in root_file.readlines():
                 # ignore comments and empty lines
                 line = line.replace('\n', '')
