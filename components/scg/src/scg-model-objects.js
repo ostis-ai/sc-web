@@ -467,9 +467,14 @@ SCg.ModelEdge.prototype.setTargetDot = function (dot) {
 
 SCg.ModelEdge.prototype.update = function () {
 
-    if (!this.source_pos)
+    if (isNaN(this.source.position.x) || isNaN(this.source.position.y))
+        this.source.setPosition(new SCg.Vector3(250.0, 250.0, 0.0))
+    if (isNaN(this.target.position.x) || isNaN(this.target.position.y))
+        this.target.setPosition(new SCg.Vector3(250.0, 250.0, 0.0))
+
+    if (!this.source_pos || isNaN(this.source_pos.x) || isNaN(this.source_pos.y) || isNaN(this.source_pos.z))
         this.source_pos = this.source.position.clone();
-    if (!this.target_pos)
+    if (!this.target_pos || isNaN(this.target_pos.x) || isNaN(this.target_pos.y) || isNaN(this.target_pos.z))
         this.target_pos = this.target.position.clone();
 
     SCg.ModelObject.prototype.update.call(this);

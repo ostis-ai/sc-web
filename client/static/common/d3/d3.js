@@ -583,7 +583,27 @@ d3 = function() {
       var x = value.apply(this, arguments);
       if (x == null) this.removeAttributeNS(name.space, name.local); else this.setAttributeNS(name.space, name.local, x);
     }
-    return value == null ? name.local ? attrNullNS : attrNull : typeof value === "function" ? name.local ? attrFunctionNS : attrFunction : name.local ? attrConstantNS : attrConstant;
+    const NaNDot = 250.0;
+    const dNaNPoint = `M${NaNDot},${NaNDot}L${NaNDot},${NaNDot}`;
+    const transformNaNPoint = `translate(${NaNDot},${NaNDot})`;
+    if (value == null) {
+      if (name.local)
+        return attrNullNS;
+      else
+        return attrNull;
+    } else if (typeof value === "function") {
+      if(name.local)
+        return attrFunctionNS;
+      else
+        return attrFunction;
+    } else if (name.local) 
+      return attrConstantNS;
+    else if (name == "d" && value == "MNaN,NaNLNaN,NaN")
+      value = dNaNPoint;
+    else if (name == "transform" && value == "translate(NaN, NaN)")
+      value = transformNaNPoint;
+    return attrConstant;
+    // return value == null ? name.local ? attrNullNS : attrNull : typeof value === "function" ? name.local ? attrFunctionNS : attrFunction : name.local ? attrConstantNS : attrConstant;
   }
   function d3_collapse(s) {
     return s.trim().replace(/\s+/g, " ");
