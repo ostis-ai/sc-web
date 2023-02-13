@@ -1,6 +1,8 @@
 const scHelper = null;
 const scKeynodes = null;
 const currentYear = new Date().getFullYear();
+const last_page_cmd_addr = 'last_page_cmd_addr';
+const last_page_cmd_args = 'last_page_cmd_args';
 
 function ScClientCreate() {
     let res, rej;
@@ -216,8 +218,9 @@ SCWeb.core.Main = {
             if (result.question !== undefined) {
                 const commandState = new SCWeb.core.CommandState(cmd_addr, cmd_args);
                 SCWeb.ui.WindowManager.appendHistoryItem(result.question, commandState);
+                setCookie(last_page_cmd_addr, cmd_addr);
+                setCookie(last_page_cmd_args, cmd_args);
             } else if (result.command !== undefined) {
-
             } else {
                 alert("There are no any answer. Try another request");
             }
@@ -295,6 +298,11 @@ SCWeb.core.Main = {
                 self.default_cmd = addrs[self.default_cmd_str];
                 if (self.default_cmd) {
                     self.doCommand(self.default_cmd, cmd_args);
+                    const last_page_cmd_addr = getCookie('last_page_cmd_addr')
+                    const last_page_cmd_args = [getCookie('last_page_cmd_args')]
+                    if (last_page_cmd_addr && last_page_cmd_args && Number(last_page_cmd_args[0]) !== cmd_args[0]){
+                        self.doCommand(last_page_cmd_addr, last_page_cmd_args);
+                    }
                 }
             });
         } else {
