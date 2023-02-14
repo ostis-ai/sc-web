@@ -103,7 +103,18 @@ SCWeb.core.Main = {
                 SCWeb.core.Translation.fireLanguageChanged(window_lang);
             }
 
-            SCWeb.core.Main.doDefaultCommandWithSystemIdentifier(sys_id);
+            if(scg_view)
+            {
+                ext_lang_addr = window.scKeynodes['scg_code'];
+                format = SCWeb.core.ComponentManager.getPrimaryFormatForExtLang(ext_lang_addr);
+                SCWeb.core.Main.doDefaultCommandWithFormatSysId(sys_id, format);
+            }
+            else
+            {
+                SCWeb.core.Main.doDefaultCommandWithSystemIdentifier(sys_id);
+
+            }
+
             window.history.replaceState(null, null, window.location.pathname);
             if (scg_view){
                 const hide_tools = urlObject['hide_tools'];
@@ -340,7 +351,7 @@ SCWeb.core.Main = {
     doDefaultCommandWithFormat: function (cmd_args, fmt_addr) {
         if (!this.default_cmd) {
             var self = this;
-            SCWeb.core.Server.resolveScAddr([this.default_cmd_str], function (addrs) {
+            SCWeb.core.Server.resolveScAddr([this.default_cmd_str]).then(function (addrs) {
                 self.default_cmd = addrs[self.default_cmd_str];
                 if (self.default_cmd) {
                     self.doCommandWithFormat(self.default_cmd, cmd_args, fmt_addr);
@@ -349,6 +360,17 @@ SCWeb.core.Main = {
         } else {
             this.doCommandWithFormat(this.default_cmd, cmd_args, fmt_addr);
         }
+    },
+
+    doDefaultCommandWithFormatSysId: function (sys_id, fmt_addr) {
+        SCWeb.core.Server.resolveScAddr([sys_id]).then(function (addrs) {
+            const resolvedId = addrs[sys_id];
+            if (resolvedId) {
+                SCWeb.core.Main.doDefaultCommandWithFormat([resolvedId], fmt_addr);
+            } else {
+                SCWeb.core.Main.doDefaultCommandWithFormatSysId('ui_start_sc_element', fmt_addr);
+            }
+        });
     }
 };
 
