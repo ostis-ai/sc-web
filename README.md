@@ -47,6 +47,20 @@ docker run --rm -it --network=host ostis/sc-web:latest
   - grunt-cli
   - python modules: tornado, sqlalchemy, numpy, configparser, py-sc-client
 
+  ### Development notes
+To run grunt in watch mode use:
+
+```shell
+    npm run serve
+```
+
+Watch mode supports livereload. To enable livereload uncomment in `client/templates/common.html`
+
+```shell
+    <!-- Enable livereload script for development -->
+    <!--<script type="text/javascript" charset="utf-8" src="http://localhost:35729/livereload.js"></script>-->
+```
+
   ### Building
 
 ```sh

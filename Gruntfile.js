@@ -244,6 +244,9 @@ module.exports = function(grunt) {
                 files: [scgDirPath + 'static/components/images/scg/**'],
                 tasks: ['copy:scgImg', 'copy:scgImgAlphabet'],
             },
+            options: {
+                livereload: true,
+            },
         },
     });
 
