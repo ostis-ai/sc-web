@@ -107,8 +107,11 @@ SCs.SCnOutput.prototype = {
             if (!treeNode.isSet) {
                 var contourTree = this.tree.subtrees[treeNode.element.addr];
                 if (contourTree) {
-                    output += '<div class="scs-scn-element sc-contour scs-scn-field scs-scn-highlighted" sc_addr="' + treeNode.element.addr + '">'
-                        + this.subtreeToHtml(contourTree) + '</div>';
+                    output += '<div class="scs-scn-element sc-contour scs-scn-field sc-no-default-cmd ui-no-tooltip" sc_addr="' + treeNode.element.addr + '">'
+                        + '<div class="scs-scn-view-primary">' + childsToHtml() + '</div>'
+                        + '<div class="scs-scn-view-external hidden"></div>'
+                        + '<button type="button" class="scs-scn-view-toogle-button btn btn-info btn-xs"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></button>'
+                        + '</div>';
                 } else {
                     output += this.treeNodeElementHtml(treeNode);
                 }
