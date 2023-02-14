@@ -606,11 +606,11 @@ SCg.Editor.prototype = {
             var open_dialog = document.getElementById("scg-tool-open-dialog");
             self.scene.clearSelection();
             open_dialog.onchange = function () {
-                return GwfFileLoader.load({
+                GwfFileLoader.load({
                     file: open_dialog.files[0],
                     render: self.render
                 });
-
+                this.value = null;
             }
             ScgObjectBuilder.scene = self.scene;
             var result = open_dialog.click();
