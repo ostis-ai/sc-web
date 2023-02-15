@@ -53,6 +53,15 @@ const translateByKeyWord = async (event, string) => {
     $('.tt-dropdown-menu').hide();
 };
 
+const debounce = (fn, ms) => {
+    let timeout;
+    return function () {
+      const fnCall = () => { fn.apply(this, arguments) }
+      clearTimeout(timeout);
+      timeout = setTimeout(fnCall, ms)
+    };
+}
+
 SCWeb.ui.SearchPanel = {
     init: function () {
         return new Promise(resolve => {
@@ -62,7 +71,7 @@ SCWeb.ui.SearchPanel = {
             },
             {
                   name: 'idtf',
-                  source: function (str, callback) {
+                  source: debounce(function (str, callback) {
                       $('#search-input').addClass('search-processing');
                       window.scClient.getLinksContentsByContentSubstrings([str]).then((strings) => {
                           const maxContentSize = 200;
@@ -70,7 +79,7 @@ SCWeb.ui.SearchPanel = {
                           callback(keys);
                           $('#search-input').removeClass('search-processing');
                       });
-                  },
+                  }, 500),
                   templates: {
                       suggestion: function (string) {
                           return '<p>' + string + '</p>';
