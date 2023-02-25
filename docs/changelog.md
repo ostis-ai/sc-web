@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Add scg speedup
 - Add double click logic in scg view
 - Add border and tools parameter to view window
 - Add language parameter to view window
