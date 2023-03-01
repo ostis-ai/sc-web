@@ -587,21 +587,15 @@ d3 = function() {
     const dNaNPoint = `M${NaNDot},${NaNDot}L${NaNDot},${NaNDot}`;
     const transformNaNPoint = `translate(${NaNDot},${NaNDot})`;
     if (value == null) {
-      if (name.local)
-        return attrNullNS;
-      else
-        return attrNull;
+      return name.local ? attrNullNS: attrNull; 
     } else if (typeof value === "function") {
-      if(name.local)
-        return attrFunctionNS;
-      else
-        return attrFunction;
-    } else if (name.local) 
+      return name.local ? attrFunctionNS : attrFunction;
+    } else if (name.local) {
       return attrConstantNS;
-    else if (name == "d" && value == "MNaN,NaNLNaN,NaN")
+    } else if (name == "d" && value == "MNaN,NaNLNaN,NaN") {
       value = dNaNPoint;
-    else if (name == "transform" && value == "translate(NaN, NaN)")
-      value = transformNaNPoint;
+    } else if (name == "transform" && value == "translate(NaN, NaN)") {
+      value = transformNaNPoint;}
     return attrConstant;
     // return value == null ? name.local ? attrNullNS : attrNull : typeof value === "function" ? name.local ? attrFunctionNS : attrFunction : name.local ? attrConstantNS : attrConstant;
   }
