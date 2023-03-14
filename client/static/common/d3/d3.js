@@ -562,6 +562,7 @@ d3 = function() {
     return this.each(d3_selection_attr(name, value));
   };
   function d3_selection_attr(name, value) {
+    const NaNDot = 250.0;
     name = d3.ns.qualify(name);
     function attrNull() {
       this.removeAttribute(name);
@@ -583,7 +584,26 @@ d3 = function() {
       var x = value.apply(this, arguments);
       if (x == null) this.removeAttributeNS(name.space, name.local); else this.setAttributeNS(name.space, name.local, x);
     }
-    return value == null ? name.local ? attrNullNS : attrNull : typeof value === "function" ? name.local ? attrFunctionNS : attrFunction : name.local ? attrConstantNS : attrConstant;
+    function attrFunctionNaN() {
+      const dNaNPoint = `M${NaNDot},${NaNDot}L${NaNDot},${NaNDot}`;
+      this.setAttribute(name, dNaNPoint);
+    }
+    function attrFunctionNaNTransform() {
+      const transformNaNPoint = `translate(${NaNDot},${NaNDot})`;
+      this.setAttribute(name, transformNaNPoint);
+    }
+    if (value == null) {
+      return name.local ? attrNullNS: attrNull; 
+    } else if (typeof value === "function") {
+      return name.local ? attrFunctionNS : attrFunction;
+    } else if (name.local) {
+      return attrConstantNS;
+    } else if (name == "d" && value == "MNaN,NaNLNaN,NaN") {
+      return attrFunctionNaN;
+    } else if (name == "transform" && value == "translate(NaN, NaN)") {
+      return attrFunctionNaNTransform;}
+    return attrConstant;
+    // return value == null ? name.local ? attrNullNS : attrNull : typeof value === "function" ? name.local ? attrFunctionNS : attrFunction : name.local ? attrConstantNS : attrConstant;
   }
   function d3_collapse(s) {
     return s.trim().replace(/\s+/g, " ");
