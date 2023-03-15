@@ -639,6 +639,15 @@ SCg.Editor.prototype = {
             self.render.changeScale(0.9);
         });
 
+        window.addEventListener("message", e => {
+            if (e.data === "zoomOut") {
+                return self.render.changeScale(0.5);
+            }
+
+            if (e.data === "zoomIn") {
+                return self.render.changeScale(2);
+            }
+        })
 
         // initial update
         self.onModalChanged();
