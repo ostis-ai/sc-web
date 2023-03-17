@@ -225,7 +225,7 @@ def read_scs_fragments(root_path: str):
                 if excluded == True:
                     continue
                 else:
-                    with open(filename, 'r') as f:
+                    with open(filename, 'r', encoding="utf-8") as f:
                         scs_fragments.append(f.read())
 
         elif isfile(path) and splitext(path)[1] == '.scs':

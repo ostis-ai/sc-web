@@ -34,6 +34,12 @@ SCg.ModelObject = function (options) {
         this.scale = new SCg.Vector2(20.0, 20.0);
     }
 
+    if (options.scaleElem) {
+        this.scaleElem = options.scaleElem;
+    } else {
+        this.scaleElem = 1;
+    }
+
     if (options.sc_type) {
         this.sc_type = options.sc_type;
     } else {
@@ -60,6 +66,7 @@ SCg.ModelObject = function (options) {
     this.scene = null;
     this.bus = null;
     this.contour = null;
+    this.scaleElem = 1;
 };
 
 SCg.ModelObject.prototype = {
@@ -95,6 +102,14 @@ SCg.ModelObject.prototype.setPosition = function (pos) {
  */
 SCg.ModelObject.prototype.setScale = function (scale) {
     this.scale = scale;
+    this.need_observer_sync = true;
+
+    this.requestUpdate();
+    this.update();
+};
+
+SCg.ModelObject.prototype.setScaleElem = function (scale) {
+    this.scaleElem = scale;
     this.need_observer_sync = true;
 
     this.requestUpdate();

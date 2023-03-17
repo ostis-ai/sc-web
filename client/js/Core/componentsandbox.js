@@ -263,16 +263,59 @@ SCWeb.core.ComponentSandbox.prototype.createViewersForScStructs = function (cont
  */
 SCWeb.core.ComponentSandbox.prototype.updateContent = async function (contentType) {
     var self = this;
-
+    
     if (this.is_struct && this.eventStructUpdate) {
+        // let scaleMainNode = 1;
+        // let scaleSecondLevel = 1;
+        // let mainNode;
+        // let scTemplateMainNode = new sc.ScTemplate();
+        // scTemplateMainNode.tripleWithRelation(
+        //! TODO: не забыть удалить из client/js/Utils/sc_keynodes.js ноды которые я вставлял для теста в самом конце!!
+        //     new sc.ScAddr(window.scKeynodes['section_core_and_extensions_sc_models_core_kb']),//тут у нас должен быть [new sc.ScAddr(this.addr), "src"] 
+        //     [sc.ScType.EdgeAccessVarPosPerm, "edge"],
+        //     [sc.ScType.Unknown, "mainNode"],
+        //     sc.ScType.EdgeAccessVarPosPerm,
+        //     new sc.ScAddr(window.scKeynodes['rrel_key_sc_element']),
+        // );
+        // let resultNode = await window.scClient.templateSearch(scTemplateMainNode);
+        // mainNode = resultNode[0].get('mainNode').value;
+        // self.eventStructUpdate(true, mainNode, resultNode[0].get('edge').value, scaleMainNode);//сюда передаем scale от него и к нему делаем поиск троек
+
+        // if (mainNode) {
+        //     let scTemplate = new sc.ScTemplate();
+        //     scTemplate.triple(
+        //         new sc.ScAddr(mainNode),
+        //         [sc.ScType.Unknown, "edge"], //так любой тип дуги
+        //         // [sc.ScType.EdgeDCommonVar, "edge"], //так любой тип дуги
+        //         [sc.ScType.Unknown, "node"]
+        //         // sc.ScType.Unknown, //тут по идее можно даже так алиас не нужен
+        //     );
+        //     let result = await window.scClient.templateSearch(scTemplate);
+        //     console.log(result);
+        //     for (let triple of result) {
+        //         console.log({
+        //             'node': triple.get("node").value,
+        //             'edge': triple.get("edge").value,
+        //         });
+        //         self.eventStructUpdate(true, mainNode, triple.get("edge").value, scaleSecondLevel);
+        //     }
+        // }
+
+        //     //от него и к нему делаем поиск троек
+        //     //сделали result 1го уровня 1 массив
+        //     //передаем скайл
+        //     //отдаем циелом на апдейт
+        // if (mainNode) return;
+        // для каждого эе-та 1го уровня делать такой же поиск элеменнтов от него и к нему и задавать скейл
+        // получается некая рекурсивная функция 
         let scTemplate = new sc.ScTemplate();
         scTemplate.triple(
-          [new sc.ScAddr(this.addr), "src"],
-          [sc.ScType.EdgeAccessVarPosPerm, "edge"],
+            [new sc.ScAddr(this.addr), "src"],
+            [sc.ScType.EdgeAccessVarPosPerm, "edge"],
             sc.ScType.Unknown);
         let result = await window.scClient.templateSearch(scTemplate);
         for (let triple of result) {
-          self.eventStructUpdate(true, triple.get("src").value, triple.get("edge").value);
+            self.eventStructUpdate(true, triple.get("src").value, triple.get("edge").value, 2);
         }
     }
     else {
