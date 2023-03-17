@@ -639,15 +639,11 @@ SCg.Editor.prototype = {
             self.render.changeScale(0.9);
         });
 
-        window.addEventListener("message", e => {
-            if (e.data === "zoomOut") {
-                return self.render.changeScale(0.5);
+        window.onmessage = (e) => {
+            if (e.data.type === 'SCALE_CHANGE') {
+                return self.render.changeScale(e.data.value);
             }
-
-            if (e.data === "zoomIn") {
-                return self.render.changeScale(2);
-            }
-        })
+        };
 
         // initial update
         self.onModalChanged();
