@@ -639,6 +639,11 @@ SCg.Editor.prototype = {
             self.render.changeScale(0.9);
         });
 
+        window.onmessage = (e) => {
+            if (e.data.type === 'SCALE_CHANGE') {
+                return self.render.changeScale(e.data.value);
+            }
+        };
 
         // initial update
         self.onModalChanged();
