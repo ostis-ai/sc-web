@@ -343,6 +343,7 @@ GwfObjectLink.prototype.parseObject = function (args) {
     } else {
         this.content = '<img src="data:' + mime_type +
             ';base64,' + content.textContent + ' " alt="Image">';
+        this.type = 'image';
     }
     return this;
 };
