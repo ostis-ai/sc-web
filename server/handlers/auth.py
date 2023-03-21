@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
+import json
+import logging
 import tornado.auth
 import tornado.options
 import tornado.web
-import json
 
 from sc_client import client
 from sc_client.constants import sc_types
@@ -18,16 +19,20 @@ from keynodes import KeynodeSysIdentifiers
 
 from . import api_logic as logic
 
+logger = logging.getLogger()
+
 
 @decorators.class_logging
 class GoogleOAuth2LoginHandler(base.BaseHandler, tornado.auth.GoogleOAuth2Mixin):
     _keynodes = ScKeynodes()
 
     def _loggedin(self, user):
+        logger.info('User logs in...')
 
         email = user['email']
         user_name = user['name']
         if len(email) == 0:
+            logger.warning('User email is not set')
             return
         database = db.DataBase()
         u = database.get_user_by_email(email)
@@ -36,15 +41,19 @@ class GoogleOAuth2LoginHandler(base.BaseHandler, tornado.auth.GoogleOAuth2Mixin)
         if u:
             key = database.create_user_key()
             u.key = key
+            logger.info(f'User key: {key}')
             database.update_user(u)
         else:
+            logger.warning('User is not found by email')
             role = 0
             supers = tornado.options.options.super_emails
             if supers and (email in supers):
+                logger.debug('Email is super email')
                 r = database.get_role_by_name('super')
                 if r:
                     role = r.id
 
+            logger.debug('Add user in database...')
             key = database.add_user(
                 name=user['name'], email=email, avatar=user['picture'], role=role)
 
@@ -53,8 +62,10 @@ class GoogleOAuth2LoginHandler(base.BaseHandler, tornado.auth.GoogleOAuth2Mixin)
         self.authorise_user(email)
 
     def authorise_user(self, email: str) -> None:
+        logger.info('User authorization')
         links = client.get_links_by_content(email)[0]
         if links and len(links) == 1:
+            logger.debug('Link is found by email')
             USER_NODE = "_user"
             template = ScTemplate()
             template.triple_with_relation(
@@ -81,8 +92,10 @@ class GoogleOAuth2LoginHandler(base.BaseHandler, tornado.auth.GoogleOAuth2Mixin)
                 client.create_elements(construction)
 
     def register_user(self, email: str, user_name: str) -> None:
+        logger.info('User registration')
         links = client.get_links_by_content(email)[0]
         if links and len(links) == 1:
+            logger.debug('Link is found by email')
             template = ScTemplate()
             template.triple_with_relation(
                 sc_types.NODE_VAR,
@@ -111,6 +124,7 @@ class GoogleOAuth2LoginHandler(base.BaseHandler, tornado.auth.GoogleOAuth2Mixin)
             self.gen_registred_user_relation(user_node)
 
     def create_ui_user_node_at_kb(self, email: str, username: str) -> ScAddr:
+        logger.debug('Creating ui user node at kb ...')
         construction = ScConstruction()
         construction.create_node(sc_types.NODE_CONST, 'user_node')
         construction.create_edge(
@@ -172,12 +186,10 @@ class GoogleOAuth2LoginHandler(base.BaseHandler, tornado.auth.GoogleOAuth2Mixin)
         self.settings[self._OAUTH_SETTINGS_KEY]['key'] = tornado.options.options.google_client_id
         self.settings[self._OAUTH_SETTINGS_KEY]['secret'] = tornado.options.options.google_client_secret
 
-        print(self.request.uri)
+        logger.debug(f'Request URI: {self.request.uri}')
 
-        uri = 'http://' + tornado.options.options.host
-        uri += ':'
-        uri += str(tornado.options.options.auth_redirect_port)
-        uri += '/auth/google'
+        uri = f'http://{tornado.options.options.host}:{str(tornado.options.options.auth_redirect_port)}/auth/google'
+        logger.debug(f'URI: {uri}')
 
         if self.get_argument('code', False):
             user = yield self.get_authenticated_user(
@@ -216,10 +228,12 @@ class GoogleOAuth2LoginHandler(base.BaseHandler, tornado.auth.GoogleOAuth2Mixin)
 class LogOut(base.BaseHandler):
     def get(self):
         self.logout_user_from_kb()
+        logger.info('Clearing cookies...')
         self.clear_cookie(self.cookie_user_key)
         self.redirect('/')
 
     def logout_user_from_kb(self):
+        logger.info('Logout from kb')
         keys = ScKeynodes()
         sc_session = logic.ScSession(self, keys)
         links = client.get_links_by_content(sc_session.email)[0]

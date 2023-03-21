@@ -2,6 +2,7 @@
 
 import base64
 import hashlib
+import logging
 import time
 import uuid
 from typing import List, Dict
@@ -33,6 +34,8 @@ __all__ = (
     'check_command_finished',
     'append_to_system_elements',
 )
+
+logger = logging.getLogger()
 
 
 @decorators.method_logging
@@ -349,6 +352,13 @@ def get_identifier_translated(addr: ScAddr, used_lang: ScAddr) -> str:
         return client.get_link_content(result[0].get(LINK))[0].data
 
     # if identifier not found, then get system identifier
+    return get_system_identifier(addr)
+
+
+def get_system_identifier(addr: ScAddr):
+    keynodes = ScKeynodes()
+    LINK = "_link"
+
     sys_idtf_template = ScTemplate()
     sys_idtf_template.triple_with_relation(
         addr,
@@ -742,11 +752,15 @@ class ScSession:
         results = client.template_search(template)
 
         if results:
+            lang_addr = results[0].get(2)
+            logger.info(f'User language: {get_system_identifier(lang_addr)}')
             return results[0].get(2)
 
         # setup russian mode by default
         _lang = self.keynodes[KeynodeSysIdentifiers.lang_ru.value]
         self.set_current_lang_mode(_lang)
+
+        logger.info(f'User language: {KeynodeSysIdentifiers.lang_ru.value}')
 
         return _lang
 
@@ -764,17 +778,23 @@ class ScSession:
         )
         result = client.template_search(template)
         if result:
-            return result[0].get(2)
+            ext_lang_addr = result[0].get(2)
+            logger.info(f'User ext language: {get_system_identifier(ext_lang_addr)}')
+            return ext_lang_addr
 
         # setup default language
         _lang = self.keynodes[KeynodeSysIdentifiers.scn_code.value]
         self.set_default_ext_lang(_lang)
+
+        logger.info(f'User ext language: {KeynodeSysIdentifiers.scn_code.value}')
 
         return _lang
 
     def set_current_lang_mode(self, mode_addr) -> None:
         """Setup new language mode as current for this session
         """
+        logger.info(f'Set lang {get_system_identifier(mode_addr)}')
+
         # try to find currently used mode and remove it
         used_language = self.keynodes[KeynodeSysIdentifiers.ui_nrel_user_used_language.value]
         template = ScTemplate()
@@ -797,6 +817,8 @@ class ScSession:
     def set_default_ext_lang(self, lang_addr) -> None:
         """Setup new default external language
         """
+        logger.info(f'Set ext lang {get_system_identifier(lang_addr)}')
+
         # try to find default external language and remove it
         default_ext_language = self.keynodes[KeynodeSysIdentifiers.ui_nrel_user_default_ext_language.value]
         template = ScTemplate()
