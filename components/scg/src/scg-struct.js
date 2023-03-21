@@ -37,16 +37,16 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
                 var task = batch[i];
                 var addr = task[0];
                 var type = task[1];
-
+                
                 if (editor.scene.getObjectByScAddr(addr))
                     continue;
 
                 if (type & sc_type_node) {
-                    var model_node = SCg.Creator.createNode(type, randomPos(), task[2], '');
+                    var model_node = SCg.Creator.createNode(type, randomPos(), task[2].node, '');
                     editor.scene.appendNode(model_node);
                     editor.scene.objects[addr] = model_node;
                     model_node.setScAddr(addr);
-                    model_node.setScaleElem(task[2]);
+                    model_node.setScaleElem(task[2].node);
                     model_node.setObjectState(SCgObjectState.FromMemory);
                     resolveIdtf(addr, model_node);
                 } else if (type & sc_type_arc_mask) {
@@ -64,11 +64,11 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
                     }
                 } else if (type & sc_type_link) {
                     var containerId = 'scg-window-' + sandbox.addr + '-' + addr + '-' + new Date().getUTCMilliseconds();
-                    var model_link = SCg.Creator.createLink(randomPos(), containerId, task[2],);
+                    var model_link = SCg.Creator.createLink(randomPos(), containerId, task[2].link,);
                     editor.scene.appendLink(model_link);
                     editor.scene.objects[addr] = model_link;
                     model_link.setScAddr(addr);
-                    model_link.setScaleElem(task[2]);
+                    model_link.setScaleElem(task[2].link);
                     model_link.setObjectState(SCgObjectState.FromMemory);
                 }
 
