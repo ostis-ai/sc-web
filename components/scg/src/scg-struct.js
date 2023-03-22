@@ -47,6 +47,7 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
                     editor.scene.objects[addr] = model_node;
                     model_node.setScAddr(addr);
                     model_node.setScaleElem(task[2].node);
+                    model_node.setOpacityElem(task[2].opacity);
                     model_node.setObjectState(SCgObjectState.FromMemory);
                     resolveIdtf(addr, model_node);
                 } else if (type & sc_type_arc_mask) {
@@ -69,6 +70,7 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
                     editor.scene.objects[addr] = model_link;
                     model_link.setScAddr(addr);
                     model_link.setScaleElem(task[2].link);
+                    model_link.setOpacityElem(task[2].opacity);
                     model_link.setObjectState(SCgObjectState.FromMemory);
                 }
 
