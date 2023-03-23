@@ -401,7 +401,8 @@ SCg.Render.prototype = {
                 })
                 .attr('class', function (d) {
                     return self.classState(d, 'SCgLink');
-                }).attr("sc_addr", function (d) {
+                })
+                .attr("sc_addr", function (d) {
                 return d.sc_addr;
             });
 
@@ -429,6 +430,7 @@ SCg.Render.prototype = {
                 if (d.need_update)
                 d.update();
                 var d3_edge = d3.select(this);
+                
                 SCgAlphabet.updateEdge(d, d3_edge, self.containerId);
                 d3_edge.attr('class', function (d) {
                     return self.classState(d, 'SCgEdge');
@@ -436,6 +438,8 @@ SCg.Render.prototype = {
                 .attr("sc_addr", function (d) {
                     return d.sc_addr;
                 });
+            d3_edge.select('.SCgEdgeEndArrowCommon').style('stroke-width', `${d.widthEdge}px`).style('opacity', d.opacityEdge);
+            d3_edge.select('.SCgEdgeEndArrowAccess').style('stroke-width', `${d.widthEdge - 6}px`).style('opacity', d.opacityEdge);
         });
 
         this.d3_contours.each(function (d) {

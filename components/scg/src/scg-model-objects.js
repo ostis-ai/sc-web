@@ -46,6 +46,18 @@ SCg.ModelObject = function (options) {
         this.opacityElem = 1;
     }
 
+    if (options.opacityEdge) {
+        this.opacityEdge = options.opacityEdge;
+    } else {
+        this.opacityEdge = 1;
+    }
+
+    if (options.widthEdge) {
+        this.widthEdge = options.widthEdge;
+    } else {
+        this.widthEdge = 8;
+    }
+
     if (options.sc_type) {
         this.sc_type = options.sc_type;
     } else {
@@ -74,6 +86,8 @@ SCg.ModelObject = function (options) {
     this.contour = null;
     this.scaleElem = 1;
     this.opacityElem = 1;
+    this.opacityEdge = 1;
+    this.widthEdge = 8;
 };
 
 SCg.ModelObject.prototype = {
@@ -125,6 +139,22 @@ SCg.ModelObject.prototype.setScaleElem = function (scale) {
 
 SCg.ModelObject.prototype.setOpacityElem = function (opacity) {
     this.opacityElem = opacity;
+    this.need_observer_sync = true;
+
+    this.requestUpdate();
+    this.update();
+};
+
+SCg.ModelObject.prototype.setOpacityEdge = function (opacity) {
+    this.opacityEdge = opacity;
+    this.need_observer_sync = true;
+
+    this.requestUpdate();
+    this.update();
+};
+
+SCg.ModelObject.prototype.setWidthEdge = function (width) {
+    this.widthEdge = width;
     this.need_observer_sync = true;
 
     this.requestUpdate();

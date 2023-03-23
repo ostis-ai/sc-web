@@ -265,7 +265,7 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (contentTyp
     var self = this;
     
     if (this.is_struct && this.eventStructUpdate) {
-        const levelScales = [{ node: 2.3, link: 1.8, opacity: 1 }, { node: 1.8, link: 1.5, opacity: 1 }, { node: 1.4, link: 1, opacity: 1 }, { node: 1, link: 1, opacity: 1 }, { node: 1, link: 1, opacity: 0.8 }, { node: 1, link: 1, opacity: 0.6 }, { node: 1, link: 1, opacity: 0.4 }];
+        const levelScales = [{ node: 2.3, link: 1.8, opacity: 1, widthEdge: 8 }, { node: 1.8, link: 1.5, opacity: 1, widthEdge: 7.5 }, { node: 1.4, link: 1, opacity: 1, widthEdge: 7 }, { node: 1, link: 1, opacity: 1, widthEdge: 6.5 }, { node: 1, link: 1, opacity: 0.8, widthEdge: 6.5 }, { node: 1, link: 1, opacity: 0.6, widthEdge: 6.5 }, { node: 1, link: 1, opacity: 0.4, widthEdge: 6.5 }];
 
         let scTemplateMainlevel = new sc.ScTemplate();
         scTemplateMainlevel.tripleWithRelation(
@@ -287,16 +287,16 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (contentTyp
         let searchAllLevelEdges = async function (elementsArr, levelScales, level, visitedElements) {
             let levelScale;
 
-            level > 6 ? levelScale = { node: 1, link: 1, opacity: 0.4  } : levelScale = levelScales[level];
+            level > 6 ? levelScale = { node: 1, link: 1, opacity: 0.4, widthEdge: 6.5 } : levelScale = levelScales[level];
 
+            let newElementsArr = [];
             for (let i = 0; i < elementsArr.length; i++) {
                 
                 let elements = elementsArr[i];
-                let newElementsArr = [];
                 for (let j = 0; j < elements.length; j++) {
                     let elem = elements[j];
                     let newElements = await searchLevelEdges(elem, levelScale, visitedElements);
-                    newElementsArr.push(newElements);
+                    if (newElements.length) newElementsArr.push(newElements);
                 }
                 await searchAllLevelEdges(newElementsArr, levelScales, level + 1, visitedElements);
             }
