@@ -1,3 +1,17 @@
+const debounce_time = (func, wait) => {
+    let timerId;
+
+    const clear = () => {
+        clearTimeout(timerId);
+    };
+    const debounced = (...args) => {
+        clearTimeout(timerId);
+        timerId = setTimeout(() => func(...args), wait);
+    };
+
+    return [debounced, clear];
+};
+
 function ScgFromScImpl(_sandbox, _editor, aMapping) {
 
     var self = this,
@@ -18,6 +32,8 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
     function randomPos() {
         return new SCg.Vector3(100 * Math.random(), 100 * Math.random(), 0);
     }
+
+    var [debouncedClearTimer] = debounce_time(() => window.clearInterval(self.timeout), 1500);
 
     var doBatch = function () {
 
@@ -80,6 +96,7 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
     };
 
     var addTask = function (args) {
+        debouncedClearTimer();
         tasks.push(args);
         if (!self.timeout) {
             self.timeout = window.setInterval(doBatch, 10);

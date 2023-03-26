@@ -3,6 +3,7 @@ SCWeb.ui.WindowManager = {
     // dictionary that contains information about windows corresponding to history items
     windows: [],
     window_count: 0,
+    MAX_WINDOWS: 20,
     window_active_formats: {},
     sandboxes: {},
     active_window_id: null,
@@ -196,6 +197,11 @@ SCWeb.ui.WindowManager = {
 
                 self.hideActiveWindow();
                 self.windows.push(id);
+                if (self.windows.length > self.MAX_WINDOWS) {
+                    const lastWindowId = self.windows.shift();
+                    delete self.sandboxes[lastWindowId]
+                    self.removeWindow(lastWindowId);
+                }
             }
             sandbox = self.sandboxes[id];
             if (!sandbox) {
@@ -241,7 +247,7 @@ SCWeb.ui.WindowManager = {
      * @param {String} addr sc-addr of window to remove
      */
     removeWindow: function (id) {
-        this.window_container.find("[sc_addr='" + addr + "']").remove();
+        this.window_container.find(`#${id}`).remove();
     },
 
     /**

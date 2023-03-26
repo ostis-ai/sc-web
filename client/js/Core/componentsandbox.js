@@ -265,12 +265,16 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (contentTyp
     var self = this;
 
     if (this.is_struct && this.eventStructUpdate) {
+        const maxNumberOfTriplets = 850;
         let scTemplate = new sc.ScTemplate();
         scTemplate.triple(
           [new sc.ScAddr(this.addr), "src"],
           [sc.ScType.EdgeAccessVarPosPerm, "edge"],
             sc.ScType.Unknown);
         let result = await window.scClient.templateSearch(scTemplate);
+        if (result.length > maxNumberOfTriplets) {
+            result.splice(maxNumberOfTriplets-1, result.length-maxNumberOfTriplets);
+        }
         for (let triple of result) {
           self.eventStructUpdate(true, triple.get("src").value, triple.get("edge").value);
         }

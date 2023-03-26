@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Add scg speedup
 - Add double click logic in scg view
 - Add scale change logic in scg iframe view by event
 - Add border and tools parameter to view window
