@@ -175,8 +175,9 @@ SCg.LayoutManager.prototype.prepareObjects = function () {
 
     for (idx in this.scene.links) {
         var link = this.scene.links[idx];
+        /* The code below has been commented out because of following issue: after gwf file loading with an image the image content hasn't been showed in SCg
         if (link.contour)
-            continue;
+            continue;*/
 
         var obj = new Object();
 
