@@ -1,5 +1,6 @@
 SCg.Render = function () {
     this.scene = null;
+    this.sandbox = null;
 };
 
 SCg.Render.prototype = {
@@ -27,7 +28,7 @@ SCg.Render.prototype = {
                 self.onMouseMove(this, self);
             })
             .on('mousedown', function () {
-                self.onMouseDown(this, self)
+                self.onMouseDown(this, self);
             })
             .on('mouseup', function () {
                 self.onMouseUp(this, self);
@@ -171,7 +172,7 @@ SCg.Render.prototype = {
     // -------------- draw -----------------------
     update: function () {
 
-        var self = this;
+        var self = this;    
 
         function eventsWrap(selector) {
             selector.on('mouseover', function (d) {
@@ -191,6 +192,7 @@ SCg.Render.prototype = {
                 })
                 .on('mouseup', function (d) {
                     self.scene.onMouseUpObject(d);
+                    self.sandbox.updateContent(d.sc_addr);
                     if (d3.event.stopPropagation())
                         d3.event.stopPropagation();
                 })
