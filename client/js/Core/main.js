@@ -12,6 +12,7 @@ function ScClientCreate() {
 }
 
 SCWeb.core.Main = {
+    mode: 0,
     window_types: [],
     idtf_modes: [],
     menu_commands: {},
@@ -96,14 +97,16 @@ SCWeb.core.Main = {
         const sys_id = urlObject['sys_id'];
         const scg_view = urlObject['scg_structure_view_only'];
         const lang = urlObject['lang'];
-
+        const modeUrl= urlObject['mode'];
+        
         if (sys_id) {
             const window_lang = window.scKeynodes[lang];
             if (window_lang) {
                 SCWeb.core.Translation.fireLanguageChanged(window_lang);
             }
-
+            
             SCWeb.core.Main.doDefaultCommandWithSystemIdentifier(sys_id);
+            SCWeb.core.Main.mode = modeUrl;
             window.history.replaceState(null, null, window.location.pathname);
             if (scg_view){
                 const hide_tools = urlObject['hide_tools'];

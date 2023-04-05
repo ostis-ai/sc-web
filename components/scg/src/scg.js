@@ -69,7 +69,7 @@ SCg.Editor.prototype = {
             edit: this
         });
         this.scene.init();
-
+        
         this.render.scene = this.scene;
         this.render.init(params);
 
@@ -135,6 +135,7 @@ SCg.Editor.prototype = {
             if (self.resolveControls)
                 self.resolveControls(tools_container);
         });
+        this.scene.setEditMode(SCWeb.core.Main.mode);
         this.scene.event_selection_changed = function () {
             self.onSelectionChanged();
         };
