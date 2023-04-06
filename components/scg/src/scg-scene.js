@@ -4,6 +4,7 @@ var SCgEditMode = {
     SCgModeBus: 2,
     SCgModeContour: 3,
     SCgModeLink: 4,
+    SCgModeViewOnly: 5,
 
     /**
      * Check if specified mode is valid
@@ -54,7 +55,7 @@ SCg.Scene = function (options) {
         new SCgBusListener(this),
         new SCgContourListener(this),
         new SCgLinkListener(this),
-        new SCgDisableClick(this)];
+        new SCgViewOnlyListener(this)];
     this.listener = this.listener_array[0];
     this.commandManager = new SCgCommandManager();
     this.render = options.render;

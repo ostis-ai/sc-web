@@ -69,7 +69,7 @@ SCg.Editor.prototype = {
             edit: this
         });
         this.scene.init();
-        
+
         this.render.scene = this.scene;
         this.render.init(params);
 
@@ -131,6 +131,15 @@ SCg.Editor.prototype = {
                 self.hideTool(self.toolIntegrate());
                 self.hideTool(self.toolUndo());
                 self.hideTool(self.toolRedo());
+            };
+            if (SCWeb.core.Main.mode === String(5)) {
+                self.hideTool(self.toolSwitch());
+                self.hideTool(self.toolSelect());
+                self.hideTool(self.toolLink());
+                self.hideTool(self.toolDelete());
+                self.hideTool(self.toolUndo());
+                self.hideTool(self.toolRedo());
+                self.hideTool(self.toolClear());
             }
             if (self.resolveControls)
                 self.resolveControls(tools_container);

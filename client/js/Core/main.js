@@ -106,7 +106,7 @@ SCWeb.core.Main = {
             }
             
             SCWeb.core.Main.doDefaultCommandWithSystemIdentifier(sys_id);
-            SCWeb.core.Main.mode = modeUrl;
+            SCWeb.core.Main.mode = modeUrl ?? 0;
             window.history.replaceState(null, null, window.location.pathname);
             if (scg_view){
                 const hide_tools = urlObject['hide_tools'];
@@ -134,10 +134,10 @@ SCWeb.core.Main = {
                         $('.main-container').css({'padding-left': '0', 'padding-right': '0'});
                     }
                 });
-
+                
                 this.waitForElm('.scg-tools-panel').then(() => {
                     if (hide_tools) {
-                        $('.scg-tools-panel').css({'display': 'none'});
+                        modeUrl === String(5) ? $('.scg-tools-panel').css({ 'display': 'block' }) : $('.scg-tools-panel').css({ 'display': 'none' });
                     }
                 });
             }
