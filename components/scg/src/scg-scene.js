@@ -54,7 +54,8 @@ SCg.Scene = function (options) {
         new SCgEdgeListener(this),
         new SCgBusListener(this),
         new SCgContourListener(this),
-        new SCgLinkListener(this)];
+        new SCgLinkListener(this),
+        new SCgViewOnlyListener(this)];
     this.listener = this.listener_array[0];
     this.commandManager = new SCgCommandManager();
     this.render = options.render;
