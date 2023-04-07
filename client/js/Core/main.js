@@ -137,7 +137,7 @@ SCWeb.core.Main = {
                 
                 this.waitForElm('.scg-tools-panel').then(() => {
                     if (hide_tools) {
-                        modeUrl === 5 ? $('.scg-tools-panel').css({ 'display': 'block' }) : $('.scg-tools-panel').css({ 'display': 'none' });
+                        $('.scg-tools-panel').css({'display': 'none'});
                     }
                 });
             }

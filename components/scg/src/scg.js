@@ -132,17 +132,6 @@ SCg.Editor.prototype = {
                 self.hideTool(self.toolUndo());
                 self.hideTool(self.toolRedo());
             };
-            if (SCWeb.core.Main.mode === 5) {
-                self.hideTool(self.toolZoomOut());
-                self.hideTool(self.toolZoomIn());
-                self.hideTool(self.toolSwitch());
-                self.hideTool(self.toolSelect());
-                self.hideTool(self.toolLink());
-                self.hideTool(self.toolDelete());
-                self.hideTool(self.toolUndo());
-                self.hideTool(self.toolRedo());
-                self.hideTool(self.toolClear());
-            }
             if (self.resolveControls)
                 self.resolveControls(tools_container);
         });
