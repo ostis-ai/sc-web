@@ -51,11 +51,11 @@ var SCgTypeNodeNow = sc_type_node | sc_type_const;
 SCg.Scene = function (options) {
 
     this.listener_array = [new SCgSelectListener(this),
-        new SCgEdgeListener(this),
-        new SCgBusListener(this),
-        new SCgContourListener(this),
-        new SCgLinkListener(this),
-        new SCgViewOnlyListener(this)];
+            new SCgEdgeListener(this),
+            new SCgBusListener(this),
+            new SCgContourListener(this),
+            new SCgLinkListener(this),
+            new SCgViewOnlyListener(this)];
     this.listener = this.listener_array[0];
     this.commandManager = new SCgCommandManager();
     this.render = options.render;
