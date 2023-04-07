@@ -97,7 +97,7 @@ SCWeb.core.Main = {
         const sys_id = urlObject['sys_id'];
         const scg_view = urlObject['scg_structure_view_only'];
         const lang = urlObject['lang'];
-        const modeUrl= urlObject['mode'];
+        const modeUrl= Number(urlObject['mode']);
         
         if (sys_id) {
             const window_lang = window.scKeynodes[lang];
@@ -137,7 +137,7 @@ SCWeb.core.Main = {
                 
                 this.waitForElm('.scg-tools-panel').then(() => {
                     if (hide_tools) {
-                        modeUrl === String(5) ? $('.scg-tools-panel').css({ 'display': 'block' }) : $('.scg-tools-panel').css({ 'display': 'none' });
+                        modeUrl === 5 ? $('.scg-tools-panel').css({ 'display': 'block' }) : $('.scg-tools-panel').css({ 'display': 'none' });
                     }
                 });
             }

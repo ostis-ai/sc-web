@@ -132,7 +132,9 @@ SCg.Editor.prototype = {
                 self.hideTool(self.toolUndo());
                 self.hideTool(self.toolRedo());
             };
-            if (SCWeb.core.Main.mode === String(5)) {
+            if (SCWeb.core.Main.mode === 5) {
+                self.hideTool(self.toolZoomOut());
+                self.hideTool(self.toolZoomIn());
                 self.hideTool(self.toolSwitch());
                 self.hideTool(self.toolSelect());
                 self.hideTool(self.toolLink());
