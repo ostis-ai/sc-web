@@ -52,6 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support of rocksdb for search
 - API to initiate an action
 - Identifiers indexing for search optimization
+- Add scg view only mode and it's configuration support in scg iframe
 
 ### Changed
 - Migrate tornado server from python2 to python3
