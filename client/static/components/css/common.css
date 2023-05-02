@@ -554,3 +554,12 @@ input:checked + .slider:before {
 .normalLabel {
   font-weight: normal;
 }
+
+.help-gif {
+    display: flex;
+    justify-content: center;
+}
+
+#help-modal-content_0 {
+    width: 90%;
+}
