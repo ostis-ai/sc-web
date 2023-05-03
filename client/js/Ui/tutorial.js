@@ -27,6 +27,29 @@ SCWeb.ui.Tutorial = {
         this.commenceToNextStage();
     },
 
+    end: function() {
+        this.blurActiveElem();
+        this.inProgress = false;
+    },
+
+    commenceToNextStage: function() {
+        if (this.currentStage >= 0) {
+            this.blurActiveElem();
+        }
+        this.currentStage++;
+        if (this.currentStage >= this.tutorialStageSelectors.length) {
+            this.end();
+        }
+        // this.addStageCompletionListener(this.currentStage);
+    },
+
+    focusActiveElem: function(elemID) {
+        $(this.tutorialStageSelectors[this.currentStage]).addClass('tutorial-focused-elem');
+    },
+
+    blurActiveElem: function() {
+        $(this.tutorialStageSelectors[this.currentStage]).removeClass('tutorial-focused-elem');
+    },
         })
     }
 }
