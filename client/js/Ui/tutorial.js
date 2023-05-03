@@ -1,5 +1,6 @@
 SCWeb.ui.Tutorial = {
     inProgress: false,
+    activeElem: undefined,
     tutorialStageSelectors: [
         "#search-panel",
         "#search-input",
@@ -43,30 +44,36 @@ SCWeb.ui.Tutorial = {
         this.addStageCompletionListener(this.currentStage);
     },
 
-    focusActiveElem: function(elemID) {
-        $(this.tutorialStageSelectors[this.currentStage]).addClass('tutorial-focused-elem');
+    setActiveElem: function() {
+        this.activeElem = $(this.tutorialStageSelectors[this.currentStage]);
+    },
+
+    focusActiveElem: function() {
+        this.activeElem.addClass('tutorial-focused-elem');
     },
 
     blurActiveElem: function() {
-        $(this.tutorialStageSelectors[this.currentStage]).removeClass('tutorial-focused-elem');
+        this.activeElem.removeClass('tutorial-focused-elem');
     },
 
     addStageCompletionListener: function(stageNumber) {
         switch(stageNumber) {
             case 0:
+                this.setActiveElem();
                 this.focusActiveElem();
-                $("#search-panel").on('click', () => {
+                this.activeElem.on('click', () => {
                     if (this.isInProgress()) {
+                        this.activeElem.off('click');
                         this.commenceToNextStage();
-                        $("#search-panel").off('click');
                     }
                 });
                 break;
             case 1:
+                this.setActiveElem();
                 this.focusActiveElem();
-                $("#search-input").on('keyup', event => {
+                this.activeElem.on('keyup', event => {
                     if (this.isInProgress() && 'транзитивное'.includes(event.originalEvent.target.value)) {
-                        $("#search-input").off('keyup');
+                        this.activeElem.off('keyup');
                         this.commenceToNextStage();
                     }
                 });
@@ -76,31 +83,35 @@ SCWeb.ui.Tutorial = {
                     if (this.isInProgress()) {
                         const suggestion = $(".tt-suggestion")
                             .toArray()
-                            .find(suggestion => suggestion.innerText === 'транзитивное отношение')
-                            .getElementsByTagName('p')[0];
-                        suggestion.setAttribute('id', 'tutorial-suggestion');
-                        this.focusActiveElem();
-                        console.log(suggestion);
-                        suggestion.addEventListener('click', () => {
-                            if (this.isInProgress()) {
-                                $("#search-input").off('keyup');
-                                this.commenceToNextStage();
-                            }
-                        });
+                            .find(suggestion => suggestion.innerText === 'транзитивное отношение')?.getElementsByTagName('p')[0];
+                        if (suggestion) {
+                            suggestion.setAttribute('id', 'tutorial-suggestion');
+                            this.setActiveElem();
+                            this.focusActiveElem();
+                            console.log(suggestion, this.activeElem);
+                            suggestion.addEventListener('click', () => {
+                                if (this.isInProgress()) {
+                                    $("#search-input").off('keyup');
+                                    this.commenceToNextStage();
+                                }
+                            });
+                        }
                     }
                 });
                 break;
             case 3:
+                this.setActiveElem();
                 this.focusActiveElem();
-                $("#mode-switching-checkbox").on('click', () => {
+                this.activeElem.on('click', () => {
                     if (this.isInProgress()) {
+                        this.activeElem.off('click');
                         this.commenceToNextStage();
-                        $("mode-switching-checkbox").off('click');
                     }
                 })
                 break;
             case 4:
                 $(document).ready(() => {
+                    this.setActiveElem();
                     this.focusActiveElem();
                 });
         }
