@@ -40,7 +40,7 @@ SCWeb.ui.Tutorial = {
         if (this.currentStage >= this.tutorialStageSelectors.length) {
             this.end();
         }
-        // this.addStageCompletionListener(this.currentStage);
+        this.addStageCompletionListener(this.currentStage);
     },
 
     focusActiveElem: function(elemID) {
@@ -50,6 +50,59 @@ SCWeb.ui.Tutorial = {
     blurActiveElem: function() {
         $(this.tutorialStageSelectors[this.currentStage]).removeClass('tutorial-focused-elem');
     },
-        })
+
+    addStageCompletionListener: function(stageNumber) {
+        switch(stageNumber) {
+            case 0:
+                this.focusActiveElem();
+                $("#search-panel").on('click', () => {
+                    if (this.isInProgress()) {
+                        this.commenceToNextStage();
+                        $("#search-panel").off('click');
+                    }
+                });
+                break;
+            case 1:
+                this.focusActiveElem();
+                $("#search-input").on('keyup', event => {
+                    if (this.isInProgress() && 'транзитивное'.includes(event.originalEvent.target.value)) {
+                        $("#search-input").off('keyup');
+                        this.commenceToNextStage();
+                    }
+                });
+                break;
+            case 2:
+                $("#search-input").on('keyup', () => {
+                    if (this.isInProgress()) {
+                        const suggestion = $(".tt-suggestion")
+                            .toArray()
+                            .find(suggestion => suggestion.innerText === 'транзитивное отношение')
+                            .getElementsByTagName('p')[0];
+                        suggestion.setAttribute('id', 'tutorial-suggestion');
+                        this.focusActiveElem();
+                        console.log(suggestion);
+                        suggestion.addEventListener('click', () => {
+                            if (this.isInProgress()) {
+                                $("#search-input").off('keyup');
+                                this.commenceToNextStage();
+                            }
+                        });
+                    }
+                });
+                break;
+            case 3:
+                this.focusActiveElem();
+                $("#mode-switching-checkbox").on('click', () => {
+                    if (this.isInProgress()) {
+                        this.commenceToNextStage();
+                        $("mode-switching-checkbox").off('click');
+                    }
+                })
+                break;
+            case 4:
+                $(document).ready(() => {
+                    this.focusActiveElem();
+                });
+        }
     }
 }
