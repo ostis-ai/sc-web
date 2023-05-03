@@ -563,3 +563,42 @@ input:checked + .slider:before {
 #help-modal-content_0 {
     width: 90%;
 }
+
+#tutorial-info {
+    width: 100%;
+    height: 20rem;
+    font-size: 1.25em;
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 2rem;
+    position: fixed;
+    bottom: -20rem;
+    background-color: #e7e7e7;
+    z-index: 1031;
+    transition-duration: 0.25s;
+    border-radius: 1rem 1rem 0 0;
+    opacity: 0;
+}
+
+#tutorial-info.visible {
+    opacity: 1;
+    bottom: 0;
+}
+
+#tutorial-info-left {
+    width: 20%;
+}
+
+.tutorial-listpoint img {
+    width: 16px;
+    height: 16px;
+}
+
+#tutorial-info-right {
+    width: 75%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
