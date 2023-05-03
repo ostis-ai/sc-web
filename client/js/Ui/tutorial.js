@@ -113,7 +113,29 @@ SCWeb.ui.Tutorial = {
                 $(document).ready(() => {
                     this.setActiveElem();
                     this.focusActiveElem();
+                    this.activeElem.on('click', () => {
+                        if (this.isInProgress()) {
+                            this.activeElem.off('click');
+                            this.commenceToNextStage();
+                        }
+                    });
                 });
+                break;
+            case 5:
+                const scgModeButton = $('#history-item-langs')
+                    .find("li")
+                    .toArray()
+                    .find(listpoint => listpoint.innerText === 'sc.g-текст');
+                scgModeButton.setAttribute('id', 'scg-mode-toggle-button');
+                this.setActiveElem();
+                this.focusActiveElem();
+                this.activeElem.on('click', () => {
+                    if (this.isInProgress()) {
+                        this.activeElem.off('click');
+                        this.commenceToNextStage();
+                    }
+                });
+                break;
         }
     }
 }
