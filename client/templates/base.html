@@ -198,6 +198,11 @@
     <script type="text/javascript">
 
         $(document).ready(function() {
+            $(document).keydown(function(event) {
+                if (event.shiftKey && event.key === 'H' && SCWeb.ui.Tutorial.isInProgress()) {
+                    $('#tutorial-info').toggleClass('visible');
+                }
+            });
 
             $('#windows-list').click(function () {
                 $('#static-window-container').toggle();
