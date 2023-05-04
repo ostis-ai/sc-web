@@ -3,22 +3,154 @@ SCWeb.ui.Tutorial = {
     activeElem: undefined,
     tutorialNodeCreated: false,
     tutorialEdgeCreated: false,
-    tutorialStages: [
-        "#search-panel",
-        "#search-input",
-        "#tutorial-suggestion",
-        "#expert_mode_container",
-        "#window-type-select-button",
-        "#scg-mode-toggle-button",
-        "#window-container",
-        "#scg-tool-edge",
-        "#window-container"
-    ],
 
     init: function() {
         return new Promise(resolve => {
+            const self = this;
+            $(document)
+                .keydown(function(event) {
+                    if (event.shiftKey && event.key === 'H' && self.isInProgress()) {
+                        self.toggleInfoVisibility();
+                    }
+                })
+                .ready(() => {
+                    $('#abort-tutorial-button').click(() => {
+                        self.end()
+                    });
+                });
             resolve();
         });
+    },
+
+    initStages: function() {
+        this.tutorialStages = [
+            {
+                elemID: "#search-panel",
+                desc: {
+                    rus: {
+                        title: '',
+                        text: ''
+                    },
+                    eng: {
+                        title: '',
+                        text: ''
+                    }
+                },
+                completed: false
+            },
+            {
+                elemID: "#search-input",
+                desc: {
+                    rus: {
+                        title: '',
+                        text: ''
+                    },
+                    eng: {
+                        title: '',
+                        text: ''
+                    }
+                },
+                completed: false
+            },
+            {
+                elemID: "#tutorial-suggestion",
+                desc: {
+                    rus: {
+                        title: '',
+                        text: ''
+                    },
+                    eng: {
+                        title: '',
+                        text: ''
+                    }
+                },
+                completed: false
+            },
+            {
+                elemID: "#expert_mode_container",
+                desc: {
+                    rus: {
+                        title: '',
+                        text: ''
+                    },
+                    eng: {
+                        title: '',
+                        text: ''
+                    }
+                },
+                completed: false
+            },
+            {
+                elemID: "#window-type-select-button",
+                desc: {
+                    rus: {
+                        title: '',
+                        text: ''
+                    },
+                    eng: {
+                        title: '',
+                        text: ''
+                    }
+                },
+                completed: false
+            },
+            {
+                elemID: "#scg-mode-toggle-button",
+                desc: {
+                    rus: {
+                        title: '',
+                        text: ''
+                    },
+                    eng: {
+                        title: '',
+                        text: ''
+                    }
+                },
+                completed: false
+            },
+            {
+                elemID: "#window-container",
+                desc: {
+                    rus: {
+                        title: '',
+                        text: ''
+                    },
+                    eng: {
+                        title: '',
+                        text: ''
+                    }
+                },
+                completed: false
+            },
+            {
+                elemID: "#scg-tool-edge",
+                desc: {
+                    rus: {
+                        title: '',
+                        text: ''
+                    },
+                    eng: {
+                        title: '',
+                        text: ''
+                    }
+                },
+                completed: false
+            },
+            {
+                elemID: "#window-container",
+                desc: {
+                    rus: {
+                        title: '',
+                        text: ''
+                    },
+                    eng: {
+                        title: '',
+                        text: ''
+                    }
+                },
+                completed: false
+            }
+        ];
     },
 
     isInProgress: function() {
@@ -28,11 +160,15 @@ SCWeb.ui.Tutorial = {
     begin: function() {
         this.inProgress = true;
         this.currentStage = -1;
+        this.initStages();
         this.commenceToNextStage();
+        this.toggleInfoVisibility();
     },
 
     end: function() {
         this.inProgress = false;
+        this.blurActiveElem();
+        this.hideInfo();
     },
 
     commenceToNextStage: function() {
@@ -40,7 +176,7 @@ SCWeb.ui.Tutorial = {
             this.blurActiveElem();
         }
         this.currentStage++;
-        if (this.currentStage === this.tutorialStageSelectors.length) {
+        if (this.currentStage === this.tutorialStages.length) {
             this.end();
             return;
         }
@@ -48,7 +184,7 @@ SCWeb.ui.Tutorial = {
     },
 
     setActiveElem: function() {
-        this.activeElem = $(this.tutorialStageSelectors[this.currentStage]);
+        this.activeElem = $(this.tutorialStages[this.currentStage].elemID);
     },
 
     focusActiveElem: function() {
@@ -65,6 +201,14 @@ SCWeb.ui.Tutorial = {
 
     fireTutorialEdgeCreatedEvent: function() {
         this.tutorialEdgeCreated = true;
+    },
+
+    toggleInfoVisibility: function() {
+        $('#tutorial-info').toggleClass('visible');
+    },
+
+    hideInfo: function() {
+        $('#tutorial-info').removeClass('visible');
     },
 
     clickListener: function() {
