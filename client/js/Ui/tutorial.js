@@ -3,7 +3,7 @@ SCWeb.ui.Tutorial = {
     activeElem: undefined,
     tutorialNodeCreated: false,
     tutorialEdgeCreated: false,
-    tutorialStageSelectors: [
+    tutorialStages: [
         "#search-panel",
         "#search-input",
         "#tutorial-suggestion",
@@ -11,7 +11,8 @@ SCWeb.ui.Tutorial = {
         "#window-type-select-button",
         "#scg-mode-toggle-button",
         "#window-container",
-        "#expert_mode_container"
+        "#scg-tool-edge",
+        "#window-container"
     ],
 
     init: function() {
@@ -31,7 +32,6 @@ SCWeb.ui.Tutorial = {
     },
 
     end: function() {
-        this.blurActiveElem();
         this.inProgress = false;
     },
 
@@ -40,8 +40,9 @@ SCWeb.ui.Tutorial = {
             this.blurActiveElem();
         }
         this.currentStage++;
-        if (this.currentStage >= this.tutorialStageSelectors.length) {
+        if (this.currentStage === this.tutorialStageSelectors.length) {
             this.end();
+            return;
         }
         this.addStageCompletionListener(this.currentStage);
     },
@@ -66,17 +67,21 @@ SCWeb.ui.Tutorial = {
         this.tutorialEdgeCreated = true;
     },
 
+    clickListener: function() {
+        this.setActiveElem();
+        this.focusActiveElem();
+        this.activeElem.on('click', () => {
+            if (this.isInProgress()) {
+                this.activeElem.off('click');
+                this.commenceToNextStage();
+            }
+        });
+    },
+
     addStageCompletionListener: function(stageNumber) {
         switch(stageNumber) {
             case 0:
-                this.setActiveElem();
-                this.focusActiveElem();
-                this.activeElem.on('click', () => {
-                    if (this.isInProgress()) {
-                        this.activeElem.off('click');
-                        this.commenceToNextStage();
-                    }
-                });
+                this.clickListener();
                 break;
             case 1:
                 this.setActiveElem();
@@ -109,25 +114,11 @@ SCWeb.ui.Tutorial = {
                 });
                 break;
             case 3:
-                this.setActiveElem();
-                this.focusActiveElem();
-                this.activeElem.on('click', () => {
-                    if (this.isInProgress()) {
-                        this.activeElem.off('click');
-                        this.commenceToNextStage();
-                    }
-                })
+                this.clickListener();
                 break;
             case 4:
                 $(document).ready(() => {
-                    this.setActiveElem();
-                    this.focusActiveElem();
-                    this.activeElem.on('click', () => {
-                        if (this.isInProgress()) {
-                            this.activeElem.off('click');
-                            this.commenceToNextStage();
-                        }
-                    });
+                    this.clickListener();
                 });
                 break;
             case 5:
@@ -148,9 +139,21 @@ SCWeb.ui.Tutorial = {
             case 6:
                 this.setActiveElem();
                 this.focusActiveElem();
-                const interval = setInterval(() => {
+                const nodeInterval = setInterval(() => {
                     if (this.tutorialNodeCreated) {
-                        clearInterval(interval);
+                        clearInterval(nodeInterval);
+                        this.commenceToNextStage();
+                    }
+                }, 200)
+                break;
+            case 7:
+                this.clickListener();
+            case 8:
+                this.setActiveElem();
+                this.focusActiveElem();
+                const edgeInterval = setInterval(() => {
+                    if (this.tutorialEdgeCreated) {
+                        clearInterval(edgeInterval);
                         this.commenceToNextStage();
                     }
                 }, 200)

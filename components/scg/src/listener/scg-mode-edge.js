@@ -41,6 +41,9 @@ SCgEdgeListener.prototype = {
             // source and target must be not equal
             if (scene.edge_data.source != obj) {
                 if (!(obj instanceof SCg.ModelContour && obj.isNodeInPolygon(scene.edge_data.source))) {
+                    if (SCWeb.ui.Tutorial.isInProgress()) {
+                        SCWeb.ui.Tutorial.fireTutorialEdgeCreatedEvent();
+                    }
                     scene.commandManager.execute(new SCgCommandCreateEdge(scene.edge_data.source,
                         obj,
                         this.scene));

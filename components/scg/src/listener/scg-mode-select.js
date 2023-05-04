@@ -39,7 +39,9 @@ SCgSelectListener.prototype = {
         if (this.scene.pointed_object && !(this.scene.pointed_object instanceof SCg.ModelContour)) {
             return false;
         }
-        SCWeb.ui.Tutorial.fireTutorialNodeCreatedEvent();
+        if (SCWeb.ui.Tutorial.isInProgress()) {
+            SCWeb.ui.Tutorial.fireTutorialNodeCreatedEvent();
+        }
         this.scene.commandManager.execute(new SCgCommandCreateNode(x, y, this.scene));
         return true;
     },
