@@ -1,6 +1,8 @@
 SCWeb.ui.Tutorial = {
     inProgress: false,
     activeElem: undefined,
+    tutorialNodeCreated: false,
+    tutorialEdgeCreated: false,
     tutorialStageSelectors: [
         "#search-panel",
         "#search-input",
@@ -8,7 +10,7 @@ SCWeb.ui.Tutorial = {
         "#expert_mode_container",
         "#window-type-select-button",
         "#scg-mode-toggle-button",
-        "#create-node-button",
+        "#window-container",
         "#expert_mode_container"
     ],
 
@@ -56,6 +58,14 @@ SCWeb.ui.Tutorial = {
         this.activeElem.removeClass('tutorial-focused-elem');
     },
 
+    fireTutorialNodeCreatedEvent: function() {
+        this.tutorialNodeCreated = true;
+    },
+
+    fireTutorialEdgeCreatedEvent: function() {
+        this.tutorialEdgeCreated = true;
+    },
+
     addStageCompletionListener: function(stageNumber) {
         switch(stageNumber) {
             case 0:
@@ -88,7 +98,6 @@ SCWeb.ui.Tutorial = {
                             suggestion.setAttribute('id', 'tutorial-suggestion');
                             this.setActiveElem();
                             this.focusActiveElem();
-                            console.log(suggestion, this.activeElem);
                             suggestion.addEventListener('click', () => {
                                 if (this.isInProgress()) {
                                     $("#search-input").off('keyup');
@@ -135,6 +144,16 @@ SCWeb.ui.Tutorial = {
                         this.commenceToNextStage();
                     }
                 });
+                break;
+            case 6:
+                this.setActiveElem();
+                this.focusActiveElem();
+                const interval = setInterval(() => {
+                    if (this.tutorialNodeCreated) {
+                        clearInterval(interval);
+                        this.commenceToNextStage();
+                    }
+                }, 200)
                 break;
         }
     }
