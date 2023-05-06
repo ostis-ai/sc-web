@@ -34,7 +34,14 @@ SCg.Render.prototype = {
             })
             .on('dblclick', function () {
                 self.onMouseDoubleClick(this, self);
+            })
+            .on("mouseleave", function (d) {
+                self.scene.onMouseUpObject(d);
+                if (d3.event.stopPropagation()) d3.event.stopPropagation();
             });
+
+        const svg = document.querySelector("svg.SCgSvg");
+        svg.ondragstart = () => false;
 
         this.scale = 1;
         var self = this;
@@ -194,6 +201,13 @@ SCg.Render.prototype = {
                     if (d3.event.stopPropagation())
                         d3.event.stopPropagation();
                 })
+                .on("dblclick", d => {
+                    if (d3.event.stopPropagation())
+                        d3.event.stopPropagation();
+                    let windowId = SCWeb.ui.WindowManager.getActiveWindowId();
+                    let container = document.getElementById(windowId);
+                    SCWeb.core.Main.doDefaultCommandWithFormat([d.sc_addr], $(container).attr("sc-addr-fmt"));
+                });
         };
 
         function appendNodeVisual(g) {
@@ -370,9 +384,11 @@ SCg.Render.prototype = {
             var linkDiv = $(document.getElementById("link_" + self.containerId + "_" + d.id));
             if (!d.sc_addr) {
                 linkDiv.find('.impl').html(d.content);
+                linkDiv.find('img').css({ 'width': '100%', 'height': '100%' })
             } else {
                 if (d.content != "") {
                     linkDiv.find('.impl').html(d.content);
+                    linkDiv.find('img').css({ 'width': '100%', 'height': '100%' });
                 } else {
                     d.content = linkDiv.find('.impl').html();
                     if (d.content != "") {
@@ -395,8 +411,8 @@ SCg.Render.prototype = {
                 .attr('class', function (d) {
                     return self.classState(d, 'SCgLink');
                 }).attr("sc_addr", function (d) {
-                return d.sc_addr;
-            });
+                    return d.sc_addr;
+                });
 
             g.selectAll(function () {
                 return this.getElementsByTagName("foreignObject");
@@ -484,6 +500,71 @@ SCg.Render.prototype = {
             });
         });
 
+        this.updateLinePoints();
+    },
+
+    updateLink: function () {
+        var self = this;
+        this.d3_links.each(function (d) {
+            if (d.contentType !== 'image') return;
+
+            if (!d.contentLoaded) {
+                var links = {};
+                links[d.containerId] = d.sc_addr;
+                self.sandbox.createViewersForScLinks(links);
+
+                d.contentLoaded = true;
+            }
+            else d.need_observer_sync = false;
+
+            var linkDiv = $(document.getElementById("link_" + self.containerId + "_" + d.id));
+            if (!d.sc_addr) {
+                linkDiv.find('.impl').html(d.content);
+                linkDiv.find('img').css({ 'width': '100%', 'height': '100%' })
+            } else {
+                if (d.content != "") {
+                    linkDiv.find('.impl').html(d.content);
+                    linkDiv.find('img').css({ 'width': '100%', 'height': '100%' });
+                } else {
+                    d.content = linkDiv.find('.impl').html();
+                    if (d.content != "") {
+                        d.setAutoType();
+                    }
+                }
+            }
+
+            var g = d3.select(this)
+
+            g.select('rect')
+                .attr('width', function (d) {
+                    d.scale.x = Math.min(linkDiv.find('.impl').outerWidth() + 300, 450) + 10;
+                    return d.scale.x + self.linkBorderWidth;
+                })
+                .attr('height', function (d) {
+                    d.scale.y = Math.min(linkDiv.outerHeight() + 300, 350);
+                    return d.scale.y + self.linkBorderWidth;
+                })
+                .attr('class', function (d) {
+                    return self.classState(d, 'SCgLink');
+                }).attr("sc_addr", function (d) {
+                    return d.sc_addr;
+                });
+
+            g.selectAll(function () {
+                return this.getElementsByTagName("foreignObject");
+            })
+                .attr('width', function (d) {
+                    return d.scale.x;
+                })
+                .attr('height', function (d) {
+                    return d.scale.y;
+                });
+
+            g.attr("transform", function (d) {
+                return 'translate(' + (d.position.x - (d.scale.x + self.linkBorderWidth) * 0.5) + ', ' + (d.position.y - (d.scale.y + self.linkBorderWidth) * 0.5) + ')';
+            });
+
+        });
         this.updateLinePoints();
     },
 
@@ -708,7 +789,7 @@ SCg.Render.prototype = {
         var point = this._correctPoint(d3.mouse(window));
 
         if (this.line_point_idx >= 0) {
-            this.scene.setLinePointPos(this.line_point_idx, {x: point[0], y: point[1]});
+            this.scene.setLinePointPos(this.line_point_idx, { x: point[0], y: point[1] });
             d3.event.stopPropagation();
         }
 

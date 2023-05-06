@@ -53,30 +53,39 @@ const translateByKeyWord = async (event, string) => {
     $('.tt-dropdown-menu').hide();
 };
 
+const debouncePanel = (fn, ms) => {
+    let timeout;
+    return function () {
+        const fnCall = () => { fn.apply(this, arguments) }
+        clearTimeout(timeout);
+        timeout = setTimeout(fnCall, ms)
+    };
+}
+
 SCWeb.ui.SearchPanel = {
     init: function () {
         return new Promise(resolve => {
             $('.typeahead').typeahead({
-                  minLength: 1,
-                  highlight: true,
+                minLength: 1,
+                highlight: true,
             },
-            {
-                  name: 'idtf',
-                  source: function (str, callback) {
-                      $('#search-input').addClass('search-processing');
-                      window.scClient.getLinksContentsByContentSubstrings([str]).then((strings) => {
-                          const maxContentSize = 200;
-                          const keys = strings.length ? strings[0].filter((string) => string.length < maxContentSize) : [];
-                          callback(keys);
-                          $('#search-input').removeClass('search-processing');
-                      });
-                  },
-                  templates: {
-                      suggestion: function (string) {
-                          return '<p>' + string + '</p>';
-                      }
-                  }
-              }
+                {
+                    name: 'idtf',
+                    source: debouncePanel(function (str, callback) {
+                        $('#search-input').addClass('search-processing');
+                        window.scClient.getLinksContentsByContentSubstrings([str]).then((strings) => {
+                            const maxContentSize = 200;
+                            const keys = strings.length ? strings[0].filter((string) => string.length < maxContentSize) : [];
+                            callback(keys);
+                            $('#search-input').removeClass('search-processing');
+                        });
+                    }, 500),
+                    templates: {
+                        suggestion: function (string) {
+                            return '<p>' + string + '</p>';
+                        }
+                    }
+                }
             ).bind('typeahead:selected', async function (event, string, dataset) {
                 await translateByKeyWord(event, string);
             }).keypress(async function (event) {

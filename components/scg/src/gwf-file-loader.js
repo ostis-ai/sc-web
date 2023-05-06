@@ -27,6 +27,10 @@ GwfFileLoader = {
         };
 //        reader.readAsText(args["file"], "CP1251");
         reader.readAsText(args["file"]);
+        setTimeout(() => {
+            args["render"].updateLink();
+            args["render"].update();
+        }, 100)
         return true;
     },
 

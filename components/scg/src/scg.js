@@ -36,31 +36,31 @@ SCg.Editor.prototype = {
             'scg-type-edge-const': sc_type_edge_common | sc_type_const,
             'scg-type-arc-const': sc_type_arc_common | sc_type_const,
             'scg-type-arc-const-perm-pos-access': sc_type_arc_access | sc_type_const | sc_type_arc_pos |
-            sc_type_arc_perm,
+                sc_type_arc_perm,
             'scg-type-arc-const-perm-neg-access': sc_type_arc_access | sc_type_const | sc_type_arc_neg |
-            sc_type_arc_perm,
+                sc_type_arc_perm,
             'scg-type-arc-const-perm-fuz-access': sc_type_arc_access | sc_type_const | sc_type_arc_fuz |
-            sc_type_arc_perm,
+                sc_type_arc_perm,
             'scg-type-arc-const-temp-pos-access': sc_type_arc_access | sc_type_const | sc_type_arc_pos |
-            sc_type_arc_temp,
+                sc_type_arc_temp,
             'scg-type-arc-const-temp-neg-access': sc_type_arc_access | sc_type_const | sc_type_arc_neg |
-            sc_type_arc_temp,
+                sc_type_arc_temp,
             'scg-type-arc-const-temp-fuz-access': sc_type_arc_access | sc_type_const | sc_type_arc_fuz |
-            sc_type_arc_temp,
+                sc_type_arc_temp,
             'scg-type-edge-var': sc_type_edge_common | sc_type_var,
             'scg-type-arc-var': sc_type_arc_common | sc_type_var,
             'scg-type-arc-var-perm-pos-access': sc_type_arc_access | sc_type_var | sc_type_arc_pos |
-            sc_type_arc_perm,
+                sc_type_arc_perm,
             'scg-type-arc-var-perm-neg-access': sc_type_arc_access | sc_type_var | sc_type_arc_neg |
-            sc_type_arc_perm,
+                sc_type_arc_perm,
             'scg-type-arc-var-perm-fuz-access': sc_type_arc_access | sc_type_var | sc_type_arc_fuz |
-            sc_type_arc_perm,
+                sc_type_arc_perm,
             'scg-type-arc-var-temp-pos-access': sc_type_arc_access | sc_type_var | sc_type_arc_pos |
-            sc_type_arc_temp,
+                sc_type_arc_temp,
             'scg-type-arc-var-temp-neg-access': sc_type_arc_access | sc_type_var | sc_type_arc_neg |
-            sc_type_arc_temp,
+                sc_type_arc_temp,
             'scg-type-arc-var-temp-fuz-access': sc_type_arc_access | sc_type_var | sc_type_arc_fuz |
-            sc_type_arc_temp
+                sc_type_arc_temp
         };
 
         this.render = new SCg.Render();
@@ -258,15 +258,15 @@ SCg.Editor.prototype = {
         this.toolSwitch().click(function () {
             self.canEdit = !self.canEdit;
             var tools = [self.toolEdge(),
-                self.toolContour(),
-                self.toolBus(),
-                self.toolUndo(),
-                self.toolRedo(),
-                self.toolDelete(),
-                self.toolClear(),
-                self.toolOpen(),
-                self.toolSave(),
-                self.toolIntegrate()
+            self.toolContour(),
+            self.toolBus(),
+            self.toolUndo(),
+            self.toolRedo(),
+            self.toolDelete(),
+            self.toolClear(),
+            self.toolOpen(),
+            self.toolSave(),
+            self.toolIntegrate()
             ];
             for (var button = 0; button < tools.length; button++) {
                 self.toggleTool(tools[button]);
@@ -516,6 +516,7 @@ SCg.Editor.prototype = {
 
         this.toolSetContent().click(function () {
             var tool = $(this);
+            const startValueLink = self.scene.selected_objects[0].content.trim();
 
             function stop_modal() {
                 self.scene.setModal(SCgModalMode.SCgModalNone);
@@ -529,6 +530,7 @@ SCg.Editor.prototype = {
             });
             $(this).popover('show');
 
+            var obj = self.scene.selected_objects[0];
             var input = $(container + ' #scg-set-content-input');
             var input_content = $(container + " input#content[type='file']");
             var input_content_type = $(container + " #scg-set-content-type");
@@ -537,36 +539,68 @@ SCg.Editor.prototype = {
             setTimeout(function () {
                 input.focus();
             }, 1);
-            input.keypress(function (e) {
-                if (e.keyCode == KeyCode.Enter || e.keyCode == KeyCode.Escape) {
-                    if (e.keyCode == KeyCode.Enter) {
-                        var obj = self.scene.selected_objects[0];
-                        if (obj.content != input.val() || obj.contentType != input_content_type
-                                .val()) {
-                            self.scene.commandManager.execute(new SCgCommandChangeContent(obj,
-                                input.val(),
-                                input_content_type.val()));
-                        }
-                    }
-                    stop_modal();
-                    e.preventDefault();
-                }
-            });
-            // process controls
-            $(container + ' #scg-set-content-apply').click(function () {
-                var obj = self.scene.selected_objects[0];
+
+            if (input.val() && (obj.contentType === 'image' || obj.contentType === 'html')) {
+                $(container + ' .popover-content').prepend(input.val());
+                $(container + ' .popover-content').children('img').css({ 'height': '150px', 'width': '150px' });
+                input.val('');
+            };
+
+            const wrapperRenameAttachLink = async () => {
+                var endValueLink = input.val().trim();
                 var file = input_content[0].files[0];
+                if ((startValueLink === endValueLink && obj.sc_addr) && !file) stop_modal();
+                obj.changedValue = true;
+
+                let addrMainConcept;
+                let templateAddr = new sc.ScTemplate();
+
+                templateAddr.tripleWithRelation(
+                    [sc.ScType.NodeVar, "_node"],
+                    sc.ScType.EdgeDCommonVar,
+                    new sc.ScAddr(obj.sc_addr),
+                    sc.ScType.EdgeAccessVarPosPerm,
+                    new sc.ScAddr(window.scKeynodes['nrel_main_idtf'])
+                );
+                addrMainConcept = await window.scClient.templateSearch(templateAddr)
+                    .then(result => {
+                        if (!result.length) return;
+                        return result[0].get("_node").value;
+                    });
+
+                if (addrMainConcept) {
+                    const objMainConcept = self.scene.getObjectByScAddr(Number(addrMainConcept));
+                    self.scene.commandManager.execute(new SCgCommandChangeIdtf(objMainConcept, input.val()));
+                    document.querySelector(`[sc_addr="${addrMainConcept}"]`).nextSibling.textContent = input.val();
+                };
+
+                if (startValueLink !== endValueLink && obj.sc_addr) {
+                    obj.changedValue = true;
+                };
+
                 if (file != undefined) {
+                    setTimeout(() => {
+                        if (obj.contentType === 'image') {
+                            self.scene.commandManager.execute(new SCgCommandChangeContent(
+                                obj,
+                                obj.content,
+                                obj.contentType,
+                                null,
+                            ));
+                            stop_modal();
+                        };
+                    }, 100);
                     var fileReader = new FileReader();
                     fileReader.onload = function () {
                         var scLinkHelper = new ScFileLinkHelper(file, this.result);
                         if (obj.fileReaderResult != scLinkHelper.fileArrayBuffer || obj.contentType !=
                             scLinkHelper.type) {
+                            if (obj.sc_addr) obj.changedValue = true;
                             self.scene.commandManager.execute(new SCgCommandChangeContent(
                                 obj,
                                 scLinkHelper.htmlViewResult(),
                                 scLinkHelper.type,
-                                scLinkHelper.fileArrayBuffer
+                                scLinkHelper.fileArrayBuffer,
                             ));
                         }
                         stop_modal();
@@ -574,6 +608,7 @@ SCg.Editor.prototype = {
                     fileReader.readAsArrayBuffer(file);
                 } else {
                     if (obj.content != input.val() || obj.contentType != input_content_type.val()) {
+                        if (obj.sc_addr) obj.changedValue = true;
                         self.scene.commandManager.execute(new SCgCommandChangeContent(obj,
                             input.val(),
                             input_content_type.val(),
@@ -582,6 +617,24 @@ SCg.Editor.prototype = {
                     }
                     stop_modal();
                 }
+            }
+
+            input.keypress(function (e) {
+                if (e.keyCode == KeyCode.Enter || e.keyCode == KeyCode.Escape) {
+                    if (e.keyCode == KeyCode.Enter) {
+                        wrapperRenameAttachLink();
+                    }
+                    stop_modal();
+                    e.preventDefault();
+                }
+            });
+            // process controls
+            $(container + ' #scg-set-content-apply').click(async function () {
+                wrapperRenameAttachLink();
+                setTimeout(() => {
+                    self.scene.updateLinkVisual();
+                    self.scene.updateRender();
+                }, 100)
             });
             $(container + ' #scg-set-content-cancel').click(function () {
                 stop_modal();
@@ -606,14 +659,14 @@ SCg.Editor.prototype = {
             var open_dialog = document.getElementById("scg-tool-open-dialog");
             self.scene.clearSelection();
             open_dialog.onchange = function () {
-                return GwfFileLoader.load({
+                GwfFileLoader.load({
                     file: open_dialog.files[0],
                     render: self.render
                 });
-
+                this.value = null;
             }
             ScgObjectBuilder.scene = self.scene;
-            var result = open_dialog.click();
+            open_dialog.click();
         });
 
         this.toolSave().click(function () {
@@ -639,6 +692,11 @@ SCg.Editor.prototype = {
             self.render.changeScale(0.9);
         });
 
+        window.onmessage = (e) => {
+            if (e.data.type === 'SCALE_CHANGE') {
+                return self.render.changeScale(e.data.value);
+            }
+        };
 
         // initial update
         self.onModalChanged();
@@ -649,30 +707,33 @@ SCg.Editor.prototype = {
      * Function that process selection changes in scene
      * It updated UI to current selection
      */
-    onSelectionChanged: function () {
-        if (this.canEdit) {
-            this.hideTool(this.toolChangeIdtf());
-            this.hideTool(this.toolSetContent());
-            this.hideTool(this.toolChangeType());
-            this.hideTool(this.toolDelete());
-            if (this.scene.selected_objects.length > 1) {
-                if (this.scene.isSelectedObjectAllArcsOrAllNodes() && !this.scene.isSelectedObjectAllHaveScAddr()) {
-                    this.showTool(this.toolChangeType());
-                }
-            } else if (this.scene.selected_objects.length == 1 && !this.scene.selected_objects[0].sc_addr) {
-                if (this.scene.selected_objects[0] instanceof SCg.ModelNode) {
-                    this.showTool(this.toolChangeIdtf());
-                    this.showTool(this.toolChangeType());
-                } else if (this.scene.selected_objects[0] instanceof SCg.ModelEdge) {
-                    this.showTool(this.toolChangeType());
-                } else if (this.scene.selected_objects[0] instanceof SCg.ModelContour) {
-                    this.showTool(this.toolChangeIdtf());
-                } else if (this.scene.selected_objects[0] instanceof SCg.ModelLink) {
-                    this.showTool(this.toolSetContent());
-                }
+    onSelectionChanged: async function () {
+        this.hideTool(this.toolChangeIdtf());
+        this.hideTool(this.toolChangeType());
+        this.hideTool(this.toolSetContent());
+        this.hideTool(this.toolDelete());
+
+        if (this.scene.selected_objects.length > 1) {
+            if (this.scene.isSelectedObjectAllArcsOrAllNodes() && !this.scene.isSelectedObjectAllHaveScAddr()) {
+                this.showTool(this.toolChangeType());
             }
-            if (this.scene.selected_objects.length > 0) this.showTool(this.toolDelete());
+        } else if (this.scene.selected_objects.length === 1 && !this.scene.selected_objects[0].sc_addr) {
+            if (this.scene.selected_objects[0] instanceof SCg.ModelNode) {
+                this.showTool(this.toolChangeIdtf());
+                this.showTool(this.toolChangeType());
+            } else if (this.scene.selected_objects[0] instanceof SCg.ModelEdge) {
+                this.showTool(this.toolChangeType());
+            } else if (this.scene.selected_objects[0] instanceof SCg.ModelContour) {
+                this.showTool(this.toolChangeIdtf());
+            } else if (this.scene.selected_objects[0] instanceof SCg.ModelLink) {
+                this.showTool(this.toolSetContent());
+            }
+        } else if (this.scene.selected_objects.length === 1) {
+            if (this.scene.selected_objects[0] instanceof SCg.ModelLink) {
+                this.showTool(this.toolSetContent());
+            }
         }
+        if (this.scene.selected_objects.length > 0) this.showTool(this.toolDelete());
     },
 
 

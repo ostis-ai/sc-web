@@ -43,7 +43,17 @@ repo
 
 server/secret.txt
 
+# docs
 
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.pdf
+*.run.xml
 
 # components
 components/*/static/components/js/*

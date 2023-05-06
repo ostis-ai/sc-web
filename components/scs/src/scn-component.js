@@ -19,30 +19,6 @@ SCnComponent = {
     }
 };
 
-function reverseMap(map) {
-    const result = {};
-    for (const key in map) {
-        result[map[key]] = key;
-    }
-    return result;
-}
-
-function getTriplesJsonFoDebug({keywords, triples, ...data}, translationMap, keynodes) {
-    const reverseKeynodes = reverseMap(scKeynodes);
-    const reverseModeKeynodes = reverseMap(keynodes);
-    const renameScAddr = ({addr, ...data}) => ({
-        addr:
-        reverseModeKeynodes[addr] ||
-        reverseKeynodes[addr] ||
-        translationMap[addr] ||
-        addr,
-        ...data
-    });
-    const renamedKeywords = keywords.map(renameScAddr);
-    const renamedTriples = triples.map((triple) => triple.map(renameScAddr));
-    return {keywords: renamedKeywords, triples: renamedTriples, ...data};
-}
-
 var SCnViewer = function (sandbox) {
     this.objects = [];
     this.addrs = [];
@@ -55,7 +31,6 @@ var SCnViewer = function (sandbox) {
     SCWeb.core.EventManager.subscribe("expert_mode_changed", this, () => {
         this.sandbox.removeChild();
         this.receiveData(this.data);
-        this.sandbox.translate();
     });
 
     SCWeb.core.EventManager.subscribe("translation/changed_language", this, () => {
@@ -74,15 +49,12 @@ var SCnViewer = function (sandbox) {
     };
 
     this.updateTranslation = function (namesMap) {
-        // apply translation
-        // console.log(getTriplesJsonFoDebug(JSON.parse(this.data), namesMap, this.sandbox.keynodes));
         $(this.sandbox.container_selector).each(function (index, element) {
             var addr = $(element).attr('sc_addr');
             if (!$(element).hasClass('sc-content') && !$(element).hasClass('sc-contour') &&
                 !$(element).hasClass('scs-scn-connector') && ($(element).hasClass('scs-scn-element'))) {
-                $(element).removeClass('resolve-idtf-anim');
                 if (namesMap[addr]) {
-                    $(element).text(namesMap[addr]);
+                    $(element).text(namesMap[addr] ? namesMap[addr] : '<b>...</b>');
                 } else {
                     $(element).html('<b>...</b>');
                 }
@@ -107,7 +79,6 @@ var SCnViewer = function (sandbox) {
 var SCsConnectors = {};
 
 $(document).ready(function () {
-
     SCsConnectors[sc_type_arc_pos_const_perm] = "->";
     SCsConnectors[sc_type_edge_common | sc_type_const] = "==";
     SCsConnectors[sc_type_edge_common | sc_type_var] = "_==";

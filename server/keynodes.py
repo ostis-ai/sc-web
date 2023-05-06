@@ -80,6 +80,7 @@ class KeynodeSysIdentifiers(Enum):
     
     ui_rrel_source_sc_construction = 'ui_rrel_source_sc_construction'
     ui_rrel_output_format = 'ui_rrel_output_format'
+    ui_rrel_user_lang = 'ui_rrel_user_lang'
 
     # languages
     languages = 'languages'

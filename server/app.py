@@ -67,6 +67,7 @@ def main():
                            help="path to template files directory",
                            type=str)
     tornado.options.define("event_wait_timeout", default=10, help="time to wait commands processing", type=int)
+    tornado.options.define("answer_wait_timeout", default = 2, help="time to wait answer getting", type=int)
     tornado.options.define("idtf_search_limit", default=100,
                            help="number of maximum results for searching by identifier", type=int)
     tornado.options.define("host", default="localhost", help="host name", type=str)
@@ -183,7 +184,7 @@ def search_kb_sources(root_path: str):
 
     elif splitext(root_path)[1] == REPO_FILE_EXT:
         print()
-        with open(join(root_path), 'r') as root_file:
+        with open(join(root_path), 'r', encoding='utf-8') as root_file:
             for line in root_file.readlines():
                 # ignore comments and empty lines
                 line = line.replace('\n', '')

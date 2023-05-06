@@ -254,6 +254,31 @@ path.SCgBusPath {
     position: absolute;
 }
 
+.btn-group-vertical {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+  }
+ 
+ @media screen and (max-height: 900px) {
+    .scg-tools-panel {
+       height: calc(100% - 20px);
+       padding-top: 16px;
+       padding-bottom: 16px;
+    }
+    hr {
+       display: none;
+    }
+    .icon-items{
+       border-radius: 0px !important;
+       margin-bottom: 0px;
+    }
+    .btn-group-vertical {
+       flex-wrap: wrap;
+       max-height: 100%;
+    }
+ }
+
 .scg-tools-panel img {
     width: 30px;
 }

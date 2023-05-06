@@ -1,9 +1,10 @@
 SCWeb.core.scAddrsDict = {};
 
-SCWeb.core.CommandState = function (command_addr, command_args, format) {
+SCWeb.core.CommandState = function (command_addr, command_args, format, lang) {
     this.command_addr = command_addr;
     this.command_args = command_args || [];
     this.format = format;
+    this.lang = lang
 }
 
 /**
@@ -64,26 +65,26 @@ SCWeb.core.ComponentSandbox = function (options) {
     /// @todo possible need to wait event creation
     if (this.is_struct) {
         let addArcEventRequest = new sc.ScEventParams(
-          new sc.ScAddr(this.addr),
-          sc.ScEventType.AddOutgoingEdge,
-          (elAddr, edge, otherAddr) => {
-              if (self.eventStructUpdate) {
-                  self.eventStructUpdate(true, elAddr.value, edge.value);
-              }
-          });
+            new sc.ScAddr(this.addr),
+            sc.ScEventType.AddOutgoingEdge,
+            (elAddr, edge, otherAddr) => {
+                if (self.eventStructUpdate) {
+                    self.eventStructUpdate(true, elAddr.value, edge.value);
+                }
+            });
         let removeArcEventRequest = new sc.ScEventParams(
-          new sc.ScAddr(this.addr),
-          sc.ScEventType.RemoveOutgoingEdge,
-          (elAddr, edge, otherAddr) => {
-              if (self.eventStructUpdate) {
-                  self.eventStructUpdate(false, elAddr.value, edge.value);
-              }
-          });
+            new sc.ScAddr(this.addr),
+            sc.ScEventType.RemoveOutgoingEdge,
+            (elAddr, edge, otherAddr) => {
+                if (self.eventStructUpdate) {
+                    self.eventStructUpdate(false, elAddr.value, edge.value);
+                }
+            });
         window.scClient.eventsCreate([addArcEventRequest, removeArcEventRequest])
-          .then((addArcEvent, removeArcEvent)=>{
-              self.event_add_element = addArcEvent;
-              self.event_remove_element = removeArcEvent;
-          });
+            .then((addArcEvent, removeArcEvent) => {
+                self.event_add_element = addArcEvent;
+                self.event_remove_element = removeArcEvent;
+            });
     }
 };
 
@@ -213,7 +214,7 @@ SCWeb.core.ComponentSandbox.prototype._appendChilds = function (windows) {
         if (!windows.hasOwnProperty(cntId))
             continue;
         if (this.childs[cntId])
-            throw "Duplicate child container " + cntId;
+            console.warn("Duplicate child container " + cntId);
         this.childs[cntId] = windows[cntId];
     }
 };
@@ -237,7 +238,7 @@ SCWeb.core.ComponentSandbox.prototype.updateAnswer = function () {
  * @param {Object} containers_map Map of viewer containers (key: sc-link addr, value: id of container)
  */
 SCWeb.core.ComponentSandbox.prototype.createViewersForScLinks = async function (containers_map) {
-    return new Promise((resolve, reject)=>{
+    return new Promise((resolve, reject) => {
         var self = this;
         SCWeb.ui.WindowManager.createViewersForScLinks(containers_map).then(function (windows) {
             self._appendChilds(windows);
@@ -264,14 +265,18 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (contentTyp
     var self = this;
 
     if (this.is_struct && this.eventStructUpdate) {
+        const maxNumberOfTriplets = 850;
         let scTemplate = new sc.ScTemplate();
         scTemplate.triple(
-          [new sc.ScAddr(this.addr), "src"],
-          [sc.ScType.EdgeAccessVarPosPerm, "edge"],
+            [new sc.ScAddr(this.addr), "src"],
+            [sc.ScType.EdgeAccessVarPosPerm, "edge"],
             sc.ScType.Unknown);
         let result = await window.scClient.templateSearch(scTemplate);
+        if (result.length > maxNumberOfTriplets) {
+            result.splice(maxNumberOfTriplets-1, result.length-maxNumberOfTriplets);
+        }
         for (let triple of result) {
-          self.eventStructUpdate(true, triple.get("src").value, triple.get("edge").value);
+            self.eventStructUpdate(true, triple.get("src").value, triple.get("edge").value);
         }
     }
     else {
@@ -342,7 +347,7 @@ SCWeb.core.ComponentSandbox.prototype.onWindowActiveChanged = function (is_activ
 // --------- Data -------------
 SCWeb.core.ComponentSandbox.prototype.onDataAppend = function (data) {
     if (this.eventDataAppend) {
-        return this.eventDataAppend(data).then(() => this.translate());
+        return this.eventDataAppend(data);
     } else {
         return Promise.resolve();
     }

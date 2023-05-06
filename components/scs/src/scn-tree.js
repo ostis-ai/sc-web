@@ -8,6 +8,7 @@ SCs.SCnTree.prototype = {
         this.nodes = [];
         this.addrs = [];    // array of sc-addrs
         this.links = [];
+        this.identifiers = {};
         this.triples = [];
         this.usedLinks = {};
         this.subtrees = {}; // dictionary of subtrees (contours)
@@ -183,18 +184,19 @@ SCs.SCnTree.prototype = {
             }
 
             this.subtrees[addr] = tree;
-            tree.build(keywordsList, subtree.triples);
+            tree.build(keywordsList, subtree.triples, self.identifiers);
             this.addrs = this.addrs.concat(tree.addrs);
         }
     },
 
     /*! Builds tree based on array of triples
-     * @param {Array} keyords Array of keywords
+     * @param {Array} keywords Array of keywords
      * @param {Array} triples Array of triples
+     * @param {Map} identifiers Map of addr identifiers
      */
-    build: function (keywords, triples) {
-
+    build: function (keywords, triples, identifiers) {
         var queue = [];
+        this.identifiers = identifiers;
         this.triples = this.triples.concat(triples);
 
         if (keywords.length == 0) {
@@ -228,7 +230,6 @@ SCs.SCnTree.prototype = {
     },
 
     buildLevels: function (queue, triples) {
-
         while (queue.length > 0) {
             var node = queue.shift();
 

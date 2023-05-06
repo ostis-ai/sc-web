@@ -6,8 +6,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Add scg speedup
+- Add ability to edit links and save changes
+- Add double click logic in scg view
+- Add scale change logic in scg iframe view by event
 - Add border and tools parameter to view window
 - Add language parameter to view window
+- Build docs in SCn format
+
+### Fixed
+- selected structure free when mouse leave window
+- When window become smaller scg tools change location and no scroll apears
+- Pointer cursor when hovering over expert mode switch label
+- Attribute `sc_control_sys_idtf` for sidebar collapse button
+- Add curl to dependencies installation script
+
+### Changed
+- View identifiers with scn-component from sc-json
+
+### Removed
+- Remove `A` button from main frame
 
 ## [0.7.0-Rebirth] - 12.10.2022
 ### Added

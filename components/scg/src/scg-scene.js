@@ -50,10 +50,10 @@ var SCgTypeNodeNow = sc_type_node | sc_type_const;
 SCg.Scene = function (options) {
 
     this.listener_array = [new SCgSelectListener(this),
-        new SCgEdgeListener(this),
-        new SCgBusListener(this),
-        new SCgContourListener(this),
-        new SCgLinkListener(this)];
+    new SCgEdgeListener(this),
+    new SCgBusListener(this),
+    new SCgContourListener(this),
+    new SCgLinkListener(this)];
     this.listener = this.listener_array[0];
     this.commandManager = new SCgCommandManager();
     this.render = options.render;
@@ -84,10 +84,10 @@ SCg.Scene = function (options) {
     this.mouse_pos = new SCg.Vector3(0, 0, 0);
 
     // edge source and target
-    this.edge_data = {source: null, target: null};
+    this.edge_data = { source: null, target: null };
 
     // bus source
-    this.bus_data = {source: null, end: null};
+    this.bus_data = { source: null, end: null };
 
     // callback for selection changed
     this.event_selection_changed = null;
@@ -255,6 +255,11 @@ SCg.Scene.prototype = {
         this.render.updateObjects();
     },
 
+    updateLinkVisual: function () {
+        this.render.updateLink();
+        this.render.update();
+    },
+
     // --------- layout --------
     layout: function () {
         this.layout_manager.doLayout();
@@ -371,7 +376,7 @@ SCg.Scene.prototype = {
 
             if (obj instanceof SCg.ModelEdge || obj instanceof SCg.ModelBus || obj instanceof SCg.ModelContour) { /* @todo add contour and bus */
                 for (idx in obj.points) {
-                    this.line_points.push({pos: obj.points[idx], idx: idx});
+                    this.line_points.push({ pos: obj.points[idx], idx: idx });
                 }
             }
         }

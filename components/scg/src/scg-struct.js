@@ -1,3 +1,17 @@
+const debounce_time = (func, wait) => {
+    let timerId;
+
+    const clear = () => {
+        clearTimeout(timerId);
+    };
+    const debounced = (...args) => {
+        clearTimeout(timerId);
+        timerId = setTimeout(() => func(...args), wait);
+    };
+
+    return [debounced, clear];
+};
+
 function ScgFromScImpl(_sandbox, _editor, aMapping) {
 
     var self = this,
@@ -18,6 +32,8 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
     function randomPos() {
         return new SCg.Vector3(100 * Math.random(), 100 * Math.random(), 0);
     }
+
+    var [debouncedClearTimer] = debounce_time(() => window.clearInterval(self.timeout), 1500);
 
     var doBatch = function () {
 
@@ -80,6 +96,7 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
     };
 
     var addTask = function (args) {
+        debouncedClearTimer();
         tasks.push(args);
         if (!self.timeout) {
             self.timeout = window.setInterval(doBatch, 10);
@@ -348,30 +365,50 @@ function scgScStructTranslator(_editor, _sandbox) {
             /// --------------------
             var translateLinks = async function () {
                 var implFunc = async function (link) {
-                    if (!link.sc_addr) {
-                        let scConstruction = new sc.ScConstruction();
-                        let data = '';
-                        let type = 1;
-                        var keynode = null;
+                    let addrLang;
+                    let addrPng;
+
+                    const scAddrEdgeLang = async (linkAddr, keynode) => {
+                        return await window.scHelper.getEdgeLang(linkAddr, keynode);
+                    };
+
+                    const scAddrEdgePng = async (linkAddr, keynode) => {
+                        return await window.scHelper.getEdgePng(linkAddr, keynode);
+                    }
+
+                    const removeLangEdge = async (addrLang) => {
+                        if (!addrLang) return;
+                        await scClient.deleteElements([addrLang]);
+                    };
+
+                    const removeImgEdges = async (addrPng) => {
+                        if (!addrPng) return;
+                        await scClient.deleteElements([addrPng]);
+                    }
+
+                    const infoConstruction = (link) => {
+                        let data = link.content;
+                        let type = sc.ScLinkContentType.String;
+                        var keynode = SCWeb.core.Translation.getCurrentLanguage();
+                        let langKeynode = keynode;
+                        let imgKeynode = window.scKeynodes['format_png'];
+
                         if (link.contentType === 'float') {
-                            data = link.content;
                             keynode = window.scKeynodes['binary_float'];
                             type = sc.ScLinkContentType.Float;
                         } else if (link.contentType === 'int8') {
-                            data = link.content;
                             type = sc.ScLinkContentType.Int;
                             keynode = window.scKeynodes['binary_int8'];
                         } else if (link.contentType === 'int16') {
-                            data = link.content;
                             type = sc.ScLinkContentType.Int;
                             keynode = window.scKeynodes['binary_int16'];
                         } else if (link.contentType === 'int32') {
-                            data = link.content;
                             type = sc.ScLinkContentType.Int;
                             keynode = window.scKeynodes['binary_int32'];
                         } else if (link.contentType === 'image') {
-                            data = link.fileReaderResult;
-                            type = sc.ScLinkContentType.Binary;
+                            let dataStarting = link.content.slice(32);
+                            data = dataStarting.slice(0, dataStarting.length - 14);
+                            type = sc.ScLinkContentType.String;
                             keynode = window.scKeynodes['format_png'];
                         } else if (link.contentType === 'html') {
                             data = link.fileReaderResult;
@@ -382,6 +419,12 @@ function scgScStructTranslator(_editor, _sandbox) {
                             type = sc.ScLinkContentType.String;
                             keynode = window.scKeynodes['format_pdf'];
                         }
+                        return { data, type, keynode, langKeynode, imgKeynode };
+                    }
+
+                    if (!link.sc_addr) {
+                        let scConstruction = new sc.ScConstruction();
+                        const { data, type, keynode } = infoConstruction(link);
                         let scLinkContent = new sc.ScLinkContent(data, type);
                         scConstruction.createLink(sc.ScType.LinkConst, scLinkContent, 'link');
                         let result = await scClient.createElements(scConstruction);
@@ -389,17 +432,33 @@ function scgScStructTranslator(_editor, _sandbox) {
                         link.setScAddr(linkAddr);
                         link.setObjectState(SCgObjectState.NewInMemory);
                         objects.push(link);
-                        if (link.fileReaderResult) {
-                            await scHelper.setLinkFormat(linkAddr, keynode);
+                        if (link.content && link.contentType === 'image') {
+                            await window.scHelper.setLinkFormat(linkAddr, keynode);
                         } else {
-                            let scTemplate = new sc.ScTemplate();
-                            scTemplate.triple(
-                                new sc.ScAddr(keynode),
-                                sc.ScType.EdgeAccessVarPosPerm,
-                                new sc.ScAddr(linkAddr)
-                            );
-                            await scClient.templateGenerate(scTemplate);
+                            await window.scHelper.setLinkLang(linkAddr, keynode);
                         }
+                    }
+                    if (link.hasOwnProperty('changedValue')) {
+                        const { data, type, langKeynode, imgKeynode } = infoConstruction(link);
+                        link.setObjectState(SCgObjectState.NewInMemory);
+                        objects.push(link);
+
+                        if (addrLang = await scAddrEdgeLang(link.sc_addr, langKeynode)) {
+                            if (link.contentType === 'image') {
+                                await removeLangEdge(addrLang);
+                                await window.scHelper.setLinkFormat(link.sc_addr, imgKeynode);
+                            }
+                            scClient.setLinkContents([new sc.ScLinkContent(data, type, new sc.ScAddr(link.sc_addr))]);
+                        }
+                        else if (addrPng = await scAddrEdgePng(link.sc_addr, imgKeynode)) {
+                            if (link.contentType !== 'image') {
+                                await removeImgEdges(addrPng);
+                                await window.scHelper.setLinkLang(link.sc_addr, langKeynode);
+                            }
+                            scClient.setLinkContents([new sc.ScLinkContent(data, type, new sc.ScAddr(link.sc_addr))]);
+                        }
+
+                        delete link.changedValue;
                     }
                 }
 

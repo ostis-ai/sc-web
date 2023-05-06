@@ -1,6 +1,8 @@
 const scHelper = null;
 const scKeynodes = null;
 const currentYear = new Date().getFullYear();
+const last_page_cmd_addr = 'last_page_cmd_addr';
+const last_page_cmd_args = 'last_page_cmd_args';
 
 function ScClientCreate() {
     let res, rej;
@@ -117,9 +119,12 @@ SCWeb.core.Main = {
 
                 this.waitForElm('.sc-contour').then(() => {
                     $('#window-container').children().children().children().children().hide();
-                    $('.sc-contour').css({'height':'97%','width':'97%','position':'absolute'});
+                    $('.sc-contour').css({'height':'100%','width':'100%','position':'absolute', "background-color": "none", "border": "0", "padding": "0px", "border-radius": "0px"});
                     $('.scs-scn-view-toogle-button').hide().click();
-                    $("[id*='tools-']").parent().css("height", "100%");
+                    $('.sc-window').css({ "padding": "0px", "overflow": "hidden" });
+                    $('.panel-body').css({ "padding": "0px", "overflow": "hidden" });
+                    $('.scs-scn-element').css("cursor", "auto !important");
+                    $("[id*='tools-']").parent().css({"height": "100%", "width": "100%"});
                     $("[id*='tools-']").parent().parent().css("height", "100%");
 
                     if (hide_borders) {
@@ -213,8 +218,9 @@ SCWeb.core.Main = {
             if (result.question !== undefined) {
                 const commandState = new SCWeb.core.CommandState(cmd_addr, cmd_args);
                 SCWeb.ui.WindowManager.appendHistoryItem(result.question, commandState);
+                setCookie(last_page_cmd_addr, cmd_addr);
+                setCookie(last_page_cmd_args, cmd_args);
             } else if (result.command !== undefined) {
-
             } else {
                 alert("There are no any answer. Try another request");
             }
@@ -254,9 +260,9 @@ SCWeb.core.Main = {
     },
 
     getTranslatedAnswer: function (command_state) {
-        return new Promise(function (resolve, reject) {
+        return new Promise(function (resolve) {
             SCWeb.core.Main.doCommandWithPromise(command_state).then(function (question_addr) {
-                SCWeb.core.Server.getAnswerTranslated(question_addr, command_state.format, function (answer) {
+                SCWeb.core.Server.getAnswerTranslated(question_addr, command_state.format, command_state.lang, function (answer) {
                     resolve(answer.link);
                 })
             })
@@ -292,6 +298,11 @@ SCWeb.core.Main = {
                 self.default_cmd = addrs[self.default_cmd_str];
                 if (self.default_cmd) {
                     self.doCommand(self.default_cmd, cmd_args);
+                    const last_page_cmd_addr = getCookie('last_page_cmd_addr')
+                    const last_page_cmd_args = [getCookie('last_page_cmd_args')]
+                    if (last_page_cmd_addr && last_page_cmd_args && Number(last_page_cmd_args[0]) !== cmd_args[0]){
+                        self.doCommand(last_page_cmd_addr, last_page_cmd_args);
+                    }
                 }
             });
         } else {
@@ -311,8 +322,41 @@ SCWeb.core.Main = {
             } else {
                 SCWeb.core.Main.doDefaultCommandWithSystemIdentifier('ui_start_sc_element');
             }
-        });      
-    }    
+        });
+    },
 
+    /**
+    * Initiate user interface command
+    * @param {String} cmd_addr sc-addr of user command
+    * @param {Array} cmd_args Array of sc-addrs with command arguments
+    */
+    doCommandWithFormat: function (cmd_addr, cmd_args, fmt_addr) {
+        SCWeb.core.Server.doCommand(cmd_addr, cmd_args, function (result) {
+            if (result.question !== undefined) {
+                const commandState = new SCWeb.core.CommandState(cmd_addr, cmd_args, fmt_addr);
+                SCWeb.ui.WindowManager.appendHistoryItem(result.question, commandState);
+            } else {
+                alert("There are no any answer. Try another request");
+            }
+        });
+    },
+
+    /**
+     * Initiate default user interface command
+     * @param {Array} cmd_args Array of sc-addrs with command arguments
+     */
+    doDefaultCommandWithFormat: function (cmd_args, fmt_addr) {
+        if (!this.default_cmd) {
+            var self = this;
+            SCWeb.core.Server.resolveScAddr([this.default_cmd_str], function (addrs) {
+                self.default_cmd = addrs[self.default_cmd_str];
+                if (self.default_cmd) {
+                    self.doCommandWithFormat(self.default_cmd, cmd_args, fmt_addr);
+                }
+            });
+        } else {
+            this.doCommandWithFormat(this.default_cmd, cmd_args, fmt_addr);
+        }
+    }
 };
 
