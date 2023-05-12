@@ -8,22 +8,22 @@ SCg.Render.prototype = {
     init: function (params) {
         this.containerId = params.containerId;
         this.sandbox = params.sandbox;
-
+        
         this.linkBorderWidth = 5;
         this.scale = 1;
         this.translate = [0, 0];
         this.translate_started = false;
-
+        
         // disable tooltips
         $('#' + this.containerId).parent().addClass('ui-no-tooltip');
-
+        
         var scgViewer = $('#scg-viewer');
         this.d3_drawer = d3.select('#' + this.containerId)
-            .append("svg:svg")
-            .attr("pointer-events", "all")
-            .attr("width", "100%")
-            .attr("height", "100%")
-            .attr("class", "SCgSvg")
+        .append("svg:svg")
+        .attr("pointer-events", "all")
+        .attr("width", "100%")
+        .attr("height", "100%")
+        .attr("class", "SCgSvg")
             .on('mousemove', function () {
                 self.onMouseMove(this, self);
             })
@@ -36,14 +36,15 @@ SCg.Render.prototype = {
             .on('dblclick', function () {
                 self.onMouseDoubleClick(this, self);
             });
-
-        this.scale = 1;
-        var self = this;
-        this.d3_container = this.d3_drawer.append('svg:g')
+            
+            this.scale = 1;
+            var self = this;
+            self.sandbox.updateContent(null, self.scene);
+            this.d3_container = this.d3_drawer.append('svg:g')
             .attr("class", "SCgSvg");
 
-        this.initDefs();
-
+            this.initDefs();
+            
         /* this.d3_container.append('svg:rect')
          .style("fill", "url(#backGrad)")
          .attr('width', '10000') //parseInt(this.d3_drawer.style("width")))
@@ -192,9 +193,14 @@ SCg.Render.prototype = {
                 })
                 .on('mouseup', function (d) {
                     self.scene.onMouseUpObject(d);
-                    self.sandbox.updateContent(d.sc_addr);
                     if (d3.event.stopPropagation())
                         d3.event.stopPropagation();
+                    if (self.sandbox.mainElement === d.sc_addr)
+                        return;
+                    if (self.scene.getObjectByScAddr(d.sc_addr) instanceof SCg.ModelEdge)
+                        return;
+                    if (self.sandbox.isRrelKeyScElement)
+                        self.sandbox.updateContent(d.sc_addr, self.scene);
                 })
                 .on("dblclick", d => {
                     if (d3.event.stopPropagation())
