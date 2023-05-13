@@ -1,5 +1,6 @@
 SCg.Render = function () {
     this.scene = null;
+    this.sandbox = null;
 };
 
 SCg.Render.prototype = {
@@ -7,15 +8,15 @@ SCg.Render.prototype = {
     init: function (params) {
         this.containerId = params.containerId;
         this.sandbox = params.sandbox;
-
+        
         this.linkBorderWidth = 5;
         this.scale = 1;
         this.translate = [0, 0];
         this.translate_started = false;
-
+        
         // disable tooltips
         $('#' + this.containerId).parent().addClass('ui-no-tooltip');
-
+        
         var scgViewer = $('#scg-viewer');
         this.d3_drawer = d3.select('#' + this.containerId)
             .append("svg:svg")
@@ -27,7 +28,7 @@ SCg.Render.prototype = {
                 self.onMouseMove(this, self);
             })
             .on('mousedown', function () {
-                self.onMouseDown(this, self)
+                self.onMouseDown(this, self);
             })
             .on('mouseup', function () {
                 self.onMouseUp(this, self);
@@ -39,17 +40,18 @@ SCg.Render.prototype = {
                 self.scene.onMouseUpObject(d);
                 if (d3.event.stopPropagation()) d3.event.stopPropagation();
             });
-
+            
         const svg = document.querySelector("svg.SCgSvg");
         svg.ondragstart = () => false;
 
-        this.scale = 1;
-        var self = this;
-        this.d3_container = this.d3_drawer.append('svg:g')
+            this.scale = 1;
+            var self = this;
+            self.sandbox.updateContent(null, self.scene);
+            this.d3_container = this.d3_drawer.append('svg:g')
             .attr("class", "SCgSvg");
 
-        this.initDefs();
-
+            this.initDefs();
+            
         /* this.d3_container.append('svg:rect')
          .style("fill", "url(#backGrad)")
          .attr('width', '10000') //parseInt(this.d3_drawer.style("width")))
@@ -178,7 +180,7 @@ SCg.Render.prototype = {
     // -------------- draw -----------------------
     update: function () {
 
-        var self = this;
+        var self = this;    
 
         function eventsWrap(selector) {
             selector.on('mouseover', function (d) {
@@ -200,6 +202,12 @@ SCg.Render.prototype = {
                     self.scene.onMouseUpObject(d);
                     if (d3.event.stopPropagation())
                         d3.event.stopPropagation();
+                    if (self.sandbox.mainElement === d.sc_addr)
+                        return;
+                    if (self.scene.getObjectByScAddr(d.sc_addr) instanceof SCg.ModelEdge)
+                        return;
+                    if (self.sandbox.isRrelKeyScElement)
+                        self.sandbox.updateContent(d.sc_addr, self.scene);
                 })
                 .on("dblclick", d => {
                     if (SCWeb.core.Main.mode === SCgEditMode.SCgModeViewOnly) return;
@@ -276,7 +284,7 @@ SCg.Render.prototype = {
             .html(function (d) {
                 return '<div id="link_' + self.containerId + '_' + d.id + '" class=\"SCgLinkContainer\"><div id="' + d.containerId + '" style="display: inline-block;" class="impl"></div></div>';
             });
-
+        
 
         eventsWrap(g);
 
@@ -335,7 +343,7 @@ SCg.Render.prototype = {
         eventsWrap(g);
 
         this.d3_buses.exit().remove();
-
+        
         this.updateObjects();
     },
 
@@ -349,12 +357,13 @@ SCg.Render.prototype = {
             if (!d.need_observer_sync) return; // do nothing
 
             d.need_observer_sync = false;
-
+            
             var g = d3.select(this)
-                .attr("transform", 'translate(' + d.position.x + ', ' + d.position.y + ')')
+                .attr("transform", 'translate(' + d.position.x + ', ' + d.position.y + ')scale(' + d.scaleElem + ')')
                 .attr('class', function (d) {
                     return self.classState(d, (d.sc_type & sc_type_constancy_mask) ? 'SCgNode' : 'SCgNodeEmpty');
                 })
+                .attr("style", 'opacity: ' + d.opacityElem + '')
 
             g.select('use')
                 .attr('xlink:href', function (d) {
@@ -386,11 +395,11 @@ SCg.Render.prototype = {
             var linkDiv = $(document.getElementById("link_" + self.containerId + "_" + d.id));
             if (!d.sc_addr) {
                 linkDiv.find('.impl').html(d.content);
-                linkDiv.find('img').css({ 'width': '100%', 'height': '100%' })
+                linkDiv.find('img').css({ 'width': '100%', 'height': '100%' });
             } else {
                 if (d.content != "") {
                     linkDiv.find('.impl').html(d.content);
-                    linkDiv.find('img').css({ 'width': '100%', 'height': '100%' });
+                    linkDiv.find('img').css({ 'width': '100%', 'height': '100%' })
                 } else {
                     d.content = linkDiv.find('.impl').html();
                     if (d.content != "") {
@@ -399,7 +408,7 @@ SCg.Render.prototype = {
                 }
             }
 
-            var g = d3.select(this)
+            var g = d3.select(this).attr("style", 'opacity: ' + d.opacityElem + '')
 
             g.select('rect')
                 .attr('width', function (d) {
@@ -412,9 +421,10 @@ SCg.Render.prototype = {
                 })
                 .attr('class', function (d) {
                     return self.classState(d, 'SCgLink');
-                }).attr("sc_addr", function (d) {
-                    return d.sc_addr;
-                });
+                })
+                .attr("sc_addr", function (d) {
+                return d.sc_addr;
+            });
 
             g.selectAll(function () {
                 return this.getElementsByTagName("foreignObject");
@@ -423,12 +433,11 @@ SCg.Render.prototype = {
                     return d.scale.x;
                 })
                 .attr('height', function (d) {
-
                     return d.scale.y;
                 });
 
             g.attr("transform", function (d) {
-                return 'translate(' + (d.position.x - (d.scale.x + self.linkBorderWidth) * 0.5) + ', ' + (d.position.y - (d.scale.y + self.linkBorderWidth) * 0.5) + ')';
+                return 'translate(' + (d.position.x - (d.scale.x + self.linkBorderWidth) * 0.5) + ', ' + (d.position.y - (d.scale.y + self.linkBorderWidth) * 0.5) +  ')scale(' + d.scaleElem + ')';
             });
 
         });
@@ -438,16 +447,18 @@ SCg.Render.prototype = {
             if (!d.need_observer_sync) return; // do nothing
             d.need_observer_sync = false;
 
-            if (d.need_update)
+                if (d.need_update)
                 d.update();
-            var d3_edge = d3.select(this);
-            SCgAlphabet.updateEdge(d, d3_edge, self.containerId);
-            d3_edge.attr('class', function (d) {
-                return self.classState(d, 'SCgEdge');
-            })
+                var d3_edge = d3.select(this);
+                SCgAlphabet.updateEdge(d, d3_edge, self.containerId);
+                d3_edge.attr('class', function (d) {
+                    return self.classState(d, 'SCgEdge');
+                })
                 .attr("sc_addr", function (d) {
                     return d.sc_addr;
                 });
+            d3_edge.select('.SCgEdgeEndArrowCommon').style('stroke-width', `${d.widthEdge}px`).style('opacity', d.opacityEdge);
+            d3_edge.select('.SCgEdgeEndArrowAccess').style('stroke-width', `${d.widthEdge - 6}px`).style('opacity', d.opacityEdge);
         });
 
         this.d3_contours.each(function (d) {
@@ -504,7 +515,7 @@ SCg.Render.prototype = {
 
         this.updateLinePoints();
     },
-
+    
     updateLink: function () {
         var self = this;
         this.d3_links.each(function (d) {

@@ -54,14 +54,32 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
                 var addr = task[0];
                 var type = task[1];
 
-                if (editor.scene.getObjectByScAddr(addr))
-                    continue;
+                let newMainNode = editor.scene.getObjectByScAddr(addr);
+                if (newMainNode) {
+                    if (newMainNode instanceof SCg.ModelEdge) {
+                        newMainNode.setOpacityEdge(task[4].opacity);
+                        newMainNode.setWidthEdge(task[4].widthEdge);
+                        continue;
+                    }
+                    if (newMainNode instanceof SCg.ModelNode) {
+                        newMainNode.setScaleElem(task[2].node);
+                        newMainNode.setOpacityElem(task[2].opacity);
+                        continue;
+                    }
+                    if (newMainNode instanceof SCg.ModelLink) {
+                        newMainNode.setScaleElem(task[2].link);
+                        newMainNode.setOpacityElem(task[2].opacity);
+                        continue;
+                    }
+                }
 
                 if (type & sc_type_node) {
                     var model_node = SCg.Creator.createNode(type, randomPos(), '');
                     editor.scene.appendNode(model_node);
                     editor.scene.objects[addr] = model_node;
                     model_node.setScAddr(addr);
+                    model_node.setScaleElem(task[2].node);
+                    model_node.setOpacityElem(task[2].opacity);
                     model_node.setObjectState(SCgObjectState.FromMemory);
                     resolveIdtf(addr, model_node);
                 } else if (type & sc_type_arc_mask) {
@@ -74,6 +92,8 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
                         editor.scene.appendEdge(model_edge);
                         editor.scene.objects[addr] = model_edge;
                         model_edge.setScAddr(addr);
+                        model_edge.setOpacityEdge(task[4].opacity);
+                        model_edge.setWidthEdge(task[4].widthEdge);
                         model_edge.setObjectState(SCgObjectState.FromMemory);
                         resolveIdtf(addr, model_edge);
                     }
@@ -83,9 +103,11 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
                     editor.scene.appendLink(model_link);
                     editor.scene.objects[addr] = model_link;
                     model_link.setScAddr(addr);
+                    model_link.setScaleElem(task[2].link);
+                    model_link.setOpacityElem(task[2].opacity);
                     model_link.setObjectState(SCgObjectState.FromMemory);
                 }
-
+                
             }
 
             editor.render.update();
@@ -128,17 +150,16 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
     };
 
     return {
-        update: async function (added, element, arc) {
-
+        update: async function (added, element, arc, scaleElem) {
             if (added) {
                 let [_, el] = await getArc(arc);
                 let t = await getElementType(el);
                 arcMapping[arc] = el;
                 if (t & (sc_type_node | sc_type_link)) {
-                    addTask([el, t]);
-                } else if (t & sc_type_arc_mask) {
+                    addTask([el, t, scaleElem]);
+                } else if (t & sc_type_arc_mask) { 
                     let [src, target] = await getArc(el);
-                    addTask([el, t, src, target]);
+                    addTask([el, t, src, target, scaleElem]);
                 } else
                     throw "Unknown element type " + t;
             } else {
@@ -203,8 +224,8 @@ function scgScStructTranslator(_editor, _sandbox) {
     };
 
     return r = {
-        updateFromSc: function (added, element, arc) {
-            scgFromSc.update(added, element, arc);
+        updateFromSc: function (added, element, arc, scaleElem) {
+            scgFromSc.update(added, element, arc, scaleElem);
         },
 
         translateToSc: async function (callback) {
@@ -394,15 +415,19 @@ function scgScStructTranslator(_editor, _sandbox) {
                         let imgKeynode = window.scKeynodes['format_png'];
 
                         if (link.contentType === 'float') {
+                            data = link.content;
                             keynode = window.scKeynodes['binary_float'];
                             type = sc.ScLinkContentType.Float;
                         } else if (link.contentType === 'int8') {
+                            data = link.content;
                             type = sc.ScLinkContentType.Int;
                             keynode = window.scKeynodes['binary_int8'];
                         } else if (link.contentType === 'int16') {
+                            data = link.content;
                             type = sc.ScLinkContentType.Int;
                             keynode = window.scKeynodes['binary_int16'];
                         } else if (link.contentType === 'int32') {
+                            data = link.content;
                             type = sc.ScLinkContentType.Int;
                             keynode = window.scKeynodes['binary_int32'];
                         } else if (link.contentType === 'image') {

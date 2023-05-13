@@ -34,6 +34,30 @@ SCg.ModelObject = function (options) {
         this.scale = new SCg.Vector2(20.0, 20.0);
     }
 
+    if (options.scaleElem) {
+        this.scaleElem = options.scaleElem;
+    } else {
+        this.scaleElem = 1;
+    }
+    
+    if (options.opacityElem) {
+        this.opacityElem = options.opacityElem;
+    } else {
+        this.opacityElem = 1;
+    }
+
+    if (options.opacityEdge) {
+        this.opacityEdge = options.opacityEdge;
+    } else {
+        this.opacityEdge = 1;
+    }
+
+    if (options.widthEdge) {
+        this.widthEdge = options.widthEdge;
+    } else {
+        this.widthEdge = 8;
+    }
+
     if (options.sc_type) {
         this.sc_type = options.sc_type;
     } else {
@@ -60,6 +84,10 @@ SCg.ModelObject = function (options) {
     this.scene = null;
     this.bus = null;
     this.contour = null;
+    this.scaleElem = 1;
+    this.opacityElem = 1;
+    this.opacityEdge = 1;
+    this.widthEdge = 8;
 };
 
 SCg.ModelObject.prototype = {
@@ -95,6 +123,38 @@ SCg.ModelObject.prototype.setPosition = function (pos) {
  */
 SCg.ModelObject.prototype.setScale = function (scale) {
     this.scale = scale;
+    this.need_observer_sync = true;
+
+    this.requestUpdate();
+    this.update();
+};
+
+SCg.ModelObject.prototype.setScaleElem = function (scale) {
+    this.scaleElem = scale;
+    this.need_observer_sync = true;
+
+    this.requestUpdate();
+    this.update();
+};
+
+SCg.ModelObject.prototype.setOpacityElem = function (opacity) {
+    this.opacityElem = opacity;
+    this.need_observer_sync = true;
+
+    this.requestUpdate();
+    this.update();
+};
+
+SCg.ModelObject.prototype.setOpacityEdge = function (opacity) {
+    this.opacityEdge = opacity;
+    this.need_observer_sync = true;
+
+    this.requestUpdate();
+    this.update();
+};
+
+SCg.ModelObject.prototype.setWidthEdge = function (width) {
+    this.widthEdge = width;
     this.need_observer_sync = true;
 
     this.requestUpdate();
@@ -876,5 +936,4 @@ SCg.ModelBus.prototype.destroy = function () {
     if (this.source)
         this.source.removeBus();
 };
-
 
