@@ -73,9 +73,7 @@ def main():
     tornado.options.define("port", default=8000, help="host port", type=int)
     tornado.options.define("server_host", default="localhost", help="host name", type=str)
     tornado.options.define("server_port", default=8090, help="host port", type=int)
-    
     tornado.options.define("public_url", default="ws://localhost:8090/ws_json", help="public server url", type=str)
-    # tornado.options.define("public_url", default="wss://pcare.dev-sc-server.ostis.ai", help="public server url", type=str)
     tornado.options.define("auth_redirect_port", default=80, help="host port", type=int)
 
     tornado.options.define("google_client_id", default="", help="client id for google auth", type=str)
@@ -103,7 +101,6 @@ def main():
 
     options_dict = tornado.options.options
     server_url = f"ws://{options_dict.server_host}:{options_dict.server_port}/ws_json"
-    # server_url = f"wss://pcare.dev-sc-server.ostis.ai"
 
     logger = logging.getLogger()
     logger.info(f"Sc-server socket: {server_url}")
@@ -121,13 +118,6 @@ def main():
         exit(1)
 
     ScKeynodes().resolve_identifiers([KeynodeSysIdentifiers])
-    # try:
-    #     client.create_elements_by_scs(read_scs_fragments(REPO_FILE_PATH))
-    # except ServerError as e:
-    #     logger.error(e)
-    #     exit(1)
-
-    # ScKeynodes().resolve_identifiers([KeynodeSysIdentifiers])
 
     rules = [
         (r"/", MainHandler),

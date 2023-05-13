@@ -65,7 +65,7 @@ SCWeb.core.ComponentSandbox = function (options) {
 
     // listen struct changes
     /// @todo possible need to wait event creation
-    if (this.is_struct) { //вот тут мы должны для PAtiCare добавить код для того, что есл илдобавляются или удаляются элементы, то необходимо дать им нужный размер
+    if (this.is_struct) {
         let addArcEventRequest = new sc.ScEventParams(
           new sc.ScAddr(this.addr),
           sc.ScEventType.AddOutgoingEdge,
@@ -281,17 +281,14 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
         let scTemplateMainlevel = new sc.ScTemplate();        
         if (scAddr) {
             scTemplateMainlevel.triple(
-                // [new sc.ScAddr(this.addr), "src"],
-                [new sc.ScAddr(window.scKeynodes['section_core_and_extensions_sc_models_core_kb']), "src"],
+                [new sc.ScAddr(this.addr), "src"],
                 [sc.ScType.EdgeAccessVarPosPerm, "edge"],
                 new sc.ScAddr(scAddr),
                 )
             }
         if (!scAddr) {
             scTemplateMainlevel.tripleWithRelation(
-                // ! TODO: не забыть удалить из client/js/Utils/sc_keynodes.js ноды которые я вставлял для теста в самом конце!!
-                // [new sc.ScAddr(this.addr), "src"],
-                [new sc.ScAddr(window.scKeynodes['section_core_and_extensions_sc_models_core_kb']), "src"],
+                [new sc.ScAddr(this.addr), "src"],
                 [sc.ScType.EdgeAccessVarPosPerm, "edge"],
                 [sc.ScType.Unknown, "mainNode"],
                 sc.ScType.EdgeAccessVarPosPerm,
@@ -348,8 +345,7 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
 
             let scTemplate = new sc.ScTemplate();
             scTemplate.triple(
-                // [new sc.ScAddr(this.addr), "src"],
-                [new sc.ScAddr(window.scKeynodes['section_core_and_extensions_sc_models_core_kb']), "src"],
+                [new sc.ScAddr(this.addr), "src"],
                 [sc.ScType.EdgeAccessVarPosPerm, "edgeFromContourToMainEdge"],
                 [sc.ScType.Unknown, "edgeFromMainNodeToSecondNode"],
             );
@@ -474,13 +470,8 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
         };
 
         searchAllLevelEdges([mainElements], levelScales, 1, [...mainElements]);
-            //от него и к нему делаем поиск троек
-            //сделали result 1го уровня 1 массив
-            //передаем скайл
-            //отдаем циелом на апдейт
         if (mainElements.length) return;
-        // для каждого эе-та 1го уровня делать такой же поиск элеменнтов от него и к нему и задавать скейл
-        // получается некая рекурсивная функция 
+
         let scTemplate = new sc.ScTemplate();
         scTemplate.triple(
             [new sc.ScAddr(this.addr), "src"],
