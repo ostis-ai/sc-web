@@ -368,7 +368,7 @@ SCg.Render.prototype = {
             d.need_observer_sync = false;
 
             var g = d3.select(this)
-                .attr("transform", 'translate(' + d.position.x + ', ' + d.position.y + ')')
+                .attr("transform", 'translate(' + d.position.x + ', ' + d.position.y + ')scale(' + d.scaleElem + ')')
                 .attr('class', function (d) {
                     return self.classState(d, (d.sc_type & sc_type_constancy_mask) ? 'SCgNode' : 'SCgNodeEmpty');
                 })
@@ -445,7 +445,7 @@ SCg.Render.prototype = {
                 });
 
             g.attr("transform", function (d) {
-                return 'translate(' + (d.position.x - (d.scale.x + self.linkBorderWidth) * 0.5) + ', ' + (d.position.y - (d.scale.y + self.linkBorderWidth) * 0.5) + ')';
+                return 'translate(' + (d.position.x - (d.scale.x + self.linkBorderWidth) * 0.5) + ', ' + (d.position.y - (d.scale.y + self.linkBorderWidth) * 0.5) +  ')scale(' + d.scaleElem + ')';
             });
 
             // Update sc-link identifier (x, y) position according to the sc-link width

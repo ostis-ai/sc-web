@@ -58,10 +58,11 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
                     continue;
 
                 if (type & sc_type_node) {
-                    var model_node = SCg.Creator.createNode(type, randomPos(), '');
+                    var model_node = SCg.Creator.createNode(type, randomPos(), task[2].node, '');
                     editor.scene.appendNode(model_node);
                     editor.scene.objects[addr] = model_node;
                     model_node.setScAddr(addr);
+                    model_node.setScaleElem(task[2].node);
                     model_node.setObjectState(SCgObjectState.FromMemory);
                     resolveIdtf(addr, model_node);
                 } else if (type & sc_type_arc_mask) {
@@ -79,10 +80,11 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
                     }
                 } else if (type & sc_type_link) {
                     var containerId = 'scg-window-' + sandbox.addr + '-' + addr + '-' + new Date().getUTCMilliseconds();
-                    var model_link = SCg.Creator.createLink(randomPos(), containerId);
+                    var model_link = SCg.Creator.createLink(randomPos(), containerId, task[2].link,);
                     editor.scene.appendLink(model_link);
                     editor.scene.objects[addr] = model_link;
                     model_link.setScAddr(addr);
+                    model_link.setScaleElem(task[2].link);
                     model_link.setObjectState(SCgObjectState.FromMemory);
                     resolveIdtf(addr, model_link);
                 }
@@ -129,14 +131,14 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
     };
 
     return {
-        update: async function (added, element, arc) {
+        update: async function (added, element, arc, scaleElem) {
 
             if (added) {
                 let [_, el] = await getArc(arc);
                 let t = await getElementType(el);
                 arcMapping[arc] = el;
                 if (t & (sc_type_node | sc_type_link)) {
-                    addTask([el, t]);
+                    addTask([el, t, scaleElem]);
                 } else if (t & sc_type_arc_mask) {
                     let [src, target] = await getArc(el);
                     addTask([el, t, src, target]);
@@ -204,8 +206,8 @@ function scgScStructTranslator(_editor, _sandbox) {
     };
 
     return r = {
-        updateFromSc: function (added, element, arc) {
-            scgFromSc.update(added, element, arc);
+        updateFromSc: function (added, element, arc, scaleElem) {
+            scgFromSc.update(added, element, arc, scaleElem);
         },
 
         translateToSc: async function (callback) {
