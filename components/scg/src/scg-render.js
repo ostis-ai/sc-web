@@ -202,6 +202,8 @@ SCg.Render.prototype = {
                         d3.event.stopPropagation();
                 })
                 .on("dblclick", d => {
+                    if (SCWeb.core.Main.mode === SCgEditMode.SCgModeViewOnly) return;
+
                     if (d3.event.stopPropagation())
                         d3.event.stopPropagation();
                     let windowId = SCWeb.ui.WindowManager.getActiveWindowId();

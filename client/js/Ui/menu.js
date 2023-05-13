@@ -9,6 +9,9 @@ SCWeb.ui.Menu = {
      * - menu_commands - object, that represent menu command hierachy (in format returned from server)
      */
     init: function (params) {
+
+        if (params.mode === SCgEditMode.SCgModeViewOnly) return;
+        
         return new Promise(resolve => {
             var self = this;
 
