@@ -54,8 +54,24 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
                 var addr = task[0];
                 var type = task[1];
 
-                if (editor.scene.getObjectByScAddr(addr))
-                    continue;
+                let newMainNode = editor.scene.getObjectByScAddr(addr);
+                if (newMainNode) {
+                    if (newMainNode instanceof SCg.ModelEdge) {
+                        newMainNode.setOpacityEdge(task[4].opacity);
+                        newMainNode.setWidthEdge(task[4].widthEdge);
+                        continue;
+                    }
+                    if (newMainNode instanceof SCg.ModelNode) {
+                        newMainNode.setScaleElem(task[2].node);
+                        newMainNode.setOpacityElem(task[2].opacity);
+                        continue;
+                    }
+                    if (newMainNode instanceof SCg.ModelLink) {
+                        newMainNode.setScaleElem(task[2].link);
+                        newMainNode.setOpacityElem(task[2].opacity);
+                        continue;
+                    }
+                }
 
                 if (type & sc_type_node) {
                     var model_node = SCg.Creator.createNode(type, randomPos(), '');

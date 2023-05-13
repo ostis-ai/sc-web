@@ -71,6 +71,7 @@ SCg.Editor.prototype = {
         this.scene.init();
 
         this.render.scene = this.scene;
+        this.render.sandbox = params.sandbox;
         this.render.init(params);
 
         this.containerId = params.containerId;
