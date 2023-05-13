@@ -272,7 +272,7 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scene, con
         const maxNumberOfTriplets = 850;
         const delayTimeoutAutosize = 300;
 
-        const levelScales = [{ node: 2.3, link: 1.8 }, { node: 1.8, link: 1.5 }, { node: 1.4, link: 1 }, { node: 1, link: 1 }];
+        const levelScales = [{ node: 2.3, link: 1.8, opacity: 1 }, { node: 1.8, link: 1.5, opacity: 1 }, { node: 1.4, link: 1, opacity: 1 }, { node: 1, link: 1, opacity: 1 }, { node: 1, link: 1, opacity: 0.8 }, { node: 1, link: 1, opacity: 0.6 }, { node: 1, link: 1, opacity: 0.4 }];
 
         let scTemplateMainlevel = new sc.ScTemplate();
         scTemplateMainlevel.tripleWithRelation(
@@ -293,12 +293,8 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scene, con
 
         let searchAllLevelEdges = async function (elementsArr, levelScales, level, visitedElements) {
             let levelScale;
-            if (level > 3) {
-                levelScale = { node: 1, link: 1 };
-            }
-            else {
-                levelScale = levelScales[level];
-            }
+
+            level > 6 ? levelScale = { node: 1, link: 1, opacity: 0.4  } : levelScale = levelScales[level];
 
             for (let i = 0; i < elementsArr.length; i++) {
 
@@ -307,20 +303,19 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scene, con
                 for (let j = 0; j < elements.length; j++) {
                     let elem = elements[j];
                     let newElements = await searchLevelEdges(elem, levelScale, visitedElements);
-                    if (!newElements.length) newElementsArr.push(newElements);
+                    newElementsArr.push(newElements);
                 }
                 await searchAllLevelEdges(newElementsArr, levelScales, level + 1, visitedElements);
             }
         };
 
         let searchLevelEdges = async function (mainElem, scale, visitedElements) {
-            console.log(scale);
             let incomingLevelNodesWithRelation = await searchLevelEdgesByDirection(mainElem, scale, visitedElements, true, true);
             let incomingLevelNodesNotWithRelation = await searchLevelEdgesByDirection(mainElem, scale, visitedElements, true, false);
             let outgoingLevelNodesWithRelation = await searchLevelEdgesByDirection(mainElem, scale, visitedElements, false, true);
             let outgoingLevelNodesNotWithRelation = await searchLevelEdgesByDirection(mainElem, scale, visitedElements, false, false);
-            return [...incomingLevelNodesWithRelation, ...incomingLevelNodesNotWithRelation, ...outgoingLevelNodesWithRelation, ...outgoingLevelNodesNotWithRelation]; 
-        }
+            return [...incomingLevelNodesWithRelation, ...incomingLevelNodesNotWithRelation, ...outgoingLevelNodesWithRelation, ...outgoingLevelNodesNotWithRelation];
+        };
 
         let searchLevelEdgesByDirection = async function (mainElem, scale, visitedElements, incomingEdge, withRelation) {
             let levelNodes = [];
@@ -367,7 +362,7 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scene, con
                     [sc.ScType.EdgeAccessVarPosPerm, "edgeFromContourToEdgeFromRelationNodeToEdgeFromMainNodeToSecondNode"],
                     "edgeFromRelationNodeToEdgeFromMainNodeToSecondNode",
                 );
-            }
+            };
 
             let result = await window.scClient.templateSearch(scTemplate);
             for (let triple of result) {
