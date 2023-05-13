@@ -261,7 +261,7 @@ SCWeb.core.ComponentSandbox.prototype.createViewersForScStructs = function (cont
  * {String} contentType type of content data (@see scClient.getLinkContent). If it's null, then
  * data will be returned as string
  */
-SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scene, contentType) {
+SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, scene, contentType) {
     var self = this;
 
     if (scene) {
@@ -275,19 +275,30 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scene, con
         const levelScales = [{ node: 2.3, link: 1.8, opacity: 1, widthEdge: 8 }, { node: 1.8, link: 1.5, opacity: 1, widthEdge: 7.5 }, { node: 1.4, link: 1, opacity: 1, widthEdge: 7 }, { node: 1, link: 1, opacity: 1, widthEdge: 6.5 }, { node: 1, link: 1, opacity: 0.8, widthEdge: 6.5 }, { node: 1, link: 1, opacity: 0.6, widthEdge: 6.5 }, { node: 1, link: 1, opacity: 0.4, widthEdge: 6.5 }];
 
         let scTemplateMainlevel = new sc.ScTemplate();
-        scTemplateMainlevel.tripleWithRelation(
-        // ! TODO: не забыть удалить из client/js/Utils/sc_keynodes.js ноды которые я вставлял для теста в самом конце!!
-            [new sc.ScAddr(window.scKeynodes['section_core_and_extensions_sc_models_core_kb']), "src"],//тут у нас должен быть [new sc.ScAddr(this.addr), "src"] 
-            [sc.ScType.EdgeAccessVarPosPerm, "edge"],
-            [sc.ScType.Unknown, "mainNode"],
-            sc.ScType.EdgeAccessVarPosPerm,
-            new sc.ScAddr(window.scKeynodes['rrel_key_sc_element']),
-        );
+        if (scAddr) {
+            scTemplateMainlevel.triple(
+                [new sc.ScAddr(window.scKeynodes['section_core_and_extensions_sc_models_core_kb']), "src"],
+                [sc.ScType.EdgeAccessVarPosPerm, "edge"],
+                new sc.ScAddr(scAddr),
+            )
+        }
+        if (!scAddr) {
+            scTemplateMainlevel.tripleWithRelation(
+            // ! TODO: не забыть удалить из client/js/Utils/sc_keynodes.js ноды которые я вставлял для теста в самом конце!!
+                // [new sc.ScAddr(this.addr), "src"],
+                [new sc.ScAddr(window.scKeynodes['section_core_and_extensions_sc_models_core_kb']), "src"],//тут у нас должен быть [new sc.ScAddr(this.addr), "src"] 
+                [sc.ScType.EdgeAccessVarPosPerm, "edge"],
+                [sc.ScType.Unknown, "mainNode"],
+                sc.ScType.EdgeAccessVarPosPerm,
+                new sc.ScAddr(window.scKeynodes['rrel_key_sc_element']),
+            );
+        }
+
         let resultLevel = await window.scClient.templateSearch(scTemplateMainlevel);
 
         let mainElements = [];
         for (let triple of resultLevel) {
-            mainElements.push(triple.get('mainNode').value);
+            scAddr ? mainElements.push(scAddr) : mainElements.push(triple.get('mainNode').value);
             self.eventStructUpdate(true, triple.get('src').value, triple.get('edge').value, levelScales[0]);
         };
 
@@ -371,8 +382,9 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scene, con
                     levelNodes.push(nodeSecond);
                     visitedElements.push(nodeSecond);
                 };
-                
-                if (!levelNodes.length) return levelNodes;
+
+                if (!levelNodes.length) continue;
+                if (nodeSecond === mainElements[0]) continue;
                 self.eventStructUpdate(true, triple.get("src").value, triple.get("edgeFromContourToSecondNode").value, scale);
                 self.eventStructUpdate(true, triple.get("src").value, triple.get("edgeFromContourToMainEdge").value, scale);
                 if (withRelation) {
