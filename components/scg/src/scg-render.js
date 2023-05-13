@@ -51,7 +51,7 @@ SCg.Render.prototype = {
 
         this.scale = 1;
         var self = this;
-        self.sandbox.updateContent(self.scene, null);
+        self.sandbox.updateContent(null, self.scene);
         this.d3_container = this.d3_drawer.append('svg:g')
             .attr("class", "SCgSvg");
 
@@ -205,9 +205,14 @@ SCg.Render.prototype = {
                 })
                 .on('mouseup', function (d) {
                     self.scene.onMouseUpObject(d);
-                    self.sandbox.updateContent(d.sc_addr);
                     if (d3.event.stopPropagation())
                         d3.event.stopPropagation();
+                    if (self.sandbox.mainElement === d.sc_addr)
+                        return;
+                    if (self.scene.getObjectByScAddr(d.sc_addr) instanceof SCg.ModelEdge)
+                        return;
+                    if (self.sandbox.isRrelKeyScElement)
+                        self.sandbox.updateContent(d.sc_addr, self.scene);
                 })
                 .on("dblclick", d => {
                     if (SCWeb.core.Main.mode === SCgEditMode.SCgModeViewOnly) return;
