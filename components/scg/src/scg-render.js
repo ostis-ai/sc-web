@@ -277,7 +277,6 @@ SCg.Render.prototype = {
                 return '<div id="link_' + self.containerId + '_' + d.id + '" class=\"SCgLinkContainer\"><div id="' + d.containerId + '" style="display: inline-block;" class="impl"></div></div>';
             });
 
-
         eventsWrap(g);
 
         this.d3_links.exit().remove();
@@ -355,6 +354,7 @@ SCg.Render.prototype = {
                 .attr('class', function (d) {
                     return self.classState(d, (d.sc_type & sc_type_constancy_mask) ? 'SCgNode' : 'SCgNodeEmpty');
                 })
+                .attr("style", 'opacity: ' + d.opacityElem + '')
 
             g.select('use')
                 .attr('xlink:href', function (d) {
@@ -399,7 +399,7 @@ SCg.Render.prototype = {
                 }
             }
 
-            var g = d3.select(this)
+            var g = d3.select(this).attr("style", 'opacity: ' + d.opacityElem + '')
 
             g.select('rect')
                 .attr('width', function (d) {
@@ -423,7 +423,6 @@ SCg.Render.prototype = {
                     return d.scale.x;
                 })
                 .attr('height', function (d) {
-
                     return d.scale.y;
                 });
 
