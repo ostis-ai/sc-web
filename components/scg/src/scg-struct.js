@@ -58,7 +58,7 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
                     continue;
 
                 if (type & sc_type_node) {
-                    var model_node = SCg.Creator.createNode(type, randomPos(), task[2].node, '');
+                    var model_node = SCg.Creator.createNode(type, randomPos(), '');
                     editor.scene.appendNode(model_node);
                     editor.scene.objects[addr] = model_node;
                     model_node.setScAddr(addr);
@@ -76,22 +76,23 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
                         editor.scene.appendEdge(model_edge);
                         editor.scene.objects[addr] = model_edge;
                         model_edge.setScAddr(addr);
+                        model_edge.setOpacityEdge(task[4].opacity);
+                        model_edge.setWidthEdge(task[4].widthEdge);
                         model_edge.setObjectState(SCgObjectState.FromMemory);
                         resolveIdtf(addr, model_edge);
                     }
                 } else if (type & sc_type_link) {
                     var containerId = 'scg-window-' + sandbox.addr + '-' + addr + '-' + new Date().getUTCMilliseconds();
-                    var model_link = SCg.Creator.createLink(randomPos(), containerId, task[2].link,);
+                    var model_link = SCg.Creator.createLink(randomPos(), containerId);
                     editor.scene.appendLink(model_link);
                     editor.scene.objects[addr] = model_link;
                     model_link.setScAddr(addr);
                     model_link.setScaleElem(task[2].link);
-                    model_node.setOpacityElem(task[2].opacity);
+                    model_link.setOpacityElem(task[2].opacity);
                     model_link.setObjectState(SCgObjectState.FromMemory);
                 }
 
             }
-
             editor.render.update();
             editor.scene.layout();
 
@@ -142,7 +143,7 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
                     addTask([el, t, scaleElem]);
                 } else if (t & sc_type_arc_mask) {
                     let [src, target] = await getArc(el);
-                    addTask([el, t, src, target]);
+                    addTask([el, t, src, target, scaleElem]);
                 } else
                     throw "Unknown element type " + t;
             } else {
