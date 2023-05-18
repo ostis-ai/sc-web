@@ -265,7 +265,9 @@ SCWeb.core.ComponentSandbox.prototype.createViewersForScStructs = function (cont
  */
 SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, scene, contentType) {
     let edgeToEdge = false;
+    let relationNodes = [];
     var self = this;
+
     if (scene) {
         self.scene = scene;
     } 
@@ -424,8 +426,9 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
                 const secondElem = triple.get("secondElem").value;
                 if (checkEdge(secondElem) && !edgeToEdge) continue;
 
-
                 if (edgeToEdge) {
+                    relationNodes.push(mainElem);
+
                     for (triple of resultEdgeElements) {
                         const targetElem = triple.get("targetElem").value;
                         const sourceElem = triple.get("sourceElem").value;
@@ -464,7 +467,7 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
                     edgeToEdge = false;
                     continue;
                 };
-                
+
                 if (!visitedElements.includes(secondElem) && !levelNodes.includes(secondElem)) {
                     levelNodes.push(secondElem);
                     visitedElements.push(secondElem);
@@ -478,6 +481,9 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
                 if (withRelation) {
                     if (scAddr === mainElements[0] && edgeToEdge) continue;
                     let relationNode = triple.get("relationNode").value;
+
+                    if (relationNodes.includes(relationNode)) continue;
+
                     if (!visitedElements.includes(relationNode) && !levelNodes.includes(relationNode)) {
                         levelNodes.push(relationNode);
                         visitedElements.push(relationNode);
