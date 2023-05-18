@@ -286,16 +286,14 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
         let scTemplateMainlevel = new sc.ScTemplate();        
         if (scAddr) {
             scTemplateMainlevel.triple(
-                // [new sc.ScAddr(this.addr), "src"],
-                [new sc.ScAddr(window.scKeynodes['section_core_and_extensions_sc_models_core_kb']), "src"],
+                [new sc.ScAddr(self.addr), "src"],
                 [sc.ScType.EdgeAccessVarPosPerm, "edgeFromContourToMainNode"],
                 new sc.ScAddr(scAddr),
                 )
         };
         if (!scAddr) {
             scTemplateMainlevel.tripleWithRelation(
-                // [new sc.ScAddr(this.addr), "src"],
-                [new sc.ScAddr(window.scKeynodes['section_core_and_extensions_sc_models_core_kb']), "src"],
+                [new sc.ScAddr(self.addr), "src"],
                 [sc.ScType.EdgeAccessVarPosPerm, "edgeFromContourToMainNode"],
                 [sc.ScType.Unknown, "mainNode"],
                 sc.ScType.EdgeAccessVarPosPerm,
@@ -304,7 +302,7 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
         };
         
         let resultLevel = await window.scClient.templateSearch(scTemplateMainlevel);
-        
+
         let mainElements = [];
         
         if (resultLevel.length) self.isRrelKeyScElement = true;
@@ -315,7 +313,7 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
             self.eventStructUpdate(true, triple.get('src').value, triple.get('edgeFromContourToMainNode').value, levelScales[0]);
         };
 
-        if ((scAddr && scene) || (!scAddr && scene)) {
+        if (scene) {
             let isEdge = scAddr ? scene.getObjectByScAddr(scAddr).edges[0].target : scene.getObjectByScAddr(resultLevel.get('mainNode').value).edges[0].target;
             isEdge instanceof SCg.ModelEdge ? edgeToEdge = true : edgeToEdge = false;
         };
@@ -359,8 +357,7 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
                 );
 
                 scTemplateSearchEdgeElements.triple(
-                    // [new sc.ScAddr(this.addr), "src"],
-                    [new sc.ScAddr(window.scKeynodes['section_core_and_extensions_sc_models_core_kb']), "src"],
+                    [new sc.ScAddr(self.addr), "src"],
                     [sc.ScType.EdgeAccessVarPosPerm, "edgeFromContourToSecondElem"],
                     "secondElem",
                 );
@@ -376,8 +373,7 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
 
             let scTemplate = new sc.ScTemplate();
             scTemplate.triple(
-                // [new sc.ScAddr(this.addr), "src"],
-                [new sc.ScAddr(window.scKeynodes['section_core_and_extensions_sc_models_core_kb']), "src"],
+                [new sc.ScAddr(self.addr), "src"],
                 [sc.ScType.EdgeAccessVarPosPerm, "edgeFromContourToMainEdge"],
                 [sc.ScType.Unknown, "edgeFromMainNodeToSecondElem"],
             );
@@ -422,7 +418,6 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
             };
 
             let result = await window.scClient.templateSearch(scTemplate);
-            
             for (let triple of result) {
                 const secondElem = triple.get("secondElem").value;
                 if (checkEdge(secondElem) && !edgeToEdge) continue;
@@ -436,8 +431,7 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
 
                         let scTemplateSearchTargetNodes = new sc.ScTemplate();
                         scTemplateSearchTargetNodes.triple(
-                            // [new sc.ScAddr(this.addr), "src"],
-                            [new sc.ScAddr(window.scKeynodes['section_core_and_extensions_sc_models_core_kb']), "src"],
+                            [new sc.ScAddr(self.addr), "src"],
                             [sc.ScType.EdgeAccessVarPosPerm, "edgeFromContourToTargetElem"],
                             new sc.ScAddr(targetElem),
                         );
