@@ -336,10 +336,10 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
         };
 
         let searchLevelEdges = async function (mainElem, scale, visitedElements) {
-            let incomingLevelNodesWithRelation = await searchLevelEdgesByDirection(mainElem, scale, visitedElements, true, true);
-            let incomingLevelNodesNotWithRelation = await searchLevelEdgesByDirection(mainElem, scale, visitedElements, true, false);
             let outgoingLevelNodesWithRelation = await searchLevelEdgesByDirection(mainElem, scale, visitedElements, false, true);
             let outgoingLevelNodesNotWithRelation = await searchLevelEdgesByDirection(mainElem, scale, visitedElements, false, false);
+            let incomingLevelNodesNotWithRelation = await searchLevelEdgesByDirection(mainElem, scale, visitedElements, true, false);
+            let incomingLevelNodesWithRelation = await searchLevelEdgesByDirection(mainElem, scale, visitedElements, true, true);
             return [...incomingLevelNodesWithRelation, ...incomingLevelNodesNotWithRelation, ...outgoingLevelNodesWithRelation, ...outgoingLevelNodesNotWithRelation];
         };
 
@@ -422,11 +422,10 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
             
             for (let triple of result) {
                 const secondElem = triple.get("secondElem").value;
-                // if (checkEdge(secondElem) && !edgeToEdge) continue;
-                // if (edgeToEdge && checkNode(secondElem)) continue;
+                if (checkEdge(secondElem) && !edgeToEdge) continue;
+
 
                 if (edgeToEdge) {
-
                     for (triple of resultEdgeElements) {
                         const targetElem = triple.get("targetElem").value;
                         const sourceElem = triple.get("sourceElem").value;
@@ -455,7 +454,6 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
                             self.eventStructUpdate(true, triple.get("src").value, triple.get("edgeFromContourToSecondElem").value, scale);
                         };
 
-
                         let resultEdgeElementsEdges = await window.scClient.templateSearch(scTemplateSearchTargetNodes);
 
                         for (triple of resultEdgeElementsEdges) {
@@ -463,18 +461,20 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
                             self.eventStructUpdate(true, triple.get("src").value, triple.get("edgeFromContourToTargetElem").value, scale);
                         };
                     };
+                    edgeToEdge = false;
+                    continue;
                 };
-                    
-                if (!visitedElements.includes(secondElem) && !levelNodes.includes(secondElem) && !edgeToEdge) {
+                
+                if (!visitedElements.includes(secondElem) && !levelNodes.includes(secondElem)) {
                     levelNodes.push(secondElem);
                     visitedElements.push(secondElem);
                     self.eventStructUpdate(true, triple.get("src").value, triple.get("edgeFromContourToSecondElem").value, scale);
                     self.eventStructUpdate(true, triple.get("src").value, triple.get("edgeFromContourToMainEdge").value, scale);
                 };
-
+                
                 if (!levelNodes.length) continue;
                 if (secondElem === mainElements[0]) continue;
-                
+
                 if (withRelation) {
                     if (scAddr === mainElements[0] && edgeToEdge) continue;
                     let relationNode = triple.get("relationNode").value;
