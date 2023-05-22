@@ -723,11 +723,11 @@ SCg.Editor.prototype = {
         this.hideTool(this.toolSetContent());
         this.hideTool(this.toolDelete());
 
-        if (this.scene.selected_objects.length > 1) {
+        if (this.scene.selected_objects.length > 1 && (SCWeb.core.Main.mode !== SCgEditMode.SCgModeViewOnly)) {
             if (this.scene.isSelectedObjectAllArcsOrAllNodes() && !this.scene.isSelectedObjectAllHaveScAddr()) {
                 this.showTool(this.toolChangeType());
             }
-        } else if (this.scene.selected_objects.length === 1 && !this.scene.selected_objects[0].sc_addr) {
+        } else if (this.scene.selected_objects.length === 1 && !this.scene.selected_objects[0].sc_addr && (SCWeb.core.Main.mode !== SCgEditMode.SCgModeViewOnly)) {
             if (this.scene.selected_objects[0] instanceof SCg.ModelNode) {
                 this.showTool(this.toolChangeIdtf());
                 this.showTool(this.toolChangeType());
@@ -738,7 +738,7 @@ SCg.Editor.prototype = {
             } else if (this.scene.selected_objects[0] instanceof SCg.ModelLink) {
                 this.showTool(this.toolSetContent());
             }
-        } else if (this.scene.selected_objects.length === 1) {
+        } else if (this.scene.selected_objects.length === 1 && (SCWeb.core.Main.mode !== SCgEditMode.SCgModeViewOnly)) {
             if (this.scene.selected_objects[0] instanceof SCg.ModelLink) {
                 this.showTool(this.toolSetContent());
             }
