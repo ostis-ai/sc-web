@@ -734,11 +734,11 @@ SCg.Editor.prototype = {
                 this.showTool(this.toolChangeType());
             } else if (this.scene.selected_objects[0] instanceof SCg.ModelContour) {
                 this.showTool(this.toolChangeIdtf());
-            } else if (this.scene.selected_objects[0] instanceof SCg.ModelLink) {
+            } else if (this.scene.selected_objects[0] instanceof SCg.ModelLink && (SCWeb.core.Main.mode !== SCgEditMode.SCgModeViewOnly)) {
                 this.showTool(this.toolSetContent());
             }
         } else if (this.scene.selected_objects.length === 1) {
-            if (this.scene.selected_objects[0] instanceof SCg.ModelLink) {
+            if (this.scene.selected_objects[0] instanceof SCg.ModelLink && (SCWeb.core.Main.mode !== SCgEditMode.SCgModeViewOnly)) {
                 this.showTool(this.toolSetContent());
             }
         }
