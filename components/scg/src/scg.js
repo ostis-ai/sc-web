@@ -738,7 +738,7 @@ SCg.Editor.prototype = {
                 this.showTool(this.toolChangeIdtf());
             } else if (this.scene.selected_objects[0] instanceof SCg.ModelLink) {
                 this.showTool(this.toolSetContent());
-            };
+            }
         } else if (this.scene.selected_objects.length === 1) {
             if (SCWeb.core.Main.mode === SCgEditMode.SCgModeViewOnly) return;
             if (this.scene.selected_objects[0] instanceof SCg.ModelLink) {
