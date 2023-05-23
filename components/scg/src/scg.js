@@ -723,10 +723,12 @@ SCg.Editor.prototype = {
         this.hideTool(this.toolDelete());
 
         if (this.scene.selected_objects.length > 1) {
+            if (SCWeb.core.Main.mode === SCgEditMode.SCgModeViewOnly) return;
             if (this.scene.isSelectedObjectAllArcsOrAllNodes() && !this.scene.isSelectedObjectAllHaveScAddr()) {
                 this.showTool(this.toolChangeType());
             }
         } else if (this.scene.selected_objects.length === 1 && !this.scene.selected_objects[0].sc_addr) {
+            if (SCWeb.core.Main.mode === SCgEditMode.SCgModeViewOnly) return;
             if (this.scene.selected_objects[0] instanceof SCg.ModelNode) {
                 this.showTool(this.toolChangeIdtf());
                 this.showTool(this.toolChangeType());
@@ -738,12 +740,13 @@ SCg.Editor.prototype = {
                 this.showTool(this.toolSetContent());
             }
         } else if (this.scene.selected_objects.length === 1) {
+            if (SCWeb.core.Main.mode === SCgEditMode.SCgModeViewOnly) return;
             if (this.scene.selected_objects[0] instanceof SCg.ModelLink) {
                 this.showTool(this.toolSetContent());
             }
         }
-
-        if (this.scene.selected_objects.length > 0 && SCWeb.core.Main.mode !== SCgEditMode.SCgModeViewOnly) this.showTool(this.toolDelete());
+        if (SCWeb.core.Main.mode === SCgEditMode.SCgModeViewOnly) return;
+        if (this.scene.selected_objects.length > 0) this.showTool(this.toolDelete());
     },
 
 
