@@ -726,7 +726,7 @@ SCg.Editor.prototype = {
             if (SCWeb.core.Main.mode === SCgEditMode.SCgModeViewOnly) return;
             if (this.scene.isSelectedObjectAllArcsOrAllNodes() && !this.scene.isSelectedObjectAllHaveScAddr()) {
                 this.showTool(this.toolChangeType());
-            };
+            }
         } else if (this.scene.selected_objects.length === 1 && !this.scene.selected_objects[0].sc_addr) {
             if (SCWeb.core.Main.mode === SCgEditMode.SCgModeViewOnly) return;
             if (this.scene.selected_objects[0] instanceof SCg.ModelNode) {
@@ -736,14 +736,14 @@ SCg.Editor.prototype = {
                 this.showTool(this.toolChangeType());
             } else if (this.scene.selected_objects[0] instanceof SCg.ModelContour) {
                 this.showTool(this.toolChangeIdtf());
-            } else if (this.scene.selected_objects[0] instanceof SCg.ModelLink ) {
+            } else if (this.scene.selected_objects[0] instanceof SCg.ModelLink) {
                 this.showTool(this.toolSetContent());
             };
         } else if (this.scene.selected_objects.length === 1) {
             if (SCWeb.core.Main.mode === SCgEditMode.SCgModeViewOnly) return;
             if (this.scene.selected_objects[0] instanceof SCg.ModelLink) {
                 this.showTool(this.toolSetContent());
-            };
+            }
         }
         if (SCWeb.core.Main.mode === SCgEditMode.SCgModeViewOnly) return;
         if (this.scene.selected_objects.length > 0) this.showTool(this.toolDelete());
