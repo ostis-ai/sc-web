@@ -724,7 +724,6 @@ SCg.Editor.prototype = {
 
         if (this.scene.selected_objects.length > 1) {
             if (SCWeb.core.Main.mode === SCgEditMode.SCgModeViewOnly) return;
-            
             if (this.scene.isSelectedObjectAllArcsOrAllNodes() && !this.scene.isSelectedObjectAllHaveScAddr()) {
                 this.showTool(this.toolChangeType());
             };
@@ -746,7 +745,7 @@ SCg.Editor.prototype = {
                 this.showTool(this.toolSetContent());
             };
         }
-
+        if (SCWeb.core.Main.mode === SCgEditMode.SCgModeViewOnly) return;
         if (this.scene.selected_objects.length > 0) this.showTool(this.toolDelete());
     },
 
