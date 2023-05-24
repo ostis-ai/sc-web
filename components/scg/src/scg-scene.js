@@ -411,6 +411,17 @@ SCg.Scene.prototype = {
         else this.listener.onMouseDoubleClick(x, y);
     },
 
+    onMouseWheelUp: function () {
+        this.render.changeScale(1.1);
+        // this.edit.toolZoomIn().click();
+    },
+
+    onMouseWheelDown: function () {
+        this.render.changeScale(0.9);
+
+        // this.edit.toolZoomOut().click();
+    },
+
     onMouseOverObject: function (obj) {
         if (this.modal != SCgModalMode.SCgModalNone) return false; // do nothing
         this.pointed_object = obj;
@@ -471,10 +482,10 @@ SCg.Scene.prototype = {
                     this.edit.toolChangeType().click();
             } else if (event.which == KeyCode.KeyMinusFirefox || event.which == KeyCode.KeyMinus ||
                 event.which == KeyCode.KeyMinusNum) {
-                this.edit.toolZoomOut().click();
+                this.render.changeScale(0.9);
             } else if (event.which == KeyCode.KeyEqualFirefox || event.which == KeyCode.KeyEqual ||
                 event.which == KeyCode.KeyPlusNum) {
-                this.edit.toolZoomIn().click();
+                this.render.changeScale(1.1);
             } else {
                 this.listener.onKeyDown(event);
             }

@@ -38,6 +38,11 @@ SCg.Render.prototype = {
             .on("mouseleave", function (d) {
                 self.scene.onMouseUpObject(d);
                 if (d3.event.stopPropagation()) d3.event.stopPropagation();
+            })
+            .on("wheel", function(){
+                var direction = d3.event.wheelDelta < 0 ? 'down' : 'up';
+                if(direction === 'up') self.scene.onMouseWheelUp(this, self);
+                if(direction === 'down') self.scene.onMouseWheelDown(this, self);
             });
 
         const svg = document.querySelector("svg.SCgSvg");
@@ -810,7 +815,16 @@ SCg.Render.prototype = {
         if (this.scene.onKeyDown(event))
             d3.event.stopPropagation();
     },
-
+    onMouseWheelUp: function (event) {
+        // do not send event to other listeners, if it processed in scene
+        if (this.scene.onKeyUp(event))
+            d3.event.stopPropagation();
+    },
+    onMouseWheelDown: function (event) {
+        // do not send event to other listeners, if it processed in scene
+        if (this.scene.onKeyUp(event))
+            d3.event.stopPropagation();
+    },
     onKeyUp: function (event) {
         // do not send event to other listeners, if it processed in scene
         if (this.scene.onKeyUp(event))
