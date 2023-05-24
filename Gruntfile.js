@@ -190,7 +190,7 @@ module.exports = function(grunt) {
             },
             scgImg: {
                 cwd: scgDirPath + 'static/components/images/scg/',
-                src: '*.png',
+                src: '*.svg',
                 dest: clientImgDirPath + 'scg/',
                 expand: true,
                 flatten: true
