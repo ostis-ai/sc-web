@@ -1,0 +1,15 @@
+.btn-default {
+  border: 0;
+}
+.btn-default.active, .btn-default.focus, .btn-default:active, .btn-default:focus, .btn-default:hover, .open>.dropdown-toggle.btn-default {
+  border: 0;
+}
+#scg-tool-switch {
+    margin-bottom: 2px;
+}
+#scg-tool-select, #scg-tool-edge, #scg-tool-bus, #scg-tool-contour, #scg-tool-link, #scg-tool-undo, #scg-tool-redo, #scg-tool-change-idtf, #scg-tool-set-content, #scg-tool-zoomin, #scg-tool-zoomout, #scg-tool-integrate, #scg-tool-open, #scg-tool-save, #scg-tool-delete, #scg-tool-change-type {
+    margin: 2px 0;
+}
+#scg-tool-clear {
+    margin-top: 2px;
+}
