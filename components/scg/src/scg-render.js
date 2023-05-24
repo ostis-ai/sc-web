@@ -815,16 +815,19 @@ SCg.Render.prototype = {
         if (this.scene.onKeyDown(event))
             d3.event.stopPropagation();
     },
+
     onMouseWheelUp: function (event) {
         // do not send event to other listeners, if it processed in scene
         if (this.scene.onKeyUp(event))
             d3.event.stopPropagation();
     },
+
     onMouseWheelDown: function (event) {
         // do not send event to other listeners, if it processed in scene
         if (this.scene.onKeyUp(event))
             d3.event.stopPropagation();
     },
+    
     onKeyUp: function (event) {
         // do not send event to other listeners, if it processed in scene
         if (this.scene.onKeyUp(event))

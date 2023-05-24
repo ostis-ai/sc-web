@@ -413,13 +413,10 @@ SCg.Scene.prototype = {
 
     onMouseWheelUp: function () {
         this.render.changeScale(1.1);
-        // this.edit.toolZoomIn().click();
     },
 
     onMouseWheelDown: function () {
         this.render.changeScale(0.9);
-
-        // this.edit.toolZoomOut().click();
     },
 
     onMouseOverObject: function (obj) {
