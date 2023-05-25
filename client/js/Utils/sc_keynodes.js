@@ -48,9 +48,9 @@ ScKeynodes.prototype.init = async function () {
     'format_png',
     'format_html',
     'ui_start_sc_element',
-    'section_core_and_extensions_sc_models_core_kb',//add
-    'rrel_key_sc_element',//add
-    'rrel_main_key_sc_element',//add
+    'section_core_and_extensions_sc_models_core_kb',
+    'rrel_key_sc_element',
+    'rrel_main_key_sc_element',
   ]
   );
 };
