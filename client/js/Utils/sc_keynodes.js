@@ -50,6 +50,7 @@ ScKeynodes.prototype.init = async function () {
     'ui_start_sc_element',
     'section_core_and_extensions_sc_models_core_kb',//add
     'rrel_key_sc_element',//add
+    'rrel_main_key_sc_element',//add
   ]
   );
 };

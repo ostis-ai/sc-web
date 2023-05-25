@@ -265,9 +265,7 @@ SCWeb.core.ComponentSandbox.prototype.createViewersForScStructs = function (cont
  */
 SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, scene, contentType) {
     let edgeToEdge = false;
-    let relationNodes = [];
-    let isResult = false;
-    let isResultWithMainKey = false;
+    let relationNodes = [];    
     var self = this;
 
     if (scene) {
@@ -286,15 +284,16 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
         };
 
         let scTemplateMainlevel = new sc.ScTemplate();        
-        let scTemplateMainlevelWithMainKey = new sc.ScTemplate();        
-        if (scAddr && isResult) {
+        let scTemplateMainlevelWithMainKey = new sc.ScTemplate();   
+
+        if (scAddr && !self.isResultWithMainKey) {
             scTemplateMainlevel.triple(
                 [new sc.ScAddr(self.addr), "src"],
                 [sc.ScType.EdgeAccessVarPosPerm, "edgeFromContourToMainNode"],
                 new sc.ScAddr(scAddr),
             )
         };
-        if (scAddr && isResultWithMainKey) {
+        if (scAddr && self.isResultWithMainKey) {
             scTemplateMainlevelWithMainKey.triple(
                 [new sc.ScAddr(self.addr), "src"],
                 [sc.ScType.EdgeAccessVarPosPerm, "edgeFromContourToMainNode"],
@@ -325,7 +324,7 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
 
         let mainElements = [];
 
-        resultLevel.length ? isResult = true : isResultWithMainKey = true;
+        if (!scAddr) resultLevel.length ? self.isResultWithMainKey = false : isResultWithMainKey = true;
 
         if (resultLevel.length || resultLevelWithMainKey.length) self.isRrelKeyScElement = true;
         
@@ -335,11 +334,11 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
             self.eventStructUpdate(true, triple.get('src').value, triple.get('edgeFromContourToMainNode').value, levelScales[0]);
         };
 
-        if (scene && isResult) {
+        if (scene && !self.isResultWithMainKey) {
             let isEdge = scAddr ? scene.getObjectByScAddr(scAddr).edges[0].target : scene.getObjectByScAddr(resultLevel.get('mainNode').value).edges[0].target;
             isEdge instanceof SCg.ModelEdge ? edgeToEdge = true : edgeToEdge = false;
         };
-        if (scene && isResultWithMainKey) {
+        if (scene && self.isResultWithMainKey) {
             let isEdge = scAddr ? scene.getObjectByScAddr(scAddr).edges[0].target : scene.getObjectByScAddr(resultLevelWithMainKey.get('mainNode').value).edges[0].target;
             isEdge instanceof SCg.ModelEdge ? edgeToEdge = true : edgeToEdge = false;
         };
