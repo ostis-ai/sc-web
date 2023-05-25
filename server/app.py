@@ -55,35 +55,52 @@ class NoCacheStaticHandler(tornado.web.StaticFileHandler, ABC):
     """
 
     def set_extra_headers(self, path):
-        self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+        self.set_header('Cache-Control',
+                        'no-store, no-cache, must-revalidate, max-age=0')
 
 
 def main():
     logging.getLogger('asyncio').setLevel(logging.WARNING)
 
-    tornado.options.define("static_path", default=join(dirname(abspath(__file__)), "../client/static"), help="path to static files directory", type=str)
-    tornado.options.define("templates_path", default=join(dirname(abspath(__file__)), "../client/templates"), help="path to template files directory", type=str)
-    tornado.options.define("event_wait_timeout", default=10, help="time to wait commands processing", type=int)
-    tornado.options.define("answer_wait_timeout", default=2, help="time to wait answer getting", type=int)
-    tornado.options.define("idtf_search_limit", default=100, help="number of maximum results for searching by identifier", type=int)
-    tornado.options.define("host", default="localhost", help="host name", type=str)
+    tornado.options.define("static_path", default=join(dirname(abspath(__file__)), "../client/static"),
+                           help="path to static files directory", type=str)
+    tornado.options.define("templates_path", default=join(dirname(abspath(__file__)), "../client/templates"),
+                           help="path to template files directory",
+                           type=str)
+    tornado.options.define("event_wait_timeout", default=10,
+                           help="time to wait commands processing", type=int)
+    tornado.options.define("answer_wait_timeout", default=2,
+                           help="time to wait answer getting", type=int)
+    tornado.options.define("idtf_search_limit", default=100,
+                           help="number of maximum results for searching by identifier", type=int)
+    tornado.options.define("host", default="localhost",
+                           help="host name", type=str)
     tornado.options.define("port", default=8000, help="host port", type=int)
     tornado.options.define(
         "server_host", default="localhost", help="host name", type=str)
-    tornado.options.define("server_port", default=8090, help="host port", type=int)
+    tornado.options.define("server_port", default=8090,
+                           help="host port", type=int)
     tornado.options.define(
         "public_url", default="ws://localhost:8090/ws_json", help="public server url", type=str)
-    tornado.options.define("auth_redirect_port", default=80, help="host port", type=int)
+    tornado.options.define("auth_redirect_port",
+                           default=80, help="host port", type=int)
 
-    tornado.options.define("google_client_id", default="", help="client id for google auth", type=str)
-    tornado.options.define("google_client_secret", default="", help="client secret for google auth", type=str)
+    tornado.options.define("google_client_id", default="",
+                           help="client id for google auth", type=str)
+    tornado.options.define("google_client_secret", default="",
+                           help="client secret for google auth", type=str)
 
-    tornado.options.define("apiai_subscription_key", default="", help="subscription key for api.ai", type=str)
-    tornado.options.define("apiai_client_access_token", default="", help="client access token for api.ai", type=str)
+    tornado.options.define("apiai_subscription_key", default="",
+                           help="subscription key for api.ai", type=str)
+    tornado.options.define("apiai_client_access_token", default="",
+                           help="client access token for api.ai", type=str)
 
-    tornado.options.define("user_key_expire_time", default=600, help="user key expire time in seconds", type=int)
-    tornado.options.define("super_emails", default="", help="email of site super administrator (maximum rights)", type=list)
-    tornado.options.define("db_path", default="data.db", help="path to database file", type=str)
+    tornado.options.define("user_key_expire_time", default=600,
+                           help="user key expire time in seconds", type=int)
+    tornado.options.define("super_emails", default="", help="email of site super administrator (maximum rights)",
+                           type=list)
+    tornado.options.define("db_path", default="data.db",
+                           help="path to database file", type=str)
 
     tornado.options.define(
         "cfg", default="", help="path to configuration file", type=str)
@@ -123,7 +140,8 @@ def main():
     rules = [
         (r"/", MainHandler),
 
-        (r"/static/(.*)", NoCacheStaticHandler, {"path": tornado.options.options.static_path}),
+        (r"/static/(.*)", NoCacheStaticHandler,
+         {"path": tornado.options.options.static_path}),
 
         # api
         (r"/api/context/", api.ContextMenu),
@@ -156,14 +174,17 @@ def main():
         xsrf_cookies=False,
         gzip=True,
 
-        google_oauth={"key": tornado.options.options.google_client_id, "secret": tornado.options.options.google_client_secret},
+        google_oauth={"key": tornado.options.options.google_client_id,
+                      "secret": tornado.options.options.google_client_secret
+                      },
         public_url=tornado.options.options.public_url
     )
 
     application.listen(tornado.options.options.port)
     tornado.ioloop.PeriodicCallback(try_exit, 1000).start()
     app_instance = tornado.ioloop.IOLoop.instance()
-    signal.signal(signal.SIGINT, lambda sig, frame: app_instance.add_callback_from_signal(on_shutdown))
+    signal.signal(signal.SIGINT, lambda sig,
+                  frame: app_instance.add_callback_from_signal(on_shutdown))
     app_instance.start()
 
     logger.disabled = False
