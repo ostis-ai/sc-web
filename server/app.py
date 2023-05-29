@@ -97,17 +97,16 @@ def main():
         config = configparser.ConfigParser()
         config.read(tornado.options.options.cfg)
 
+    options_dict = tornado.options.options
+    server_url = f"ws://{options_dict.server_host}:{options_dict.server_port}/ws_json"
+    logger.info(f"Sc-server socket: {server_url}")
+    client.connect(server_url)
+    logger.info("Connection: " + "OK" if client.is_connected() else "Error")
+
     # prepare database
     logger.info("Preparing database...")
     database = db.DataBase()
     database.init()
-
-    options_dict = tornado.options.options
-    server_url = f"ws://{options_dict.server_host}:{options_dict.server_port}/ws_json"
-
-    logger.info(f"Sc-server socket: {server_url}")
-    client.connect(server_url)
-    logger.info("Connection: " + "OK" if client.is_connected() else "Error")
 
     # prepare logger
     logger.info("Preparing logger...")
@@ -170,6 +169,7 @@ def main():
     app_instance = tornado.ioloop.IOLoop.instance()
     signal.signal(signal.SIGINT, lambda sig, frame: app_instance.add_callback_from_signal(on_shutdown))
     app_instance.start()
+    logging.info(f'The app is running and listening on port {options_dict.server_port}')
 
     logger.disabled = False
     logger.info("Close connection with sc-server")
