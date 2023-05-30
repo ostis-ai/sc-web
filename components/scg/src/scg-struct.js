@@ -54,6 +54,9 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
                 var addr = task[0];
                 var type = task[1];
 
+                if (!task[2]) task[2] = { node: 1, link: 1, opacity: 1, widthEdge: 6.5 };
+                if (!task[4]) task[4] = { node: 1, link: 1, opacity: 1, widthEdge: 6.5 };
+
                 let newMainNode = editor.scene.getObjectByScAddr(addr);
                 if (newMainNode) {
                     if (newMainNode instanceof SCg.ModelEdge) {
