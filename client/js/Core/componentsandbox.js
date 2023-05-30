@@ -275,7 +275,7 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
         const maxNumberOfTriplets = 850;
         const delayTimeoutAutosize = 300;
 
-        const levelScales = [{ node: 2.3, link: 1.8, opacity: 1, widthEdge: 8 }, { node: 1.8, link: 1.5, opacity: 1, widthEdge: 7.5 }, { node: 1.4, link: 1, opacity: 1, widthEdge: 7 }, { node: 1, link: 1, opacity: 1, widthEdge: 6.5 }, { node: 1, link: 1, opacity: 0.8, widthEdge: 6.5 }, { node: 1, link: 1, opacity: 0.6, widthEdge: 6.5 }, { node: 1, link: 1, opacity: 0.4, widthEdge: 6.5 }];
+        const levelScales = [{ node: 2.3, link: 1.8, opacity: 1, widthEdge: 8, stroke: 'black' }, { node: 1.8, link: 1.5, opacity: 1, widthEdge: 7.5, stroke: 'black' }, { node: 1.4, link: 1, opacity: 1, widthEdge: 7, stroke: 'black' }, { node: 1, link: 1, opacity: 1, widthEdge: 6.5, stroke: 'black' }, { node: 1, link: 1, opacity: 0.8, widthEdge: 6.5, stroke: 'black' }, { node: 1, link: 1, opacity: 0.6, widthEdge: 6.5, stroke: 'black' }, { node: 1, link: 1, opacity: 0.4, widthEdge: 6.5, stroke: 'black' }];
         
         const checkEdge = (scAddr) => {
             let elem = self.scene.getObjectByScAddr(scAddr);

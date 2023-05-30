@@ -367,6 +367,7 @@ SCg.Render.prototype = {
 
     // -------------- update objects --------------------------
     updateObjects: function () {
+        
         var self = this;
         this.d3_nodes.each(function (d) {
 
@@ -379,7 +380,7 @@ SCg.Render.prototype = {
                 .attr('class', function (d) {
                     return self.classState(d, (d.sc_type & sc_type_constancy_mask) ? 'SCgNode' : 'SCgNodeEmpty');
                 })
-                .attr("style", 'opacity: ' + d.opacityElem + '')
+                .attr("style", 'opacity: ' + d.opacityElem + '; stroke: ' + d.strokeElem + '')
 
             g.select('use')
                 .attr('xlink:href', function (d) {
@@ -424,7 +425,7 @@ SCg.Render.prototype = {
                 }
             }
 
-            var g = d3.select(this).attr("style", 'opacity: ' + d.opacityElem + '')
+            var g = d3.select(this).attr("style", 'opacity: ' + d.opacityElem + '; stroke: ' + d.strokeElem + '')
 
             g.select('rect')
                 .attr('width', function (d) {
@@ -486,8 +487,8 @@ SCg.Render.prototype = {
                     return d.sc_addr;
                 });
             
-            d3_edge.select('.SCgEdgeEndArrowCommon').style('stroke-width', `${d.widthEdge}px`).style('opacity', d.opacityEdge);
-            d3_edge.select('.SCgEdgeEndArrowAccess').style('stroke-width', `${d.widthEdge - 6}px`).style('opacity', d.opacityEdge);
+            d3_edge.select('.SCgEdgeEndArrowCommon').style('stroke-width', `${d.widthEdge}px`).style('opacity', d.opacityElem);
+            d3_edge.select('.SCgEdgeEndArrowAccess').style('stroke-width', `${d.widthEdge - 6}px`).style('opacity', d.opacityElem);
         });
 
         this.d3_contours.each(function (d) {

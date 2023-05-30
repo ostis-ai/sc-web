@@ -54,24 +54,27 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
                 var addr = task[0];
                 var type = task[1];
 
-                if (!task[2]) task[2] = { node: 1, link: 1, opacity: 1, widthEdge: 6.5 };
-                if (!task[4]) task[4] = { node: 1, link: 1, opacity: 1, widthEdge: 6.5 };
+                if (!task[2]) task[2] = { node: 1.8, link: 1.5, opacity: 1, widthEdge: 7.5, stroke: 'red' };
+                if (!task[4]) task[4] = { node: 1.8, link: 1.5, opacity: 1, widthEdge: 7.5, stroke: 'red' };
 
                 let newMainNode = editor.scene.getObjectByScAddr(addr);
                 if (newMainNode) {
                     if (newMainNode instanceof SCg.ModelEdge) {
-                        newMainNode.setOpacityEdge(task[4].opacity);
+                        newMainNode.setOpacityElem(task[4].opacity);
                         newMainNode.setWidthEdge(task[4].widthEdge);
+                        newMainNode.setStrokeElem(task[4].stroke);
                         continue;
                     }
                     if (newMainNode instanceof SCg.ModelNode) {
                         newMainNode.setScaleElem(task[2].node);
                         newMainNode.setOpacityElem(task[2].opacity);
+                        newMainNode.setStrokeElem(task[2].stroke);
                         continue;
                     }
                     if (newMainNode instanceof SCg.ModelLink) {
                         newMainNode.setScaleElem(task[2].link);
                         newMainNode.setOpacityElem(task[2].opacity);
+                        newMainNode.setStrokeElem(task[2].stroke);
                         continue;
                     }
                 }
@@ -83,6 +86,7 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
                     model_node.setScAddr(addr);
                     model_node.setScaleElem(task[2].node);
                     model_node.setOpacityElem(task[2].opacity);
+                    model_node.setStrokeElem(task[2].stroke);
                     model_node.setObjectState(SCgObjectState.FromMemory);
                     resolveIdtf(addr, model_node);
                 } else if (type & sc_type_arc_mask) {
@@ -95,8 +99,9 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
                         editor.scene.appendEdge(model_edge);
                         editor.scene.objects[addr] = model_edge;
                         model_edge.setScAddr(addr);
-                        model_edge.setOpacityEdge(task[4].opacity);
+                        model_edge.setOpacityElem(task[4].opacity);
                         model_edge.setWidthEdge(task[4].widthEdge);
+                        model_edge.setStrokeElem(task[4].stroke);
                         model_edge.setObjectState(SCgObjectState.FromMemory);
                         resolveIdtf(addr, model_edge);
                     }
@@ -108,6 +113,7 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
                     model_link.setScAddr(addr);
                     model_link.setScaleElem(task[2].link);
                     model_link.setOpacityElem(task[2].opacity);
+                    model_link.setStrokeElem(task[2].stroke);
                     model_link.setObjectState(SCgObjectState.FromMemory);
                     resolveIdtf(addr, model_link);
                 }
