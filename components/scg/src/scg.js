@@ -585,7 +585,7 @@ SCg.Editor.prototype = {
 
                 if (startValueLink !== endValueLink && obj.sc_addr) {
                     obj.changedValue = true;
-                };
+                }
 
                 if (file != undefined) {
                     setTimeout(() => {
@@ -650,17 +650,38 @@ SCg.Editor.prototype = {
             });
         });
 
-        this.toolDelete().click(function () {
+        this.toolDelete().click(async function () {
             if (self.scene.selected_objects.length > 0) {
-                self.scene.deleteObjects(self.scene.selected_objects.slice(0, self.scene.selected_objects
-                    .length));
-                self.scene.clearSelection();
+                if (self.scene.selected_objects.length > 1) {
+                    const cantDelete = [];
+                    const deletableObjects = await Promise.all(self.scene.selected_objects.filter(obj => obj.sc_addr).map(async (obj) => {
+                        const canDelete = await self.checkCanDelete(obj.sc_addr);
+                        if (canDelete) {
+                            cantDelete.push(obj);
+                        } else {
+                            return obj;
+                        }
+                    })).then(arr => arr.filter(Boolean));
+
+                    function diffArray(arr1, arr2) {
+                        return arr1.filter(item => !arr2.includes(item));
+                    }
+                    self.scene.deleteObjects(diffArray(self.scene.selected_objects, cantDelete));
+                    self.scene.addDeletedObjects(deletableObjects);
+                } else {
+                    self.scene.deleteObjects(self.scene.selected_objects);
+                    self.scene.addDeletedObjects(self.scene.selected_objects);
+                }
             }
+            self.hideTool(self.toolDelete())
+            select.button('toggle');
         });
 
         this.toolClear().click(function () {
+            self.scene.clear = true;
             self.scene.selectAll();
-            self.toolDelete().click();
+            self.scene.clear = false;
+            self.scene.deleteObjects(self.scene.selected_objects);
         });
 
         this.toolOpen().click(function () {
@@ -685,12 +706,40 @@ SCg.Editor.prototype = {
             saveAs(blob, "new_file.gwf");
         });
 
-        this.toolIntegrate().click(function () {
+        const updateConfirmedData = async function () {
             self._disableTool(self.toolIntegrate());
             if (self.translateToSc)
                 self.translateToSc(self.scene, function () {
                     self._enableTool(self.toolIntegrate());
                 });
+        }
+
+        const getElement = async function (arr) {
+            let construction = new sc.ScConstruction();
+            construction.createNode(sc.ScType.NodeConst, 'node')
+
+            arr.forEach(el => {
+                construction.createEdge(sc.ScType.EdgeAccessConstPosPerm, 'node', new sc.ScAddr(el.sc_addr));
+            })
+
+            const elements = await scClient.createElements(construction);
+            return elements[0];
+        }
+
+        this.toolIntegrate().click(async function () {
+            self.scene.deleted_objects = self.scene.deleted_objects.filter(el => el.sc_addr !== null);
+            if (self.scene.deleted_objects.length) {
+                SCWeb.core.Server.doCommand(
+                    window.scKeynodes["ui_menu_erase_elements"],
+                    [(await getElement(self.scene.deleted_objects)).value],
+                    function (get_result) {
+                        updateConfirmedData();
+                    }
+                );
+                self.scene.deleted_objects = [];
+                return;
+            }
+            await updateConfirmedData();
         });
 
         this.toolZoomIn().click(function () {
@@ -712,41 +761,67 @@ SCg.Editor.prototype = {
         self.onSelectionChanged();
     },
 
+    checkCanDelete: async function (addr) {
+        let template = new sc.ScTemplate();
+        template.triple(
+            new sc.ScAddr(window.scKeynodes["basic_ontology_structure"]),
+            sc.ScType.EdgeAccessVarPosPerm,
+            new sc.ScAddr(addr)
+        );
+        const res = await window.scClient.templateSearch(template);
+
+        return res.length !== 0;
+    },
+
     /**
      * Function that process selection changes in scene
      * It updated UI to current selection
      */
     onSelectionChanged: async function () {
-        this.hideTool(this.toolChangeIdtf());
-        this.hideTool(this.toolChangeType());
-        this.hideTool(this.toolSetContent());
-        this.hideTool(this.toolDelete());
+        const self = this;
 
-        if (this.scene.selected_objects.length > 1) {
-            if (SCWeb.core.Main.mode === SCgEditMode.SCgModeViewOnly) return;
-            if (this.scene.isSelectedObjectAllArcsOrAllNodes() && !this.scene.isSelectedObjectAllHaveScAddr()) {
-                this.showTool(this.toolChangeType());
+        const checkCanEdit = async (addr) => {
+            return !(await self.checkCanDelete(addr));
+        }
+
+        if (this.canEdit) {
+            this.hideTool(this.toolChangeIdtf());
+            this.hideTool(this.toolChangeType());
+            this.hideTool(this.toolSetContent());
+            this.hideTool(this.toolDelete());
+
+            if (this.scene.selected_objects.length > 0 && !this.scene.clear) {
+                if (this.scene.selected_objects.length === 1) {
+                    const isDeletable = await self.checkCanDelete(this.scene.selected_objects[0].sc_addr);
+                    isDeletable ? this.hideTool(this.toolDelete()) : this.showTool(this.toolDelete());
+                } else {
+                    const result = await Promise.all(this.scene.selected_objects.map(async (selected_object) => (
+                        await self.checkCanDelete(selected_object.sc_addr)
+                    )));
+                    result.every(elem => elem === 1) ? this.hideTool(this.toolDelete()) : this.showTool(this.toolDelete());
+                }
             }
-        } else if (this.scene.selected_objects.length === 1 && !this.scene.selected_objects[0].sc_addr) {
-            if (SCWeb.core.Main.mode === SCgEditMode.SCgModeViewOnly) return;
-            if (this.scene.selected_objects[0] instanceof SCg.ModelNode) {
-                this.showTool(this.toolChangeIdtf());
-                this.showTool(this.toolChangeType());
-            } else if (this.scene.selected_objects[0] instanceof SCg.ModelEdge) {
-                this.showTool(this.toolChangeType());
-            } else if (this.scene.selected_objects[0] instanceof SCg.ModelContour) {
-                this.showTool(this.toolChangeIdtf());
-            } else if (this.scene.selected_objects[0] instanceof SCg.ModelLink) {
-                this.showTool(this.toolSetContent());
-            }
-        } else if (this.scene.selected_objects.length === 1) {
-            if (SCWeb.core.Main.mode === SCgEditMode.SCgModeViewOnly) return;
-            if (this.scene.selected_objects[0] instanceof SCg.ModelLink) {
-                this.showTool(this.toolSetContent());
+            if (this.scene.selected_objects.length > 1) {
+                if (this.scene.isSelectedObjectAllArcsOrAllNodes() && !this.scene.isSelectedObjectAllHaveScAddr()) {
+                    this.showTool(this.toolChangeType());
+                }
+            } else if (this.scene.selected_objects.length === 1 && !this.scene.selected_objects[0].sc_addr) {
+                if (this.scene.selected_objects[0] instanceof SCg.ModelNode) {
+                    this.showTool(this.toolChangeIdtf());
+                    this.showTool(this.toolChangeType());
+                } else if (this.scene.selected_objects[0] instanceof SCg.ModelEdge) {
+                    this.showTool(this.toolChangeType());
+                } else if (this.scene.selected_objects[0] instanceof SCg.ModelContour) {
+                    this.showTool(this.toolChangeIdtf());
+                } else if (this.scene.selected_objects[0] instanceof SCg.ModelLink) {
+                    this.showTool(this.toolSetContent());
+                }
+            } else if (this.scene.selected_objects.length === 1 && await checkCanEdit(this.scene.selected_objects[0].sc_addr)) {
+                if (this.scene.selected_objects[0] instanceof SCg.ModelLink) {
+                    this.showTool(this.toolSetContent());
+                }
             }
         }
-        if (SCWeb.core.Main.mode === SCgEditMode.SCgModeViewOnly) return;
-        if (this.scene.selected_objects.length > 0) this.showTool(this.toolDelete());
     },
 
 
