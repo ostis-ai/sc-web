@@ -367,7 +367,7 @@ SCg.Render.prototype = {
 
     // -------------- update objects --------------------------
     updateObjects: function () {
-        
+
         var self = this;
         this.d3_nodes.each(function (d) {
 
@@ -389,6 +389,7 @@ SCg.Render.prototype = {
                 .attr("sc_addr", function (d) {
                     return d.sc_addr;
                 });
+            g.select('text').style('fill', d.fillElem);
 
             g.selectAll('text').text(function (d) {
                 return d.text;

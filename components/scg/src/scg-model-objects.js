@@ -146,6 +146,14 @@ SCg.ModelObject.prototype.setStrokeElem = function (stroke) {
     this.update();
 };
 
+SCg.ModelObject.prototype.setFillElem = function (fill) {
+    this.fillElem = fill;
+    this.need_observer_sync = true;
+
+    this.requestUpdate();
+    this.update();
+};
+
 SCg.ModelObject.prototype.setWidthEdge = function (width) {
     this.widthEdge = width;
     this.need_observer_sync = true;
