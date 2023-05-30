@@ -32,6 +32,8 @@ is_closing = False
 REPO_FILE_EXT = ".path"
 REPO_FILE_PATH = join(dirname(abspath(__file__)), "../repo.path")
 
+logger = logging.getLogger()
+
 
 def signal_handler(signum, frame):
     global is_closing
@@ -96,23 +98,24 @@ def main():
         config = configparser.ConfigParser()
         config.read(tornado.options.options.cfg)
 
-    # prepare database
-    database = db.DataBase()
-    database.init()
-
     options_dict = tornado.options.options
     server_url = f"ws://{options_dict.server_host}:{options_dict.server_port}/ws_json"
-
-    logger = logging.getLogger()
     logger.info(f"Sc-server socket: {server_url}")
     client.connect(server_url)
     logger.info("Connection: " + "OK" if client.is_connected() else "Error")
 
+    # prepare database
+    logger.info("Preparing database...")
+    database = db.DataBase()
+    database.init()
+
     # prepare logger
+    logger.info("Preparing logger...")
     logger_sc.init()
 
     # load scs required for sc-web server
     try:
+        logger.debug(f"Repo file path: {REPO_FILE_PATH}")
         client.create_elements_by_scs(read_scs_fragments(REPO_FILE_PATH))
     except ServerError as e:
         logger.error(e)
@@ -167,6 +170,7 @@ def main():
     app_instance = tornado.ioloop.IOLoop.instance()
     signal.signal(signal.SIGINT, lambda sig, frame: app_instance.add_callback_from_signal(on_shutdown))
     app_instance.start()
+    logging.info(f'The app is running and listening on port {options_dict.server_port}')
 
     logger.disabled = False
     logger.info("Close connection with sc-server")
@@ -179,12 +183,13 @@ scs_exclude_paths = set()
 
 def search_kb_sources(root_path: str):
     if not exists(root_path):
-        print(root_path, "does not exist.")
+        logger.error(f"{root_path} does not exist")
         exit(1)
 
     elif splitext(root_path)[1] == REPO_FILE_EXT:
-        print()
+        logger.debug(f"{root_path} has the correct extension \'{REPO_FILE_EXT}\'")
         with open(join(root_path), 'r', encoding='utf-8') as root_file:
+            logger.debug(f"Opening {root_path}")
             for line in root_file.readlines():
                 # ignore comments and empty lines
                 line = line.replace('\n', '')
@@ -194,6 +199,7 @@ def search_kb_sources(root_path: str):
                     continue
                 elif line.startswith('!'):
                     absolute_path = abspath(join(dirname(root_path), line[1:]))
+                    logger.debug(f"Excluding {absolute_path} from KB building")
                     scs_exclude_paths.add(absolute_path)
                 else:
                     absolute_path = abspath(join(dirname(root_path), line))
@@ -203,6 +209,7 @@ def search_kb_sources(root_path: str):
                         search_kb_sources(absolute_path)
 
     else:
+        logger.debug(f"Including {root_path} in KB building")
         scs_paths.add(root_path)
 
     return scs_paths, scs_exclude_paths
@@ -226,16 +233,16 @@ def read_scs_fragments(root_path: str):
                 if excluded == True:
                     continue
                 else:
-                    with open(filename, 'r') as f:
+                    with open(filename, 'r', encoding='utf-8') as f:
                         scs_fragments.append(f.read())
 
         elif isfile(path) and splitext(path)[1] == '.scs':
             if path not in exclude_paths:
-                with open(path, 'r') as f:
+                with open(path, 'r', encoding='utf-8') as f:
                     scs_fragments.append(f.read())
 
         elif not exists(path):
-            print("Error: path '%s' does not exist" % path)
+            logger.error(f"Read scs-fragments: {path} does not exist")
             exit(1)
 
         else:

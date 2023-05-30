@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
+
 from typing import List
+import logging
+import os
 
 import tornado.web
 import json
@@ -17,8 +20,9 @@ from . import api_logic as logic
 import time
 from . import base
 
-
 # -------------------------------------------
+
+logger = logging.getLogger()
 
 
 class ContextMenu(base.BaseHandler):
@@ -31,6 +35,7 @@ class ContextMenu(base.BaseHandler):
         cmds = []
         logic.find_atomic_commands(keynode_ui_main_menu, cmds)
 
+        logger.debug(f'Result: {cmds}')
         self.set_header("Content-Type", "application/json")
         self.finish(json.dumps(cmds))
 
@@ -57,8 +62,10 @@ class CmdDo(base.BaseHandler):
             idx += 1
 
         result = logic.do_command(cmd_addr, arguments, self)
-        self.set_header("Content-Type", "application/json")
-        self.finish(json.dumps(result))
+        if result is not None:
+            logger.debug(f'Result: {result}')
+            self.set_header("Content-Type", "application/json")
+            self.finish(json.dumps(result))
 
 
 class QuestionAnswerTranslate(base.BaseHandler):
@@ -100,6 +107,7 @@ class QuestionAnswerTranslate(base.BaseHandler):
         result_link_addr = logic.find_translation_with_format(answer_addr, format_addr)
 
         # if link addr not found, then run translation of answer to specified format
+        result = {}
         if not result_link_addr.is_valid():
             construction = ScConstruction()
             construction.create_node(sc_types.NODE_CONST, 'trans_cmd_addr')
@@ -150,8 +158,8 @@ class QuestionAnswerTranslate(base.BaseHandler):
         if result_link_addr is not None:
             result = json.dumps({"link": result_link_addr.value})
 
+        logger.debug(f'Result: {result}')
         self.set_header("Content-Type", "application/json")
-
         self.finish(result)
 
 
@@ -161,6 +169,7 @@ class Languages(base.BaseHandler):
     def get(self):
         langs = logic.get_languages_list()
 
+        logger.debug(f'Result: {langs}')
         self.set_header("Content-Type", "application/json")
         self.finish(json.dumps(langs))
 
@@ -197,13 +206,14 @@ class InfoTooltip(base.BaseHandler):
 
             sc_session = logic.ScSession(self)
 
-            res = {}
+            result = {}
             for addr in arguments:
                 tooltip = logic.find_tooltip(ScAddr(int(addr)), sc_session.get_used_language())
-                res[addr] = tooltip
+                result[addr] = tooltip
 
+            logger.debug(f'Result: {result}')
             self.set_header("Content-Type", "application/json")
-            self.finish(json.dumps(res))
+            self.finish(json.dumps(result))
 
 
 @decorators.class_logging
@@ -237,6 +247,7 @@ class User(base.BaseHandler):
             'roles': roles
         }
 
+        logger.debug(f'Result: {result}')
         self.set_header("Content-Type", "application/json")
         self.finish(json.dumps(result))
 

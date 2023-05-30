@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-from typing import TypeVar, Callable
-
-import tornado.web
 import logging
-from functools import wraps
+
 import tornado.options
+import tornado.web
+from functools import wraps
+from typing import TypeVar, Callable
 
 
 def requestAdmin(method):
