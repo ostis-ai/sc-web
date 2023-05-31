@@ -15,8 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Build docs in SCn format
 
 ### Fixed
+- Change identifier by apply in scg-identifier
 - Integrate contours in scg-editor
-- selected structure free when mouse leave window
+- Selected structure free when mouse leave window
 - When window become smaller scg tools change location and no scroll apears
 - Pointer cursor when hovering over expert mode switch label
 - Attribute `sc_control_sys_idtf` for sidebar collapse button
