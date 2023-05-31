@@ -450,7 +450,7 @@ SCg.Editor.prototype = {
             $(container + ' #scg-change-idtf-apply').click(async function () {
                 var obj = self.scene.selected_objects[0];
                 if (obj.text != input.val() && !self._selectedIdtf) {
-                    self.scene.commandManager.execute(new SCgCommandChangeIdtf(obj, self._selectedIdtf));
+                    self.scene.commandManager.execute(new SCgCommandChangeIdtf(obj, input.val()));
                 }
                 if (self._selectedIdtf) {
                     searchNodeByAnyIdentifier(self._selectedIdtf).then(async (selectedAddr) => {
