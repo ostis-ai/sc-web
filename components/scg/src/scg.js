@@ -784,7 +784,13 @@ SCg.Editor.prototype = {
             return !(await self.checkCanDelete(addr));
         }
 
-        if (this.canEdit) {
+        if (SCWeb.core.Main.mode === SCgEditMode.SCgModeViewOnly) {
+            this.hideTool(this.toolChangeIdtf());
+            this.hideTool(this.toolChangeType());
+            this.hideTool(this.toolSetContent());
+            this.hideTool(this.toolDelete());
+        }
+        else if (this.canEdit) {
             this.hideTool(this.toolChangeIdtf());
             this.hideTool(this.toolChangeType());
             this.hideTool(this.toolSetContent());

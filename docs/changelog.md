@@ -6,8 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- Not erase elements from basic ontology structure
-- Erase elements
+- Not erase elements from basic ontology structure in scg-editor
+- Erase elements in scg-editor
 - Add scg speedup
 - Add ability to edit links and save changes
 - Add double click logic in scg view
