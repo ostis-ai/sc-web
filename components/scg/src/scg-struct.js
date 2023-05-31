@@ -255,7 +255,7 @@ function scgScStructTranslator(_editor, _sandbox) {
                     if (c.sc_addr)
                         return;
                     let scConstruction = new sc.ScConstruction();
-                    scConstruction.createNode(sc.ScType.NodeStruct, 'node');
+                    scConstruction.createNode(sc.ScType.NodeConstStruct, 'node');
                     let result = await scClient.createElements(scConstruction);
                     let node = result[scConstruction.getIndex('node')].value;
                     c.setScAddr(node);
@@ -344,7 +344,7 @@ function scgScStructTranslator(_editor, _sandbox) {
             var translateContours = async function () {
                 // now need to process arcs from countours to child elements
                 var arcGen = async function (contour, child) {
-                    let edgeExist = await scHelper.checkEdge(contour.sc_addr, sc_type_arc_pos_const_perm, child.sc_addr);
+                    let edgeExist = await window.scHelper.checkEdge(contour.sc_addr, sc_type_arc_pos_const_perm, child.sc_addr);
                     if (!edgeExist) {
                         let scConstruction = new sc.ScConstruction();
                         scConstruction.createEdge(sc.ScType.EdgeAccessConstPosPerm, new sc.ScAddr(contour.sc_addr), new sc.ScAddr(child.sc_addr), 'edge');
