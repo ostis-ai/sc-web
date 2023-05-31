@@ -77,6 +77,9 @@ SCg.Scene = function (options) {
     // list of selected objects
     this.selected_objects = [];
 
+    // list of object that should be deleted
+    this.deleted_objects = [];
+
     // drag line points
     this.drag_line_points = [];
     // points of selected line object
@@ -199,6 +202,14 @@ SCg.Scene.prototype = {
             remove_from_list(obj, this.buses);
             obj.destroy();
         }
+    },
+
+    addDeletedObjects: function (arr) {
+        this.deleted_objects = this.deleted_objects.concat(arr);
+    },
+
+    cleanDeletedObjects: function () {
+        this.deleted_objects = [];
     },
 
     // --------- objects destroy -------

@@ -9,6 +9,7 @@ ScKeynodes.prototype.init = async function () {
     'nrel_main_idtf',
     'nrel_idtf',
     'nrel_answer',
+    'basic_ontology_structure',
 
     'ui_user',
     'ui_user_registered',
@@ -23,6 +24,7 @@ ScKeynodes.prototype.init = async function () {
 
     'nrel_ui_commands_decomposition',
 
+    'ui_menu_erase_elements',
     'ui_command_initiated',
     'ui_command_finished',
     'ui_nrel_user_used_language',
