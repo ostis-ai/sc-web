@@ -53,8 +53,9 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
                 var task = batch[i];
                 var addr = task[0];
                 var type = task[1];
-                if (!task[2]) task[2] = { node: 1.8, link: 1.5, opacity: 1, widthEdge: 7.5, stroke: '#1E90FF', fill: '#1E90FF' };
-                if (!task[4]) task[4] = { node: 1.8, link: 1.5, opacity: 1, widthEdge: 7.5, stroke: '#1E90FF', fill: '#1E90FF' };
+
+                if (!task[2] && sandbox.mainElement) task[2] = { node: 1.8, link: 1.5, opacity: 1, widthEdge: 7.5, stroke: '#1E90FF', fill: '#1E90FF' };
+                if (!task[4] && sandbox.mainElement) task[4] = { node: 1.8, link: 1.5, opacity: 1, widthEdge: 7.5, stroke: '#1E90FF', fill: '#1E90FF' };
 
                 let newMainNode = editor.scene.getObjectByScAddr(addr);
                 if (newMainNode) {
