@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Build docs in SCn format
 
 ### Fixed
+- Integrate nodes in scg-editor
 - Change identifier by apply in scg-identifier
 - Integrate contours in scg-editor
 - Selected structure free when mouse leave window
