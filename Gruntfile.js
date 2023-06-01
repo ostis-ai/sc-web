@@ -167,6 +167,13 @@ module.exports = function(grunt) {
                 expand: true,
                 flatten: true
             },
+            bootOverCss: {
+                cwd: scgDirPath + 'static/components/css/',
+                src: 'bootstrap-override.css',
+                dest: clientCssDirPath,
+                expand: true,
+                flatten: true
+            },
             scgHtml: {
                 cwd: scgDirPath + 'static/components/html/',
                 src: ['**/*.html'],
