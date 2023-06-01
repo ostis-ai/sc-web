@@ -1,24 +1,5 @@
 const searchNodeByAnyIdentifier = async (string) => {
     return new Promise(async (resolve) => {
-        const searchNodeByIdentifier = async function (linkAddr, identification) {
-            const NODE = "_node";
-
-            const template = new sc.ScTemplate();
-            template.triple(
-                [sc.ScType.Unknown, NODE],
-                sc.ScType.EdgeDCommonVar,
-                linkAddr,
-                sc.ScType.EdgeAccessVarPosPerm,
-                identification,
-            );
-            let result = await window.scClient.templateSearch(template);
-            if (result.length) {
-                return result[0].get(NODE);
-            }
-
-            return null;
-        };
-
         let linkAddrs = await window.scClient.getLinksByContents([string]);
         let addr = null;
 
@@ -27,9 +8,9 @@ const searchNodeByAnyIdentifier = async (string) => {
 
             if (linkAddrs.length) {
                 addr = linkAddrs[0];
-                addr = await searchNodeByIdentifier(addr, window.scKeynodes["nrel_system_identifier"]);
+                addr = await window.scHelper.searchNodeByIdentifier(addr, window.scKeynodes["nrel_system_identifier"]);
                 if (!addr) {
-                    addr = await searchNodeByIdentifier(addr, window.scKeynodes["nrel_main_idtf"]);
+                    addr = await window.scHelper.searchNodeByIdentifier(addr, window.scKeynodes["nrel_main_idtf"]);
                 }
 
                 if (!addr) {

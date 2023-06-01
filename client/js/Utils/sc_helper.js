@@ -189,3 +189,22 @@ ScHelper.prototype.getEdgePng = async (linkAddr, keynode) => {
   if (!result.length) return null;
   return result[0].get("_edgePng");
 };
+
+ScHelper.prototype.searchNodeByIdentifier = async (linkAddr, identification) => {
+    const NODE = "_node";
+
+    const template = new sc.ScTemplate();
+    template.triple(
+        [sc.ScType.Unknown, NODE],
+        sc.ScType.EdgeDCommonVar,
+        linkAddr,
+        sc.ScType.EdgeAccessVarPosPerm,
+        identification,
+    );
+    let result = await window.scClient.templateSearch(template);
+    if (result.length) {
+        return result[0].get(NODE);
+    }
+
+    return null;
+};
