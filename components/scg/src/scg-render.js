@@ -41,8 +41,8 @@ SCg.Render.prototype = {
             })
             .on("wheel", function(){
                 var direction = d3.event.wheelDelta < 0 ? 'down' : 'up';
-                if(direction === 'up') self.scene.onMouseWheelUp(this, self);
-                if(direction === 'down') self.scene.onMouseWheelDown(this, self);
+                if (direction === 'up') self.scene.onMouseWheelUp(this, self);
+                if (direction === 'down') self.scene.onMouseWheelDown(this, self);
             });
 
         const svg = document.querySelector("svg.SCgSvg");
