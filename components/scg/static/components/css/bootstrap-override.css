@@ -1,7 +1,4 @@
-.btn-default {
-  border: 0;
-}
-.btn-default.active, .btn-default.focus, .btn-default:active, .btn-default:focus, .btn-default:hover, .open>.dropdown-toggle.btn-default {
+.btn-group-vertical>.btn, .btn-group-vertical>.btn-group, .btn-group-vertical>.btn-group>.btn {
   border: 0;
 }
 #scg-tool-switch {
