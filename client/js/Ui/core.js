@@ -63,9 +63,9 @@ SCWeb.ui.Core = {
                               SCWeb.core.Server.resolveIdentifiers([addr]).then(function (idf) {
                                   if (self.tooltip_element) { // check mouseout destroy
                                       self.tooltip_element.tooltip({
-                                          placement: 'auto',
-                                          title: idf[addr]
-                                      }).tooltip('show');
+                                         placement: ($(self.tooltip_element).hasClass("btn-default") || $(self.tooltip_element).is("#arguments_clear_button")) ? 'right' : "auto",
+                                         title: idf[addr]
+                                     }).tooltip('show');
                                   }
                               }, function () {
                                   destroyTooltip();

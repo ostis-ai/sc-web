@@ -183,7 +183,7 @@ module.exports = function(grunt) {
             },
             scgImg: {
                 cwd: scgDirPath + 'static/components/images/scg/',
-                src: '*.png',
+                src: '*.svg',
                 dest: clientImgDirPath + 'scg/',
                 expand: true,
                 flatten: true
@@ -232,6 +232,10 @@ module.exports = function(grunt) {
             scsCss: {
                 files: scsDirPath + 'static/components/css/**',
                 tasks: ['copy:scsCss'],
+            },
+            bootstrapOverrideCss: {
+                files: scgDirPath + 'static/components/css/**',
+                tasks: ['copy:bootstrapOverrideCss'],
             },
             scgHtml: {
                 files: [scgDirPath + 'static/components/html/**'],
