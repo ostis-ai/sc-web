@@ -167,13 +167,6 @@ module.exports = function(grunt) {
                 expand: true,
                 flatten: true
             },
-            bootOverCss: {
-                cwd: scgDirPath + 'static/components/css/',
-                src: 'bootstrap-override.css',
-                dest: clientCssDirPath,
-                expand: true,
-                flatten: true
-            },
             scgHtml: {
                 cwd: scgDirPath + 'static/components/html/',
                 src: ['**/*.html'],
@@ -240,9 +233,9 @@ module.exports = function(grunt) {
                 files: scsDirPath + 'static/components/css/**',
                 tasks: ['copy:scsCss'],
             },
-            bootOverCss: {
+            bootstrapOverrideCss: {
                 files: scgDirPath + 'static/components/css/**',
-                tasks: ['copy:bootOverCss'],
+                tasks: ['copy:bootstrapOverrideCss'],
             },
             scgHtml: {
                 files: [scgDirPath + 'static/components/html/**'],
