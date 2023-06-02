@@ -234,16 +234,32 @@ function scgScStructTranslator(_editor, _sandbox) {
             /// --------------------
             var translateNodes = async function () {
                 var implFunc = async function (node) {
-                    if (!node.sc_addr) {
-                        let scConstruction = new sc.ScConstruction();
-                        scConstruction.createNode(new sc.ScType(node.sc_type), "node");
-                        let result = await scClient.createElements(scConstruction);
-                        node.setScAddr(result[scConstruction.getIndex("node")].value);
-                        node.setObjectState(SCgObjectState.NewInMemory);
-                        objects.push(node);
-                        if (node.text) {
-                            await translateIdentifier(node);
+                    if (node.sc_addr) {
+                        return;
+                    }
+
+                    if (node.text) {
+                        let linkAddrs = await scClient.getLinksByContents([node.text]);
+                        if (linkAddrs.length) {
+                            linkAddrs = linkAddrs[0];
+                            if (linkAddrs.length) {
+                                let nodeFromKb = await window.scHelper.searchNodeByIdentifier(linkAddrs[0], window.scKeynodes['nrel_system_identifier']);
+                                node.setScAddr(nodeFromKb.value);
+                                node.setObjectState(SCgObjectState.FromMemory);
+                                objects.push(node);
+                                return;
+                            }
                         }
+                    }
+
+                    let scConstruction = new sc.ScConstruction();
+                    scConstruction.createNode(new sc.ScType(node.sc_type), "node");
+                    let result = await scClient.createElements(scConstruction);
+                    node.setScAddr(result[scConstruction.getIndex("node")].value);
+                    node.setObjectState(SCgObjectState.NewInMemory);
+                    objects.push(node);
+                    if (node.text) {
+                        await translateIdentifier(node);
                     }
                 }
                 return Promise.all(nodes.map(implFunc));
