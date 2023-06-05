@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Build docs in SCn format
 
 ### Fixed
+- SC.g-contours and its sc.g-elements create, edit, extend, select, move, click and delete
 - Integrate nodes in scg-editor
 - Change identifier by apply in scg-identifier
 - Integrate contours in scg-editor
