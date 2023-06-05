@@ -10,7 +10,7 @@ SCgCommandAppendObject.prototype = {
 
     undo: function () {
         if (this.object) {
-            var idx = this.scene.selected_objects.indexOf(this.object);
+            const idx = this.scene.selected_objects.indexOf(this.object);
             this.scene.selected_objects.splice(idx, 1);
             this.object._setSelected(false);
             this.scene.edit.onSelectionChanged();

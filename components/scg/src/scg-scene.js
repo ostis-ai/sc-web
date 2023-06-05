@@ -115,6 +115,42 @@ SCg.Scene.prototype = {
         this.layout_manager.init(this);
     },
 
+    updateContours: function (elements) {
+        const contours = this.contours;
+
+        for (let i = 0; i < elements.length; i++) {
+            const element = elements[i];
+
+            let hasContour = false;
+            for (let j = 0; j < contours.length; j++) {
+                const contour = contours[j];
+
+                if (element instanceof SCg.ModelEdge) {
+                    if (contour.isEdgeInPolygon(element)) {
+                        if (element.contour) {
+                            element.contour.removeChild(element);
+                        }
+                        contour.addChild(element);
+                        hasContour = true;
+                    }
+                } else {
+                    if (contour.isNodeInPolygon(element)) {
+                        if (element.contour) {
+                            element.contour.removeChild(element);
+                        }
+                        contour.addChild(element);
+                        hasContour = true;
+                    }
+                }
+            }
+
+            if (!hasContour && element.contour) {
+                element.contour.removeChild(element);
+                element.contour = null;
+            }
+        }
+    },
+
     /**
      * Appends new sc.g-node to scene
      * @param {SCg.ModelNode} node Node to append
@@ -169,6 +205,12 @@ SCg.Scene.prototype = {
             this.appendBus(obj);
             obj.setSource(obj.source);
         }
+    },
+
+    appendAllElementToContours: function () {
+        this.updateContours(this.nodes);
+        this.updateContours(this.links);
+        this.updateContours(this.edges);
     },
 
     /**

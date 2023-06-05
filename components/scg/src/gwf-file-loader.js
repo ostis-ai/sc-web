@@ -40,7 +40,7 @@ GwfFileLoader = {
             "<?xml version=\"1.0\" encoding=\"windows-1251\"?>",
             "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
         ));
-        if (is_file_correct != false) {
+        if (is_file_correct) {
             ScgObjectBuilder.buildObjects(GwfObjectInfoReader.objects_info);
             render.update();
         } else {

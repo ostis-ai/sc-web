@@ -1,4 +1,4 @@
-var GwfObjectController = {
+const GwfObjectController = {
     x_offset: 0,
     y_offset: 0,
 
@@ -44,7 +44,6 @@ GwfObject.prototype.buildObject = function (args) {
 
 
 GwfObject.prototype.parsePoints = function (args) {
-
     var gwf_object = args.gwf_object;
     var reader = args.reader;
 
@@ -58,12 +57,10 @@ GwfObject.prototype.parsePoints = function (args) {
 }
 
 GwfObject.prototype.fixParent = function (args) {
+    const parent = this.attributes["parent"];
 
-
-    var parent = this.attributes["parent"];
-
-    if (parent != "0") {
-        var parent_object = args.builder.getOrCreate(parent);
+    if (parent !== "0") {
+        let parent_object = args.builder.getOrCreate(parent);
         parent_object.addChild(args.scg_object);
         args.scg_object.update();
         parent_object.update();
@@ -105,8 +102,7 @@ GwfObjectNode.prototype.parseObject = function (args) {
 // have to specify scene,builder
 GwfObjectNode.prototype.buildObject = function (args) {
     var scene = args.scene;
-    var builder = args.builder;
-    var node = SCg.Creator.createNode(this.attributes["type"], new SCg.Vector3(this.attributes["x"] + GwfObjectController.getXOffset(), this.attributes["y"] + +GwfObjectController.getYOffset(), 0), this.attributes["idtf"]);
+    var node = SCg.Creator.createNode(this.attributes["type"], new SCg.Vector3(this.attributes["x"] + GwfObjectController.getXOffset(), this.attributes["y"] + GwfObjectController.getYOffset(), 0), this.attributes["idtf"]);
     scene.appendNode(node);
     scene.appendSelection(node);
     args.scg_object = node;
@@ -132,7 +128,7 @@ GwfObjectPair.prototype.parseObject = function (args) {
 
     this.attributes = reader.fetchAttributes(pair, this.required_attrs);
 
-    if (this.attributes == false)
+    if (this.attributes === false)
         return false;
 
     //fix some attrs
@@ -170,6 +166,10 @@ GwfObjectPair.prototype.buildObject = function (args) {
     edge.setPoints(points);
     source.update();
     target.update();
+    if (source.contour && target.contour && source.contour === target.contour) {
+        edge.contour = source.contour;
+        edge.contour.addChild(edge);
+    }
     edge.update();
     return edge;
 }

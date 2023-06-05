@@ -5657,8 +5657,8 @@ d3 = function() {
           }
           for (j = 0; j < m; ++j) {
             var o = links[j];
-            neighbors[o.source.index].push(o.target);
-            neighbors[o.target.index].push(o.source);
+            if (neighbors[o.source.index]) neighbors[o.source.index].push(o.target);
+            if (neighbors[o.target.index]) neighbors[o.target.index].push(o.source);
           }
         }
         return neighbors[i];
