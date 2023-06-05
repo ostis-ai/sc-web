@@ -294,7 +294,7 @@ var GwfObjectLink = function (args) {
     GwfObject.call(this, args);
     this.content = null;
     this.type = -1;
-    this.requiredAttrs = ["id", "x", "y", "parent"];
+    this.requiredAttrs = ["id", "x", "y", "parent", "idtf"];
 };
 
 GwfObjectLink.prototype = Object.create(GwfObject.prototype);
@@ -353,7 +353,8 @@ GwfObjectLink.prototype.buildObject = function (args) {
     var link = SCg.Creator.createLink(new SCg.Vector3(this.attributes["x"] + GwfObjectController.getXOffset(),
             this.attributes["y"] + +GwfObjectController.getYOffset(),
         0),
-        '');
+        '',
+        this.attributes["idtf"]);
     link.setContent(this.content, this.type);
     scene.appendLink(link);
     scene.appendSelection(link);
