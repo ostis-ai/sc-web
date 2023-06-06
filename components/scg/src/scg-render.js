@@ -451,10 +451,10 @@ SCg.Render.prototype = {
             // Update sc-link identifier (x, y) position according to the sc-link width
             g.selectAll('text')
                 .text(function (d) {
-                return d.text;
+                    return d.text;
                 })
                 .attr('x', function (d) {
-                return d.scale.x + self.linkBorderWidth * 2;
+                    return d.scale.x + self.linkBorderWidth * 2;
                 })
                 .attr('y', function (d) {
                     return d.scale.y + self.linkBorderWidth * 4;
@@ -583,6 +583,9 @@ SCg.Render.prototype = {
             g.selectAll(function () {
                 return this.getElementsByTagName("foreignObject");
             })
+                .text(function (d) {
+                    return d.text;
+                })
                 .attr('width', function (d) {
                     return d.scale.x;
                 })
@@ -600,6 +603,9 @@ SCg.Render.prototype = {
 
     updateTexts: function () {
         this.d3_nodes.select('text').text(function (d) {
+            return d.text;
+        });
+        this.d3_links.select('text').text(function (d) {
             return d.text;
         });
     },

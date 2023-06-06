@@ -232,7 +232,7 @@ SCWeb.core.Server = {
 
             result = await window.scClient.templateSearch(sysIdtfTemplate);
             if (result.length) {
-                result[0].get(LINK);
+                return result[0].get(LINK);
             }
 
             return addr;
@@ -240,13 +240,19 @@ SCWeb.core.Server = {
 
         if (arguments.length) {
             const elements = notChecked.map(id => new sc.ScAddr(parseInt(id)));
-            const types = await window.scClient.checkElements(elements);
-            const nodes = elements.filter((_, index) => !types[index].isLink());
-            const links = await Promise.all(nodes.map(node => getIdentifierLink(node)));
-            const contents = await window.scClient.getLinkContents(links);
-            contents.forEach((content, index) => {
-                result[notChecked[index]] = content.data;
-            });
+            const links = await Promise.all(elements.map(async (element) => {
+                    const res = await getIdentifierLink(element);
+                    if((res !== element)) return res;
+                }
+            ));
+            let linksWithoutUndefined = links.filter(link => link !== undefined);
+            if (linksWithoutUndefined.length)
+            {
+                const contents = await window.scClient.getLinkContents(linksWithoutUndefined);
+                contents.forEach((content, index) => {
+                    result[notChecked[index]] = content.data;
+                });
+            }
         }
         return result;
     },

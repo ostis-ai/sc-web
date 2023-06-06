@@ -84,6 +84,7 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
                     editor.scene.objects[addr] = model_link;
                     model_link.setScAddr(addr);
                     model_link.setObjectState(SCgObjectState.FromMemory);
+                    resolveIdtf(addr, model_link);
                 }
 
             }
@@ -439,19 +440,39 @@ function scgScStructTranslator(_editor, _sandbox) {
                     }
 
                     if (!link.sc_addr) {
-                        let scConstruction = new sc.ScConstruction();
-                        const { data, type, keynode } = infoConstruction(link);
-                        let scLinkContent = new sc.ScLinkContent(data, type);
-                        scConstruction.createLink(sc.ScType.LinkConst, scLinkContent, 'link');
-                        let result = await scClient.createElements(scConstruction);
-                        let linkAddr = result[scConstruction.getIndex('link')].value;
-                        link.setScAddr(linkAddr);
-                        link.setObjectState(SCgObjectState.NewInMemory);
-                        objects.push(link);
-                        if (link.content && link.contentType === 'image') {
-                            await window.scHelper.setLinkFormat(linkAddr, keynode);
-                        } else {
-                            await window.scHelper.setLinkLang(linkAddr, keynode);
+                        // Find link from kb by system identifier
+                        if (link.text) {
+                            let linkSystemIdentifierAddrs = await scClient.getLinksByContents([link.text]);
+                            if (linkSystemIdentifierAddrs.length) {
+                                linkSystemIdentifierAddrs = linkSystemIdentifierAddrs[0];
+                                if (linkSystemIdentifierAddrs.length) {
+                                    let linkFromKb = await window.scHelper.searchNodeByIdentifier(linkSystemIdentifierAddrs[0], window.scKeynodes['nrel_system_identifier']);
+                                    link.setScAddr(linkFromKb.value);
+                                    link.setObjectState(SCgObjectState.FromMemory);
+                                    objects.push(link);
+                                }
+                            }
+                        }
+
+                        // Create new link
+                        if (!link.sc_addr) {
+                            let scConstruction = new sc.ScConstruction();
+                            const { data, type, keynode } = infoConstruction(link);
+                            let scLinkContent = new sc.ScLinkContent(data, type);
+                            scConstruction.createLink(sc.ScType.LinkConst, scLinkContent, 'link');
+                            let result = await scClient.createElements(scConstruction);
+                            let linkAddr = result[scConstruction.getIndex('link')].value;
+                            link.setScAddr(linkAddr);
+                            link.setObjectState(SCgObjectState.NewInMemory);
+                            objects.push(link);
+                            if (link.text) {
+                                await translateIdentifier(link);
+                            }
+                            if (link.content && link.contentType === 'image') {
+                                await window.scHelper.setLinkFormat(linkAddr, keynode);
+                            } else {
+                                await window.scHelper.setLinkLang(linkAddr, keynode);
+                            }
                         }
                     }
                     if (link.hasOwnProperty('changedValue')) {
