@@ -718,16 +718,22 @@ SCg.Render.prototype = {
             })
             .on('dblclick', function (d) {
                 self.line_point_idx = -1;
+            })
+            .on('mouseup', function(d) {
+                //this.scene.updateContours(this.scene.selected_objects[0].childs);
+                self.scene.appendAllElementToContours();
             });
-        /*.on('mouseup', function(d) {
-         self.scene.pointed_object = null;
-         });*/
 
         line_points.each(function (d) {
             d3.select(this).attr('transform', function (d) {
                 return 'translate(' + d.pos.x + ',' + d.pos.y + ')';
             });
         });
+
+        // if (this.scene.selected_objects[0] instanceof SCg.ModelContour) {
+        //     //this.scene.updateContours(this.scene.selected_objects[0].childs);
+        //     this.scene.appendAllElementToContours();
+        // }
     },
 
     _changeContainerTransform: function (translate, scale) {

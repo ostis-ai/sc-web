@@ -160,12 +160,11 @@ SCg.ModelObject.prototype.requestUpdate = function () {
 /** Updates object state.
  */
 SCg.ModelObject.prototype.update = function () {
-
     this.need_update = false;
     this.need_observer_sync = true;
 
-    for (var i = 0; i < this.edges.length; ++i) {
-        var edge = this.edges[i];
+    for (let i = 0; i < this.edges.length; ++i) {
+        let edge = this.edges[i];
 
         if (edge.need_update) {
             edge.update();
@@ -466,7 +465,6 @@ SCg.ModelEdge.prototype.setTargetDot = function (dot) {
 };
 
 SCg.ModelEdge.prototype.update = function () {
-
     if (isNaN(this.source.position.x) || isNaN(this.source.position.y))
         this.source.setPosition(new SCg.Vector3(250.0, 250.0, 0.0))
     if (isNaN(this.target.position.x) || isNaN(this.target.position.y))
@@ -644,15 +642,14 @@ SCg.ModelContour.prototype = Object.create(SCg.ModelObject.prototype);
 
 
 SCg.ModelContour.prototype.setPosition = function (pos) {
+    const dp = pos.clone().sub(this.position);
 
-    var dp = pos.clone().sub(this.position);
-
-    for (var i = 0; i < this.childs.length; i++) {
-        var newPos = this.childs[i].position.clone().add(dp);
+    for (let i = 0; i < this.childs.length; i++) {
+        let newPos = this.childs[i].position.clone().add(dp);
         this.childs[i].setPosition(newPos);
     }
 
-    for (var i = 0; i < this.points.length; i++) {
+    for (let i = 0; i < this.points.length; i++) {
         this.points[i].x += dp.x;
         this.points[i].y += dp.y;
     }
@@ -669,6 +666,8 @@ SCg.ModelContour.prototype.update = function () {
  * @param {SCg.ModelObject} child Child object to append
  */
 SCg.ModelContour.prototype.addChild = function (child) {
+    if (child === this) return;
+
     this.childs.push(child);
     child.contour = this;
 };
@@ -678,7 +677,7 @@ SCg.ModelContour.prototype.addChild = function (child) {
  * @param {SCg.ModelObject} child Child object for remove
  */
 SCg.ModelContour.prototype.removeChild = function (child) {
-    var idx = this.childs.indexOf(child);
+    const idx = this.childs.indexOf(child);
     this.childs.splice(idx, 1);
     child.contour = null;
 };
@@ -693,7 +692,7 @@ SCg.ModelContour.prototype.isNodeInPolygon = function (node) {
  * @param nodes array of {SCg.ModelNode}
  */
 SCg.ModelContour.prototype.addNodesWhichAreInContourPolygon = function (nodes) {
-    for (var i = 0; i < nodes.length; i++) {
+    for (let i = 0; i < nodes.length; i++) {
         if (!nodes[i].contour && this.isNodeInPolygon(nodes[i])) {
             this.addChild(nodes[i]);
         }
@@ -705,16 +704,22 @@ SCg.ModelContour.prototype.isEdgeInPolygon = function (edge) {
 };
 
 SCg.ModelContour.prototype.addEdgesWhichAreInContourPolygon = function (edges) {
-    for (var i = 0; i < edges.length; i++) {
+    for (let i = 0; i < edges.length; i++) {
         if (this.isEdgeInPolygon(edges[i])) {
             this.addChild(edges[i]);
         }
     }
 };
 
+SCg.ModelContour.prototype.addElementsWhichAreInContourPolygon = function (scene) {
+    this.addNodesWhichAreInContourPolygon(scene.nodes);
+    this.addNodesWhichAreInContourPolygon(scene.links);
+    this.addEdgesWhichAreInContourPolygon(scene.edges);
+};
+
 SCg.ModelContour.prototype.getConnectionPos = function (from, dotPos) {
-    var points = SCg.Algorithms.polyclip(this.points, from, this.position);
-    var nearestIntersectionPoint = new SCg.Vector3(points[0].x, points[0].y, 0);
+    const points = SCg.Algorithms.polyclip(this.points, from, this.position);
+    let nearestIntersectionPoint = new SCg.Vector3(points[0].x, points[0].y, 0);
     for (var i = 1; i < points.length; i++) {
         var nextPoint = new SCg.Vector3(points[i].x, points[i].y, 0);
         var currentLength = from.clone().sub(nearestIntersectionPoint).length();

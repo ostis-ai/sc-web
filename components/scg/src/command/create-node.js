@@ -11,7 +11,7 @@ SCgCommandCreateNode.prototype = {
 
     undo: function () {
         if (this.node.is_selected) {
-            var idx = this.scene.selected_objects.indexOf(this.node);
+            const idx = this.scene.selected_objects.indexOf(this.node);
             this.scene.selected_objects.splice(idx, 1);
             this.node._setSelected(false);
             this.scene.edit.onSelectionChanged();
@@ -30,5 +30,4 @@ SCgCommandCreateNode.prototype = {
             this.scene.appendNode(this.node);
         }
     }
-
 };

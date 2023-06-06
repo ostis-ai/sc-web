@@ -264,44 +264,38 @@ SCg.Algorithms.isPointInPolygon = function (point, vertecies) {
  * @return {Array} intersection points
  */
 SCg.Algorithms.polyclip = function (pin, segStart, segEnd) {
-
-    var inside = function (p, plane) {
-        var d = p.x * plane[0] + p.y * plane[1];
+    const inside = function (p, plane) {
+        const d = p.x * plane[0] + p.y * plane[1];
         return d > plane[2];
     };
-
-    var clip = function (segStart, segEnd, plane) {
-        var d1 = segStart.x * plane[0] + segStart.y * plane[1] - plane[2];
-        var d2 = segEnd.x * plane[0] + segEnd.y * plane[1] - plane[2];
-        var t = (0 - d1) / (d2 - d1);
-        var x1 = segStart.x + t * (segEnd.x - segStart.x);
-        var y1 = segStart.y + t * (segEnd.y - segStart.y);
+    const clip = function (segStart, segEnd, plane) {
+        const d1 = segStart.x * plane[0] + segStart.y * plane[1] - plane[2];
+        const d2 = segEnd.x * plane[0] + segEnd.y * plane[1] - plane[2];
+        const t = (0 - d1) / (d2 - d1);
+        const x1 = segStart.x + t * (segEnd.x - segStart.x);
+        const y1 = segStart.y + t * (segEnd.y - segStart.y);
         return {x: x1, y: y1};
     };
-
-    var plane = [segStart.y - segEnd.y, segEnd.x - segStart.x, 0];
+    const plane = [segStart.y - segEnd.y, segEnd.x - segStart.x, 0];
     plane[2] = segStart.x * plane[0] + segStart.y * plane[1];
-    var n = pin.length;
-    var pout = [];
-    var s = pin[n - 1];
-    for (var ci = 0; ci < n; ci++) {
-        var p = pin[ci];
+    const n = pin.length;
+    let pout = [];
+    let s = pin[n - 1];
+    for (let ci = 0; ci < n; ci++) {
+        const p = pin[ci];
         if (inside(p, plane)) {
             if (!inside(s, plane)) {
-                var t = clip(s, p, plane);
+                const t = clip(s, p, plane);
                 pout.push(t);
             }
         }
         else {
             if (inside(s, plane)) {
-                var t = clip(s, p, plane);
+                const t = clip(s, p, plane);
                 pout.push(t);
             }
         }
-
         s = p;
     }
-
     return pout;
 };
-

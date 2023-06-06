@@ -7,10 +7,10 @@ ScgObjectBuilder = {
 
     buildObjects: function (gwf_objects) {
         this.gwf_objects = gwf_objects;
-        for (var gwf_object_id  in gwf_objects) {
-            var gwf_object = gwf_objects[gwf_object_id];
-            if (gwf_object.attributes.id in this.scg_objects == false) {
-                var scg_object = gwf_object.buildObject({
+        for (let gwf_object_id in gwf_objects) {
+            let gwf_object = gwf_objects[gwf_object_id];
+            if (!(gwf_object.attributes.id in this.scg_objects)) {
+                const scg_object = gwf_object.buildObject({
                     scene: this.scene,
                     builder: this
                 });
@@ -20,12 +20,13 @@ ScgObjectBuilder = {
         }
         this.scene.commandManager.execute(new SCgWrapperCommand(this.commandList), true);
         this.getScAddrsForObjects();
+        this.scene.clearSelection();
         this.emptyObjects();
     },
 
     getOrCreate: function (gwf_object_id) {
-        if (gwf_object_id in this.scg_objects == false) {
-            var gwf_object = this.gwf_objects[gwf_object_id];
+        if (!(gwf_object_id in this.scg_objects)) {
+            let gwf_object = this.gwf_objects[gwf_object_id];
             this.scg_objects[gwf_object_id] = gwf_object.buildObject({
                 scene: this.scene,
                 builder: this

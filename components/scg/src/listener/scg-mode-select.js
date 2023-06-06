@@ -5,7 +5,6 @@ SCgSelectListener = function (scene) {
 };
 
 SCgSelectListener.prototype = {
-
     constructor: SCgSelectListener,
 
     selectObject: function (obj) {
@@ -15,14 +14,15 @@ SCgSelectListener.prototype = {
     },
 
     onMouseMove: function (x, y) {
-        var self = this;
-        var offset = new SCg.Vector3(x - this.scene.mouse_pos.x, y - this.scene.mouse_pos.y, 0);
+        let self= this;
+        const offset= new SCg.Vector3(x - this.scene.mouse_pos.x, y - this.scene.mouse_pos.y, 0);
         this.scene.mouse_pos.x = x;
         this.scene.mouse_pos.y = y;
         if (this.scene.focused_object) {
             this.scene.selected_objects.forEach(function (object) {
                 if (!(object.contour != null && self.scene.selected_objects.indexOf(object.contour) > -1)) {
                     object.setPosition(object.position.clone().add(offset));
+                    self.scene.updateContours([object]);
                 }
             });
             this.scene.updateObjectsVisual();

@@ -9,7 +9,7 @@ SCgCommandCreateContour.prototype = {
 
     undo: function () {
         if (this.contour.is_selected) {
-            var idx = this.scene.selected_objects.indexOf(this.contour);
+            const idx = this.scene.selected_objects.indexOf(this.contour);
             this.scene.selected_objects.splice(idx, 1);
             this.contour._setSelected(false);
             this.scene.edit.onSelectionChanged();
@@ -19,9 +19,9 @@ SCgCommandCreateContour.prototype = {
     },
 
     execute: function () {
-        var scene = this.scene;
+        let scene = this.scene;
         if (this.contour == null) {
-            var polygon = $.map(scene.drag_line_points, function (vertex) {
+            const polygon = $.map(scene.drag_line_points, function (vertex) {
                 return $.extend({}, vertex);
             });
             this.contour = SCg.Creator.createCounter(polygon);
@@ -36,7 +36,6 @@ SCgCommandCreateContour.prototype = {
             scene.appendContour(this.contour);
             this.contour.update();
         }
-
+        this.contour.addElementsWhichAreInContourPolygon(scene);
     }
-
 };

@@ -713,10 +713,16 @@ SCg.Editor.prototype = {
         });
 
         this.toolClear().click(function () {
+            self._disableTool(self.toolClear());
             self.scene.clear = true;
             self.scene.selectAll();
             self.scene.clear = false;
-            self.scene.deleteObjects(self.scene.selected_objects);
+            if (self.scene.selected_objects.length) {
+                const objects = self.scene.selected_objects.slice();
+                self.scene.clearSelection();
+                self.scene.deleteObjects(objects);
+            }
+            self._enableTool(self.toolClear());
         });
 
         this.toolOpen().click(function () {
@@ -747,6 +753,8 @@ SCg.Editor.prototype = {
                 self.translateToSc(self.scene, function () {
                     self._enableTool(self.toolIntegrate());
                 });
+
+            self._enableTool(self.toolClear());
         }
 
         const getElement = async function (arr) {
