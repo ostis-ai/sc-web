@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- View sc-links identifiers
+- Load sc-links identifiers from gwf
 - Not erase elements from basic ontology structure in scg-editor
 - Erase elements in scg-editor
 - Add scg speedup
@@ -22,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Change identifier by apply in scg-identifier
 - Integrate contours in scg-editor
 - Selected structure free when mouse leave window
-- When window become smaller scg tools change location and no scroll apears
+- When window become smaller scg tools change location and no scroll appears
 - Pointer cursor when hovering over expert mode switch label
 - Attribute `sc_control_sys_idtf` for sidebar collapse button
 - Add curl to dependencies installation script
