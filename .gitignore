@@ -70,6 +70,9 @@ client/static/components/*/scs*
 # html
 client/static/components/*/html*
 
+# css
+client/static/components/*/css*
+
 # other
 node_modules
 client/static/components/js/sc-web-core.js

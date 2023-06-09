@@ -241,8 +241,8 @@ SCWeb.core.Server = {
         if (arguments.length) {
             const elements = notChecked.map(id => new sc.ScAddr(parseInt(id)));
             const links = await Promise.all(elements.map(async (element) => {
-                    const res = await getIdentifierLink(element);
-                    if((res !== element)) return res;
+                    const elementIdtf = await getIdentifierLink(element);
+                    if ((elementIdtf !== element)) return elementIdtf;
                 }
             ));
             let linksWithoutUndefined = links.filter(link => link !== undefined);
