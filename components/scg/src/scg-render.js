@@ -282,6 +282,18 @@ SCg.Render.prototype = {
                 return '<div id="link_' + self.containerId + '_' + d.id + '" class=\"SCgLinkContainer\"><div id="' + d.containerId + '" style="display: inline-block;" class="impl"></div></div>';
             });
 
+        // Add identifier to sc-link, default (x, y) position
+        g.append('svg:text')
+            .attr('class', 'SCgText')
+            .text(function (d) {
+                return d.text;
+            })
+            .attr('x', function (d) {
+                return d.scale.x + self.linkBorderWidth * 2;
+            })
+            .attr('y', function (d) {
+                return d.scale.y + self.linkBorderWidth * 4;
+            });
 
         eventsWrap(g);
 
@@ -436,6 +448,17 @@ SCg.Render.prototype = {
                 return 'translate(' + (d.position.x - (d.scale.x + self.linkBorderWidth) * 0.5) + ', ' + (d.position.y - (d.scale.y + self.linkBorderWidth) * 0.5) + ')';
             });
 
+            // Update sc-link identifier (x, y) position according to the sc-link width
+            g.selectAll('text')
+                .text(function (d) {
+                    return d.text;
+                })
+                .attr('x', function (d) {
+                    return d.scale.x + self.linkBorderWidth * 2;
+                })
+                .attr('y', function (d) {
+                    return d.scale.y + self.linkBorderWidth * 4;
+                });
         });
 
         this.d3_edges.each(function (d) {
@@ -560,6 +583,9 @@ SCg.Render.prototype = {
             g.selectAll(function () {
                 return this.getElementsByTagName("foreignObject");
             })
+                .text(function (d) {
+                    return d.text;
+                })
                 .attr('width', function (d) {
                     return d.scale.x;
                 })
@@ -577,6 +603,9 @@ SCg.Render.prototype = {
 
     updateTexts: function () {
         this.d3_nodes.select('text').text(function (d) {
+            return d.text;
+        });
+        this.d3_links.select('text').text(function (d) {
             return d.text;
         });
     },
