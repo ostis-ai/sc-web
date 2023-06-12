@@ -18,3 +18,6 @@
 #scg-tool-undo.active:hover, #scg-tool-redo.active:hover, #scg-tool-change-idtf.active:hover, #scg-tool-set-content.active:hover, #scg-tool-zoomin.active:hover, #scg-tool-zoomout.active:hover, #scg-tool-integrate.active:hover, #scg-tool-open.active:hover, #scg-tool-save.active:hover, #scg-tool-delete.active:hover, #scg-tool-change-type.active:hover, #scg-tool-autosize:hover {
     background:#e6e6e6;
 }
+#scg-tool-autosize {
+    border: none !important;
+}

@@ -261,8 +261,12 @@ SCWeb.core.ComponentSandbox.prototype.createViewersForScStructs = function (cont
  * {String} contentType type of content data (@see scClient.getLinkContent). If it's null, then
  * data will be returned as string
  */
-SCWeb.core.ComponentSandbox.prototype.updateContent = async function (contentType) {
+SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scene, contentType) {
     var self = this;
+
+    if (scene) {
+        self.scene = scene;
+    } 
 
     if (this.is_struct && this.eventStructUpdate) {
         const maxNumberOfTriplets = 850;
@@ -278,6 +282,23 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (contentTyp
         for (let triple of result) {
             self.eventStructUpdate(true, triple.get("src").value, triple.get("edge").value);
         }
+
+        setTimeout(() => {
+            if (self.scene) {
+                const [conteinerWidth, conteinerHeight] = self.scene.getContainerSize();
+                const scgHeight = self.scene.render.d3_container[0][0].getBoundingClientRect().height + (conteinerHeight/2 + 350);
+                const scgWidth = self.scene.render.d3_container[0][0].getBoundingClientRect().width + (conteinerWidth/2 + 350);
+
+                const containerAspectRatio = conteinerHeight / conteinerWidth;
+                const graphAspectRatio = scgHeight / scgWidth;
+                
+                const scale = containerAspectRatio < graphAspectRatio ? 
+                conteinerWidth / scgWidth : 
+                conteinerHeight / scgHeight;
+                
+                self.scene.render._changeContainerTransform([conteinerWidth * 0.3, conteinerHeight * 0.3], scale);
+            }
+        },300)
     }
     else {
         let content = await window.scClient.getLinkContents([new sc.ScAddr(this.addr)]);

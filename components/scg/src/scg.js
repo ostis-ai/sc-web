@@ -243,6 +243,10 @@ SCg.Editor.prototype = {
         return this.tool('save');
     },
 
+    toolAutoSize: function () {
+        return this.tool('autosize');
+    },
+
     toolZoomIn: function () {
         return this.tool('zoomin');
     },
@@ -785,6 +789,11 @@ SCg.Editor.prototype = {
             await updateConfirmedData();
         });
 
+        this.toolAutoSize().click(function () {
+            const [conteinerWidth, conteinerHeight] = self.scene.getContainerSize();
+            self.scene.render._changeContainerTransform([conteinerWidth * 0.3, conteinerHeight * 0.3], 0.5)
+        });
+
         this.toolZoomIn().click(function () {
             self.render.changeScale(1.1);
         });
@@ -900,6 +909,7 @@ SCg.Editor.prototype = {
         update_tool(this.toolSetContent());
         update_tool(this.toolDelete());
         update_tool(this.toolClear());
+        update_tool(this.toolAutoSize());
         update_tool(this.toolZoomIn());
         update_tool(this.toolZoomOut());
         update_tool(this.toolIntegrate());
