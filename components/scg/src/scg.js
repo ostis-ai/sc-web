@@ -131,6 +131,7 @@ SCg.Editor.prototype = {
                 self.hideTool(self.toolIntegrate());
                 self.hideTool(self.toolUndo());
                 self.hideTool(self.toolRedo());
+                self.hideTool(self.toolDeleteFromScene());
             }
             if (SCWeb.core.Main.mode === SCgEditMode.SCgModeViewOnly) {
                 self.hideTool(self.toolSwitch());
@@ -227,6 +228,10 @@ SCg.Editor.prototype = {
         return this.tool('delete');
     },
 
+    toolDeleteFromScene: function () {
+        return this.tool('delete-from-scene');
+    },
+
     toolClear: function () {
         return this.tool('clear');
     },
@@ -272,6 +277,7 @@ SCg.Editor.prototype = {
             self.toolUndo(),
             self.toolRedo(),
             self.toolDelete(),
+            self.toolDeleteFromScene(),
             self.toolClear(),
             self.toolOpen(),
             self.toolSave(),
@@ -284,6 +290,7 @@ SCg.Editor.prototype = {
             self.hideTool(self.toolSetContent());
             self.hideTool(self.toolChangeType());
             self.hideTool(self.toolDelete());
+            self.hideTool(self.toolDeleteFromScene());
         });
         select.click(function () {
             self.scene.setEditMode(SCgEditMode.SCgModeSelect);
@@ -712,6 +719,29 @@ SCg.Editor.prototype = {
             select.button('toggle');
         });
 
+        this.toolDeleteFromScene().click(async function () {
+            if (self.scene.selected_objects.length > 0) {
+                if (self.scene.selected_objects.length > 1) {
+                    const cantDelete = [];
+                    const deletableObjects = await Promise.all(self.scene.selected_objects.filter(obj => obj.sc_addr).map(async (obj) => {
+                        const canDelete = await self.checkCanDelete(obj.sc_addr);
+                        if (canDelete) {
+                            cantDelete.push(obj);
+                        } else {
+                            return obj;
+                        }
+                    })).then(arr => arr.filter(Boolean));
+
+                    function diffArray(arr1, arr2) {
+                        return arr1.filter(item => !arr2.includes(item));
+                    }
+                    self.scene.deleteObjects(diffArray(self.scene.selected_objects, cantDelete));
+                } else {
+                    self.scene.deleteObjects(self.scene.selected_objects);
+                }
+            }
+        });
+
         this.toolClear().click(function () {
             self._disableTool(self.toolClear());
             self.scene.clear = true;
@@ -832,12 +862,14 @@ SCg.Editor.prototype = {
             this.hideTool(this.toolChangeType());
             this.hideTool(this.toolSetContent());
             this.hideTool(this.toolDelete());
+            this.hideTool(this.toolDeleteFromScene());
         }
         else if (this.canEdit) {
             this.hideTool(this.toolChangeIdtf());
             this.hideTool(this.toolChangeType());
             this.hideTool(this.toolSetContent());
             this.hideTool(this.toolDelete());
+            this.hideTool(this.toolDeleteFromScene());
 
             if (this.scene.selected_objects.length > 0 && !this.scene.clear) {
                 if (this.scene.selected_objects.length === 1) {
@@ -899,6 +931,7 @@ SCg.Editor.prototype = {
         update_tool(this.toolChangeType());
         update_tool(this.toolSetContent());
         update_tool(this.toolDelete());
+        update_tool(this.toolDeleteFromScene());
         update_tool(this.toolClear());
         update_tool(this.toolZoomIn());
         update_tool(this.toolZoomOut());
