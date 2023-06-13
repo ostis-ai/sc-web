@@ -458,7 +458,7 @@ function scgScStructTranslator(_editor, _sandbox) {
                         let scConstruction = new sc.ScConstruction();
                         const { data, type, keynode } = infoConstruction(link);
                         let scLinkContent = new sc.ScLinkContent(data, type);
-                        scConstruction.createLink(sc.ScType.LinkConst, scLinkContent, 'link');
+                        scConstruction.createLink(sc.ScType.Link, scLinkContent, 'link');
                         let result = await scClient.createElements(scConstruction);
                         let linkAddr = result[scConstruction.getIndex('link')].value;
                         link.setScAddr(linkAddr);
