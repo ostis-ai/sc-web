@@ -286,17 +286,21 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scene, con
         setTimeout(() => {
             if (self.scene) {
                 const [conteinerWidth, conteinerHeight] = self.scene.getContainerSize();
-                const scgHeight = self.scene.render.d3_container[0][0].getBoundingClientRect().height + (conteinerHeight/2 + 350);
-                const scgWidth = self.scene.render.d3_container[0][0].getBoundingClientRect().width + (conteinerWidth/2 + 350);
+                const deltaTranslate = 0.3;
+                const addSize = 350;
+
+                const scgHeight = self.scene.render.d3_container[0][0].getBoundingClientRect().height + (conteinerHeight/2 + addSize);
+                const scgWidth = self.scene.render.d3_container[0][0].getBoundingClientRect().width + (conteinerWidth/2 + addSize);
 
                 const containerAspectRatio = conteinerHeight / conteinerWidth;
                 const graphAspectRatio = scgHeight / scgWidth;
                 
                 const scale = containerAspectRatio < graphAspectRatio ? 
                 conteinerWidth / scgWidth : 
-                conteinerHeight / scgHeight;
+                    conteinerHeight / scgHeight;
                 
-                self.scene.render._changeContainerTransform([conteinerWidth * 0.3, conteinerHeight * 0.3], scale);
+                
+                self.scene.render._changeContainerTransform([conteinerWidth * deltaTranslate, conteinerHeight * deltaTranslate], scale);
             }
         },300)
     }

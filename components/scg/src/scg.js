@@ -791,7 +791,9 @@ SCg.Editor.prototype = {
 
         this.toolAutoSize().click(function () {
             const [conteinerWidth, conteinerHeight] = self.scene.getContainerSize();
-            self.scene.render._changeContainerTransform([conteinerWidth * 0.3, conteinerHeight * 0.3], 0.5)
+            const deltaTranslate = 0.3;
+            const scale = 0.5;
+            self.scene.render._changeContainerTransform([conteinerWidth * deltaTranslate, conteinerHeight * deltaTranslate], scale);
         });
 
         this.toolZoomIn().click(function () {

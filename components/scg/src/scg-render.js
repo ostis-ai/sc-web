@@ -360,7 +360,6 @@ SCg.Render.prototype = {
 
     // -------------- update objects --------------------------
     updateObjects: function () {
-        
         var self = this;
         this.d3_nodes.each(function (d) {
 
