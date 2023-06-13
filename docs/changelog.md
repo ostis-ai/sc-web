@@ -67,3 +67,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Migrate from tornado 4.2 to tornado 6.1.0
 - Imrpove README
 - Clean up dependencies installation
+
+### Fixed
+- hide background after tool buttons click
