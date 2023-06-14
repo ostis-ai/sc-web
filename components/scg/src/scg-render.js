@@ -50,6 +50,7 @@ SCg.Render.prototype = {
 
         this.scale = 1;
         var self = this;
+        self.sandbox.updateContent(self.scene, null);
         this.d3_container = this.d3_drawer.append('svg:g')
             .attr("class", "SCgSvg");
 
@@ -359,7 +360,6 @@ SCg.Render.prototype = {
 
     // -------------- update objects --------------------------
     updateObjects: function () {
-
         var self = this;
         this.d3_nodes.each(function (d) {
 
@@ -766,6 +766,12 @@ SCg.Render.prototype = {
     },
 
     _changeContainerTransform: function (translate, scale) {
+        if (translate) {
+            this.translate[0] = translate[0];
+            this.translate[1] = translate[1];
+            this.scale = scale;
+        }
+        
         this.d3_container.attr("transform", "translate(" + this.translate + ")scale(" + this.scale + ")");
     },
 

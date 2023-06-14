@@ -265,6 +265,7 @@ path.SCgBusPath {
        height: calc(100% - 20px);
        padding-top: 16px;
        padding-bottom: 16px;
+       cursor: auto;
     }
     hr {
        display: none;

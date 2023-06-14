@@ -261,11 +261,16 @@ SCWeb.core.ComponentSandbox.prototype.createViewersForScStructs = function (cont
  * {String} contentType type of content data (@see scClient.getLinkContent). If it's null, then
  * data will be returned as string
  */
-SCWeb.core.ComponentSandbox.prototype.updateContent = async function (contentType) {
+SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scene, contentType) {
     var self = this;
+
+    if (scene) {
+        self.scene = scene;
+    } 
 
     if (this.is_struct && this.eventStructUpdate) {
         const maxNumberOfTriplets = 850;
+        const delayTimeoutAutosize = 300;
         let scTemplate = new sc.ScTemplate();
         scTemplate.triple(
             [new sc.ScAddr(this.addr), "src"],
@@ -278,6 +283,27 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (contentTyp
         for (let triple of result) {
             self.eventStructUpdate(true, triple.get("src").value, triple.get("edge").value);
         }
+
+        setTimeout(() => {
+            if (self.scene) {
+                const [conteinerWidth, conteinerHeight] = self.scene.getContainerSize();
+                const deltaTranslate = 0.1;
+                const addSize = 400;
+
+                const scgHeight = self.scene.render.d3_container[0][0].getBoundingClientRect().height + (conteinerHeight / 2 + addSize);
+                const scgWidth = self.scene.render.d3_container[0][0].getBoundingClientRect().width + (conteinerWidth / 2 + addSize);
+
+                const containerAspectRatio = conteinerHeight / conteinerWidth;
+                const graphAspectRatio = scgHeight / scgWidth;
+                
+                const scale = containerAspectRatio < graphAspectRatio ?
+                    conteinerWidth / scgWidth :
+                    conteinerHeight / scgHeight;
+                
+                
+                self.scene.render._changeContainerTransform([conteinerWidth * deltaTranslate, conteinerHeight * deltaTranslate], scale);
+            }
+        }, delayTimeoutAutosize);
     }
     else {
         let content = await window.scClient.getLinkContents([new sc.ScAddr(this.addr)]);
