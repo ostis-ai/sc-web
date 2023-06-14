@@ -25,34 +25,23 @@ import re
 is_closing = False
 REPO_FILE_EXT = ".path"
 REPO_FILE_PATH = join(dirname(abspath(__file__)), "../repo.path")
-
-
 def signal_handler(signum, frame):
     global is_closing
     is_closing = True
-
-
 def try_exit():
     global is_closing
     if is_closing:
         # clean up here
         tornado.ioloop.IOLoop.instance().stop()
-
-
 def on_shutdown():
     tornado.ioloop.IOLoop.instance().stop()
-
-
 class NoCacheStaticHandler(tornado.web.StaticFileHandler, ABC):
     """ Request static file handlers for development and debug only.
         It disables any caching for static file.
     """
-
     def set_extra_headers(self, path):
         self.set_header('Cache-Control',
                         'no-store, no-cache, must-revalidate, max-age=0')
-
-
 def main():
     logging.getLogger('asyncio').setLevel(logging.WARNING)
     tornado.options.define("static_path", default=join(dirname(abspath(__file__)), "../client/static"),
@@ -166,12 +155,8 @@ def main():
     logger.disabled = False
     logger.info("Close connection with sc-server")
     client.disconnect()
-
-
 scs_paths = set()
 scs_exclude_paths = set()
-
-
 def search_kb_sources(root_path: str):
     if not exists(root_path):
         print(root_path, "does not exist.")
@@ -199,8 +184,6 @@ def search_kb_sources(root_path: str):
         scs_paths.add(root_path)
     return scs_paths, scs_exclude_paths
 # read scs fragments unless they are excluded by repo.path
-
-
 def read_scs_fragments(root_path: str):
     scs_fragments = []
     paths, exclude_paths = search_kb_sources(root_path)
@@ -228,7 +211,5 @@ def read_scs_fragments(root_path: str):
         else:
             continue
     return scs_fragments
-
-
 if __name__ == "__main__":
     main()
