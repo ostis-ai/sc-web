@@ -71,7 +71,7 @@ client/static/components/*/scs*
 client/static/components/*/html*
 
 # css
-client/static/components/*/.css*
+client/static/components/*/*.css
 
 # other
 node_modules
