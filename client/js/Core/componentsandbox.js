@@ -286,8 +286,8 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scene, con
         setTimeout(() => {
             if (self.scene) {
                 const [conteinerWidth, conteinerHeight] = self.scene.getContainerSize();
-                const deltaTranslate = 0.3;
-                const addSize = 350;
+                const deltaTranslate = 0.1;
+                const addSize = 400;
 
                 const scgHeight = self.scene.render.d3_container[0][0].getBoundingClientRect().height + (conteinerHeight/2 + addSize);
                 const scgWidth = self.scene.render.d3_container[0][0].getBoundingClientRect().width + (conteinerWidth/2 + addSize);
