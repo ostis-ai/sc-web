@@ -10,11 +10,11 @@
 #scg-tool-clear {
     margin-top: 2px;
 }
-#scg-tool-undo.active, #scg-tool-redo.active, #scg-tool-change-idtf.active, #scg-tool-set-content.active, #scg-tool-zoomin.active, #scg-tool-zoomout.active, #scg-tool-integrate.active, #scg-tool-open.active, #scg-tool-save.active, #scg-tool-delete.active, #scg-tool-change-type.active {
+#scg-tool-undo.active, #scg-tool-redo.active, #scg-tool-change-idtf.active, #scg-tool-set-content.active, #scg-tool-zoomin.active, #scg-tool-zoomout.active, #scg-tool-integrate.active, #scg-tool-open.active, #scg-tool-save.active, #scg-tool-delete.active, #scg-tool-change-type.active, #scg-tool-autosize.active {
     background:white;
     -webkit-box-shadow: none;
     box-shadow: none;
 }
-#scg-tool-undo.active:hover, #scg-tool-redo.active:hover, #scg-tool-change-idtf.active:hover, #scg-tool-set-content.active:hover, #scg-tool-zoomin.active:hover, #scg-tool-zoomout.active:hover, #scg-tool-integrate.active:hover, #scg-tool-open.active:hover, #scg-tool-save.active:hover, #scg-tool-delete.active:hover, #scg-tool-change-type.active:hover {
+#scg-tool-undo.active:hover, #scg-tool-redo.active:hover, #scg-tool-change-idtf.active:hover, #scg-tool-set-content.active:hover, #scg-tool-zoomin.active:hover, #scg-tool-zoomout.active:hover, #scg-tool-integrate.active:hover, #scg-tool-open.active:hover, #scg-tool-save.active:hover, #scg-tool-delete.active:hover, #scg-tool-change-type.active:hover, #scg-tool-autosize:hover {
     background:#e6e6e6;
 }
