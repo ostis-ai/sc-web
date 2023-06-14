@@ -270,6 +270,7 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scene, con
 
     if (this.is_struct && this.eventStructUpdate) {
         const maxNumberOfTriplets = 850;
+        const delayTimeoutAutosize = 300;
         let scTemplate = new sc.ScTemplate();
         scTemplate.triple(
             [new sc.ScAddr(this.addr), "src"],
@@ -289,20 +290,20 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scene, con
                 const deltaTranslate = 0.1;
                 const addSize = 400;
 
-                const scgHeight = self.scene.render.d3_container[0][0].getBoundingClientRect().height + (conteinerHeight/2 + addSize);
-                const scgWidth = self.scene.render.d3_container[0][0].getBoundingClientRect().width + (conteinerWidth/2 + addSize);
+                const scgHeight = self.scene.render.d3_container[0][0].getBoundingClientRect().height + (conteinerHeight / 2 + addSize);
+                const scgWidth = self.scene.render.d3_container[0][0].getBoundingClientRect().width + (conteinerWidth / 2 + addSize);
 
                 const containerAspectRatio = conteinerHeight / conteinerWidth;
                 const graphAspectRatio = scgHeight / scgWidth;
                 
-                const scale = containerAspectRatio < graphAspectRatio ? 
-                conteinerWidth / scgWidth : 
+                const scale = containerAspectRatio < graphAspectRatio ?
+                    conteinerWidth / scgWidth :
                     conteinerHeight / scgHeight;
                 
                 
                 self.scene.render._changeContainerTransform([conteinerWidth * deltaTranslate, conteinerHeight * deltaTranslate], scale);
             }
-        },300)
+        }, delayTimeoutAutosize);
     }
     else {
         let content = await window.scClient.getLinkContents([new sc.ScAddr(this.addr)]);
