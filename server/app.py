@@ -57,8 +57,7 @@ class NoCacheStaticHandler(tornado.web.StaticFileHandler, ABC):
     """
 
     def set_extra_headers(self, path):
-        self.set_header('Cache-Control',
-                        'no-store, no-cache, must-revalidate, max-age=0')
+        self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
 
 
 def main():
@@ -69,43 +68,28 @@ def main():
     tornado.options.define("templates_path", default=join(dirname(abspath(__file__)), "../client/templates"),
                            help="path to template files directory",
                            type=str)
-    tornado.options.define("event_wait_timeout", default=10,
-                           help="time to wait commands processing", type=int)
-    tornado.options.define("answer_wait_timeout", default=2,
-                           help="time to wait answer getting", type=int)
-    tornado.options.define("idtf_search_limit", default=100,
-                           help="number of maximum results for searching by identifier", type=int)
-    tornado.options.define("host", default="localhost",
-                           help="host name", type=str)
+    tornado.options.define("event_wait_timeout", default=10, help="time to wait commands processing", type=int)
+    tornado.options.define("answer_wait_timeout", default=2, help="time to wait answer getting", type=int)
+    tornado.options.define("idtf_search_limit", default=100, help="number of maximum results for searching by identifier", type=int)
+    tornado.options.define("host", default="localhost", help="host name", type=str)
     tornado.options.define("port", default=8000, help="host port", type=int)
-    tornado.options.define(
-        "server_host", default="localhost", help="host name", type=str)
-    tornado.options.define("server_port", default=8090,
-                           help="host port", type=int)
-    tornado.options.define(
-        "public_url", default="ws://localhost:8090/ws_json", help="public server url", type=str)
-    tornado.options.define("auth_redirect_port",
-                           default=80, help="host port", type=int)
+    tornado.options.define("server_host", default="localhost", help="host name", type=str)
+    tornado.options.define("server_port", default=8090, help="host port", type=int)
+    tornado.options.define("public_url", default="ws://localhost:8090/ws_json", help="public server url", type=str)
+    tornado.options.define("auth_redirect_port", default=80, help="host port", type=int)
 
-    tornado.options.define("google_client_id", default="",
-                           help="client id for google auth", type=str)
-    tornado.options.define("google_client_secret", default="",
-                           help="client secret for google auth", type=str)
+    tornado.options.define("google_client_id", default="", help="client id for google auth", type=str)
+    tornado.options.define("google_client_secret", default="", help="client secret for google auth", type=str)
 
-    tornado.options.define("apiai_subscription_key", default="",
-                           help="subscription key for api.ai", type=str)
-    tornado.options.define("apiai_client_access_token", default="",
-                           help="client access token for api.ai", type=str)
+    tornado.options.define("apiai_subscription_key", default="", help="subscription key for api.ai", type=str)
+    tornado.options.define("apiai_client_access_token", default="", help="client access token for api.ai", type=str)
 
-    tornado.options.define("user_key_expire_time", default=600,
-                           help="user key expire time in seconds", type=int)
+    tornado.options.define("user_key_expire_time", default=600, help="user key expire time in seconds", type=int)
     tornado.options.define("super_emails", default="", help="email of site super administrator (maximum rights)",
                            type=list)
-    tornado.options.define("db_path", default="data.db",
-                           help="path to database file", type=str)
+    tornado.options.define("db_path", default="data.db", help="path to database file", type=str)
 
-    tornado.options.define(
-        "cfg", default="", help="path to configuration file", type=str)
+    tornado.options.define("cfg", default="", help="path to configuration file", type=str)
 
     # parse config
     tornado.options.parse_command_line()
@@ -141,8 +125,7 @@ def main():
     rules = [
         (r"/", MainHandler),
 
-        (r"/static/(.*)", NoCacheStaticHandler,
-         {"path": tornado.options.options.static_path}),
+        (r"/static/(.*)", NoCacheStaticHandler, {"path": tornado.options.options.static_path}),
 
         # api
         (r"/api/context/", api.ContextMenu),
@@ -184,11 +167,9 @@ def main():
     application.listen(tornado.options.options.port)
     tornado.ioloop.PeriodicCallback(try_exit, 1000).start()
     app_instance = tornado.ioloop.IOLoop.instance()
-    signal.signal(signal.SIGINT, lambda sig,
-                  frame: app_instance.add_callback_from_signal(on_shutdown))
+    signal.signal(signal.SIGINT, lambda sig, frame: app_instance.add_callback_from_signal(on_shutdown))
     app_instance.start()
-    logging.info(
-        f'The app is running and listening on port {options_dict.server_port}')
+    logging.info(f'The app is running and listening on port {options_dict.server_port}')
 
     logger.disabled = False
     logger.info("Close connection with sc-server")
@@ -205,8 +186,7 @@ def search_kb_sources(root_path: str):
         exit(1)
 
     elif splitext(root_path)[1] == REPO_FILE_EXT:
-        logger.debug(
-            f"{root_path} has the correct extension \'{REPO_FILE_EXT}\'")
+        logger.debug(f"{root_path} has the correct extension \'{REPO_FILE_EXT}\'")
         with open(join(root_path), 'r', encoding='utf-8') as root_file:
             logger.debug(f"Opening {root_path}")
             for line in root_file.readlines():
