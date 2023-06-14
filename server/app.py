@@ -69,8 +69,10 @@ def main():
                            help="path to template files directory",
                            type=str)
     tornado.options.define("event_wait_timeout", default=10, help="time to wait commands processing", type=int)
-    tornado.options.define("answer_wait_timeout", default=2, help="time to wait answer getting", type=int)
-    tornado.options.define("idtf_search_limit", default=100, help="number of maximum results for searching by identifier", type=int)
+    tornado.options.define("answer_wait_timeout", default=2,
+                           help="time to wait answer getting", type=int)
+    tornado.options.define("idtf_search_limit", default=100,
+                           help="number of maximum results for searching by identifier", type=int)
     tornado.options.define("host", default="localhost", help="host name", type=str)
     tornado.options.define("port", default=8000, help="host port", type=int)
     tornado.options.define("server_host", default="localhost", help="host name", type=str)
