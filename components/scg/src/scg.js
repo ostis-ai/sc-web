@@ -117,7 +117,20 @@ SCg.Editor.prototype = {
                                 "Error to get edges type change panel");
                         },
                         complete: function () {
-                            self.bindToolEvents();
+                            $.ajax({
+                                url: 'static/components/html/demo-scg-delete-panel.html',
+                                dataType: 'html',
+                                success: function (response) {
+                                    self.delete_panel_content = response;
+                                },
+                                error: function () {
+                                    SCgDebug.error(
+                                        "Error to get delete panel");
+                                },
+                                complete: function () {
+                                    self.bindToolEvents();
+                                }
+                            })
                         }
                     });
                 }
@@ -690,7 +703,58 @@ SCg.Editor.prototype = {
         });
 
         this.toolDelete().click(async function () {
-            if (self.scene.selected_objects.length > 0) {
+            if (!self.scene.selected_objects.length) return;
+
+            self.scene.setModal(SCgModalMode.SCgModalType);
+            self.onModalChanged();
+            var tool = $(this);
+
+            function stop_modal() {
+                tool.popover('destroy');
+                self.scene.setEditMode(SCgEditMode.SCgModeSelect);
+                self.scene.setModal(SCgModalMode.SCgModalNone);
+            }
+
+            el = $(this);
+            el.popover({
+                content: self.delete_panel_content,
+                container: container,
+                html: true,
+                delay: {
+                    show: 500,
+                    hide: 100
+                }
+            }).popover('show');
+            cont.find('.popover-content').append(
+                '<button id="scg-close-btn" type="button" class="close scg-close-btn-fragments-window">&times;</button>'
+            );
+
+            if (self.scene.selected_objects.length === 1) {
+                const isDeletable = await self.checkCanDelete(
+                    self.scene.selected_objects[0].sc_addr
+                );
+                isDeletable
+                    ? cont.find('.delete-from-db-btn').addClass('empty-delete-btn')
+                    : null;
+            } else {
+                const result = await Promise.all(
+                    self.scene.selected_objects.map(async (selected_object) => await self.checkCanDelete(selected_object.sc_addr))
+                );
+                result.every((elem) => elem === false)
+                    ? null
+                    : cont.find('.delete-from-db-btn').addClass('empty-delete-btn')
+            }
+
+            cont.find('.popover').addClass('scg-tool-fragments-popover');
+            cont.find('.popover-content').addClass('scg-tool-fragments-popover-content');
+            cont.find('.popover>.arrow').addClass('scg-tool-popover-arrow-hide');
+            
+            cont.find('#scg-close-btn').click(function () {
+                stop_modal();
+                select.button('toggle');
+            });
+
+            cont.find('.delete-from-db-btn').click(async function () {
                 if (self.scene.selected_objects.length > 1) {
                     const cantDelete = [];
                     const deletableObjects = await Promise.all(self.scene.selected_objects.filter(obj => obj.sc_addr).map(async (obj) => {
@@ -711,9 +775,18 @@ SCg.Editor.prototype = {
                     self.scene.deleteObjects(self.scene.selected_objects);
                     self.scene.addDeletedObjects(self.scene.selected_objects);
                 }
-            }
-            self.hideTool(self.toolDelete())
-            select.button('toggle');
+                await updateConfirmedData();
+                stop_modal();
+                self.hideTool(self.toolDelete())
+                select.button('toggle');
+            })
+
+            cont.find('.delete-from-scene-btn').click(async function () {
+                self.scene.deleteObjects(self.scene.selected_objects);
+                stop_modal();
+                self.hideTool(self.toolDelete())
+                select.button('toggle');
+            })
         });
 
         this.toolClear().click(function () {

@@ -348,3 +348,36 @@ path.SCgBusPath {
 .tt-dropdown-menu .tt-dataset-idtf .tt-suggestion:hover {
     background-color: #428bca !important;
 }
+
+.demo-fragments-btn {
+    width: 100%;
+    padding: 8px 16px;
+    background-color: #ffffff;
+    border: none;
+    outline: none;
+
+    font-family: "Roboto";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 23px;
+    color: #454545;
+    transition: all 0.3s ease;
+}
+
+.demo-fragments-btn:hover {
+    background-color: #f6f6f6;
+}
+
+.demo-fragments-btn:active {
+    background-color: #ebedff;
+}
+
+.demo-fragments-btn:last-child {
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.empty-delete-btn {
+    display: none;
+}
