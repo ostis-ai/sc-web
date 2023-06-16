@@ -21,14 +21,13 @@ SCgCommandCreateLink.prototype = {
 
     execute: function () {
         if (this.link == null) {
-            this.link = SCg.Creator.createLink(new SCg.Vector3(this.x, this.y, 0), '');
+            this.link = SCg.Creator.createLink(sc_type_link | sc_type_const, new SCg.Vector3(this.x, this.y, 0), '');
             this.scene.appendLink(this.link);
             this.scene.updateRender();
             this.scene.clearSelection();
             this.scene.appendSelection(this.link);
         } else {
             this.scene.appendLink(this.link);
-            this.link.update();
         }
     }
 

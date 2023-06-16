@@ -79,7 +79,7 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
                     }
                 } else if (type & sc_type_link) {
                     var containerId = 'scg-window-' + sandbox.addr + '-' + addr + '-' + new Date().getUTCMilliseconds();
-                    var model_link = SCg.Creator.createLink(randomPos(), containerId);
+                    var model_link = SCg.Creator.createLink(sc_type_link, randomPos(), containerId);
                     editor.scene.appendLink(model_link);
                     editor.scene.objects[addr] = model_link;
                     model_link.setScAddr(addr);
