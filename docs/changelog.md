@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Translate system identifiers in scg-editor
 - View sc-links identifiers
 - Load sc-links identifiers from gwf
 - Not erase elements from basic ontology structure in scg-editor
