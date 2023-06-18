@@ -182,9 +182,10 @@ function scgScStructTranslator(_editor, _sandbox) {
     var currentLanguage = sandbox.getCurrentLanguage();
     var translateIdentifier = async function (obj) {
         if (currentLanguage) {
+            let scAddr = new sc.ScAddr(obj.sc_addr);
             let scTemplate = new sc.ScTemplate();
             scTemplate.tripleWithRelation(
-                new sc.ScAddr(obj.sc_addr),
+                scAddr,
                 sc.ScType.EdgeDCommonVar,
                 [sc.ScType.LinkVar, 'link'],
                 sc.ScType.EdgeAccessVarPosPerm,
@@ -198,6 +199,21 @@ function scgScStructTranslator(_editor, _sandbox) {
             let result = await scClient.templateGenerate(scTemplate);
             let linkAddr = result.get('link');
             await scClient.setLinkContents([new sc.ScLinkContent(obj.text, sc.ScLinkContentType.String, linkAddr)]);
+
+            // Checks if identifier is allowed to be system identifier (only letter, digits, '-' and '_')
+            if (/^[a-zA-Z0-9_-]+$/.test(obj.text)) {
+                let systemIdtfTemplate = new sc.ScTemplate();
+                systemIdtfTemplate.tripleWithRelation(
+                    scAddr,
+                    sc.ScType.EdgeDCommonVar,
+                    [sc.ScType.LinkVar, 'link'],
+                    sc.ScType.EdgeAccessVarPosPerm,
+                    new sc.ScAddr(window.scKeynodes['nrel_system_identifier'])
+                );
+                let systemIdtfResult = await scClient.templateGenerate(systemIdtfTemplate);
+                let systemIdtfAddr = systemIdtfResult.get('link');
+                await scClient.setLinkContents([new sc.ScLinkContent(obj.text, sc.ScLinkContentType.String, systemIdtfAddr)]);
+            }
         } else {
             throw new Error();
         }
