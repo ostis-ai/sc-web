@@ -118,7 +118,7 @@ SCg.Editor.prototype = {
                         },
                         complete: function () {
                             $.ajax({
-                                url: 'static/components/html/demo-scg-delete-panel.html',
+                                url: 'static/components/html/scg-delete-panel.html',
                                 dataType: 'html',
                                 success: function (response) {
                                     self.delete_panel_content = response;
@@ -730,15 +730,19 @@ SCg.Editor.prototype = {
             );
 
             if (self.scene.selected_objects.length === 1) {
+                if(!self.scene.selected_objects[0].sc_addr) {
+                    cont.find('.delete-from-db-btn').addClass('empty-delete-btn')
+                }
                 const isDeletable = await self.checkCanDelete(
                     self.scene.selected_objects[0].sc_addr
                 );
-                isDeletable
-                    ? cont.find('.delete-from-db-btn').addClass('empty-delete-btn')
-                    : null;
+                if(isDeletable) cont.find('.delete-from-db-btn').addClass('empty-delete-btn')
             } else {
                 const result = await Promise.all(
-                    self.scene.selected_objects.map(async (selected_object) => await self.checkCanDelete(selected_object.sc_addr))
+                    self.scene.selected_objects.map(async (selected_object) => {
+                        if(!selected_object.sc_addr) return null
+                        return await self.checkCanDelete(selected_object.sc_addr)
+                    })
                 );
                 result.every((elem) => elem === false)
                     ? null
