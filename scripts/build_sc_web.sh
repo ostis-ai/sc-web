@@ -14,4 +14,4 @@ stage "Build sc-web"
 cd "${SC_WEB_PATH}"
 npm run build
 
-stage "SC-web successfully built"
+stage "SC-web built successfully"
