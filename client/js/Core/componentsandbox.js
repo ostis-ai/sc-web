@@ -68,7 +68,7 @@ SCWeb.core.ComponentSandbox = function (options) {
             new sc.ScAddr(this.addr),
             sc.ScEventType.AddOutgoingEdge,
             async (elAddr, edge, otherAddr) => {
-                if (self.eventStructUpdate && ((await scClient.checkElements([edge]))[0].value & sc_type_arc_pos_const_perm)) {
+                if (self.eventStructUpdate && ((await scClient.checkElements([edge]))[0].equal(sc.ScType.EdgeAccessConstPosPerm))) {
                     self.eventStructUpdate(true, elAddr.value, edge.value);
                 }
             });
@@ -76,7 +76,7 @@ SCWeb.core.ComponentSandbox = function (options) {
             new sc.ScAddr(this.addr),
             sc.ScEventType.RemoveOutgoingEdge,
             async (elAddr, edge, otherAddr) => {
-                if (self.eventStructUpdate && ((await scClient.checkElements([edge]))[0].value & sc_type_arc_pos_const_perm)) {
+                if (self.eventStructUpdate && !(await window.scHelper.checkEdge(elAddr.value, sc.ScType.EdgeAccessConstPosPerm, otherAddr.value))) {
                     self.eventStructUpdate(false, elAddr.value, edge.value);
                 }
             });
