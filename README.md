@@ -57,7 +57,7 @@ npm install
 ### Build the frontend
 
 ```sh
-npm run build
+./build_sc_web.sh
 ```
 
 ### Run the server
@@ -68,7 +68,7 @@ Use the included script to launch the backend server:
 
 ```sh
 cd sc-web/scripts
-./run_scweb.sh`
+./run_sc_web.sh`
 ```
 
 The UI will listen at localhost:8000.

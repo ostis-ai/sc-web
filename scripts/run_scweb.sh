@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
-APP_ROOT_PATH=$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && cd .. && pwd)
+set -eo pipefail
 
-python3 "$APP_ROOT_PATH"/server/app.py "$@"
+YELLOW='\033[01;33m'
+NC='\033[0m' # No Color
+echo -e "${YELLOW}[WARNING] This script was deprecated in sc-web 0.8.0.
+Please, use scripts/run_sc_web.sh instead. It will be removed in sc-web 0.9.0.${NC}"
+
+./run_sc_web.sh "$@"
