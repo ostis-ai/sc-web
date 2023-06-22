@@ -121,6 +121,7 @@ SCg.Editor.prototype = {
                                 url: 'static/components/html/scg-delete-panel.html',
                                 dataType: 'html',
                                 success: function (response) {
+                                    // DeleteButtons.init(),
                                     self.delete_panel_content = response;
                                 },
                                 error: function () {
@@ -132,6 +133,9 @@ SCg.Editor.prototype = {
                                 }
                             })
                         }
+                        // complete: function () {
+                        //     self.bindToolEvents();
+                        // }
                     });
                 }
             });
@@ -705,6 +709,8 @@ SCg.Editor.prototype = {
         this.toolDelete().click(async function () {
             if (!self.scene.selected_objects.length) return;
 
+            DeleteButtons.init();
+
             self.scene.setModal(SCgModalMode.SCgModalType);
             self.onModalChanged();
             var tool = $(this);
@@ -758,7 +764,9 @@ SCg.Editor.prototype = {
                 select.button('toggle');
             });
 
-            cont.find('.delete-from-db-btn').click(async function () {
+            cont.find('.delete-from-db-btn').click(async function (e) {
+                e.stopImmediatePropagation();
+                console.log('удалить из БД');
                 if (self.scene.selected_objects.length > 1) {
                     const cantDelete = [];
                     const deletableObjects = await Promise.all(self.scene.selected_objects.filter(obj => obj.sc_addr).map(async (obj) => {
@@ -782,10 +790,11 @@ SCg.Editor.prototype = {
                 await updateConfirmedData();
                 stop_modal();
                 self.hideTool(self.toolDelete())
-                select.button('toggle');
+                select.button('toggle');  
             })
 
-            cont.find('.delete-from-scene-btn').click(async function () {
+            cont.find('.delete-from-scene-btn').click(async function (e) {
+                e.stopImmediatePropagation();
                 self.scene.deleteObjects(self.scene.selected_objects);
                 stop_modal();
                 self.hideTool(self.toolDelete())
