@@ -17,11 +17,11 @@ SCg.Creator.createNode = function (sc_type, pos, text) {
     });
 };
 
-SCg.Creator.createLink = function (pos, containerId, text) {
+SCg.Creator.createLink = function (sc_type, pos, containerId, text) {
     var link = new SCg.ModelLink({
         position: pos.clone(),
         scale: new SCg.Vector2(50, 50),
-        sc_type: sc_type_link,
+        sc_type: sc_type,
         containerId: containerId,
         text: text
     });
