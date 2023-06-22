@@ -766,31 +766,56 @@ SCg.Editor.prototype = {
 
             cont.find('.delete-from-db-btn').click(async function (e) {
                 e.stopImmediatePropagation();
-                console.log('удалить из БД');
-                if (self.scene.selected_objects.length > 1) {
-                    const cantDelete = [];
-                    const deletableObjects = await Promise.all(self.scene.selected_objects.filter(obj => obj.sc_addr).map(async (obj) => {
-                        const canDelete = await self.checkCanDelete(obj.sc_addr);
-                        if (canDelete) {
-                            cantDelete.push(obj);
-                        } else {
-                            return obj;
+                if (self.scene.selected_objects.length > 0) {
+                    if (self.scene.selected_objects.length > 1) {
+                        const cantDelete = [];
+                        const deletableObjects = await Promise.all(self.scene.selected_objects.filter(obj => obj.sc_addr).map(async (obj) => {
+                            const canDelete = await self.checkCanDelete(obj.sc_addr);
+                            if (canDelete) {
+                                cantDelete.push(obj);
+                            } else {
+                                return obj;
+                            }
+                        })).then(arr => arr.filter(Boolean));
+    
+                        function diffArray(arr1, arr2) {
+                            return arr1.filter(item => !arr2.includes(item));
                         }
-                    })).then(arr => arr.filter(Boolean));
-
-                    function diffArray(arr1, arr2) {
-                        return arr1.filter(item => !arr2.includes(item));
+                        self.scene.deleteObjects(diffArray(self.scene.selected_objects, cantDelete));
+                        self.scene.addDeletedObjects(deletableObjects);
+                    } else {
+                        self.scene.deleteObjects(self.scene.selected_objects);
+                        self.scene.addDeletedObjects(self.scene.selected_objects);
                     }
-                    self.scene.deleteObjects(diffArray(self.scene.selected_objects, cantDelete));
-                    self.scene.addDeletedObjects(deletableObjects);
-                } else {
-                    self.scene.deleteObjects(self.scene.selected_objects);
-                    self.scene.addDeletedObjects(self.scene.selected_objects);
                 }
-                await updateConfirmedData();
-                stop_modal();
                 self.hideTool(self.toolDelete())
-                select.button('toggle');  
+                stop_modal();
+                select.button('toggle');
+                // if (self.scene.selected_objects.length > 1) {
+                //     const cantDelete = [];
+                //     const deletableObjects = await Promise.all(self.scene.selected_objects.filter(obj => obj.sc_addr).map(async (obj) => {
+                //         const canDelete = await self.checkCanDelete(obj.sc_addr);
+                //         if (canDelete) {
+                //             cantDelete.push(obj);
+                //         } else {
+                //             return obj;
+                //         }
+                //     })).then(arr => arr.filter(Boolean));
+
+                //     function diffArray(arr1, arr2) {
+                //         return arr1.filter(item => !arr2.includes(item));
+                //     }
+                //     self.scene.deleteObjects(diffArray(self.scene.selected_objects, cantDelete));
+                //     self.scene.addDeletedObjects(deletableObjects);
+                // } else {
+                //     self.scene.deleteObjects(self.scene.selected_objects);
+                //     self.scene.addDeletedObjects(self.scene.selected_objects);
+                // }
+                // self.scene.deleteObjects(self.scene.selected_objects);
+                //     self.scene.addDeletedObjects(self.scene.selected_objects);
+                // stop_modal();
+                // self.hideTool(self.toolDelete())
+                // select.button('toggle');  
             })
 
             cont.find('.delete-from-scene-btn').click(async function (e) {

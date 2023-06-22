@@ -351,7 +351,7 @@ path.SCgBusPath {
 
 .delete-fragments-btn {
     width: 100%;
-    padding: 8px 16px;
+    padding: 4px 8px;
     background-color: #ffffff;
     border: none;
     outline: none;
@@ -359,7 +359,7 @@ path.SCgBusPath {
     font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
     font-style: normal;
     font-weight: 400;
-    font-size: 20px;
+    font-size: 16px;
     line-height: 23px;
     color: #454545;
     transition: all 0.3s ease;
