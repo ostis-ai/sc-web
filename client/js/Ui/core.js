@@ -28,7 +28,6 @@ SCWeb.ui.Core = {
               SCWeb.ui.WindowManager.init(data),
               SCWeb.ui.SearchPanel.init(),
               SCWeb.ui.ExpertModePanel.init(),
-            //   SCWeb.ui.DeleteScgButtons.init(),
               SCWeb.ui.KeyboardHandler.init(SCWeb.ui.WindowManager),
               self.resolveElementsAddr('body'),
             ]).then(function () {

@@ -121,7 +121,6 @@ SCg.Editor.prototype = {
                                 url: 'static/components/html/scg-delete-panel.html',
                                 dataType: 'html',
                                 success: function (response) {
-                                    // DeleteButtons.init(),
                                     self.delete_panel_content = response;
                                 },
                                 error: function () {
@@ -133,9 +132,6 @@ SCg.Editor.prototype = {
                                 }
                             })
                         }
-                        // complete: function () {
-                        //     self.bindToolEvents();
-                        // }
                     });
                 }
             });
@@ -791,31 +787,6 @@ SCg.Editor.prototype = {
                 self.hideTool(self.toolDelete())
                 stop_modal();
                 select.button('toggle');
-                // if (self.scene.selected_objects.length > 1) {
-                //     const cantDelete = [];
-                //     const deletableObjects = await Promise.all(self.scene.selected_objects.filter(obj => obj.sc_addr).map(async (obj) => {
-                //         const canDelete = await self.checkCanDelete(obj.sc_addr);
-                //         if (canDelete) {
-                //             cantDelete.push(obj);
-                //         } else {
-                //             return obj;
-                //         }
-                //     })).then(arr => arr.filter(Boolean));
-
-                //     function diffArray(arr1, arr2) {
-                //         return arr1.filter(item => !arr2.includes(item));
-                //     }
-                //     self.scene.deleteObjects(diffArray(self.scene.selected_objects, cantDelete));
-                //     self.scene.addDeletedObjects(deletableObjects);
-                // } else {
-                //     self.scene.deleteObjects(self.scene.selected_objects);
-                //     self.scene.addDeletedObjects(self.scene.selected_objects);
-                // }
-                // self.scene.deleteObjects(self.scene.selected_objects);
-                //     self.scene.addDeletedObjects(self.scene.selected_objects);
-                // stop_modal();
-                // self.hideTool(self.toolDelete())
-                // select.button('toggle');  
             })
 
             cont.find('.delete-from-scene-btn').click(async function (e) {
