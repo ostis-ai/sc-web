@@ -67,16 +67,16 @@ SCWeb.core.ComponentSandbox = function (options) {
         let addArcEventRequest = new sc.ScEventParams(
             new sc.ScAddr(this.addr),
             sc.ScEventType.AddOutgoingEdge,
-            (elAddr, edge, otherAddr) => {
-                if (self.eventStructUpdate) {
+            async (elAddr, edge, otherAddr) => {
+                if (self.eventStructUpdate && ((await scClient.checkElements([edge]))[0].equal(sc.ScType.EdgeAccessConstPosPerm))) {
                     self.eventStructUpdate(true, elAddr.value, edge.value);
                 }
             });
         let removeArcEventRequest = new sc.ScEventParams(
             new sc.ScAddr(this.addr),
             sc.ScEventType.RemoveOutgoingEdge,
-            (elAddr, edge, otherAddr) => {
-                if (self.eventStructUpdate) {
+            async (elAddr, edge, otherAddr) => {
+                if (self.eventStructUpdate && !(await window.scHelper.checkEdge(elAddr.value, sc.ScType.EdgeAccessConstPosPerm, otherAddr.value))) {
                     self.eventStructUpdate(false, elAddr.value, edge.value);
                 }
             });
