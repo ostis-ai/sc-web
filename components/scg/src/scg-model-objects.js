@@ -36,19 +36,19 @@ SCg.ModelObject = function (options) {
     if (options.scaleElem) {
         this.scaleElem = options.scaleElem;
     } else {
-        this.scaleElem = 1;
+        this.scaleElem;
     }
     
     if (options.opacityElem) {
         this.opacityElem = options.opacityElem;
     } else {
-        this.opacityElem = 1;
+        this.opacityElem;
     }
 
     if (options.widthEdge) {
         this.widthEdge = options.widthEdge;
     } else {
-        this.widthEdge = 8;
+        this.widthEdge;
     }
 
     if (options.sc_type) {
@@ -77,9 +77,9 @@ SCg.ModelObject = function (options) {
     this.scene = null;
     this.bus = null;
     this.contour = null;
-    this.scaleElem = 1;
-    this.opacityElem = 1;
-    this.widthEdge = 8;
+    this.scaleElem = 1; // default value
+    this.opacityElem = 1; // default value
+    this.widthEdge = 8; // default value
 
 };
 
