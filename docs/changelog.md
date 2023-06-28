@@ -62,6 +62,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - API to initiate an action
 - Identifiers indexing for search optimization
 - Add scg view only mode and it's configuration support in scg iframe
+- Displaying elements in the SCg depending on their distance from the root element
 
 ### Changed
 - Migrate tornado server from python2 to python3
