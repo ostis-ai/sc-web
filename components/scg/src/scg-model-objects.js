@@ -33,6 +33,23 @@ SCg.ModelObject = function (options) {
     } else {
         this.scale = new SCg.Vector2(20.0, 20.0);
     }
+    if (options.scaleElem) {
+        this.scaleElem = options.scaleElem;
+    } else {
+        this.scaleElem = 1; // default value, 100% natural size
+    }
+    
+    if (options.opacityElem) {
+        this.opacityElem = options.opacityElem;
+    } else {
+        this.opacityElem = 1; // default value, 100% natural size
+    }
+
+    if (options.widthEdge) {
+        this.widthEdge = options.widthEdge;
+    } else {
+        this.widthEdge = 6.5; // default value, 100% natural size
+    }
 
     if (options.sc_type) {
         this.sc_type = options.sc_type;
@@ -60,6 +77,7 @@ SCg.ModelObject = function (options) {
     this.scene = null;
     this.bus = null;
     this.contour = null;
+
 };
 
 SCg.ModelObject.prototype = {
@@ -95,6 +113,46 @@ SCg.ModelObject.prototype.setPosition = function (pos) {
  */
 SCg.ModelObject.prototype.setScale = function (scale) {
     this.scale = scale;
+    this.need_observer_sync = true;
+
+    this.requestUpdate();
+    this.update();
+};
+
+SCg.ModelObject.prototype.setScaleElem = function (scale) {
+    this.scaleElem = scale;
+    this.need_observer_sync = true;
+
+    this.requestUpdate();
+    this.update();
+};
+
+SCg.ModelObject.prototype.setOpacityElem = function (opacity) {
+    this.opacityElem = opacity;
+    this.need_observer_sync = true;
+
+    this.requestUpdate();
+    this.update();
+};
+
+SCg.ModelObject.prototype.setStrokeElem = function (stroke) {
+    this.strokeElem = stroke;
+    this.need_observer_sync = true;
+
+    this.requestUpdate();
+    this.update();
+};
+
+SCg.ModelObject.prototype.setFillElem = function (fill) {
+    this.fillElem = fill;
+    this.need_observer_sync = true;
+
+    this.requestUpdate();
+    this.update();
+};
+
+SCg.ModelObject.prototype.setWidthEdge = function (width) {
+    this.widthEdge = width;
     this.need_observer_sync = true;
 
     this.requestUpdate();

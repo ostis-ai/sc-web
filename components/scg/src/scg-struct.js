@@ -53,20 +53,52 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
                 var task = batch[i];
                 var addr = task[0];
                 var type = task[1];
+                var addrNodeorLink = task[2];
+                var addrEdge = task[4];
+                var addrElemEdgeEnd = task[3];
 
-                if (editor.scene.getObjectByScAddr(addr))
-                    continue;
+                if (!addrNodeorLink && sandbox.mainElement) addrNodeorLink = { node: 1.8, link: 1.5, opacity: 1, widthEdge: 7.5, stroke: '#1E90FF', fill: '#1E90FF' };
+                if (!addrEdge && sandbox.mainElement) addrEdge = { node: 1.8, link: 1.5, opacity: 1, widthEdge: 7.5, stroke: '#1E90FF', fill: '#1E90FF' };
+
+                let newMainNode = editor.scene.getObjectByScAddr(addr);
+                if (newMainNode) {
+                    if (newMainNode instanceof SCg.ModelEdge) {
+                        newMainNode.setOpacityElem(addrEdge.opacity);
+                        newMainNode.setWidthEdge(addrEdge.widthEdge);
+                        newMainNode.setStrokeElem(addrEdge.stroke);
+                        newMainNode.setFillElem(addrEdge.fill);
+                        continue;
+                    }
+                    if (newMainNode instanceof SCg.ModelNode) {
+                        newMainNode.setScaleElem(addrNodeorLink.node);
+                        newMainNode.setOpacityElem(addrNodeorLink.opacity);
+                        newMainNode.setStrokeElem(addrNodeorLink.stroke);
+                        newMainNode.setFillElem(addrNodeorLink.fill);
+                        continue;
+                    }
+                    if (newMainNode instanceof SCg.ModelLink) {
+                        newMainNode.setScaleElem(addrNodeorLink.link);
+                        newMainNode.setOpacityElem(addrNodeorLink.opacity);
+                        newMainNode.setStrokeElem(addrNodeorLink.stroke);
+                        newMainNode.setFillElem(addrNodeorLink.fill);
+                        continue;
+                    }
+                }
 
                 if (type & sc_type_node) {
                     var model_node = SCg.Creator.createNode(type, randomPos(), '');
                     editor.scene.appendNode(model_node);
                     editor.scene.objects[addr] = model_node;
                     model_node.setScAddr(addr);
+                    model_node.setScaleElem(addrNodeorLink.node);
+                    model_node.setOpacityElem(addrNodeorLink.opacity);
+                    model_node.setStrokeElem(addrNodeorLink.stroke);
+                    model_node.setFillElem(addrNodeorLink.fill);
                     model_node.setObjectState(SCgObjectState.FromMemory);
                     resolveIdtf(addr, model_node);
                 } else if (type & sc_type_arc_mask) {
-                    var bObj = editor.scene.getObjectByScAddr(task[2]);
-                    var eObj = editor.scene.getObjectByScAddr(task[3]);
+                    var bObj = editor.scene.getObjectByScAddr(addrNodeorLink);
+                    var eObj = editor.scene.getObjectByScAddr(addrElemEdgeEnd);
                     if (!bObj || !eObj) {
                         tasks.push(task);
                     } else {
@@ -74,6 +106,10 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
                         editor.scene.appendEdge(model_edge);
                         editor.scene.objects[addr] = model_edge;
                         model_edge.setScAddr(addr);
+                        model_edge.setOpacityElem(addrEdge.opacity);
+                        model_edge.setWidthEdge(addrEdge.widthEdge);
+                        model_edge.setStrokeElem(addrEdge.stroke);
+                        model_edge.setFillElem(addrEdge.fill);
                         model_edge.setObjectState(SCgObjectState.FromMemory);
                         resolveIdtf(addr, model_edge);
                     }
@@ -83,12 +119,15 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
                     editor.scene.appendLink(model_link);
                     editor.scene.objects[addr] = model_link;
                     model_link.setScAddr(addr);
+                    model_link.setScaleElem(addrNodeorLink.link);
+                    model_link.setOpacityElem(addrNodeorLink.opacity);
+                    model_link.setStrokeElem(addrNodeorLink.stroke);
+                    model_link.setFillElem(addrNodeorLink.fill);
                     model_link.setObjectState(SCgObjectState.FromMemory);
                     resolveIdtf(addr, model_link);
                 }
 
             }
-
             editor.render.update();
             editor.scene.layout();
 
@@ -129,17 +168,17 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
     };
 
     return {
-        update: async function (added, element, arc) {
+        update: async function (added, element, arc, scaleElem) {
 
             if (added) {
                 let [_, el] = await getArc(arc);
                 let t = await getElementType(el);
                 arcMapping[arc] = el;
                 if (t & (sc_type_node | sc_type_link)) {
-                    addTask([el, t]);
+                    addTask([el, t, scaleElem]);
                 } else if (t & sc_type_arc_mask) {
                     let [src, target] = await getArc(el);
-                    addTask([el, t, src, target]);
+                    addTask([el, t, src, target, scaleElem]);
                 } else
                     throw "Unknown element type " + t;
             } else {
@@ -220,8 +259,8 @@ function scgScStructTranslator(_editor, _sandbox) {
     };
 
     return r = {
-        updateFromSc: function (added, element, arc) {
-            scgFromSc.update(added, element, arc);
+        updateFromSc: function (added, element, arc, scaleElem) {
+            scgFromSc.update(added, element, arc, scaleElem);
         },
 
         translateToSc: async function (callback) {

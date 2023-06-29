@@ -47,7 +47,10 @@ ScKeynodes.prototype.init = async function () {
     'format_pdf',
     'format_png',
     'format_html',
-    'ui_start_sc_element']
+    'ui_start_sc_element',
+    'rrel_key_sc_element',
+    'rrel_main_key_sc_element',
+  ]
   );
 };
 
