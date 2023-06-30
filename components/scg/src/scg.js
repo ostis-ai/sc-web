@@ -818,8 +818,7 @@ SCg.Editor.prototype = {
             const currentRectLeft = graphRect.left - svgRect.left - scaleRect;
             const currentRectRight = graphRect.right - svgRect.right + scaleRect;
             const currentRectBotton = graphRect.bottom - svgRect.bottom + scaleRect;
-
-            if(currentRectTop < 0 && currentRectLeft < 0) {
+            if (currentRectTop < 0 && currentRectLeft < 0) {
                 self.scene.render._changeContainerTransform([currentTranslateScgWidth - currentRectLeft, currentTranslateScgHeight - currentRectTop], scale);
             } else if (currentRectTop < 0 && currentRectRight > 0) {
                 self.scene.render._changeContainerTransform([currentTranslateScgWidth - currentRectRight, currentTranslateScgHeight - currentRectTop], scale);
@@ -836,6 +835,25 @@ SCg.Editor.prototype = {
             } else if (currentRectRight > 0) {
                 self.scene.render._changeContainerTransform([currentTranslateScgWidth - currentRectRight, currentTranslateScgHeight], scale);
             };   
+            
+            const svgRect2AfterRender = svg.getBoundingClientRect();
+            const graphRectAfterRender = graph.getBoundingClientRect();
+            const currentRectTopAfterRender = graphRectAfterRender.top - svgRect2AfterRender.top - scaleRect;
+            const currentRectLeftAfterRender = graphRectAfterRender.left - svgRect2AfterRender.left - scaleRect;
+            const currentRectRightAfterRender = graphRectAfterRender.right - svgRect2AfterRender.right + scaleRect;
+            const currentRectBottonAfterRender = graphRectAfterRender.bottom - svgRect2AfterRender.bottom + scaleRect;
+            if (Math.abs(currentRectLeftAfterRender) < Math.abs(currentRectRightAfterRender)) {
+                self.scene.render._changeContainerTransform([self.scene.render.translate[0] + ((Math.abs(currentRectRightAfterRender) + Math.abs(currentRectLeftAfterRender) ) / 2) , self.scene.render.translate[1]], scale);
+            };
+            if (Math.abs(currentRectLeftAfterRender) > Math.abs(currentRectRightAfterRender)) {
+                self.scene.render._changeContainerTransform([self.scene.render.translate[0] - ((currentRectLeftAfterRender - currentRectRightAfterRender) / 2), self.scene.render.translate[1]], scale);
+            };
+            if (Math.abs(currentRectTopAfterRender) < Math.abs(currentRectBottonAfterRender)) {
+                self.scene.render._changeContainerTransform([self.scene.render.translate[0], self.scene.render.translate[1] + ((Math.abs(currentRectBottonAfterRender) + Math.abs(currentRectTopAfterRender) ) / 2)], scale);
+            };
+            if (Math.abs(currentRectTopAfterRender) > Math.abs(currentRectBottonAfterRender)) {
+                self.scene.render._changeContainerTransform([self.scene.render.translate[0], self.scene.render.translate[1] - ((Math.abs(currentRectTopAfterRender) + Math.abs(currentRectBottonAfterRender)) / 2)], scale);
+            };
         });
         
         this.toolZoomIn().click(function () {
