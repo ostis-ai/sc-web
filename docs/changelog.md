@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Show element text as main idtf without language if main idtf with language is not found
 - Translate sc-links constancy from gwf
 - Add opportunity to create links with constancy mask
 - Generalize all scripts
