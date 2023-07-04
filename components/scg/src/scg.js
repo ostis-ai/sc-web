@@ -791,12 +791,71 @@ SCg.Editor.prototype = {
         });
 
         this.toolAutoSize().click(function () {
-            const [conteinerWidth, conteinerHeight] = self.scene.getContainerSize();
-            const deltaTranslate = 0.2;
-            const scale = 0.5;
-            self.scene.render._changeContainerTransform([conteinerWidth * deltaTranslate, conteinerHeight * deltaTranslate], scale);
-        });
+            const scaleDelta = 0.05;
+            const scaleRect = 10;
 
+            const [containerWidth, containerHeight] = self.scene.getContainerSize();
+            const scgHeight = self.scene.render.d3_container[0][0].getBoundingClientRect().height;
+            const scgWidth = self.scene.render.d3_container[0][0].getBoundingClientRect().width;
+            const currentScale = self.scene.render.scale;
+            const heightRatio = containerHeight / scgHeight;
+            const widthRatio = containerWidth / scgWidth;
+            const scale = currentScale * Math.min(heightRatio, widthRatio) - scaleDelta;
+            const translateX = self.scene.render.d3_container[0][0].getBoundingClientRect().width * scale;
+            const translateY = self.scene.render.d3_container[0][0].getBoundingClientRect().height * scale;
+            
+            self.scene.render._changeContainerTransform([((containerWidth - translateX) / 2), ((containerHeight - translateY) / 2)], scale);
+            self.scene.render._changeContainerTransform([((containerWidth - self.scene.render.d3_container[0][0].getBoundingClientRect().width) / 2), ((containerHeight - self.scene.render.d3_container[0][0].getBoundingClientRect().height) / 2)], scale); 
+
+            const svg = document.querySelector('.SCgSvg');
+            const graph = self.scene.render.d3_container[0][0];
+
+            const currentTranslateScgWidth = self.scene.render.translate[0];
+            const currentTranslateScgHeight = self.scene.render.translate[1];
+            const svgRect = svg.getBoundingClientRect();
+            const graphRect = graph.getBoundingClientRect();
+            const currentRectTop = graphRect.top - svgRect.top - scaleRect;
+            const currentRectLeft = graphRect.left - svgRect.left - scaleRect;
+            const currentRectRight = graphRect.right - svgRect.right + scaleRect;
+            const currentRectBotton = graphRect.bottom - svgRect.bottom + scaleRect;
+            if (currentRectTop < 0 && currentRectLeft < 0) {
+                self.scene.render._changeContainerTransform([currentTranslateScgWidth - currentRectLeft, currentTranslateScgHeight - currentRectTop], scale);
+            } else if (currentRectTop < 0 && currentRectRight > 0) {
+                self.scene.render._changeContainerTransform([currentTranslateScgWidth - currentRectRight, currentTranslateScgHeight - currentRectTop], scale);
+            } else if (currentRectBotton > 0 && currentRectLeft < 0) {
+                self.scene.render._changeContainerTransform([currentTranslateScgWidth - currentRectLeft, currentTranslateScgHeight - currentRectBotton], scale);
+            } else if (currentRectBotton > 0 && currentRectRight > 0) {
+                self.scene.render._changeContainerTransform([currentTranslateScgWidth - currentRectRight, currentTranslateScgHeight - currentRectBotton], scale);
+            } else  if (currentRectTop < 0) {
+                self.scene.render._changeContainerTransform([currentTranslateScgWidth, currentTranslateScgHeight - currentRectTop], scale);
+            } else if (currentRectLeft < 0) {
+                self.scene.render._changeContainerTransform([currentTranslateScgWidth - currentRectLeft, currentTranslateScgHeight], scale);
+            } else if (currentRectBotton > 0) {
+                self.scene.render._changeContainerTransform([currentTranslateScgWidth, currentTranslateScgHeight - currentRectBotton], scale);
+            } else if (currentRectRight > 0) {
+                self.scene.render._changeContainerTransform([currentTranslateScgWidth - currentRectRight, currentTranslateScgHeight], scale);
+            };   
+            
+            const svgRect2AfterRender = svg.getBoundingClientRect();
+            const graphRectAfterRender = graph.getBoundingClientRect();
+            const currentRectTopAfterRender = graphRectAfterRender.top - svgRect2AfterRender.top - scaleRect;
+            const currentRectLeftAfterRender = graphRectAfterRender.left - svgRect2AfterRender.left - scaleRect;
+            const currentRectRightAfterRender = graphRectAfterRender.right - svgRect2AfterRender.right + scaleRect;
+            const currentRectBottonAfterRender = graphRectAfterRender.bottom - svgRect2AfterRender.bottom + scaleRect;
+            if (Math.abs(currentRectLeftAfterRender) < Math.abs(currentRectRightAfterRender)) {
+                self.scene.render._changeContainerTransform([self.scene.render.translate[0] + ((Math.abs(currentRectRightAfterRender) + Math.abs(currentRectLeftAfterRender) ) / 2) , self.scene.render.translate[1]], scale);
+            };
+            if (Math.abs(currentRectLeftAfterRender) > Math.abs(currentRectRightAfterRender)) {
+                self.scene.render._changeContainerTransform([self.scene.render.translate[0] - ((currentRectLeftAfterRender - currentRectRightAfterRender) / 2), self.scene.render.translate[1]], scale);
+            };
+            if (Math.abs(currentRectTopAfterRender) < Math.abs(currentRectBottonAfterRender)) {
+                self.scene.render._changeContainerTransform([self.scene.render.translate[0], self.scene.render.translate[1] + ((Math.abs(currentRectBottonAfterRender) + Math.abs(currentRectTopAfterRender) ) / 2)], scale);
+            };
+            if (Math.abs(currentRectTopAfterRender) > Math.abs(currentRectBottonAfterRender)) {
+                self.scene.render._changeContainerTransform([self.scene.render.translate[0], self.scene.render.translate[1] - ((Math.abs(currentRectTopAfterRender) + Math.abs(currentRectBottonAfterRender)) / 2)], scale);
+            };
+        });
+        
         this.toolZoomIn().click(function () {
             self.render.changeScale(1.1);
         });

@@ -537,27 +537,6 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
         for (let triple of result) {
             self.eventStructUpdate(true, triple.get("src").value, triple.get("edge").value, { node: 1, link: 1 });
         }
-
-        setTimeout(() => {
-            if (self.scene) {
-                const [conteinerWidth, conteinerHeight] = self.scene.getContainerSize();
-                const deltaTranslate = 0.1;
-                const addSize = 400;
-
-                const scgHeight = self.scene.render.d3_container[0][0].getBoundingClientRect().height + (conteinerHeight / 2 + addSize);
-                const scgWidth = self.scene.render.d3_container[0][0].getBoundingClientRect().width + (conteinerWidth / 2 + addSize);
-
-                const containerAspectRatio = conteinerHeight / conteinerWidth;
-                const graphAspectRatio = scgHeight / scgWidth;
-                
-                const scale = containerAspectRatio < graphAspectRatio ?
-                    conteinerWidth / scgWidth :
-                    conteinerHeight / scgHeight;
-                
-                
-                self.scene.render._changeContainerTransform([conteinerWidth * deltaTranslate, conteinerHeight * deltaTranslate], scale);
-            }
-        }, delayTimeoutAutosize);
     }
     else {
         let content = await window.scClient.getLinkContents([new sc.ScAddr(this.addr)]);
