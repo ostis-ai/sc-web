@@ -221,6 +221,20 @@ SCWeb.core.Server = {
                 return result[0].get(LINK);
             }
 
+            const mainIdtfNoLanguageTemplate = new sc.ScTemplate();
+            mainIdtfNoLanguageTemplate.tripleWithRelation(
+                addr,
+                sc.ScType.EdgeDCommonVar,
+                [sc.ScType.LinkVar, LINK],
+                sc.ScType.EdgeAccessVarPosPerm,
+                new sc.ScAddr(window.scKeynodes["nrel_main_idtf"]),
+            );
+            let mainIdtfNoLanguageResult = await window.scClient.templateSearch(mainIdtfNoLanguageTemplate);
+
+            if (mainIdtfNoLanguageResult.length) {
+                return mainIdtfNoLanguageResult[0].get(LINK);
+            }
+
             const sysIdtfTemplate = new sc.ScTemplate();
             sysIdtfTemplate.tripleWithRelation(
                 addr,
