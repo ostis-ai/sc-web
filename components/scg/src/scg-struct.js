@@ -218,10 +218,23 @@ function scgScStructTranslator(_editor, _sandbox) {
         arcMapping[result.get('arc').value] = obj;
     };
 
-    var currentLanguage = sandbox.getCurrentLanguage();
     var translateIdentifier = async function (obj) {
-        if (currentLanguage) {
-            let scAddr = new sc.ScAddr(obj.sc_addr);
+        let scAddr = new sc.ScAddr(obj.sc_addr);
+        // Checks if identifier is allowed to be system identifier (only letter, digits, '-' and '_')
+        if (/^[a-zA-Z0-9_-]+$/.test(obj.text)) {
+            let systemIdtfTemplate = new sc.ScTemplate();
+            systemIdtfTemplate.tripleWithRelation(
+                scAddr,
+                sc.ScType.EdgeDCommonVar,
+                [sc.ScType.LinkVar, 'link'],
+                sc.ScType.EdgeAccessVarPosPerm,
+                new sc.ScAddr(window.scKeynodes['nrel_system_identifier'])
+            );
+            let systemIdtfResult = await scClient.templateGenerate(systemIdtfTemplate);
+            let systemIdtfAddr = systemIdtfResult.get('link');
+            await scClient.setLinkContents([new sc.ScLinkContent(obj.text, sc.ScLinkContentType.String, systemIdtfAddr)]);
+        }
+        else {
             let scTemplate = new sc.ScTemplate();
             scTemplate.tripleWithRelation(
                 scAddr,
@@ -230,31 +243,9 @@ function scgScStructTranslator(_editor, _sandbox) {
                 sc.ScType.EdgeAccessVarPosPerm,
                 new sc.ScAddr(window.scKeynodes['nrel_main_idtf'])
             );
-            scTemplate.triple(
-                new sc.ScAddr(currentLanguage),
-                sc.ScType.EdgeAccessVarPosPerm,
-                'link'
-            );
             let result = await scClient.templateGenerate(scTemplate);
             let linkAddr = result.get('link');
             await scClient.setLinkContents([new sc.ScLinkContent(obj.text, sc.ScLinkContentType.String, linkAddr)]);
-
-            // Checks if identifier is allowed to be system identifier (only letter, digits, '-' and '_')
-            if (/^[a-zA-Z0-9_-]+$/.test(obj.text)) {
-                let systemIdtfTemplate = new sc.ScTemplate();
-                systemIdtfTemplate.tripleWithRelation(
-                    scAddr,
-                    sc.ScType.EdgeDCommonVar,
-                    [sc.ScType.LinkVar, 'link'],
-                    sc.ScType.EdgeAccessVarPosPerm,
-                    new sc.ScAddr(window.scKeynodes['nrel_system_identifier'])
-                );
-                let systemIdtfResult = await scClient.templateGenerate(systemIdtfTemplate);
-                let systemIdtfAddr = systemIdtfResult.get('link');
-                await scClient.setLinkContents([new sc.ScLinkContent(obj.text, sc.ScLinkContentType.String, systemIdtfAddr)]);
-            }
-        } else {
-            throw new Error();
         }
     };
 

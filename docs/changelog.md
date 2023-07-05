@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Show element text as main idtf without language if main idtf with language is not found
 - Translate sc-links constancy from gwf
 - Add opportunity to create links with constancy mask
 - Generalize all scripts
@@ -23,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Build docs in SCn format
 
 ### Fixed
+- Main and system identifier translation with current language in scg-editor
 - Check edges on addArcEventRequest and removeArcEventRequest ([120](https://github.com/ostis-ai/sc-web/issues/120), [121](https://github.com/ostis-ai/sc-web/issues/121))
 - Create links with unspecified constancy in scg-editor
 - SC.g-contours and its sc.g-elements create, edit, extend, select, move, click and delete
