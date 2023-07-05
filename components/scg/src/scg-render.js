@@ -1,5 +1,6 @@
 SCg.Render = function () {
     this.scene = null;
+    this.sandbox = null;
 };
 
 SCg.Render.prototype = {
@@ -27,7 +28,7 @@ SCg.Render.prototype = {
                 self.onMouseMove(this, self);
             })
             .on('mousedown', function () {
-                self.onMouseDown(this, self)
+                self.onMouseDown(this, self);
             })
             .on('mouseup', function () {
                 self.onMouseUp(this, self);
@@ -50,7 +51,7 @@ SCg.Render.prototype = {
 
         this.scale = 1;
         var self = this;
-        self.sandbox.updateContent(self.scene, null);
+        self.sandbox.updateContent(null, self.scene);
         this.d3_container = this.d3_drawer.append('svg:g')
             .attr("class", "SCgSvg");
 
@@ -206,6 +207,12 @@ SCg.Render.prototype = {
                     self.scene.onMouseUpObject(d);
                     if (d3.event.stopPropagation())
                         d3.event.stopPropagation();
+                    if (self.sandbox.mainElement === d.sc_addr)
+                        return;
+                    if (self.scene.getObjectByScAddr(d.sc_addr) instanceof SCg.ModelEdge)
+                        return;
+                    if (self.sandbox.isRrelKeyScElement)
+                        self.sandbox.updateContent(d.sc_addr, self.scene);
                 })
                 .on("dblclick", d => {
                     if (SCWeb.core.Main.mode === SCgEditMode.SCgModeViewOnly) return;
@@ -360,6 +367,7 @@ SCg.Render.prototype = {
 
     // -------------- update objects --------------------------
     updateObjects: function () {
+
         var self = this;
         this.d3_nodes.each(function (d) {
 
@@ -368,10 +376,11 @@ SCg.Render.prototype = {
             d.need_observer_sync = false;
 
             var g = d3.select(this)
-                .attr("transform", 'translate(' + d.position.x + ', ' + d.position.y + ')')
+                .attr("transform", 'translate(' + d.position.x + ', ' + d.position.y + ')scale(' + d.scaleElem + ')')
                 .attr('class', function (d) {
                     return self.classState(d, (d.sc_type & sc_type_constancy_mask) ? 'SCgNode' : 'SCgNodeEmpty');
                 })
+                .attr("style", 'opacity: ' + d.opacityElem + '; stroke: ' + d.strokeElem + '')
 
             g.select('use')
                 .attr('xlink:href', function (d) {
@@ -380,6 +389,7 @@ SCg.Render.prototype = {
                 .attr("sc_addr", function (d) {
                     return d.sc_addr;
                 });
+            g.select('text').style('fill', d.fillElem);
 
             g.selectAll('text').text(function (d) {
                 return d.text;
@@ -416,7 +426,7 @@ SCg.Render.prototype = {
                 }
             }
 
-            var g = d3.select(this)
+            var g = d3.select(this).attr("style", 'opacity: ' + d.opacityElem + '; stroke: ' + d.strokeElem + '')
 
             g.select('rect')
                 .attr('width', function (d) {
@@ -429,7 +439,8 @@ SCg.Render.prototype = {
                 })
                 .attr('class', function (d) {
                     return self.classState(d, 'SCgLink');
-                }).attr("sc_addr", function (d) {
+                })
+                .attr("sc_addr", function (d) {
                     return d.sc_addr;
                 });
 
@@ -440,12 +451,11 @@ SCg.Render.prototype = {
                     return d.scale.x;
                 })
                 .attr('height', function (d) {
-
                     return d.scale.y;
                 });
 
             g.attr("transform", function (d) {
-                return 'translate(' + (d.position.x - (d.scale.x + self.linkBorderWidth) * 0.5) + ', ' + (d.position.y - (d.scale.y + self.linkBorderWidth) * 0.5) + ')';
+                return 'translate(' + (d.position.x - (d.scale.x + self.linkBorderWidth) * 0.5) + ', ' + (d.position.y - (d.scale.y + self.linkBorderWidth) * 0.5) +  ')scale(' + d.scaleElem + ')';
             });
 
             // Update sc-link identifier (x, y) position according to the sc-link width
@@ -469,6 +479,7 @@ SCg.Render.prototype = {
             if (d.need_update)
                 d.update();
             var d3_edge = d3.select(this);
+
             SCgAlphabet.updateEdge(d, d3_edge, self.containerId);
             d3_edge.attr('class', function (d) {
                 return self.classState(d, 'SCgEdge');
@@ -476,6 +487,9 @@ SCg.Render.prototype = {
                 .attr("sc_addr", function (d) {
                     return d.sc_addr;
                 });
+            
+            d3_edge.select('.SCgEdgeEndArrowCommon').style('stroke-width', `${d.widthEdge}px`).style('opacity', d.opacityElem);
+            d3_edge.select('.SCgEdgeEndArrowAccess').style('stroke-width', `${d.widthEdge - 6}px`).style('opacity', d.opacityElem);
         });
 
         this.d3_contours.each(function (d) {

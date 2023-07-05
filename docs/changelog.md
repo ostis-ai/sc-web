@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Show element text as main idtf without language if main idtf with language is not found
+- Translate sc-links constancy from gwf
+- Add opportunity to create links with constancy mask
+- Generalize all scripts
+- Translate system identifiers in scg-editor
 - View sc-links identifiers
 - Load sc-links identifiers from gwf
 - Not erase elements from basic ontology structure in scg-editor
@@ -20,6 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add optional buttons to delete function
 
 ### Fixed
+- Main and system identifier translation with current language in scg-editor
+- Check edges on addArcEventRequest and removeArcEventRequest ([120](https://github.com/ostis-ai/sc-web/issues/120), [121](https://github.com/ostis-ai/sc-web/issues/121))
 - Create links with unspecified constancy in scg-editor
 - SC.g-contours and its sc.g-elements create, edit, extend, select, move, click and delete
 - Integrate nodes in scg-editor
@@ -63,6 +70,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - API to initiate an action
 - Identifiers indexing for search optimization
 - Add scg view only mode and it's configuration support in scg iframe
+- Displaying elements in the SCg depending on their distance from the root element
+- Auto-scaling svg within container border
 
 ### Changed
 - Migrate tornado server from python2 to python3

@@ -294,7 +294,7 @@ var GwfObjectLink = function (args) {
     GwfObject.call(this, args);
     this.content = null;
     this.type = -1;
-    this.requiredAttrs = ["id", "x", "y", "parent", "idtf"];
+    this.requiredAttrs = ["id", "type", "x", "y", "parent", "idtf"];
 };
 
 GwfObjectLink.prototype = Object.create(GwfObject.prototype);
@@ -312,6 +312,7 @@ GwfObjectLink.prototype.parseObject = function (args) {
     var reader = args.reader;
     this.attributes = reader.fetchAttributes(link, this.requiredAttrs);
     if (this.attributes == false) return false;
+    this.attributes["type"] = reader.getTypeCode(this.attributes.type);
     this.attributes["x"] = parseFloat(this.attributes["x"]);
     this.attributes["y"] = parseFloat(this.attributes["y"]);
     GwfObjectController.fixOffsetOfPoints({x: this.attributes["x"], y: this.attributes["y"]});
@@ -350,7 +351,9 @@ GwfObjectLink.prototype.parseObject = function (args) {
 
 GwfObjectLink.prototype.buildObject = function (args) {
     var scene = args.scene;
-    var link = SCg.Creator.createLink(new SCg.Vector3(this.attributes["x"] + GwfObjectController.getXOffset(),
+    let constancy = this.attributes["type"] & sc_type_constancy_mask;
+    let linkType = sc_type_link | constancy;
+    var link = SCg.Creator.createLink(linkType, new SCg.Vector3(this.attributes["x"] + GwfObjectController.getXOffset(),
             this.attributes["y"] + +GwfObjectController.getYOffset(),
         0),
         '',
