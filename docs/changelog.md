@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add border and tools parameter to view window
 - Add language parameter to view window
 - Build docs in SCn format
+- Add optional buttons to delete function
 
 ### Fixed
 - Create links with unspecified constancy in scg-editor
