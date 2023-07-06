@@ -119,7 +119,7 @@
         </div>
         <div id="window-header-tools" class="pull-right">
             <div class="btn-group mode-switching-panel">    <!-- mode-switching-panel -->
-                <button type="button" class="histoy-item-btn btn btn-success" data-toggle="dropdown" sc_control_sys_idtf="ui_control_select_window_type">
+                <button id="window-type-select-button" type="button" class="histoy-item-btn btn btn-success" data-toggle="dropdown" sc_control_sys_idtf="ui_control_select_window_type">
                     <span class="glyphicon glyphicon-list-alt"></span>
                 </button>
                 <ul id="history-item-langs" class="dropdown-menu" role="menu">{# languages will be added #}</ul>
@@ -172,11 +172,19 @@
         </div><!-- /.modal-dialog -->
     </div>
 
+    <!-- Tutorial -->
+    <div id="tutorial-info">
+        <div id="tutorial-info-left">
+        </div>
+        <div id="tutorial-info-right">
+            <div style="width: 100%"><p id="tutorial-point-description"></p></div>
+            <button id="abort-tutorial-button" class="btn btn-danger">Abort tutorial</button>
+        </div>
+    </div>
 
     <script type="text/javascript">
 
         $(document).ready(function() {
-
             $('#windows-list').click(function () {
                 $('#static-window-container').toggle();
             });
