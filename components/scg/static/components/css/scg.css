@@ -401,3 +401,8 @@ path.SCgBusPath {
 .empty-delete-btn {
     display: none;
 }
+
+.disabled-delete-btn {
+    color: #737373;
+    background: #FAFAFA;
+}

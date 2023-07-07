@@ -733,12 +733,12 @@ SCg.Editor.prototype = {
 
             if (self.scene.selected_objects.length === 1) {
                 if (!self.scene.selected_objects[0].sc_addr) {
-                    cont.find('.delete-from-db-btn').addClass('empty-delete-btn')
+                    cont.find('.delete-from-db-btn').prop('disabled', true).addClass('disabled-delete-btn');
                 }
                 const isDeletable = await self.checkCanDelete(
                     self.scene.selected_objects[0].sc_addr
                 );
-                if (isDeletable) cont.find('.delete-from-db-btn').addClass('empty-delete-btn')
+                if (isDeletable) cont.find('.delete-from-db-btn').prop('disabled', true).addClass('disabled-delete-btn');
             } else {
                 const result = await Promise.all(
                     self.scene.selected_objects.map(async (selected_object) => {
@@ -748,7 +748,7 @@ SCg.Editor.prototype = {
                 );
                 result.every((elem) => elem === false)
                     ? null
-                    : cont.find('.delete-from-db-btn').addClass('empty-delete-btn')
+                    : cont.find('.delete-from-db-btn').prop('disabled', true).addClass('disabled-delete-btn');
             }
 
             cont.find('.popover').addClass('scg-tool-fragments-popover');
@@ -773,7 +773,7 @@ SCg.Editor.prototype = {
                                 return obj;
                             }
                         })).then(arr => arr.filter(Boolean));
-    
+
                         function diffArray(arr1, arr2) {
                             return arr1.filter(item => !arr2.includes(item));
                         }
@@ -932,17 +932,10 @@ SCg.Editor.prototype = {
             this.hideTool(this.toolSetContent());
             this.hideTool(this.toolDelete());
 
-            if (this.scene.selected_objects.length > 0 && !this.scene.clear) {
-                if (this.scene.selected_objects.length === 1) {
-                    const isDeletable = await self.checkCanDelete(this.scene.selected_objects[0].sc_addr);
-                    isDeletable ? this.hideTool(this.toolDelete()) : this.showTool(this.toolDelete());
-                } else {
-                    const result = await Promise.all(this.scene.selected_objects.map(async (selected_object) => (
-                        await self.checkCanDelete(selected_object.sc_addr)
-                    )));
-                    result.every(elem => elem === 1) ? this.hideTool(this.toolDelete()) : this.showTool(this.toolDelete());
-                }
-            }
+            this.scene.selected_objects.length > 0 && !this.scene.clear
+                ? this.showTool(this.toolDelete())
+                : this.hideTool(this.toolDelete())
+
             if (this.scene.selected_objects.length > 1) {
                 if (this.scene.isSelectedObjectAllArcsOrAllNodes() && !this.scene.isSelectedObjectAllHaveScAddr()) {
                     this.showTool(this.toolChangeType());
