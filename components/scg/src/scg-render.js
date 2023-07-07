@@ -217,13 +217,15 @@ SCg.Render.prototype = {
                 .on("dblclick", d => {
                     if (SCWeb.core.Main.mode === SCgEditMode.SCgModeViewOnly) return;
 
+                    if (!d.sc_addr) return;
+
                     if (d3.event.stopPropagation())
                         d3.event.stopPropagation();
                     let windowId = SCWeb.ui.WindowManager.getActiveWindowId();
                     let container = document.getElementById(windowId);
                     SCWeb.core.Main.doDefaultCommandWithFormat([d.sc_addr], $(container).attr("sc-addr-fmt"));
                 });
-        };
+        }
 
         function appendNodeVisual(g) {
             g.append('svg:use')
@@ -397,15 +399,16 @@ SCg.Render.prototype = {
         });
 
         this.d3_links.each(function (d) {
-
             if (!d.need_observer_sync && d.contentLoaded) return; // do nothing
 
             if (!d.contentLoaded) {
-                var links = {};
+                let links = {};
                 links[d.containerId] = d.sc_addr;
                 self.sandbox.createViewersForScLinks(links);
 
-                d.contentLoaded = true;
+                if (d.content.length) {
+                    d.contentLoaded = true;
+                }
             }
             else
                 d.need_observer_sync = false;

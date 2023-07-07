@@ -241,7 +241,7 @@ SCWeb.core.ComponentSandbox.prototype.updateAnswer = function () {
  */
 SCWeb.core.ComponentSandbox.prototype.createViewersForScLinks = async function (containers_map) {
     return new Promise((resolve, reject) => {
-        var self = this;
+        let self = this;
         SCWeb.ui.WindowManager.createViewersForScLinks(containers_map).then(function (windows) {
             self._appendChilds(windows);
             resolve(windows);
@@ -254,7 +254,7 @@ SCWeb.core.ComponentSandbox.prototype.createViewersForScLinks = async function (
  * @param {Object} containers_map Map of viewer containers (id: id of container, value: {key: sc-struct addr, ext_lang_addr: sc-addr of external language}})
  */
 SCWeb.core.ComponentSandbox.prototype.createViewersForScStructs = function (containers_map) {
-    var windows = SCWeb.ui.WindowManager.createViewersForScStructs(containers_map);
+    let windows = SCWeb.ui.WindowManager.createViewersForScStructs(containers_map);
     this._appendChilds(windows);
     return windows;
 };

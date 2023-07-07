@@ -577,7 +577,7 @@ SCg.Editor.prototype = {
 
 
         this.toolSetContent().click(function () {
-            var tool = $(this);
+            let tool = $(this);
             const startValueLink = self.scene.selected_objects[0].content.trim();
 
             function stop_modal() {
@@ -615,26 +615,26 @@ SCg.Editor.prototype = {
                 obj.changedValue = true;
 
                 let addrMainConcept;
-                let templateAddr = new sc.ScTemplate();
-
-                templateAddr.tripleWithRelation(
-                    [sc.ScType.NodeVar, "_node"],
-                    sc.ScType.EdgeDCommonVar,
-                    new sc.ScAddr(obj.sc_addr),
-                    sc.ScType.EdgeAccessVarPosPerm,
-                    new sc.ScAddr(window.scKeynodes['nrel_main_idtf'])
-                );
-                addrMainConcept = await window.scClient.templateSearch(templateAddr)
-                    .then(result => {
-                        if (!result.length) return;
-                        return result[0].get("_node").value;
-                    });
-
+                if (obj.sc_addr) {
+                    let templateAddr = new sc.ScTemplate();
+                    templateAddr.tripleWithRelation(
+                        [sc.ScType.NodeVar, "_node"],
+                        sc.ScType.EdgeDCommonVar,
+                        new sc.ScAddr(obj.sc_addr),
+                        sc.ScType.EdgeAccessVarPosPerm,
+                        new sc.ScAddr(window.scKeynodes['nrel_main_idtf'])
+                    );
+                    addrMainConcept = await window.scClient.templateSearch(templateAddr)
+                        .then(result => {
+                            if (!result.length) return;
+                            return result[0].get("_node").value;
+                        });
+                }
                 if (addrMainConcept) {
                     const objMainConcept = self.scene.getObjectByScAddr(Number(addrMainConcept));
                     self.scene.commandManager.execute(new SCgCommandChangeIdtf(objMainConcept, input.val()));
                     document.querySelector(`[sc_addr="${addrMainConcept}"]`).nextSibling.textContent = input.val();
-                };
+                }
 
                 if (startValueLink !== endValueLink && obj.sc_addr) {
                     obj.changedValue = true;
@@ -647,10 +647,9 @@ SCg.Editor.prototype = {
                                 obj,
                                 obj.content,
                                 obj.contentType,
-                                null,
                             ));
                             stop_modal();
-                        };
+                        }
                     }, 100);
                     var fileReader = new FileReader();
                     fileReader.onload = function () {
@@ -662,7 +661,6 @@ SCg.Editor.prototype = {
                                 obj,
                                 scLinkHelper.htmlViewResult(),
                                 scLinkHelper.type,
-                                scLinkHelper.fileArrayBuffer,
                             ));
                         }
                         stop_modal();

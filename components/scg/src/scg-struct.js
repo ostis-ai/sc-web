@@ -452,10 +452,9 @@ function scgScStructTranslator(_editor, _sandbox) {
                     const infoConstruction = (link) => {
                         let data = link.content;
                         let type = sc.ScLinkContentType.String;
-                        var keynode = SCWeb.core.Translation.getCurrentLanguage();
-                        let langKeynode = keynode;
-                        let imgKeynode = window.scKeynodes['format_png'];
+                        let langKeynode = SCWeb.core.Translation.getCurrentLanguage();
 
+                        let keynode;
                         if (link.contentType === 'float') {
                             keynode = window.scKeynodes['binary_float'];
                             type = sc.ScLinkContentType.Float;
@@ -469,20 +468,13 @@ function scgScStructTranslator(_editor, _sandbox) {
                             type = sc.ScLinkContentType.Int;
                             keynode = window.scKeynodes['binary_int32'];
                         } else if (link.contentType === 'image') {
-                            let dataStarting = link.content.slice(32);
-                            data = dataStarting.slice(0, dataStarting.length - 14);
-                            type = sc.ScLinkContentType.String;
                             keynode = window.scKeynodes['format_png'];
                         } else if (link.contentType === 'html') {
-                            data = link.fileReaderResult;
-                            type = sc.ScLinkContentType.String;
                             keynode = window.scKeynodes['format_html'];
                         } else if (link.contentType === 'pdf') {
-                            data = link.fileReaderResult;
-                            type = sc.ScLinkContentType.String;
                             keynode = window.scKeynodes['format_pdf'];
                         }
-                        return { data, type, keynode, langKeynode, imgKeynode };
+                        return { data, type, keynode, langKeynode };
                     }
 
                     // Find link from kb by system identifier
@@ -513,15 +505,14 @@ function scgScStructTranslator(_editor, _sandbox) {
                         if (link.text) {
                             await translateIdentifier(link);
                         }
-                        if (link.content && link.contentType === 'image') {
+                        if (link.content) {
                             await window.scHelper.setLinkFormat(linkAddr, keynode);
-                        } else {
-                            await window.scHelper.setLinkLang(linkAddr, keynode);
                         }
                     }
 
                     if (link.hasOwnProperty('changedValue')) {
-                        const { data, type, langKeynode, imgKeynode } = infoConstruction(link);
+                        const imgKeynode = window.scKeynodes['format_png'];
+                        const { data, type, langKeynode } = infoConstruction(link);
                         link.setObjectState(SCgObjectState.NewInMemory);
                         objects.push(link);
 

@@ -302,11 +302,11 @@ SCWeb.ui.WindowManager = {
     createViewersForScLinks: function (containers_map) {
         return new Promise((resolve, reject)=>{
 
-            var linkAddrs = [];
-            for (var cntId in containers_map)
+            let linkAddrs = [];
+            for (const cntId in containers_map)
                 linkAddrs.push(containers_map[cntId]);
 
-            if (linkAddrs.length == 0) {
+            if (!linkAddrs.length) {
                 resolve();
                 return;
             }
@@ -315,9 +315,8 @@ SCWeb.ui.WindowManager = {
                 SCWeb.core.Server.getLinksFormat(linkAddrs).then(
                   function (formats) {
 
-                      var result = {};
-
-                      for (var cntId in containers_map) {
+                      let result = {};
+                      for (const cntId in containers_map) {
                           var addr = containers_map[cntId];
                           var fmt = formats[addr];
                           if (fmt) {

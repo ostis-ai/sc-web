@@ -344,7 +344,6 @@ SCg.ModelLink = function (options) {
     this.containerId = options.containerId;
     this.content = options.content;
     this.contentType = 'string';
-    this.fileReaderResult = null;
 };
 
 SCg.ModelLink.prototype = Object.create(SCg.ModelObject.prototype);
@@ -411,6 +410,8 @@ SCg.ModelLink.prototype.setAutoType = function () {
         this.contentType = 'float';
     } else if (!isNaN(this.content)) {
         this.contentType = 'int32';
+    } else if (this.content === 'binary') {
+        this.contentType = 'binary';
     } else {
         this.contentType = 'string';
     }

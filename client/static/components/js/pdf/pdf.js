@@ -159,18 +159,16 @@ var PdfViewer = function(sandbox) {
        $('#cotrols' + id).append(inputGoTo);
        $('#cotrols' + id).append(buttonGoTo);
        
-       
        var canvasDiv = '<canvas id="pdf_canvas' + id + '" style="border:1px solid black"></canvas>'
-       $('#pdf' + id).append(canvasDiv);       
-
+       $('#pdf' + id).append(canvasDiv);
     };
 
     const base64ToArrayBuffer = function (base64) {
-        const binary_string = window.atob(base64);
-        const len = binary_string.length;
-        const bytes = new Uint8Array(len);
+        const binary_string= window.atob(base64);
+        const len= binary_string.length;
+        const bytes= new Uint8Array(len);
 
-        for (let i = 0; i < len; i++) {
+        for (let i= 0; i < len; i++) {
             bytes[i] = binary_string.charCodeAt(i);
         }
         return bytes.buffer;
@@ -180,7 +178,7 @@ var PdfViewer = function(sandbox) {
         window.scClient.getLinkContents([new sc.ScAddr(this.sandbox.addr)]).then((contents) => {
            if (contents.length) {
                const base64Pdf = contents[0].data;
-               const buffer = base64ToArrayBuffer(base64Pdf);
+               const buffer= base64ToArrayBuffer(base64Pdf);
 
                this.receiveData(buffer);
            }
