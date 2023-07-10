@@ -118,7 +118,20 @@ SCg.Editor.prototype = {
                                 "Error to get edges type change panel");
                         },
                         complete: function () {
-                            self.bindToolEvents();
+                            $.ajax({
+                                url: 'static/components/html/scg-delete-panel.html',
+                                dataType: 'html',
+                                success: function (response) {
+                                    self.delete_panel_content = response;
+                                },
+                                error: function () {
+                                    SCgDebug.error(
+                                        "Error to get delete panel");
+                                },
+                                complete: function () {
+                                    self.bindToolEvents();
+                                }
+                            })
                         }
                     });
                 }
@@ -691,30 +704,99 @@ SCg.Editor.prototype = {
         });
 
         this.toolDelete().click(async function () {
-            if (self.scene.selected_objects.length > 0) {
-                if (self.scene.selected_objects.length > 1) {
-                    const cantDelete = [];
-                    const deletableObjects = await Promise.all(self.scene.selected_objects.filter(obj => obj.sc_addr).map(async (obj) => {
-                        const canDelete = await self.checkCanDelete(obj.sc_addr);
-                        if (canDelete) {
-                            cantDelete.push(obj);
-                        } else {
-                            return obj;
-                        }
-                    })).then(arr => arr.filter(Boolean));
+            if (!self.scene.selected_objects.length) return;
 
-                    function diffArray(arr1, arr2) {
-                        return arr1.filter(item => !arr2.includes(item));
-                    }
-                    self.scene.deleteObjects(diffArray(self.scene.selected_objects, cantDelete));
-                    self.scene.addDeletedObjects(deletableObjects);
-                } else {
-                    self.scene.deleteObjects(self.scene.selected_objects);
-                    self.scene.addDeletedObjects(self.scene.selected_objects);
-                }
+            DeleteButtons.init();
+
+            self.scene.setModal(SCgModalMode.SCgModalType);
+            self.onModalChanged();
+            var tool = $(this);
+
+            function stop_modal() {
+                tool.popover('destroy');
+                self.scene.setEditMode(SCgEditMode.SCgModeSelect);
+                self.scene.setModal(SCgModalMode.SCgModalNone);
             }
-            self.hideTool(self.toolDelete())
-            select.button('toggle');
+
+            el = $(this);
+            el.popover({
+                content: self.delete_panel_content,
+                container: container,
+                html: true,
+                delay: {
+                    show: 500,
+                    hide: 100
+                }
+            }).popover('show');
+            cont.find('.popover-content').append(
+                '<button id="scg-close-btn" type="button" class="close scg-close-btn-fragments-window">&times;</button>'
+            );
+
+            if (self.scene.selected_objects.length === 1) {
+                if (!self.scene.selected_objects[0].sc_addr) {
+                    cont.find('.delete-from-db-btn').prop('disabled', true).addClass('disabled-delete-btn');
+                }
+                const isDeletable = await self.checkCanDelete(
+                    self.scene.selected_objects[0].sc_addr
+                );
+                if (isDeletable) cont.find('.delete-from-db-btn').prop('disabled', true).addClass('disabled-delete-btn');
+            } else {
+                const result = await Promise.all(
+                    self.scene.selected_objects.map(async (selected_object) => {
+                        if (!selected_object.sc_addr) return null
+                        return await self.checkCanDelete(selected_object.sc_addr)
+                    })
+                );
+                result.every((elem) => elem === false)
+                    ? null
+                    : cont.find('.delete-from-db-btn').prop('disabled', true).addClass('disabled-delete-btn');
+            }
+
+            cont.find('.popover').addClass('scg-tool-fragments-popover');
+            cont.find('.popover-content').addClass('scg-tool-fragments-popover-content');
+            cont.find('.popover>.arrow').addClass('scg-tool-popover-arrow-hide');
+            
+            cont.find('#scg-close-btn').click(function () {
+                stop_modal();
+                select.button('toggle');
+            });
+
+            cont.find('.delete-from-db-btn').click(async function (e) {
+                e.stopImmediatePropagation();
+                if (self.scene.selected_objects.length > 0) {
+                    if (self.scene.selected_objects.length > 1) {
+                        const cantDelete = [];
+                        const deletableObjects = await Promise.all(self.scene.selected_objects.filter(obj => obj.sc_addr).map(async (obj) => {
+                            const canDelete = await self.checkCanDelete(obj.sc_addr);
+                            if (canDelete) {
+                                cantDelete.push(obj);
+                            } else {
+                                return obj;
+                            }
+                        })).then(arr => arr.filter(Boolean));
+
+                        function diffArray(arr1, arr2) {
+                            return arr1.filter(item => !arr2.includes(item));
+                        }
+                        self.scene.deleteObjects(diffArray(self.scene.selected_objects, cantDelete));
+                        self.scene.addDeletedObjects(deletableObjects);
+                    } else {
+                        self.scene.deleteObjects(self.scene.selected_objects);
+                        self.scene.addDeletedObjects(self.scene.selected_objects);
+                    }
+                }
+                self.hideTool(self.toolDelete())
+                stop_modal();
+                select.button('toggle');
+            })
+
+            cont.find('.delete-from-scene-btn').click(async function (e) {
+                e.stopImmediatePropagation();
+                self.scene.deleteObjects(self.scene.selected_objects);
+                stop_modal();
+                self.hideTool(self.toolDelete())
+                select.button('toggle');
+            })
         });
 
         this.toolClear().click(function () {
@@ -910,17 +992,10 @@ SCg.Editor.prototype = {
             this.hideTool(this.toolSetContent());
             this.hideTool(this.toolDelete());
 
-            if (this.scene.selected_objects.length > 0 && !this.scene.clear) {
-                if (this.scene.selected_objects.length === 1) {
-                    const isDeletable = await self.checkCanDelete(this.scene.selected_objects[0].sc_addr);
-                    isDeletable ? this.hideTool(this.toolDelete()) : this.showTool(this.toolDelete());
-                } else {
-                    const result = await Promise.all(this.scene.selected_objects.map(async (selected_object) => (
-                        await self.checkCanDelete(selected_object.sc_addr)
-                    )));
-                    result.every(elem => elem === 1) ? this.hideTool(this.toolDelete()) : this.showTool(this.toolDelete());
-                }
-            }
+            this.scene.selected_objects.length > 0 && !this.scene.clear
+                ? this.showTool(this.toolDelete())
+                : this.hideTool(this.toolDelete())
+
             if (this.scene.selected_objects.length > 1) {
                 if (this.scene.isSelectedObjectAllArcsOrAllNodes() && !this.scene.isSelectedObjectAllHaveScAddr()) {
                     this.showTool(this.toolChangeType());

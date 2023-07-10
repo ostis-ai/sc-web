@@ -348,3 +348,61 @@ path.SCgBusPath {
 .tt-dropdown-menu .tt-dataset-idtf .tt-suggestion:hover {
     background-color: #428bca !important;
 }
+
+.delete-fragments-btn {
+    width: 100%;
+    padding: 4px 8px;
+    background-color: #ffffff;
+    border: none;
+    outline: none;
+
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 23px;
+    color: #454545;
+    transition: all 0.3s ease;
+}
+
+.delete-fragments-btn:hover {
+    background-color: #f6f6f6;
+}
+
+.delete-fragments-btn:active {
+    background-color: #ebedff;
+}
+
+.delete-fragments-btn:last-child {
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.scg-tool-fragments-popover-content {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: flex-end;
+    padding: 0;
+}
+
+.delete-fragments-window {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.scg-close-btn-fragments-window {
+    margin-top: 5px;
+    margin-right: 8px;
+}
+
+.empty-delete-btn {
+    display: none;
+}
+
+.disabled-delete-btn {
+    color: #737373;
+    background: #FAFAFA;
+}
