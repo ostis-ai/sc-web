@@ -13,11 +13,15 @@ SCgCommandChangeContent.prototype = {
         this.object.setContent(this.oldContent, this.oldType);
         this.object.setObjectState(SCgObjectState.NewInMemory);
         this.object.scene.updateRender();
+        this.object.requestUpdate();
+        this.object.notifyEdgesUpdate();
     },
 
     execute: function () {
         this.object.setContent(this.newContent, this.newType);
         this.object.setObjectState(SCgObjectState.NewInMemory);
         this.object.scene.updateRender();
+        this.object.requestUpdate();
+        this.object.notifyEdgesUpdate();
     }
 };
