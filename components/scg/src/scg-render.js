@@ -17,7 +17,6 @@ SCg.Render.prototype = {
         // disable tooltips
         $('#' + this.containerId).parent().addClass('ui-no-tooltip');
 
-        var scgViewer = $('#scg-viewer');
         this.d3_drawer = d3.select('#' + this.containerId)
             .append("svg:svg")
             .attr("pointer-events", "all")
@@ -403,41 +402,31 @@ SCg.Render.prototype = {
 
             if (!d.contentLoaded) {
                 let links = {};
-                links[d.containerId] = d.sc_addr;
+                links[d.containerId] = {addr: d.sc_addr, content: d.content, contentType: d.contentType};
                 self.sandbox.createViewersForScLinks(links);
 
-                if (d.content.length) {
-                    d.contentLoaded = true;
-                }
+                if (d.content.length) d.contentLoaded = true;
             }
-            else
-                d.need_observer_sync = false;
+            else d.need_observer_sync = false;
 
-            var linkDiv = $(document.getElementById("link_" + self.containerId + "_" + d.id));
-            if (!d.sc_addr) {
-                linkDiv.find('.impl').html(d.content);
-                linkDiv.find('img').css({ 'width': '100%', 'height': '100%' })
-            } else {
-                if (d.content != "") {
-                    linkDiv.find('.impl').html(d.content);
-                    linkDiv.find('img').css({ 'width': '100%', 'height': '100%' });
-                } else {
-                    d.content = linkDiv.find('.impl').html();
-                    if (d.content != "") {
-                        d.setAutoType();
-                    }
-                }
+            let linkDiv = $(document.getElementById("link_" + self.containerId + "_" + d.id));
+            if (!d.content.length) {
+                d.content = linkDiv.find('.impl').html();
+                d.setAutoType();
+            }
+            if (!linkDiv.find('.impl').html().length) {
+                linkDiv.find('.impl').html(d.content)
             }
 
-            var g = d3.select(this).attr("style", 'opacity: ' + d.opacityElem + '; stroke: ' + d.strokeElem + '')
-
+            const imageDiv = linkDiv.find('img');
+            let g = d3.select(this).attr("style", 'opacity: ' + d.opacityElem + '; stroke: ' + d.strokeElem + '');
             g.select('rect')
                 .attr('width', function (d) {
-                    d.scale.x = Math.min(linkDiv.find('.impl').outerWidth(), 450) + 10;
+                    d.scale.x = imageDiv.length ? imageDiv[0].width : Math.min(linkDiv.find('.impl').outerWidth(), 450) + 10;
                     return d.scale.x + self.linkBorderWidth;
                 })
                 .attr('height', function (d) {
-                    d.scale.y = Math.min(linkDiv.outerHeight(), 350);
+                    d.scale.y = imageDiv.length ? imageDiv[0].height : Math.min(linkDiv.outerHeight(), 350);
                     return d.scale.y + self.linkBorderWidth;
                 })
                 .attr('class', function (d) {
@@ -551,44 +540,35 @@ SCg.Render.prototype = {
     },
 
     updateLink: function () {
-        var self = this;
+        let self = this;
         this.d3_links.each(function (d) {
-            if (d.contentType !== 'image') return;
-
             if (!d.contentLoaded) {
-                var links = {};
-                links[d.containerId] = d.sc_addr;
+                let links = {};
+                links[d.containerId] = {addr: d.sc_addr, content: d.content, contentType: d.contentType};
                 self.sandbox.createViewersForScLinks(links);
 
-                d.contentLoaded = true;
+                if (d.content.length) d.contentLoaded = true;
             }
             else d.need_observer_sync = false;
 
-            var linkDiv = $(document.getElementById("link_" + self.containerId + "_" + d.id));
-            if (!d.sc_addr) {
-                linkDiv.find('.impl').html(d.content);
-                linkDiv.find('img').css({ 'width': '100%', 'height': '100%' })
-            } else {
-                if (d.content != "") {
-                    linkDiv.find('.impl').html(d.content);
-                    linkDiv.find('img').css({ 'width': '100%', 'height': '100%' });
-                } else {
-                    d.content = linkDiv.find('.impl').html();
-                    if (d.content != "") {
-                        d.setAutoType();
-                    }
-                }
+            let linkDiv = $(document.getElementById("link_" + self.containerId + "_" + d.id));
+            if (!d.content.length) {
+                d.content = linkDiv.find('.impl').html();
+                d.setAutoType();
+            }
+            if (!linkDiv.find('.impl').html().length) {
+                linkDiv.find('.impl').html(d.content)
             }
 
-            var g = d3.select(this)
-
+            const imageDiv = linkDiv.find('img');
+            let g = d3.select(this);
             g.select('rect')
                 .attr('width', function (d) {
-                    d.scale.x = Math.min(linkDiv.find('.impl').outerWidth() + 300, 450) + 10;
+                    d.scale.x = imageDiv.length ? imageDiv[0].width : Math.min(linkDiv.find('.impl').outerWidth() + 300, 450) + 10;
                     return d.scale.x + self.linkBorderWidth;
                 })
                 .attr('height', function (d) {
-                    d.scale.y = Math.min(linkDiv.outerHeight() + 300, 350);
+                    d.scale.y = imageDiv.length ? imageDiv[0].height : Math.min(linkDiv.outerHeight() + 300, 350);
                     return d.scale.y + self.linkBorderWidth;
                 })
                 .attr('class', function (d) {
@@ -609,11 +589,6 @@ SCg.Render.prototype = {
                 .attr('height', function (d) {
                     return d.scale.y;
                 });
-
-            g.attr("transform", function (d) {
-                return 'translate(' + (d.position.x - (d.scale.x + self.linkBorderWidth) * 0.5) + ', ' + (d.position.y - (d.scale.y + self.linkBorderWidth) * 0.5) + ')';
-            });
-
         });
         this.updateLinePoints();
     },

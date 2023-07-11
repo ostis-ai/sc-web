@@ -410,8 +410,6 @@ SCg.ModelLink.prototype.setAutoType = function () {
         this.contentType = 'float';
     } else if (!isNaN(this.content)) {
         this.contentType = 'int32';
-    } else if (this.content === 'binary') {
-        this.contentType = 'binary';
     } else {
         this.contentType = 'string';
     }
@@ -475,7 +473,6 @@ SCg.ModelEdge.prototype.destroy = function () {
  *      sc.g-object, that will be the source of edge
  */
 SCg.ModelEdge.prototype.setSource = function (scg_obj) {
-
     if (this.source == scg_obj) return; // do nothing
 
     if (this.source)

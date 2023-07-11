@@ -641,17 +641,7 @@ SCg.Editor.prototype = {
                 }
 
                 if (file != undefined) {
-                    setTimeout(() => {
-                        if (obj.contentType === 'image') {
-                            self.scene.commandManager.execute(new SCgCommandChangeContent(
-                                obj,
-                                obj.content,
-                                obj.contentType,
-                            ));
-                            stop_modal();
-                        }
-                    }, 100);
-                    var fileReader = new FileReader();
+                    let fileReader = new FileReader();
                     fileReader.onload = function () {
                         var scLinkHelper = new ScFileLinkHelper(file, this.result);
                         if (obj.fileReaderResult != scLinkHelper.fileArrayBuffer || obj.contentType !=
@@ -691,10 +681,6 @@ SCg.Editor.prototype = {
             // process controls
             $(container + ' #scg-set-content-apply').click(async function () {
                 wrapperRenameAttachLink();
-                setTimeout(() => {
-                    self.scene.updateLinkVisual();
-                    self.scene.updateRender();
-                }, 100)
             });
             $(container + ' #scg-set-content-cancel').click(function () {
                 stop_modal();
@@ -956,6 +942,8 @@ SCg.Editor.prototype = {
     },
 
     checkCanDelete: async function (addr) {
+        if (!addr) return true;
+
         let template = new sc.ScTemplate();
         template.triple(
             new sc.ScAddr(window.scKeynodes["basic_ontology_structure"]),

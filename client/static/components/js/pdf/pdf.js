@@ -7,7 +7,6 @@ PdfComponent = {
 
 
 var PdfViewer = function(sandbox) {
-    
     function Viewer () {
         var self = this;
 
@@ -164,11 +163,11 @@ var PdfViewer = function(sandbox) {
     };
 
     const base64ToArrayBuffer = function (base64) {
-        const binary_string= window.atob(base64);
-        const len= binary_string.length;
-        const bytes= new Uint8Array(len);
+        const binary_string = window.atob(base64);
+        const len = binary_string.length;
+        const bytes = new Uint8Array(len);
 
-        for (let i= 0; i < len; i++) {
+        for (let i = 0; i < len; i++) {
             bytes[i] = binary_string.charCodeAt(i);
         }
         return bytes.buffer;
@@ -176,13 +175,19 @@ var PdfViewer = function(sandbox) {
     
     if (this.sandbox.addr) {
         window.scClient.getLinkContents([new sc.ScAddr(this.sandbox.addr)]).then((contents) => {
-           if (contents.length) {
+            if (contents.length) {
                const base64Pdf = contents[0].data;
-               const buffer= base64ToArrayBuffer(base64Pdf);
+               const buffer = base64ToArrayBuffer(base64Pdf);
 
                this.receiveData(buffer);
-           }
+            }
         });
+    }
+    else {
+        const base64Pdf = sandbox.content;
+        const buffer = base64ToArrayBuffer(base64Pdf);
+
+        this.receiveData(buffer);
     }
 };
 

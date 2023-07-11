@@ -103,19 +103,18 @@ SCWeb.core.ComponentManager = {
      *                                  otherwise the last one a sc-addr of sc-link
      *          {String} container      Id of dom object, that will contain window
      *          {Boolean} canEdit       If that value is true, then request editor creation; otherwise - viewer
-     * @param {Function} callback Callback function that calls on creation finished
      * @return Return component sandbox object for created window instance.
      * If window doesn't created, then returns null
      */
-    createWindowSandboxByFormat: function (options, callback) {
+    createWindowSandboxByFormat: function (options) {
         return new Promise((resolve, reject) => {
-            var comp_def = this._factories_fmt[options.format_addr];
-
+            const comp_def = this._factories_fmt[options.format_addr];
             if (comp_def) {
-                var sandbox = new SCWeb.core.ComponentSandbox({
+                const sandbox = new SCWeb.core.ComponentSandbox({
                     container: options.container,
                     window_id: options.window_id,
                     addr: options.addr,
+                    content: options.content,
                     is_struct: options.is_struct,
                     format_addr: options.format_addr,
                     keynodes: this._keynodes,
@@ -125,7 +124,7 @@ SCWeb.core.ComponentManager = {
                 if (!comp_def.struct_support && options.is_struct)
                     throw "Component doesn't support structures: " + comp_def;
 
-                var component = comp_def.factory(sandbox);
+                const component = comp_def.factory(sandbox);
                 if (component.editor) {
                     if (component.editor.keyboardCallbacks) {
                         SCWeb.ui.KeyboardHandler.subscribeWindow(options.window_id, component.editor.keyboardCallbacks);
@@ -141,7 +140,7 @@ SCWeb.core.ComponentManager = {
             } else {
                 reject();
             }
-        })
+        });
     },
 
     /**
