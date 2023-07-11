@@ -602,12 +602,6 @@ SCg.Editor.prototype = {
                 input.focus();
             }, 1);
 
-            if (input.val() && (obj.contentType === 'image' || obj.contentType === 'html')) {
-                $(container + ' .popover-content').prepend(input.val());
-                $(container + ' .popover-content').children('img').css({ 'height': '150px', 'width': '150px' });
-                input.val('');
-            };
-
             const wrapperRenameAttachLink = async () => {
                 var endValueLink = input.val().trim();
                 var file = input_content[0].files[0];
@@ -641,6 +635,15 @@ SCg.Editor.prototype = {
                 }
 
                 if (file != undefined) {
+                    setTimeout(() => {
+                        self.scene.commandManager.execute(new SCgCommandChangeContent(
+                            obj,
+                            obj.content,
+                            obj.contentType,
+                        ));
+                        stop_modal();
+                    }, 200);
+
                     let fileReader = new FileReader();
                     fileReader.onload = function () {
                         var scLinkHelper = new ScFileLinkHelper(file, this.result);

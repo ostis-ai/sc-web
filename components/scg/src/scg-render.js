@@ -412,21 +412,33 @@ SCg.Render.prototype = {
             let linkDiv = $(document.getElementById("link_" + self.containerId + "_" + d.id));
             if (!d.content.length) {
                 d.content = linkDiv.find('.impl').html();
-                d.setAutoType();
             }
             if (!linkDiv.find('.impl').html().length) {
                 linkDiv.find('.impl').html(d.content)
             }
 
             const imageDiv = linkDiv.find('img');
+            const pdfDiv = linkDiv.children().find('canvas');
             let g = d3.select(this).attr("style", 'opacity: ' + d.opacityElem + '; stroke: ' + d.strokeElem + '');
             g.select('rect')
                 .attr('width', function (d) {
-                    d.scale.x = imageDiv.length ? imageDiv[0].width : Math.min(linkDiv.find('.impl').outerWidth(), 450) + 10;
+                    if (imageDiv.length) {
+                        d.scale.x = imageDiv[0].width;
+                    } else if (pdfDiv.length) {
+                        d.scale.x = pdfDiv[0].width;
+                    } else {
+                        d.scale.x = Math.min(linkDiv.find('.impl').outerWidth(), 450) + 10;
+                    }
                     return d.scale.x + self.linkBorderWidth;
                 })
                 .attr('height', function (d) {
-                    d.scale.y = imageDiv.length ? imageDiv[0].height : Math.min(linkDiv.outerHeight(), 350);
+                    if (imageDiv.length) {
+                        d.scale.y = imageDiv[0].height;
+                    } else if (pdfDiv.length) {
+                        d.scale.y = pdfDiv[0].height;
+                    } else {
+                        d.scale.y = Math.min(linkDiv.outerHeight(), 350);
+                    }
                     return d.scale.y + self.linkBorderWidth;
                 })
                 .attr('class', function (d) {
@@ -554,21 +566,33 @@ SCg.Render.prototype = {
             let linkDiv = $(document.getElementById("link_" + self.containerId + "_" + d.id));
             if (!d.content.length) {
                 d.content = linkDiv.find('.impl').html();
-                d.setAutoType();
             }
             if (!linkDiv.find('.impl').html().length) {
                 linkDiv.find('.impl').html(d.content)
             }
 
             const imageDiv = linkDiv.find('img');
+            const pdfDiv = linkDiv.children().find('canvas');
             let g = d3.select(this);
             g.select('rect')
                 .attr('width', function (d) {
-                    d.scale.x = imageDiv.length ? imageDiv[0].width : Math.min(linkDiv.find('.impl').outerWidth() + 300, 450) + 10;
+                    if (imageDiv.length) {
+                        d.scale.x = imageDiv[0].width;
+                    } else if (pdfDiv.length) {
+                        d.scale.x = pdfDiv[0].width;
+                    } else {
+                        d.scale.x = Math.min(linkDiv.find('.impl').outerWidth() + 300, 450) + 10;
+                    }
                     return d.scale.x + self.linkBorderWidth;
                 })
                 .attr('height', function (d) {
-                    d.scale.y = imageDiv.length ? imageDiv[0].height : Math.min(linkDiv.outerHeight() + 300, 350);
+                    if (imageDiv.length) {
+                        d.scale.y = imageDiv[0].height;
+                    } else if (pdfDiv.length) {
+                        d.scale.y = pdfDiv[0].height;
+                    } else {
+                        d.scale.y = Math.min(linkDiv.outerHeight() + 300, 350);
+                    }
                     return d.scale.y + self.linkBorderWidth;
                 })
                 .attr('class', function (d) {

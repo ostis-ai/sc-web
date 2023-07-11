@@ -61,7 +61,7 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
                 if (!addrEdge && sandbox.mainElement) addrEdge = { node: 1.8, link: 1.5, opacity: 1, widthEdge: 7.5, stroke: '#1E90FF', fill: '#1E90FF' };
 
                 let newMainNode = editor.scene.getObjectByScAddr(addr);
-                if (newMainNode) {
+                if (newMainNode && sandbox.mainElement) {
                     if (newMainNode instanceof SCg.ModelEdge) {
                         newMainNode.setOpacityElem(addrEdge.opacity);
                         newMainNode.setWidthEdge(addrEdge.widthEdge);
@@ -90,10 +90,12 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
                     editor.scene.appendNode(model_node);
                     editor.scene.objects[addr] = model_node;
                     model_node.setScAddr(addr);
-                    model_node.setScaleElem(addrNodeorLink.node);
-                    model_node.setOpacityElem(addrNodeorLink.opacity);
-                    model_node.setStrokeElem(addrNodeorLink.stroke);
-                    model_node.setFillElem(addrNodeorLink.fill);
+                    if (addrNodeorLink) {
+                        model_node.setScaleElem(addrNodeorLink.node);
+                        model_node.setOpacityElem(addrNodeorLink.opacity);
+                        model_node.setStrokeElem(addrNodeorLink.stroke);
+                        model_node.setFillElem(addrNodeorLink.fill);
+                    }
                     model_node.setObjectState(SCgObjectState.FromMemory);
                     resolveIdtf(addr, model_node);
                 } else if (type & sc_type_arc_mask) {
@@ -106,12 +108,13 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
                         editor.scene.appendEdge(model_edge);
                         editor.scene.objects[addr] = model_edge;
                         model_edge.setScAddr(addr);
-                        model_edge.setOpacityElem(addrEdge.opacity);
-                        model_edge.setWidthEdge(addrEdge.widthEdge);
-                        model_edge.setStrokeElem(addrEdge.stroke);
-                        model_edge.setFillElem(addrEdge.fill);
+                        if (addrEdge) {
+                            model_edge.setOpacityElem(addrEdge.opacity);
+                            model_edge.setWidthEdge(addrEdge.widthEdge);
+                            model_edge.setStrokeElem(addrEdge.stroke);
+                            model_edge.setFillElem(addrEdge.fill);
+                        }
                         model_edge.setObjectState(SCgObjectState.FromMemory);
-                        resolveIdtf(addr, model_edge);
                     }
                 } else if (type & sc_type_link) {
                     var containerId = 'scg-window-' + sandbox.addr + '-' + addr + '-' + new Date().getUTCMilliseconds();
@@ -119,11 +122,13 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
                     editor.scene.appendLink(model_link);
                     editor.scene.objects[addr] = model_link;
                     model_link.setScAddr(addr);
-                    model_link.setScaleElem(addrNodeorLink.link);
-                    model_link.setOpacityElem(addrNodeorLink.opacity);
-                    model_link.setStrokeElem(addrNodeorLink.stroke);
-                    model_link.setFillElem(addrNodeorLink.fill);
-                    model_link.setObjectState(SCgObjectState.FromMemory);
+                    if (addrNodeorLink) {
+                        model_link.setScaleElem(addrNodeorLink.link);
+                        model_link.setOpacityElem(addrNodeorLink.opacity);
+                        model_link.setStrokeElem(addrNodeorLink.stroke);
+                        model_link.setFillElem(addrNodeorLink.fill);
+                        model_link.setObjectState(SCgObjectState.FromMemory);
+                    }
                     resolveIdtf(addr, model_link);
                 }
 
@@ -428,27 +433,6 @@ function scgScStructTranslator(_editor, _sandbox) {
             /// --------------------
             var translateLinks = async function () {
                 var implFunc = async function (link) {
-                    let addrLang;
-                    let addrPng;
-
-                    const scAddrEdgeLang = async (linkAddr, keynode) => {
-                        return await window.scHelper.getEdgeLang(linkAddr, keynode);
-                    };
-
-                    const scAddrEdgePng = async (linkAddr, keynode) => {
-                        return await window.scHelper.getEdgePng(linkAddr, keynode);
-                    }
-
-                    const removeLangEdge = async (addrLang) => {
-                        if (!addrLang) return;
-                        await scClient.deleteElements([addrLang]);
-                    };
-
-                    const removeImgEdges = async (addrPng) => {
-                        if (!addrPng) return;
-                        await scClient.deleteElements([addrPng]);
-                    }
-
                     const infoConstruction = (link) => {
                         let data = link.content;
                         let type = sc.ScLinkContentType.String;
@@ -508,30 +492,6 @@ function scgScStructTranslator(_editor, _sandbox) {
                         if (link.content) {
                             await window.scHelper.setLinkFormat(linkAddr, keynode);
                         }
-                    }
-
-                    if (link.hasOwnProperty('changedValue')) {
-                        const imgKeynode = window.scKeynodes['format_png'];
-                        const { data, type, langKeynode } = infoConstruction(link);
-                        link.setObjectState(SCgObjectState.NewInMemory);
-                        objects.push(link);
-
-                        if (addrLang = await scAddrEdgeLang(link.sc_addr, langKeynode)) {
-                            if (link.contentType === 'image') {
-                                await removeLangEdge(addrLang);
-                                await window.scHelper.setLinkFormat(link.sc_addr, imgKeynode);
-                            }
-                            scClient.setLinkContents([new sc.ScLinkContent(data, type, new sc.ScAddr(link.sc_addr))]);
-                        }
-                        else if (addrPng = await scAddrEdgePng(link.sc_addr, imgKeynode)) {
-                            if (link.contentType !== 'image') {
-                                await removeImgEdges(addrPng);
-                                await window.scHelper.setLinkLang(link.sc_addr, langKeynode);
-                            }
-                            scClient.setLinkContents([new sc.ScLinkContent(data, type, new sc.ScAddr(link.sc_addr))]);
-                        }
-
-                        delete link.changedValue;
                     }
                 }
 

@@ -29,7 +29,8 @@ var PdfViewer = function(sandbox) {
             PDFJS.getDocument(buffer).then(function (pdfDoc_) {
                 self.pdfDoc = pdfDoc_;
 
-                document.getElementById('pdf_page_count' + self.id).textContent = self.pdfDoc.numPages;
+                let pdfDiv = document.getElementById('pdf_page_count' + self.id);
+                if (pdfDiv) pdfDiv.textContent = self.pdfDoc.numPages;
                 self.pageCount = self.pdfDoc.numPages;
 
                 self.renderPage(self.pageNum);
@@ -61,7 +62,9 @@ var PdfViewer = function(sandbox) {
                     }
                 });
             });
-            document.getElementById('pdf_page_number'  + self.id).textContent = self.pageNum;
+
+            let pdfDiv = document.getElementById('pdf_page_number'  + self.id);
+            if (pdfDiv) pdfDiv.textContent = self.pageNum;
        };
 
        self.queueRenderPage = function (num) {
@@ -173,7 +176,7 @@ var PdfViewer = function(sandbox) {
         return bytes.buffer;
     }
     
-    if (this.sandbox.addr) {
+    if (this.sandbox.addr && !this.sandbox.content) {
         window.scClient.getLinkContents([new sc.ScAddr(this.sandbox.addr)]).then((contents) => {
             if (contents.length) {
                const base64Pdf = contents[0].data;
