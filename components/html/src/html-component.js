@@ -90,11 +90,15 @@ var HtmlViewer = function(sandbox) {
         return this.addrs;
     }
 
-    this.sandbox.eventGetObjectsToTranslate = $.proxy(this.getObjectsToTranslate, this);
-    this.sandbox.eventApplyTranslation = $.proxy(this.updateTranslation, this);
-    this.sandbox.eventDataAppend = $.proxy(this.receiveData, this);
-    
-    this.sandbox.updateContent();
+    if (this.sandbox.content) {
+        this.receiveData(this.sandbox.content);
+    } else {
+        this.sandbox.eventGetObjectsToTranslate = $.proxy(this.getObjectsToTranslate, this);
+        this.sandbox.eventApplyTranslation = $.proxy(this.updateTranslation, this);
+        this.sandbox.eventDataAppend = $.proxy(this.receiveData, this);
+
+        this.sandbox.updateContent();
+    }
 };
 
 

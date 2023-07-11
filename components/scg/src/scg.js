@@ -635,15 +635,6 @@ SCg.Editor.prototype = {
                 }
 
                 if (file != undefined) {
-                    setTimeout(() => {
-                        self.scene.commandManager.execute(new SCgCommandChangeContent(
-                            obj,
-                            obj.content,
-                            obj.contentType,
-                        ));
-                        stop_modal();
-                    }, 200);
-
                     let fileReader = new FileReader();
                     fileReader.onload = function () {
                         var scLinkHelper = new ScFileLinkHelper(file, this.result);
@@ -662,14 +653,23 @@ SCg.Editor.prototype = {
                 } else {
                     if (obj.content != input.val() || obj.contentType != input_content_type.val()) {
                         if (obj.sc_addr) obj.changedValue = true;
-                        self.scene.commandManager.execute(new SCgCommandChangeContent(obj,
+                        self.scene.commandManager.execute(new SCgCommandChangeContent(
+                            obj,
                             input.val(),
                             input_content_type.val(),
-                            null
                         ));
                     }
                     stop_modal();
                 }
+
+                setTimeout(() => {
+                    self.scene.commandManager.execute(new SCgCommandChangeContent(
+                        obj,
+                        obj.content,
+                        obj.contentType,
+                    ));
+                    stop_modal();
+                }, 200);
             }
 
             input.keypress(function (e) {

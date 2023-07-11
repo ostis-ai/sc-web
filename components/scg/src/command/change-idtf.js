@@ -10,10 +10,14 @@ SCgCommandChangeIdtf.prototype = {
 
     undo: function () {
         this.object.setText(this.oldIdtf);
+        this.object.setObjectState(SCgObjectState.NewInMemory);
+        this.object.scene.updateRender();
     },
 
     execute: function () {
         this.object.setText(this.newIdtf);
+        this.object.setObjectState(SCgObjectState.NewInMemory);
+        this.object.scene.updateRender();
     }
 
 };
