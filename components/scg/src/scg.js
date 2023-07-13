@@ -86,6 +86,7 @@ SCg.Editor.prototype = {
         this.canEdit = !!params.canEdit;
         this.initUI();
 
+        SCWeb.core.EventManager.subscribe("render/update", null, () => { this.scene.updateRender(); this.scene.updateLinkVisual(); });
     },
 
     /**
@@ -661,21 +662,12 @@ SCg.Editor.prototype = {
                     }
                     stop_modal();
                 }
-
-                setTimeout(() => {
-                    self.scene.commandManager.execute(new SCgCommandChangeContent(
-                        obj,
-                        obj.content,
-                        obj.contentType,
-                    ));
-                    stop_modal();
-                }, 200);
             }
 
-            input.keypress(function (e) {
-                if (e.keyCode == KeyCode.Enter || e.keyCode == KeyCode.Escape) {
-                    if (e.keyCode == KeyCode.Enter) {
-                        wrapperRenameAttachLink();
+            input.keypress(async function (e) {
+                if (e.keyCode === KeyCode.Enter || e.keyCode === KeyCode.Escape) {
+                    if (e.keyCode === KeyCode.Enter) {
+                        wrapperRenameAttachLink().then(null);
                     }
                     stop_modal();
                     e.preventDefault();
@@ -683,7 +675,7 @@ SCg.Editor.prototype = {
             });
             // process controls
             $(container + ' #scg-set-content-apply').click(async function () {
-                wrapperRenameAttachLink();
+                wrapperRenameAttachLink().then(null);
             });
             $(container + ' #scg-set-content-cancel').click(function () {
                 stop_modal();

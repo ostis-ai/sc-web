@@ -9,22 +9,18 @@ const ImageViewer = function (sandbox) {
     this.container = '#' + sandbox.container;
     this.sandbox = sandbox;
 
-    function getDimensions(base64) {
-        const header = atob(base64.slice(0, 50)).slice(16,24);
-        const uint8 = Uint8Array.from(header, c => c.charCodeAt(0));
-        const dataView = new DataView(uint8.buffer);
-
-        return {
-            width: dataView.getInt32(0),
-            height: dataView.getInt32(4)
-        };
-    }
-
     // ---- window interface -----
     this.receiveData = function (mimeType, data) {
-        const dim = getDimensions(data);
         $(this.container).empty();
-        $(this.container).append('<img src="data:' + mimeType + ';base64,' + data + '" style="width:' + dim.width + 'px; height:' + dim.height + 'px">');
+
+        let img = $('<img>').attr('src', 'data:' + mimeType + ';base64,' + data).css({
+            'max-width': '300px',
+            'max-height': '300px'
+        }).on('load', function() {
+            SCWeb.core.EventManager.emit("render/update");
+        });
+
+        $(this.container).append(img);
     };
 
     const getMimeType = async function (formatAddr) {
@@ -53,7 +49,7 @@ const ImageViewer = function (sandbox) {
         return "";
     }
 
-    if (this.sandbox.addr) {
+    if (this.sandbox.addr && !this.sandbox.content) {
         window.scClient.getLinkContents([new sc.ScAddr(this.sandbox.addr)]).then((contents) => {
             if (contents.length) {
                 let base64 = contents[0].data;

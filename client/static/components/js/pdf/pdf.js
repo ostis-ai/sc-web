@@ -5,8 +5,7 @@ PdfComponent = {
     }
 };
 
-
-var PdfViewer = function(sandbox) {
+const PdfViewer = function(sandbox) {
     function Viewer () {
         var self = this;
 
@@ -41,7 +40,6 @@ var PdfViewer = function(sandbox) {
             self.pageRendering = true;
 
             self.pdfDoc.getPage(num).then(function(page) {
-
                 var viewport = page.getViewport(self.scale);
                 self.canvas.height = viewport.height;
                 self.canvas.width = viewport.width;
@@ -60,6 +58,8 @@ var PdfViewer = function(sandbox) {
                         self.renderPage(pageNumPending);
                         self.pageNumPending = null;
                     }
+
+                    SCWeb.core.EventManager.emit("render/update");
                 });
             });
 
@@ -142,27 +142,28 @@ var PdfViewer = function(sandbox) {
     
         
     this.createHtml = function (id, container) {
-       var mainPdfDiv = '<div id="pdf' + id + '"></div>';
-       $(container).append(mainPdfDiv);
-       
-       var controlsDiv = '<div id="cotrols' + id +'"></div>';
-       $('#pdf' + id).append(controlsDiv);
-       
-       var prevButton = '<button id="pdf_prev_page' + id + '" style="margin: 10px;">Prev page</button>';
-       var nextButton = '<button id="pdf_next_page' + id + '" style="margin: 10px;">Next page</button>';
-       var pageCounter = '<span style="margin: 10px;">Page: <span id="pdf_page_number' + id + '"></span> / <span id="pdf_page_count' + id + '"></span></span>'
-       
-       var inputGoTo = '<input type="text" id="pdf_go_to_page' + id + '"/>';
-       var buttonGoTo = '<button id="pdf_go_to_page_button' + id + '">Go to page</button>';
-       
-       $('#cotrols' + id).append(prevButton);
-       $('#cotrols' + id).append(pageCounter);
-       $('#cotrols' + id).append(nextButton);
-       $('#cotrols' + id).append(inputGoTo);
-       $('#cotrols' + id).append(buttonGoTo);
-       
-       var canvasDiv = '<canvas id="pdf_canvas' + id + '" style="border:1px solid black"></canvas>'
-       $('#pdf' + id).append(canvasDiv);
+        const mainPdfDiv = '<div id="pdf' + id + '"></div>';
+        $(container).append(mainPdfDiv);
+
+        const controlsDiv = '<div id="cotrols' + id +'"></div>';
+        $('#pdf' + id).append(controlsDiv);
+
+        var prevButton = '<button id="pdf_prev_page' + id + '" style="margin: 10px;">Prev page</button>';
+        var nextButton = '<button id="pdf_next_page' + id + '" style="margin: 10px;">Next page</button>';
+        var pageCounter = '<span style="margin: 10px;">Page: <span id="pdf_page_number' + id + '"></span> / <span id="pdf_page_count' + id + '"></span></span>'
+
+        var inputGoTo = '<input type="text" id="pdf_go_to_page' + id + '"/>';
+        var buttonGoTo = '<button id="pdf_go_to_page_button' + id + '">Go to page</button>';
+
+        $('#cotrols' + id).append(prevButton);
+        $('#cotrols' + id).append(pageCounter);
+        $('#cotrols' + id).append(nextButton);
+        $('#cotrols' + id).append(inputGoTo);
+        $('#cotrols' + id).append(buttonGoTo);
+
+        const canvasDiv = '<canvas id="pdf_canvas' + id + '" style="border:1px solid black"></canvas>';
+
+        $('#pdf' + id).append(canvasDiv);
     };
 
     const base64ToArrayBuffer = function (base64) {
