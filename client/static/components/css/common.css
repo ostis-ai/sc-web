@@ -558,3 +558,56 @@ input:checked + .slider:before {
 .normalLabel {
   font-weight: normal;
 }
+
+.modal-container {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 10000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-container.display-none {
+  display: none;
+}
+
+.modal-content {
+  width: 50rem;
+  padding: 1rem;
+}
+
+.modal-content-header {
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+.modal-content-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.modal-content-btn {
+  margin-left: 1rem;
+}
+
+.blue-btn {
+  background-color: #337ab7;
+  color: white;
+}
+
+.blue-btn:hover {
+  background-color: #115ab5;
+  color: white;
+}
+
+.intro-modal-button-text {
+  position: relative;
+  top: 0.1rem;
+}
