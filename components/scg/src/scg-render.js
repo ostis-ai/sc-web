@@ -14,6 +14,17 @@ SCg.Render.prototype = {
         this.translate = [0, 0];
         this.translate_started = false;
 
+        this.transformByZoom = function (e) {
+            const xs = (e.clientX - this.translate[0]) / this.scale;
+            const ys = (e.clientY - this.translate[1]) / this.scale;
+
+            e.wheelDelta > 0 ? this.scale *= 1.1 : this.scale *= 0.9;
+
+            this.translate[0] = e.clientX - xs * this.scale;
+            this.translate[1] = e.clientY - ys * this.scale;
+
+            this.scene.render._changeContainerTransform()
+        }
         // disable tooltips
         $('#' + this.containerId).parent().addClass('ui-no-tooltip');
 
@@ -39,10 +50,14 @@ SCg.Render.prototype = {
                 self.scene.onMouseUpObject(d);
                 if (d3.event.stopPropagation()) d3.event.stopPropagation();
             })
-            .on("wheel", function(){
+            .on("wheel", function () {
                 var direction = d3.event.wheelDelta < 0 ? 'down' : 'up';
-                if (direction === 'up') self.scene.onMouseWheelUp(this, self);
-                if (direction === 'down') self.scene.onMouseWheelDown(this, self);
+                if (direction === 'up') {
+                    self.transformByZoom(d3.event);
+                };
+                if (direction === 'down') {
+                    self.transformByZoom(d3.event);
+                };
             });
 
         const svg = document.querySelector("svg.SCgSvg");
@@ -464,7 +479,7 @@ SCg.Render.prototype = {
                 });
 
             g.attr("transform", function (d) {
-                return 'translate(' + (d.position.x - (d.scale.x + self.linkBorderWidth) * 0.5) + ', ' + (d.position.y - (d.scale.y + self.linkBorderWidth) * 0.5) +  ')scale(' + d.scaleElem + ')';
+                return 'translate(' + (d.position.x - (d.scale.x + self.linkBorderWidth) * 0.5) + ', ' + (d.position.y - (d.scale.y + self.linkBorderWidth) * 0.5) + ')scale(' + d.scaleElem + ')';
             });
 
             // Update sc-link identifier (x, y) position according to the sc-link width
@@ -785,7 +800,7 @@ SCg.Render.prototype = {
             .on('dblclick', function (d) {
                 self.line_point_idx = -1;
             })
-            .on('mouseup', function(d) {
+            .on('mouseup', function (d) {
                 //this.scene.updateContours(this.scene.selected_objects[0].childs);
                 self.scene.appendAllElementToContours();
             });
@@ -806,12 +821,12 @@ SCg.Render.prototype = {
         if (translate) {
             this.translate[0] = translate[0];
             this.translate[1] = translate[1];
-            this.scale = scale;
+            this.scale = scale || this.scale;
         }
         this.d3_container.attr("transform", "translate(" + this.translate + ")scale(" + this.scale + ")");
     },
 
-    changeScale: function (mult) {
+    changeScale: function (mult, tr) {
         if (mult === 0)
             throw "Invalid scale multiplier";
 
@@ -904,7 +919,7 @@ SCg.Render.prototype = {
         if (this.scene.onKeyUp(event))
             d3.event.stopPropagation();
     },
-    
+
     onKeyUp: function (event) {
         // do not send event to other listeners, if it processed in scene
         if (this.scene.onKeyUp(event))
