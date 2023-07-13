@@ -36,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Pointer cursor when hovering over expert mode switch label
 - Attribute `sc_control_sys_idtf` for sidebar collapse button
 - Add curl to dependencies installation script
+- Add the ability to drag nodes in scg
 
 ### Changed
 - View identifiers with scn-component from sc-json
