@@ -207,6 +207,11 @@ SCg.Render.prototype = {
                     self.scene.onMouseUpObject(d);
                     if (d3.event.stopPropagation())
                         d3.event.stopPropagation();
+                })
+                .on('click', function (d) {
+                    self.scene.onMouseUpObject(d);
+                    if (d3.event.stopPropagation())
+                        d3.event.stopPropagation();
                     if (self.sandbox.mainElement === d.sc_addr)
                         return;
                     if (self.scene.getObjectByScAddr(d.sc_addr) instanceof SCg.ModelEdge)
@@ -785,7 +790,6 @@ SCg.Render.prototype = {
             this.translate[1] = translate[1];
             this.scale = scale;
         }
-        
         this.d3_container.attr("transform", "translate(" + this.translate + ")scale(" + this.scale + ")");
     },
 
