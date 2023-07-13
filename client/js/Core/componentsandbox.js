@@ -264,14 +264,13 @@ SCWeb.core.ComponentSandbox.prototype.createViewersForScStructs = function (cont
  * data will be returned as string
  */
 SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, scene, contentType) {
-
     let edgeToEdge = false;
-    let relationNodes = [];
+    let relationNodes = [];    
     var self = this;
 
     if (scene) {
         self.scene = scene;
-    }
+    } 
     if (this.is_struct && this.eventStructUpdate) {
         const maxNumberOfTriplets = 850;
         const delayTimeoutAutosize = 300;
@@ -290,8 +289,8 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
             return false;
         };
 
-        let scTemplateMainlevel = new sc.ScTemplate();
-        let scTemplateMainlevelWithMainKey = new sc.ScTemplate();
+        let scTemplateMainlevel = new sc.ScTemplate();      
+        let scTemplateMainlevelWithMainKey = new sc.ScTemplate();   
 
         if (scAddr && !self.isResultWithMainKey) {
             scTemplateMainlevel.triple(
@@ -473,7 +472,7 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
                             [sc.ScType.EdgeAccessVarPosPerm, "edgeFromContourToSourceElem"],
                             new sc.ScAddr(sourceElem),
                         );
-
+                        
                         if (!visitedElements.includes(targetElem) && !levelNodes.includes(targetElem) || !visitedElements.includes(sourceElem) && !levelNodes.includes(sourceElem)) {
 
                             levelNodes.push(targetElem);
