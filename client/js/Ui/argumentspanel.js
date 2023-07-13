@@ -4,6 +4,7 @@ SCWeb.ui.ArgumentsPanel = {
     init: function () {
         this.argument_add_state = false;
         var self = this;
+        this._parentContainer = document.getElementById('arguments_container');
         return new Promise((resolve, reject)=>{
 
             // listen events from arguments
@@ -70,7 +71,9 @@ SCWeb.ui.ArgumentsPanel = {
             + idx_str
             + '"></button>';
         $(this._container).append(new_button);
-
+        if(this._parentContainer.classList.contains('display-none')) {
+             this._parentContainer.classList.toggle('display-none');
+        }
         // translate added argument
         SCWeb.core.Translation.translate([argument]).then(function (namesMap) {
 
@@ -87,9 +90,10 @@ SCWeb.ui.ArgumentsPanel = {
     onArgumentRemoved: function (argument, idx) {
 
         $('#argument_' + idx.toString()).remove();
-        // update indicies
+        // update indices
+        let noArguments = true;
         $(this._container + ' [arg_idx]').each(function (index, element) {
-
+            noArguments = false;
             var v = parseInt($(this).attr('arg_idx'));
 
             if (v > idx) {
@@ -98,11 +102,15 @@ SCWeb.ui.ArgumentsPanel = {
                 $(this).attr('id', 'argument_' + v.toString());
             }
         });
+        if (noArguments) {
+            this._parentContainer.classList.toggle('display-none');
+        }
     },
 
     onArgumentsCleared: function () {
 
         $(this._container).empty();
+        this._parentContainer.classList.toggle('display-none');
     },
 
     // ------- Translation listener interface ---------
