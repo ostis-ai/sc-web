@@ -290,7 +290,7 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
             return false;
         };
 
-        let scTemplateMainlevel = new sc.ScTemplate();      
+        let scTemplateMainlevel = new sc.ScTemplate();          
         let scTemplateMainlevelWithMainKey = new sc.ScTemplate();   
 
         if (scAddr && !self.isResultWithMainKey) {
