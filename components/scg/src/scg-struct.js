@@ -472,7 +472,7 @@ function scgScStructTranslator(_editor, _sandbox) {
                             await window.scHelper.setLinkFormat(link.sc_addr, format);
                         }
                     }
-                    else {
+                    else if (!link.sc_addr) {
                         let construction = new sc.ScConstruction();
                         const linkContent = new sc.ScLinkContent(data, type);
                         construction.createLink(sc.ScType.Link, linkContent, 'link');
@@ -490,11 +490,9 @@ function scgScStructTranslator(_editor, _sandbox) {
                     }
                 }
 
-                let funcs = [];
                 for (let i = 0; i < links.length; ++i) {
-                    funcs.push(implFunc(links[i]));
+                    await implFunc(links[i]);
                 }
-                return Promise.all(funcs);
             }
 
             await translateNodes();

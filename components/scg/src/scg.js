@@ -86,7 +86,10 @@ SCg.Editor.prototype = {
         this.canEdit = !!params.canEdit;
         this.initUI();
 
-        SCWeb.core.EventManager.subscribe("render/update", null, () => { this.scene.updateRender(); this.scene.updateLinkVisual(); });
+        SCWeb.core.EventManager.subscribe("render/update", null, () => {
+            this.scene.updateRender();
+            this.scene.updateLinkVisual();
+        });
     },
 
     /**
@@ -432,12 +435,11 @@ SCg.Editor.prototype = {
                 if (!result.length) return;
 
                 return result[0].get("_node");
-
             }
 
             const wrapperChangeApply = async (obj, input, self) => {
                 const addrNodeEnterValue = await checkEnterValue(input[0].value);
-                if (obj.text != input.val() && !self._selectedIdtf && !addrNodeEnterValue) {
+                if (obj.text !== input.val() && !self._selectedIdtf && !addrNodeEnterValue) {
                     self.scene.commandManager.execute(new SCgCommandChangeIdtf(obj, input.val()));
                 }
 
@@ -637,14 +639,12 @@ SCg.Editor.prototype = {
                     let fileReader = new FileReader();
                     fileReader.onload = function () {
                         const scLinkHelper = new ScFileLinkHelper(file, this.result);
-                        if (obj.contentType !== scLinkHelper.type) {
-                            if (obj.sc_addr) obj.changedValue = true;
-                            self.scene.commandManager.execute(new SCgCommandChangeContent(
-                                obj,
-                                scLinkHelper.htmlViewResult(),
-                                scLinkHelper.type,
-                            ));
-                        }
+                        if (obj.sc_addr) obj.changedValue = true;
+                        self.scene.commandManager.execute(new SCgCommandChangeContent(
+                            obj,
+                            scLinkHelper.htmlViewResult(),
+                            scLinkHelper.type,
+                        ));
                         stop_modal();
                     };
                     fileReader.readAsArrayBuffer(file);
