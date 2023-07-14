@@ -593,19 +593,17 @@ SCg.Editor.prototype = {
             });
             $(this).popover('show');
 
-            var obj = self.scene.selected_objects[0];
-            var input = $(container + ' #scg-set-content-input');
-            var input_content = $(container + " input#content[type='file']");
-            var input_content_type = $(container + " #scg-set-content-type");
+            const obj = self.scene.selected_objects[0];
+            const input = $(container + ' #scg-set-content-input');
+            const input_content = $(container + " input#content[type='file']");
             input.val(self.scene.selected_objects[0].content);
-            input_content_type.val(self.scene.selected_objects[0].contentType);
             setTimeout(function () {
                 input.focus();
             }, 1);
 
             const wrapperRenameAttachLink = async () => {
-                var endValueLink = input.val().trim();
-                var file = input_content[0].files[0];
+                const endValueLink = input.val().trim();
+                const file = input_content[0].files[0];
                 if ((startValueLink === endValueLink && obj.sc_addr) && !file) stop_modal();
                 obj.changedValue = true;
 
@@ -635,12 +633,11 @@ SCg.Editor.prototype = {
                     obj.changedValue = true;
                 }
 
-                if (file != undefined) {
+                if (file) {
                     let fileReader = new FileReader();
                     fileReader.onload = function () {
-                        var scLinkHelper = new ScFileLinkHelper(file, this.result);
-                        if (obj.fileReaderResult != scLinkHelper.fileArrayBuffer || obj.contentType !=
-                            scLinkHelper.type) {
+                        const scLinkHelper = new ScFileLinkHelper(file, this.result);
+                        if (obj.contentType !== scLinkHelper.type) {
                             if (obj.sc_addr) obj.changedValue = true;
                             self.scene.commandManager.execute(new SCgCommandChangeContent(
                                 obj,
@@ -652,12 +649,12 @@ SCg.Editor.prototype = {
                     };
                     fileReader.readAsArrayBuffer(file);
                 } else {
-                    if (obj.content != input.val() || obj.contentType != input_content_type.val()) {
+                    if (obj.content !== input.val()) {
                         if (obj.sc_addr) obj.changedValue = true;
                         self.scene.commandManager.execute(new SCgCommandChangeContent(
                             obj,
                             input.val(),
-                            input_content_type.val(),
+                            null
                         ));
                     }
                     stop_modal();

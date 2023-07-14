@@ -15,6 +15,8 @@ const TextViewer = function(sandbox){
         container.empty();
         container.addClass('sc-content-string');
         container.text(data);
+
+        SCWeb.core.EventManager.emit("render/update");
     };
 
     if (sandbox.content) {
