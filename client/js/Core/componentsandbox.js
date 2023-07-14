@@ -283,6 +283,7 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
         const levelScale7 = { node: 1, link: 1, opacity: 0.4, widthEdge: 6.5, stroke: 'black', fill: '#00a' };
 
         const levelScales = [levelScale1, levelScale2, levelScale3, levelScale4, levelScale5, levelScale6, levelScale7];
+
         const checkEdge = (scAddr) => {
             let elem = self.scene.getObjectByScAddr(scAddr);
             if (elem instanceof SCg.ModelEdge) return true;
@@ -324,7 +325,7 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
                 new sc.ScAddr(window.scKeynodes['rrel_main_key_sc_element']),
             );
         };
-
+        
         let resultLevel = await window.scClient.templateSearch(scTemplateMainlevel);
         let resultLevelWithMainKey = await window.scClient.templateSearch(scTemplateMainlevelWithMainKey);
 
@@ -333,7 +334,7 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
         if (!scAddr) resultLevel.length ? self.isResultWithMainKey = false : isResultWithMainKey = true;
 
         if (resultLevel.length || resultLevelWithMainKey.length) self.isRrelKeyScElement = true;
-
+        
         for (let triple of resultLevel.length ? resultLevel : resultLevelWithMainKey) {
 
             scAddr ? mainElements.push(scAddr) && (self.mainElement = scAddr): mainElements.push(triple.get('mainNode').value) && (self.mainElement = triple.get('mainNode').value);
@@ -356,7 +357,7 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
 
             let newElementsArr = [];
             for (let i = 0; i < elementsArr.length; i++) {
-
+                
                 let elements = elementsArr[i];
                 for (let j = 0; j < elements.length; j++) {
                     let elem = elements[j];
@@ -474,7 +475,7 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
                         );
                         
                         if (!visitedElements.includes(targetElem) && !levelNodes.includes(targetElem) || !visitedElements.includes(sourceElem) && !levelNodes.includes(sourceElem)) {
-
+                            
                             levelNodes.push(targetElem);
                             visitedElements.push(targetElem);
                             levelNodes.push(sourceElem);
@@ -500,7 +501,7 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
                     self.eventStructUpdate(true, triple.get("src").value, triple.get("edgeFromContourToSecondElem").value, scale);
                     self.eventStructUpdate(true, triple.get("src").value, triple.get("edgeFromContourToMainEdge").value, scale);
                 };
-
+                
                 if (!levelNodes.length) continue;
                 if (secondElem === mainElements[0]) continue;
 
@@ -536,7 +537,6 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
         for (let triple of result) {
             self.eventStructUpdate(true, triple.get("src").value, triple.get("edge").value, { node: 1, link: 1 });
         }
-
     }
     else {
         let content = await window.scClient.getLinkContents([new sc.ScAddr(this.addr)]);
