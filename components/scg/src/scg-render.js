@@ -491,9 +491,11 @@ SCg.Render.prototype = {
                 .attr("sc_addr", function (d) {
                     return d.sc_addr;
                 });
-            
-            d3_edge.select('.SCgEdgeEndArrowCommon').style('stroke-width', `${d.widthEdge}px`).style('opacity', d.opacityElem);
-            d3_edge.select('.SCgEdgeEndArrowAccess').style('stroke-width', `${d.widthEdge - 6}px`).style('opacity', d.opacityElem);
+
+            if (SCWeb.core.Main.mode === SCgEditMode.SCgModeViewOnly) {
+                d3_edge.select('.SCgEdgeEndArrowCommon').style('stroke-width', `${d.widthEdge}px`).style('opacity', d.opacityElem);
+                d3_edge.select('.SCgEdgeEndArrowAccess').style('stroke-width', `${d.widthEdge - 6}px`).style('opacity', d.opacityElem);
+            }
         });
 
         this.d3_contours.each(function (d) {
