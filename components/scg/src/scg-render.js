@@ -56,7 +56,7 @@ SCg.Render.prototype = {
                 self.scene.onMouseUpObject(d);
                 if (d3.event.stopPropagation()) d3.event.stopPropagation();
             })
-            .on("wheel", function () {
+            .on("wheel", function(){
                 var direction = d3.event.wheelDelta < 0 ? 'down' : 'up';
                 if (direction === 'up') {
                     self.transformByZoom(d3.event);
@@ -485,7 +485,7 @@ SCg.Render.prototype = {
                 });
 
             g.attr("transform", function (d) {
-                return 'translate(' + (d.position.x - (d.scale.x + self.linkBorderWidth) * 0.5) + ', ' + (d.position.y - (d.scale.y + self.linkBorderWidth) * 0.5) + ')scale(' + d.scaleElem + ')';
+                return 'translate(' + (d.position.x - (d.scale.x + self.linkBorderWidth) * 0.5) + ', ' + (d.position.y - (d.scale.y + self.linkBorderWidth) * 0.5) +  ')scale(' + d.scaleElem + ')';
             });
 
             // Update sc-link identifier (x, y) position according to the sc-link width
@@ -806,7 +806,7 @@ SCg.Render.prototype = {
             .on('dblclick', function (d) {
                 self.line_point_idx = -1;
             })
-            .on('mouseup', function (d) {
+            .on('mouseup', function(d) {
                 //this.scene.updateContours(this.scene.selected_objects[0].childs);
                 self.scene.appendAllElementToContours();
             });
@@ -832,7 +832,7 @@ SCg.Render.prototype = {
         this.d3_container.attr("transform", "translate(" + this.translate + ")scale(" + this.scale + ")");
     },
 
-    changeScale: function (mult, tr) {
+    changeScale: function (mult) {
         if (mult === 0)
             throw "Invalid scale multiplier";
 
@@ -925,7 +925,7 @@ SCg.Render.prototype = {
         if (this.scene.onKeyUp(event))
             d3.event.stopPropagation();
     },
-
+    
     onKeyUp: function (event) {
         // do not send event to other listeners, if it processed in scene
         if (this.scene.onKeyUp(event))
