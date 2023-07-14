@@ -283,7 +283,7 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
         const levelScale7 = { node: 1, link: 1, opacity: 0.4, widthEdge: 6.5, stroke: 'black', fill: '#00a' };
 
         const levelScales = [levelScale1, levelScale2, levelScale3, levelScale4, levelScale5, levelScale6, levelScale7];
-
+        
         const checkEdge = (scAddr) => {
             let elem = self.scene.getObjectByScAddr(scAddr);
             if (elem instanceof SCg.ModelEdge) return true;
@@ -475,7 +475,7 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
                         );
                         
                         if (!visitedElements.includes(targetElem) && !levelNodes.includes(targetElem) || !visitedElements.includes(sourceElem) && !levelNodes.includes(sourceElem)) {
-                            
+                                
                             levelNodes.push(targetElem);
                             visitedElements.push(targetElem);
                             levelNodes.push(sourceElem);
