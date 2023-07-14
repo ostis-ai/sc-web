@@ -15,13 +15,19 @@ SCg.Render.prototype = {
         this.translate_started = false;
 
         this.transformByZoom = function (e) {
-            const xs = (e.clientX - this.translate[0]) / this.scale;
-            const ys = (e.clientY - this.translate[1]) / this.scale;
+            const svg = e.currentTarget
+            const svgRect = svg.getBoundingClientRect();
+
+            const svgX = e.clientX - svgRect.x;
+            const svgY = e.clientY - svgRect.y;
+
+            const transformX = (svgX - this.translate[0]) / this.scale;
+            const transformY = (svgY - this.translate[1]) / this.scale;
 
             e.wheelDelta > 0 ? this.scale *= 1.1 : this.scale *= 0.9;
 
-            this.translate[0] = e.clientX - xs * this.scale;
-            this.translate[1] = e.clientY - ys * this.scale;
+            this.translate[0] = svgX - transformX * this.scale;
+            this.translate[1] = svgY - transformY * this.scale;
 
             this.scene.render._changeContainerTransform()
         }
