@@ -13,6 +13,8 @@ SCg.Render.prototype = {
         this.scale = 1;
         this.translate = [0, 0];
         this.translate_started = false;
+        this.zoomIn = 1.1;
+        this.zoomOut = 0.9
 
         this.transformByZoom = function (e) {
             const svg = e.currentTarget
@@ -24,7 +26,7 @@ SCg.Render.prototype = {
             const transformX = (svgX - this.translate[0]) / this.scale;
             const transformY = (svgY - this.translate[1]) / this.scale;
 
-            e.wheelDelta > 0 ? this.scale *= 1.1 : this.scale *= 0.9;
+            e.wheelDelta > 0 ? this.scale *= this.zoomIn : this.scale *= this.zoomOut;
 
             this.translate[0] = svgX - transformX * this.scale;
             this.translate[1] = svgY - transformY * this.scale;
@@ -56,7 +58,7 @@ SCg.Render.prototype = {
                 self.scene.onMouseUpObject(d);
                 if (d3.event.stopPropagation()) d3.event.stopPropagation();
             })
-            .on("wheel", function(){
+            .on("wheel", function () {
                 var direction = d3.event.wheelDelta < 0 ? 'down' : 'up';
                 if (direction === 'up') {
                     self.transformByZoom(d3.event);
@@ -485,7 +487,7 @@ SCg.Render.prototype = {
                 });
 
             g.attr("transform", function (d) {
-                return 'translate(' + (d.position.x - (d.scale.x + self.linkBorderWidth) * 0.5) + ', ' + (d.position.y - (d.scale.y + self.linkBorderWidth) * 0.5) +  ')scale(' + d.scaleElem + ')';
+                return 'translate(' + (d.position.x - (d.scale.x + self.linkBorderWidth) * 0.5) + ', ' + (d.position.y - (d.scale.y + self.linkBorderWidth) * 0.5) + ')scale(' + d.scaleElem + ')';
             });
 
             // Update sc-link identifier (x, y) position according to the sc-link width
@@ -806,7 +808,7 @@ SCg.Render.prototype = {
             .on('dblclick', function (d) {
                 self.line_point_idx = -1;
             })
-            .on('mouseup', function(d) {
+            .on('mouseup', function (d) {
                 //this.scene.updateContours(this.scene.selected_objects[0].childs);
                 self.scene.appendAllElementToContours();
             });
@@ -925,7 +927,7 @@ SCg.Render.prototype = {
         if (this.scene.onKeyUp(event))
             d3.event.stopPropagation();
     },
-    
+
     onKeyUp: function (event) {
         // do not send event to other listeners, if it processed in scene
         if (this.scene.onKeyUp(event))
