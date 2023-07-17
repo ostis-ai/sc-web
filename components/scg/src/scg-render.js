@@ -62,7 +62,7 @@ SCg.Render.prototype = {
                 var direction = d3.event.wheelDelta < 0 ? 'down' : 'up';
                 if (direction === 'up') {
                     self.transformByZoom(d3.event);
-                };
+                }
                 if (direction === 'down') {
                     self.transformByZoom(d3.event);
                 };
