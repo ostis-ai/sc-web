@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import configparser
-import functools
 import logging
 import signal
 from abc import ABC
@@ -45,8 +44,10 @@ def parse_options():
     tornado.options.define("port", default=8000, help="host port", type=int)
     tornado.options.define("server_host", default="localhost", help="host name", type=str)
     tornado.options.define("server_port", default=8090, help="host port", type=int)
-    tornado.options.define("reconnect_period", default=1000, help="time period between reconnects to the server in ms",
-                           type=int)
+    tornado.options.define("reconnect_retries", default=5, help="reconnect count to the server", type=int)
+    tornado.options.define("reconnect_retry_delay", default=2.0,
+                           help="time period between reconnects to the server in seconds",
+                           type=float)
     tornado.options.define("public_url", default="ws://localhost:8090/ws_json", help="public server url", type=str)
     tornado.options.define("auth_redirect_port", default=80, help="host port", type=int)
 
@@ -102,33 +103,32 @@ def init_app_rules():
     ]
 
 
-def connect(server_url):
-    logger.info(f"Sc-server socket: {server_url}")
-    client.connect(server_url)
-    logger.info("Connection: " + ("OK" if client.is_connected() else "Failed"))
+def post_reconnect_handler():
+    # load scs required for sc-web server
+    # TODO: don't load scs fragments if they already exist in sc-memory
+    try:
+        logger.info(f"Load sc-web kb model from: {REPO_FILE_PATH}")
+        load_scs_fragments(REPO_FILE_PATH)
+    except ServerError as e:
+        logger.error(e)
+        exit(1)
+
+    logger.info("Resolve keynodes")
+    ScKeynodes().resolve_identifiers([KeynodeSysIdentifiers])
 
 
-def try_connect(server_url):
-    if not client.is_connected():
-        logger.warning(f"Connection to sc-server has failed. Trying to reconnect to sc-server socket")
-        connect(server_url)
-
-        if not client.is_connected():
-            return
-
-        # load scs required for sc-web server
-        # TODO: don't load scs fragments if they already exist in sc-memory
-        try:
-            logger.debug(f"Repo file path: {REPO_FILE_PATH}")
-            load_scs_fragments(REPO_FILE_PATH)
-        except ServerError as e:
-            logger.error(e)
-            exit(1)
-
-        ScKeynodes().resolve_identifiers([KeynodeSysIdentifiers])
+def on_error(e):
+    logger.error(e)
+    if isinstance(e, ConnectionAbortedError):
+        on_shutdown()
+        exit(1)
 
 
 def on_shutdown():
+    logger.info("Close connection with sc-server")
+    client.disconnect()
+
+    logging.info('Stop application')
     tornado.ioloop.IOLoop.instance().stop()
 
 
@@ -161,26 +161,28 @@ def main(options):
         template_path=tornado.options.options.templates_path,
         xsrf_cookies=False,
         gzip=True,
-
-        google_oauth={"key": options.google_client_id,
-                      "secret": options.google_client_secret
-                      },
+        google_oauth={"key": options.google_client_id, "secret": options.google_client_secret},
         public_url=options.public_url
     )
 
     application.listen(options.port)
     server_url = f"ws://{options.server_host}:{options.server_port}/ws_json"
-    tornado.ioloop.PeriodicCallback(functools.partial(try_connect, server_url), options.reconnect_period).start()
-    connect(server_url)
+    client.set_error_handler(on_error)
+    client.set_reconnect_handler(
+        post_reconnect_handler=post_reconnect_handler,
+        reconnect_retries=options.reconnect_retries,
+        reconnect_retry_delay=options.reconnect_retry_delay
+    )
+    client.connect(server_url)
 
     app_instance = tornado.ioloop.IOLoop.instance()
     signal.signal(signal.SIGINT, lambda sig, frame: app_instance.add_callback_from_signal(on_shutdown))
 
-    logging.info(f'The app is running and listening on port {options.port}')
+    web_url = f"http://{options.host}:{options.port}"
+    logging.info(f'Application is running and listening on {web_url}')
     app_instance.start()
 
-    logger.info("Close connection with sc-server")
-    client.disconnect()
+    exit(0)
 
 
 if __name__ == "__main__":
