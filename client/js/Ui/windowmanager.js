@@ -297,39 +297,32 @@ SCWeb.ui.WindowManager = {
 
     /**
      * Create viewers for specified sc-links
-     * @param {Object} containers_map Map of viewer containers (key: sc-link addr, value: id of container)
+     * @param {Object} links Map of viewer containers (key: sc-link addr, value: id of container)
      */
-    createViewersForScLinks: function (containers_map) {
-        return new Promise((resolve, reject)=>{
-
-            var linkAddrs = [];
-            for (var cntId in containers_map)
-                linkAddrs.push(containers_map[cntId]);
-
-            if (linkAddrs.length == 0) {
-                resolve();
-                return;
-            }
-
-            (function (containers_map) {
-                SCWeb.core.Server.getLinksFormat(linkAddrs).then(
+    createViewersForScLinks: function (links) {
+        return new Promise((resolve)=> {
+            (function (links) {
+                SCWeb.core.Server.getLinksFormat(links).then(
                   function (formats) {
+                      let result = {};
+                      for (const id in links) {
+                          const link = links[id];
 
-                      var result = {};
+                          const fmt = formats[id];
+                          const addr = link.addr;
+                          const content = link.content;
 
-                      for (var cntId in containers_map) {
-                          var addr = containers_map[cntId];
-                          var fmt = formats[addr];
                           if (fmt) {
-                              var sandbox = SCWeb.core.ComponentManager.createWindowSandboxByFormat({
+                              const sandbox = SCWeb.core.ComponentManager.createWindowSandboxByFormat({
                                   format_addr: fmt,
                                   addr: addr,
+                                  content: content,
                                   is_struct: false,
-                                  container: cntId,
+                                  container: id,
                                   canEdit: false
                               });
                               if (sandbox) {
-                                  result[addr] = sandbox;
+                                  result[id] = sandbox;
                               }
                           }
                       }
@@ -337,7 +330,7 @@ SCWeb.ui.WindowManager = {
                       resolve(result);
                   }
                 );
-            })(containers_map);
+            })(links);
         })
     },
 

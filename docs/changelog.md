@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Links autoscaling with images and pdf size
 - Show element text as main idtf without language if main idtf with language is not found
 - Translate sc-links constancy from gwf
 - Add opportunity to create links with constancy mask
@@ -25,6 +26,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add optional buttons to delete function
 
 ### Fixed
+- Double click by sc-elements that aren't synchronized
+- Check addr before search by it sc-links and sc-nodes
+- Reset sc-links formats after synchronize
+- Set and reset link content with images and pdf before and after synchronize
 - Main and system identifier translation with current language in scg-editor
 - Check edges on addArcEventRequest and removeArcEventRequest ([120](https://github.com/ostis-ai/sc-web/issues/120), [121](https://github.com/ostis-ai/sc-web/issues/121))
 - Create links with unspecified constancy in scg-editor
@@ -42,6 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - View identifiers with scn-component from sc-json
 
 ### Removed
+- Popover view for set link content
 - Remove `A` button from main frame
 
 ## [0.7.0-Rebirth] - 12.10.2022

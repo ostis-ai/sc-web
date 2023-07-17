@@ -62,27 +62,27 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
 
                 let newMainNode = editor.scene.getObjectByScAddr(addr);
                 if (newMainNode) {
-                    if (newMainNode instanceof SCg.ModelEdge) {
-                        newMainNode.setOpacityElem(addrEdge.opacity);
-                        newMainNode.setWidthEdge(addrEdge.widthEdge);
-                        newMainNode.setStrokeElem(addrEdge.stroke);
-                        newMainNode.setFillElem(addrEdge.fill);
-                        continue;
+                    if (sandbox.mainElement) {
+                        if (newMainNode instanceof SCg.ModelEdge) {
+                            newMainNode.setOpacityElem(addrEdge.opacity);
+                            newMainNode.setWidthEdge(addrEdge.widthEdge);
+                            newMainNode.setStrokeElem(addrEdge.stroke);
+                            newMainNode.setFillElem(addrEdge.fill);
+                        }
+                        if (newMainNode instanceof SCg.ModelNode) {
+                            newMainNode.setScaleElem(addrNodeorLink.node);
+                            newMainNode.setOpacityElem(addrNodeorLink.opacity);
+                            newMainNode.setStrokeElem(addrNodeorLink.stroke);
+                            newMainNode.setFillElem(addrNodeorLink.fill);
+                        }
+                        if (newMainNode instanceof SCg.ModelLink) {
+                            newMainNode.setScaleElem(addrNodeorLink.link);
+                            newMainNode.setOpacityElem(addrNodeorLink.opacity);
+                            newMainNode.setStrokeElem(addrNodeorLink.stroke);
+                            newMainNode.setFillElem(addrNodeorLink.fill);
+                        }
                     }
-                    if (newMainNode instanceof SCg.ModelNode) {
-                        newMainNode.setScaleElem(addrNodeorLink.node);
-                        newMainNode.setOpacityElem(addrNodeorLink.opacity);
-                        newMainNode.setStrokeElem(addrNodeorLink.stroke);
-                        newMainNode.setFillElem(addrNodeorLink.fill);
-                        continue;
-                    }
-                    if (newMainNode instanceof SCg.ModelLink) {
-                        newMainNode.setScaleElem(addrNodeorLink.link);
-                        newMainNode.setOpacityElem(addrNodeorLink.opacity);
-                        newMainNode.setStrokeElem(addrNodeorLink.stroke);
-                        newMainNode.setFillElem(addrNodeorLink.fill);
-                        continue;
-                    }
+                    continue;
                 }
 
                 if (type & sc_type_node) {
@@ -90,10 +90,12 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
                     editor.scene.appendNode(model_node);
                     editor.scene.objects[addr] = model_node;
                     model_node.setScAddr(addr);
-                    model_node.setScaleElem(addrNodeorLink.node);
-                    model_node.setOpacityElem(addrNodeorLink.opacity);
-                    model_node.setStrokeElem(addrNodeorLink.stroke);
-                    model_node.setFillElem(addrNodeorLink.fill);
+                    if (addrNodeorLink) {
+                        model_node.setScaleElem(addrNodeorLink.node);
+                        model_node.setOpacityElem(addrNodeorLink.opacity);
+                        model_node.setStrokeElem(addrNodeorLink.stroke);
+                        model_node.setFillElem(addrNodeorLink.fill);
+                    }
                     model_node.setObjectState(SCgObjectState.FromMemory);
                     resolveIdtf(addr, model_node);
                 } else if (type & sc_type_arc_mask) {
@@ -106,12 +108,13 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
                         editor.scene.appendEdge(model_edge);
                         editor.scene.objects[addr] = model_edge;
                         model_edge.setScAddr(addr);
-                        model_edge.setOpacityElem(addrEdge.opacity);
-                        model_edge.setWidthEdge(addrEdge.widthEdge);
-                        model_edge.setStrokeElem(addrEdge.stroke);
-                        model_edge.setFillElem(addrEdge.fill);
+                        if (addrEdge) {
+                            model_edge.setOpacityElem(addrEdge.opacity);
+                            model_edge.setWidthEdge(addrEdge.widthEdge);
+                            model_edge.setStrokeElem(addrEdge.stroke);
+                            model_edge.setFillElem(addrEdge.fill);
+                        }
                         model_edge.setObjectState(SCgObjectState.FromMemory);
-                        resolveIdtf(addr, model_edge);
                     }
                 } else if (type & sc_type_link) {
                     var containerId = 'scg-window-' + sandbox.addr + '-' + addr + '-' + new Date().getUTCMilliseconds();
@@ -119,11 +122,13 @@ function ScgFromScImpl(_sandbox, _editor, aMapping) {
                     editor.scene.appendLink(model_link);
                     editor.scene.objects[addr] = model_link;
                     model_link.setScAddr(addr);
-                    model_link.setScaleElem(addrNodeorLink.link);
-                    model_link.setOpacityElem(addrNodeorLink.opacity);
-                    model_link.setStrokeElem(addrNodeorLink.stroke);
-                    model_link.setFillElem(addrNodeorLink.fill);
-                    model_link.setObjectState(SCgObjectState.FromMemory);
+                    if (addrNodeorLink) {
+                        model_link.setScaleElem(addrNodeorLink.link);
+                        model_link.setOpacityElem(addrNodeorLink.opacity);
+                        model_link.setStrokeElem(addrNodeorLink.stroke);
+                        model_link.setFillElem(addrNodeorLink.fill);
+                        model_link.setObjectState(SCgObjectState.FromMemory);
+                    }
                     resolveIdtf(addr, model_link);
                 }
 
@@ -218,38 +223,37 @@ function scgScStructTranslator(_editor, _sandbox) {
         arcMapping[result.get('arc').value] = obj;
     };
 
-    var translateIdentifier = async function (obj) {
-        let scAddr = new sc.ScAddr(obj.sc_addr);
+    const translateIdentifier = async function (obj) {
+        const LINK = 'link';
+        const objectAddr = new sc.ScAddr(obj.sc_addr);
+
         // Checks if identifier is allowed to be system identifier (only letter, digits, '-' and '_')
-        if (/^[a-zA-Z0-9_-]+$/.test(obj.text)) {
-            let systemIdtfTemplate = new sc.ScTemplate();
-            systemIdtfTemplate.tripleWithRelation(
-                scAddr,
-                sc.ScType.EdgeDCommonVar,
-                [sc.ScType.LinkVar, 'link'],
-                sc.ScType.EdgeAccessVarPosPerm,
-                new sc.ScAddr(window.scKeynodes['nrel_system_identifier'])
-            );
-            let systemIdtfResult = await scClient.templateGenerate(systemIdtfTemplate);
-            let systemIdtfAddr = systemIdtfResult.get('link');
-            await scClient.setLinkContents([new sc.ScLinkContent(obj.text, sc.ScLinkContentType.String, systemIdtfAddr)]);
+        const idtfRelation = /^[a-zA-Z0-9_-]+$/.test(obj.text)
+            ? new sc.ScAddr(window.scKeynodes['nrel_system_identifier'])
+            : new sc.ScAddr(window.scKeynodes['nrel_main_idtf']);
+
+        let template = new sc.ScTemplate();
+        template.tripleWithRelation(
+            objectAddr,
+            sc.ScType.EdgeDCommonVar,
+            [sc.ScType.LinkVar, LINK],
+            sc.ScType.EdgeAccessVarPosPerm,
+            idtfRelation
+        );
+        let result = await scClient.templateSearch(template);
+
+        let idtfLinkAddr;
+        if (result.length) {
+            idtfLinkAddr = result[0].get(LINK);
         }
         else {
-            let scTemplate = new sc.ScTemplate();
-            scTemplate.tripleWithRelation(
-                scAddr,
-                sc.ScType.EdgeDCommonVar,
-                [sc.ScType.LinkVar, 'link'],
-                sc.ScType.EdgeAccessVarPosPerm,
-                new sc.ScAddr(window.scKeynodes['nrel_main_idtf'])
-            );
-            let result = await scClient.templateGenerate(scTemplate);
-            let linkAddr = result.get('link');
-            await scClient.setLinkContents([new sc.ScLinkContent(obj.text, sc.ScLinkContentType.String, linkAddr)]);
+            result = await scClient.templateGenerate(template);
+            idtfLinkAddr = result.get(LINK);
         }
+        await scClient.setLinkContents([new sc.ScLinkContent(obj.text, sc.ScLinkContentType.String, idtfLinkAddr)]);
     };
 
-    return r = {
+    return {
         updateFromSc: function (added, element, arc, scaleElem) {
             scgFromSc.update(added, element, arc, scaleElem);
         },
@@ -259,13 +263,12 @@ function scgScStructTranslator(_editor, _sandbox) {
                 throw "Invalid state. Trying translate sc-link into sc-memory";
 
             editor.scene.commandManager.clear();
-            var nodes = editor.scene.nodes.slice();
-            var links = editor.scene.links.slice();
-            var buses = editor.scene.buses.slice();
-            var objects = [];
+            const nodes = editor.scene.nodes.slice();
+            const links = editor.scene.links.slice();
+            const buses = editor.scene.buses.slice();
+            const objects = [];
 
-
-            var appendObjects = function () {
+            const appendObjects = function () {
                 Promise.all(objects.map(appendToConstruction))
                     .then(() => callback(true))
                     .catch(() => callback(false));
@@ -277,15 +280,10 @@ function scgScStructTranslator(_editor, _sandbox) {
                 appendObjects();
             }
 
-
             /// --------------------
-            var translateNodes = async function () {
-                var implFunc = async function (node) {
-                    if (node.sc_addr) {
-                        return;
-                    }
-
-                    if (node.text) {
+            const translateNodes = async function () {
+                const implFunc = async function (node) {
+                    if (!node.sc_addr && node.text) {
                         let linkAddrs = await scClient.getLinksByContents([node.text]);
                         if (linkAddrs.length) {
                             linkAddrs = linkAddrs[0];
@@ -299,44 +297,47 @@ function scgScStructTranslator(_editor, _sandbox) {
                         }
                     }
 
-                    let scConstruction = new sc.ScConstruction();
-                    scConstruction.createNode(new sc.ScType(node.sc_type), "node");
-                    let result = await scClient.createElements(scConstruction);
-                    node.setScAddr(result[scConstruction.getIndex("node")].value);
-                    node.setObjectState(SCgObjectState.NewInMemory);
-                    objects.push(node);
-                    if (node.text) {
+                    if (!node.sc_addr) {
+                        let scConstruction = new sc.ScConstruction();
+                        scConstruction.createNode(new sc.ScType(node.sc_type), "node");
+                        let result = await scClient.createElements(scConstruction);
+                        node.setScAddr(result[scConstruction.getIndex("node")].value);
+                        node.setObjectState(SCgObjectState.NewInMemory);
+                        objects.push(node);
+                    }
+
+                    if (node.text && node.state === SCgObjectState.NewInMemory) {
                         await translateIdentifier(node);
                     }
                 }
                 return Promise.all(nodes.map(implFunc));
             }
 
-            var preTranslateContoursAndBus = async function () {
+            const preTranslateContoursAndBus = async function () {
                 // create sc-struct nodes
-                var scAddrGen = async function (c) {
-                    if (c.sc_addr)
-                        return;
-                    let scConstruction = new sc.ScConstruction();
-                    scConstruction.createNode(sc.ScType.NodeConstStruct, 'node');
-                    let result = await scClient.createElements(scConstruction);
-                    let node = result[scConstruction.getIndex('node')].value;
-                    c.setScAddr(node);
-                    c.setObjectState(SCgObjectState.NewInMemory);
-                    objects.push(c);
-                    if (c.text) {
+                const scAddrGen = async function (c) {
+                    if (!c.sc_addr) {
+                        let scConstruction = new sc.ScConstruction();
+                        scConstruction.createNode(sc.ScType.NodeConstStruct, 'node');
+                        let result = await scClient.createElements(scConstruction);
+                        let node = result[scConstruction.getIndex('node')].value;
+                        c.setScAddr(node);
+                        c.setObjectState(SCgObjectState.NewInMemory);
+                        objects.push(c);
+                    }
+                    if (c.text && c.state === SCgObjectState.NewInMemory) {
                         await translateIdentifier(c);
                     }
                 };
-                var funcs = [];
-                for (var i = 0; i < editor.scene.contours.length; ++i) {
+                let funcs = [];
+                for (let i = 0; i < editor.scene.contours.length; ++i) {
                     editor.scene.contours[i].addNodesWhichAreInContourPolygon(editor.scene.nodes);
                     editor.scene.contours[i].addNodesWhichAreInContourPolygon(editor.scene.links);
                     editor.scene.contours[i].addEdgesWhichAreInContourPolygon(editor.scene.edges);
                     funcs.push(scAddrGen(editor.scene.contours[i]));
                 }
 
-                for (var number_bus = 0; number_bus < buses.length; ++number_bus) {
+                for (let number_bus = 0; number_bus < buses.length; ++number_bus) {
                     buses[number_bus].setScAddr(buses[number_bus].source.sc_addr);
                 }
 
@@ -345,20 +346,20 @@ function scgScStructTranslator(_editor, _sandbox) {
             }
 
             /// --------------------
-            var translateEdges = function () {
+            const translateEdges = function () {
                 return new Promise((resolve, reject) => {
                     // translate edges
-                    var edges = [];
+                    let edges = [];
                     editor.scene.edges.map(function (e) {
                         if (!e.sc_addr)
                             edges.push(e);
                     });
 
-                    var edgesNew = [];
-                    var translatedCount = 0;
+                    let edgesNew = [];
+                    let translatedCount = 0;
 
                     async function doIteration() {
-                        var edge = edges.shift();
+                        const edge = edges.shift();
 
                         function nextIteration() {
                             if (edges.length === 0) {
@@ -377,8 +378,8 @@ function scgScStructTranslator(_editor, _sandbox) {
                         if (edge.sc_addr)
                             reject("Edge already have sc-addr");
 
-                        var src = edge.source.sc_addr;
-                        var trg = edge.target.sc_addr;
+                        const src = edge.source.sc_addr;
+                        const trg = edge.target.sc_addr;
 
                         if (src && trg) {
                             let scConstruction = new sc.ScConstruction();
@@ -404,9 +405,9 @@ function scgScStructTranslator(_editor, _sandbox) {
                 });
             }
 
-            var translateContours = async function () {
+            const translateContours = async function () {
                 // now need to process arcs from countours to child elements
-                var arcGen = async function (contour, child) {
+                const arcGen = async function (contour, child) {
                     let edgeExist = await window.scHelper.checkEdge(contour.sc_addr, sc_type_arc_pos_const_perm, child.sc_addr);
                     if (!edgeExist) {
                         let scConstruction = new sc.ScConstruction();
@@ -415,10 +416,10 @@ function scgScStructTranslator(_editor, _sandbox) {
                     }
                 };
 
-                var acrFuncs = [];
-                for (var i = 0; i < editor.scene.contours.length; ++i) {
-                    var c = editor.scene.contours[i];
-                    for (var j = 0; j < c.childs.length; ++j) {
+                let acrFuncs = [];
+                for (let i = 0; i < editor.scene.contours.length; ++i) {
+                    const c = editor.scene.contours[i];
+                    for (let j = 0; j < c.childs.length; ++j) {
                         acrFuncs.push(arcGen(c, c.childs[j]));
                     }
                 }
@@ -426,63 +427,23 @@ function scgScStructTranslator(_editor, _sandbox) {
             }
 
             /// --------------------
-            var translateLinks = async function () {
-                var implFunc = async function (link) {
-                    let addrLang;
-                    let addrPng;
-
-                    const scAddrEdgeLang = async (linkAddr, keynode) => {
-                        return await window.scHelper.getEdgeLang(linkAddr, keynode);
-                    };
-
-                    const scAddrEdgePng = async (linkAddr, keynode) => {
-                        return await window.scHelper.getEdgePng(linkAddr, keynode);
-                    }
-
-                    const removeLangEdge = async (addrLang) => {
-                        if (!addrLang) return;
-                        await scClient.deleteElements([addrLang]);
-                    };
-
-                    const removeImgEdges = async (addrPng) => {
-                        if (!addrPng) return;
-                        await scClient.deleteElements([addrPng]);
-                    }
-
+            const translateLinks = async function () {
+                const implFunc = async function (link) {
                     const infoConstruction = (link) => {
                         let data = link.content;
                         let type = sc.ScLinkContentType.String;
-                        var keynode = SCWeb.core.Translation.getCurrentLanguage();
-                        let langKeynode = keynode;
-                        let imgKeynode = window.scKeynodes['format_png'];
+                        let format = window.scKeynodes['format_txt'];
 
-                        if (link.contentType === 'float') {
-                            keynode = window.scKeynodes['binary_float'];
-                            type = sc.ScLinkContentType.Float;
-                        } else if (link.contentType === 'int8') {
-                            type = sc.ScLinkContentType.Int;
-                            keynode = window.scKeynodes['binary_int8'];
-                        } else if (link.contentType === 'int16') {
-                            type = sc.ScLinkContentType.Int;
-                            keynode = window.scKeynodes['binary_int16'];
-                        } else if (link.contentType === 'int32') {
-                            type = sc.ScLinkContentType.Int;
-                            keynode = window.scKeynodes['binary_int32'];
-                        } else if (link.contentType === 'image') {
-                            let dataStarting = link.content.slice(32);
-                            data = dataStarting.slice(0, dataStarting.length - 14);
-                            type = sc.ScLinkContentType.String;
-                            keynode = window.scKeynodes['format_png'];
+                        if (link.contentType === 'image') {
+                            format = window.scKeynodes['format_png'];
                         } else if (link.contentType === 'html') {
-                            data = link.fileReaderResult;
-                            type = sc.ScLinkContentType.String;
-                            keynode = window.scKeynodes['format_html'];
+                            format = window.scKeynodes['format_html'];
                         } else if (link.contentType === 'pdf') {
-                            data = link.fileReaderResult;
-                            type = sc.ScLinkContentType.String;
-                            keynode = window.scKeynodes['format_pdf'];
+                            format = window.scKeynodes['format_pdf'];
                         }
-                        return { data, type, keynode, langKeynode, imgKeynode };
+
+                        let langKeynode = SCWeb.core.Translation.getCurrentLanguage();
+                        return { data, type, format, langKeynode };
                     }
 
                     // Find link from kb by system identifier
@@ -500,55 +461,38 @@ function scgScStructTranslator(_editor, _sandbox) {
                     }
 
                     // Create new link
-                    if (!link.sc_addr) {
-                        let scConstruction = new sc.ScConstruction();
-                        const { data, type, keynode } = infoConstruction(link);
-                        let scLinkContent = new sc.ScLinkContent(data, type);
-                        scConstruction.createLink(sc.ScType.Link, scLinkContent, 'link');
-                        let result = await scClient.createElements(scConstruction);
-                        let linkAddr = result[scConstruction.getIndex('link')].value;
+                    const { data, type, format } = infoConstruction(link);
+                    if (link.sc_addr && link.state === SCgObjectState.NewInMemory) {
+                        const linkContent = new sc.ScLinkContent(data, type, new sc.ScAddr(link.sc_addr));
+                        await scClient.setLinkContents([linkContent]);
+                        if (link.text) {
+                            await translateIdentifier(link);
+                        }
+                        if (link.content && format) {
+                            await window.scHelper.setLinkFormat(link.sc_addr, format);
+                        }
+                    }
+                    else if (!link.sc_addr) {
+                        let construction = new sc.ScConstruction();
+                        const linkContent = new sc.ScLinkContent(data, type);
+                        construction.createLink(sc.ScType.Link, linkContent, 'link');
+                        const result = await scClient.createElements(construction);
+                        const linkAddr = result[construction.getIndex('link')].value;
                         link.setScAddr(linkAddr);
                         link.setObjectState(SCgObjectState.NewInMemory);
                         objects.push(link);
                         if (link.text) {
                             await translateIdentifier(link);
                         }
-                        if (link.content && link.contentType === 'image') {
-                            await window.scHelper.setLinkFormat(linkAddr, keynode);
-                        } else {
-                            await window.scHelper.setLinkLang(linkAddr, keynode);
+                        if (link.content && format) {
+                            await window.scHelper.setLinkFormat(linkAddr, format);
                         }
-                    }
-
-                    if (link.hasOwnProperty('changedValue')) {
-                        const { data, type, langKeynode, imgKeynode } = infoConstruction(link);
-                        link.setObjectState(SCgObjectState.NewInMemory);
-                        objects.push(link);
-
-                        if (addrLang = await scAddrEdgeLang(link.sc_addr, langKeynode)) {
-                            if (link.contentType === 'image') {
-                                await removeLangEdge(addrLang);
-                                await window.scHelper.setLinkFormat(link.sc_addr, imgKeynode);
-                            }
-                            scClient.setLinkContents([new sc.ScLinkContent(data, type, new sc.ScAddr(link.sc_addr))]);
-                        }
-                        else if (addrPng = await scAddrEdgePng(link.sc_addr, imgKeynode)) {
-                            if (link.contentType !== 'image') {
-                                await removeImgEdges(addrPng);
-                                await window.scHelper.setLinkLang(link.sc_addr, langKeynode);
-                            }
-                            scClient.setLinkContents([new sc.ScLinkContent(data, type, new sc.ScAddr(link.sc_addr))]);
-                        }
-
-                        delete link.changedValue;
                     }
                 }
 
-                var funcs = [];
                 for (let i = 0; i < links.length; ++i) {
-                    funcs.push(implFunc(links[i]));
+                    await implFunc(links[i]);
                 }
-                return Promise.all(funcs);
             }
 
             await translateNodes();

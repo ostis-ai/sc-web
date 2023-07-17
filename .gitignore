@@ -83,6 +83,6 @@ build_kb.sh
 
 sc-server*
 
-scripts/secret.txt
+secret.txt
 
 client/static/components/html

@@ -6,7 +6,7 @@ SCs.SCnOutput.prototype = {
     init: function (tree, container, keynode_func, gen_window_func) {
         this.tree = tree;
         this.container = container;
-        this.sc_links = [];
+        this.sc_links = {};
         this.linkCounter = 0;
         this.getKeynode = keynode_func;
         this.generateWindow = gen_window_func;
@@ -139,7 +139,7 @@ SCs.SCnOutput.prototype = {
         if (!isKeyword && treeNode.element.type & sc_type_link) {
             var containerId = this.container + '_' + this.linkCounter;
             this.linkCounter++;
-            this.sc_links[containerId] = treeNode.element.addr;
+            this.sc_links[containerId] = {addr: treeNode.element.addr};
             return this.generateWindow(containerId, "scs-scn-field", "scs-scn-highlighted scs-scn-element", treeNode.element.addr);
             //return '<div class="scs-scn-element sc-content scs-scn-field scs-scn-highlighted" id="' + containerId + '" sc_addr="' + treeNode.element.addr + '">' + '</div>';
         }

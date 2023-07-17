@@ -134,60 +134,30 @@ ScHelper.prototype.getAnswer = function (question_addr) {
 };
 
 ScHelper.prototype.setLinkFormat = async function (addr, format) {
+  const EDGE = "edge";
+
   let template = new sc.ScTemplate();
   template.tripleWithRelation(
     new sc.ScAddr(addr),
-    sc.ScType.EdgeDCommonVar,
-    new sc.ScAddr(format),
+    [sc.ScType.EdgeDCommonVar, EDGE],
+    sc.ScType.NodeVar,
     sc.ScType.EdgeAccessVarPosPerm,
     new sc.ScAddr(window.scKeynodes['nrel_format']),
   );
-  await scClient.templateGenerate(template);
-};
+  const result = await scClient.templateSearch(template);
+  if (result.length) {
+    await scClient.deleteElements([result[0].get(EDGE)]);
+  }
 
-ScHelper.prototype.setLinkLang = async function (link, lang) {
-  let scTemplate = new sc.ScTemplate();
-  scTemplate.triple(
-    new sc.ScAddr(lang),
-    sc.ScType.EdgeAccessVarPosPerm,
-    new sc.ScAddr(link)
-  );
-  await scClient.templateGenerate(scTemplate);
-};
-
-ScHelper.prototype.getEdgeLang = async (linkAddr, keynode) => {
-  if (!linkAddr || !keynode) return;
-
-  const template = new sc.ScTemplate();
-  template.triple(
-    new sc.ScAddr(window.scKeynodes["languages"]),
-    sc.ScType.EdgeAccessVarPosPerm,
-    [sc.ScType.NodeVar, 'lang']
-  );
-  template.triple(
-    'lang',
-    [sc.ScType.EdgeAccessVarPosPerm, "_edge"],
-    new sc.ScAddr(linkAddr)
-  );
-  let result = await scClient.templateSearch(template);
-  if (!result.length) return;
-  return result[0].get("_edge");
-};
-
-ScHelper.prototype.getEdgePng = async (linkAddr, keynode) => {
-  if (!linkAddr || !keynode) return;
-
-  const template = new sc.ScTemplate();
+  template = new sc.ScTemplate();
   template.tripleWithRelation(
-    new sc.ScAddr(linkAddr),
-    [sc.ScType.EdgeDCommonVar, "_edgePng"],
-    new sc.ScAddr(keynode),
-    [sc.ScType.EdgeAccessVarPosPerm, "_edgeFormat"],
-    new sc.ScAddr(window.scKeynodes["nrel_format"]),
+      new sc.ScAddr(addr),
+      [sc.ScType.EdgeDCommonVar, EDGE],
+      new sc.ScAddr(format),
+      sc.ScType.EdgeAccessVarPosPerm,
+      new sc.ScAddr(window.scKeynodes['nrel_format']),
   );
-  let result = await scClient.templateSearch(template);
-  if (!result.length) return null;
-  return result[0].get("_edgePng");
+  await scClient.templateGenerate(template);
 };
 
 ScHelper.prototype.searchNodeByIdentifier = async (linkAddr, identification) => {

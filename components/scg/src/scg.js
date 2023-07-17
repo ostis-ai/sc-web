@@ -86,6 +86,10 @@ SCg.Editor.prototype = {
         this.canEdit = !!params.canEdit;
         this.initUI();
 
+        SCWeb.core.EventManager.subscribe("render/update", null, () => {
+            this.scene.updateRender();
+            this.scene.updateLinkVisual();
+        });
     },
 
     /**
@@ -431,12 +435,11 @@ SCg.Editor.prototype = {
                 if (!result.length) return;
 
                 return result[0].get("_node");
-
             }
 
             const wrapperChangeApply = async (obj, input, self) => {
                 const addrNodeEnterValue = await checkEnterValue(input[0].value);
-                if (obj.text != input.val() && !self._selectedIdtf && !addrNodeEnterValue) {
+                if (obj.text !== input.val() && !self._selectedIdtf && !addrNodeEnterValue) {
                     self.scene.commandManager.execute(new SCgCommandChangeIdtf(obj, input.val()));
                 }
 
@@ -577,7 +580,7 @@ SCg.Editor.prototype = {
 
 
         this.toolSetContent().click(function () {
-            var tool = $(this);
+            let tool = $(this);
             const startValueLink = self.scene.selected_objects[0].content.trim();
 
             function stop_modal() {
@@ -592,88 +595,65 @@ SCg.Editor.prototype = {
             });
             $(this).popover('show');
 
-            var obj = self.scene.selected_objects[0];
-            var input = $(container + ' #scg-set-content-input');
-            var input_content = $(container + " input#content[type='file']");
-            var input_content_type = $(container + " #scg-set-content-type");
+            const obj = self.scene.selected_objects[0];
+            const input = $(container + ' #scg-set-content-input');
+            const input_content = $(container + " input#content[type='file']");
             input.val(self.scene.selected_objects[0].content);
-            input_content_type.val(self.scene.selected_objects[0].contentType);
             setTimeout(function () {
                 input.focus();
             }, 1);
 
-            if (input.val() && (obj.contentType === 'image' || obj.contentType === 'html')) {
-                $(container + ' .popover-content').prepend(input.val());
-                $(container + ' .popover-content').children('img').css({ 'height': '150px', 'width': '150px' });
-                input.val('');
-            };
-
             const wrapperRenameAttachLink = async () => {
-                var endValueLink = input.val().trim();
-                var file = input_content[0].files[0];
+                const endValueLink = input.val().trim();
+                const file = input_content[0].files[0];
                 if ((startValueLink === endValueLink && obj.sc_addr) && !file) stop_modal();
                 obj.changedValue = true;
 
                 let addrMainConcept;
-                let templateAddr = new sc.ScTemplate();
-
-                templateAddr.tripleWithRelation(
-                    [sc.ScType.NodeVar, "_node"],
-                    sc.ScType.EdgeDCommonVar,
-                    new sc.ScAddr(obj.sc_addr),
-                    sc.ScType.EdgeAccessVarPosPerm,
-                    new sc.ScAddr(window.scKeynodes['nrel_main_idtf'])
-                );
-                addrMainConcept = await window.scClient.templateSearch(templateAddr)
-                    .then(result => {
-                        if (!result.length) return;
-                        return result[0].get("_node").value;
-                    });
-
+                if (obj.sc_addr) {
+                    let templateAddr = new sc.ScTemplate();
+                    templateAddr.tripleWithRelation(
+                        [sc.ScType.NodeVar, "_node"],
+                        sc.ScType.EdgeDCommonVar,
+                        new sc.ScAddr(obj.sc_addr),
+                        sc.ScType.EdgeAccessVarPosPerm,
+                        new sc.ScAddr(window.scKeynodes['nrel_main_idtf'])
+                    );
+                    addrMainConcept = await window.scClient.templateSearch(templateAddr)
+                        .then(result => {
+                            if (!result.length) return;
+                            return result[0].get("_node").value;
+                        });
+                }
                 if (addrMainConcept) {
                     const objMainConcept = self.scene.getObjectByScAddr(Number(addrMainConcept));
                     self.scene.commandManager.execute(new SCgCommandChangeIdtf(objMainConcept, input.val()));
                     document.querySelector(`[sc_addr="${addrMainConcept}"]`).nextSibling.textContent = input.val();
-                };
+                }
 
                 if (startValueLink !== endValueLink && obj.sc_addr) {
                     obj.changedValue = true;
                 }
 
-                if (file != undefined) {
-                    setTimeout(() => {
-                        if (obj.contentType === 'image') {
-                            self.scene.commandManager.execute(new SCgCommandChangeContent(
-                                obj,
-                                obj.content,
-                                obj.contentType,
-                                null,
-                            ));
-                            stop_modal();
-                        };
-                    }, 100);
-                    var fileReader = new FileReader();
+                if (file) {
+                    let fileReader = new FileReader();
                     fileReader.onload = function () {
-                        var scLinkHelper = new ScFileLinkHelper(file, this.result);
-                        if (obj.fileReaderResult != scLinkHelper.fileArrayBuffer || obj.contentType !=
-                            scLinkHelper.type) {
-                            if (obj.sc_addr) obj.changedValue = true;
-                            self.scene.commandManager.execute(new SCgCommandChangeContent(
-                                obj,
-                                scLinkHelper.htmlViewResult(),
-                                scLinkHelper.type,
-                                scLinkHelper.fileArrayBuffer,
-                            ));
-                        }
+                        const scLinkHelper = new ScFileLinkHelper(file, this.result);
+                        if (obj.sc_addr) obj.changedValue = true;
+                        self.scene.commandManager.execute(new SCgCommandChangeContent(
+                            obj,
+                            scLinkHelper.htmlViewResult(),
+                            scLinkHelper.type,
+                        ));
                         stop_modal();
                     };
                     fileReader.readAsArrayBuffer(file);
                 } else {
-                    if (obj.content != input.val() || obj.contentType != input_content_type.val()) {
+                    if (obj.content !== input.val()) {
                         if (obj.sc_addr) obj.changedValue = true;
-                        self.scene.commandManager.execute(new SCgCommandChangeContent(obj,
+                        self.scene.commandManager.execute(new SCgCommandChangeContent(
+                            obj,
                             input.val(),
-                            input_content_type.val(),
                             null
                         ));
                     }
@@ -681,10 +661,10 @@ SCg.Editor.prototype = {
                 }
             }
 
-            input.keypress(function (e) {
-                if (e.keyCode == KeyCode.Enter || e.keyCode == KeyCode.Escape) {
-                    if (e.keyCode == KeyCode.Enter) {
-                        wrapperRenameAttachLink();
+            input.keypress(async function (e) {
+                if (e.keyCode === KeyCode.Enter || e.keyCode === KeyCode.Escape) {
+                    if (e.keyCode === KeyCode.Enter) {
+                        wrapperRenameAttachLink().then(null);
                     }
                     stop_modal();
                     e.preventDefault();
@@ -692,11 +672,7 @@ SCg.Editor.prototype = {
             });
             // process controls
             $(container + ' #scg-set-content-apply').click(async function () {
-                wrapperRenameAttachLink();
-                setTimeout(() => {
-                    self.scene.updateLinkVisual();
-                    self.scene.updateRender();
-                }, 100)
+                wrapperRenameAttachLink().then(null);
             });
             $(container + ' #scg-set-content-cancel').click(function () {
                 stop_modal();
@@ -958,6 +934,8 @@ SCg.Editor.prototype = {
     },
 
     checkCanDelete: async function (addr) {
+        if (!addr) return true;
+
         let template = new sc.ScTemplate();
         template.triple(
             new sc.ScAddr(window.scKeynodes["basic_ontology_structure"]),

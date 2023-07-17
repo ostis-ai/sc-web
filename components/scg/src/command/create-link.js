@@ -11,7 +11,7 @@ SCgCommandCreateLink.prototype = {
 
     undo: function () {
         if (this.link.is_selected) {
-            var idx = this.scene.selected_objects.indexOf(this.link);
+            const idx = this.scene.selected_objects.indexOf(this.link);
             this.scene.selected_objects.splice(idx, 1);
             this.link._setSelected(false);
             this.scene.edit.onSelectionChanged();
@@ -21,7 +21,7 @@ SCgCommandCreateLink.prototype = {
 
     execute: function () {
         if (this.link == null) {
-            this.link = SCg.Creator.createLink(sc_type_link | sc_type_const, new SCg.Vector3(this.x, this.y, 0), '');
+            this.link = SCg.Creator.createLink(sc_type_link | sc_type_const, new SCg.Vector3(this.x, this.y, 0), this.scene.links.length);
             this.scene.appendLink(this.link);
             this.scene.updateRender();
             this.scene.clearSelection();

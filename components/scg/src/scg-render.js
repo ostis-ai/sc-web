@@ -17,7 +17,6 @@ SCg.Render.prototype = {
         // disable tooltips
         $('#' + this.containerId).parent().addClass('ui-no-tooltip');
 
-        var scgViewer = $('#scg-viewer');
         this.d3_drawer = d3.select('#' + this.containerId)
             .append("svg:svg")
             .attr("pointer-events", "all")
@@ -217,13 +216,15 @@ SCg.Render.prototype = {
                 .on("dblclick", d => {
                     if (SCWeb.core.Main.mode === SCgEditMode.SCgModeViewOnly) return;
 
+                    if (!d.sc_addr) return;
+
                     if (d3.event.stopPropagation())
                         d3.event.stopPropagation();
                     let windowId = SCWeb.ui.WindowManager.getActiveWindowId();
                     let container = document.getElementById(windowId);
                     SCWeb.core.Main.doDefaultCommandWithFormat([d.sc_addr], $(container).attr("sc-addr-fmt"));
                 });
-        };
+        }
 
         function appendNodeVisual(g) {
             g.append('svg:use')
@@ -397,45 +398,48 @@ SCg.Render.prototype = {
         });
 
         this.d3_links.each(function (d) {
-
             if (!d.need_observer_sync && d.contentLoaded) return; // do nothing
 
             if (!d.contentLoaded) {
-                var links = {};
-                links[d.containerId] = d.sc_addr;
+                let links = {};
+                links[d.containerId] = {addr: d.sc_addr, content: d.content, contentType: d.contentType};
                 self.sandbox.createViewersForScLinks(links);
 
-                d.contentLoaded = true;
+                if (d.state !== SCgObjectState.NewInMemory || d.content.length) d.contentLoaded = true;
             }
-            else
-                d.need_observer_sync = false;
+            else d.need_observer_sync = false;
 
-            var linkDiv = $(document.getElementById("link_" + self.containerId + "_" + d.id));
-            if (!d.sc_addr) {
-                linkDiv.find('.impl').html(d.content);
-                linkDiv.find('img').css({ 'width': '100%', 'height': '100%' })
-            } else {
-                if (d.content != "") {
-                    linkDiv.find('.impl').html(d.content);
-                    linkDiv.find('img').css({ 'width': '100%', 'height': '100%' });
-                } else {
-                    d.content = linkDiv.find('.impl').html();
-                    if (d.content != "") {
-                        d.setAutoType();
-                    }
-                }
+            let linkDiv = $(document.getElementById("link_" + self.containerId + "_" + d.id));
+            if (!d.content.length) {
+                d.content = linkDiv.find('.impl').html();
+            }
+            if (!linkDiv.find('.impl').html().length) {
+                linkDiv.find('.impl').html(d.content)
             }
 
-            var g = d3.select(this).attr("style", 'opacity: ' + d.opacityElem + '; stroke: ' + d.strokeElem + '')
-
+            const imageDiv = linkDiv.find('img');
+            const pdfDiv = linkDiv.children().find('canvas');
+            let g = d3.select(this).attr("style", 'opacity: ' + d.opacityElem + '; stroke: ' + d.strokeElem + '');
             g.select('rect')
                 .attr('width', function (d) {
-                    d.scale.x = Math.min(linkDiv.find('.impl').outerWidth(), 450) + 10;
-                    return d.scale.x + self.linkBorderWidth;
+                    if (imageDiv.length && !isNaN(imageDiv[0].width)) {
+                        d.scale.x = imageDiv[0].width;
+                    } else if (pdfDiv.length && !isNaN(pdfDiv[0].width)) {
+                        d.scale.x = pdfDiv[0].width;
+                    } else {
+                        d.scale.x = Math.min(linkDiv.find('.impl').outerWidth(), 450) + 10;
+                    }
+                    return d.scale.x + self.linkBorderWidth * 2;
                 })
                 .attr('height', function (d) {
-                    d.scale.y = Math.min(linkDiv.outerHeight(), 350);
-                    return d.scale.y + self.linkBorderWidth;
+                    if (imageDiv.length && !isNaN(imageDiv[0].height)) {
+                        d.scale.y = imageDiv[0].height;
+                    } else if (pdfDiv.length && !isNaN(pdfDiv[0].height)) {
+                        d.scale.y = pdfDiv[0].height;
+                    } else {
+                        d.scale.y = Math.min(linkDiv.outerHeight(), 350);
+                    }
+                    return d.scale.y + self.linkBorderWidth * 2;
                 })
                 .attr('class', function (d) {
                     return self.classState(d, 'SCgLink');
@@ -487,9 +491,11 @@ SCg.Render.prototype = {
                 .attr("sc_addr", function (d) {
                     return d.sc_addr;
                 });
-            
-            d3_edge.select('.SCgEdgeEndArrowCommon').style('stroke-width', `${d.widthEdge}px`).style('opacity', d.opacityElem);
-            d3_edge.select('.SCgEdgeEndArrowAccess').style('stroke-width', `${d.widthEdge - 6}px`).style('opacity', d.opacityElem);
+
+            if (SCWeb.core.Main.mode === SCgEditMode.SCgModeViewOnly) {
+                d3_edge.select('.SCgEdgeEndArrowCommon').style('stroke-width', `${d.widthEdge}px`).style('opacity', d.opacityElem);
+                d3_edge.select('.SCgEdgeEndArrowAccess').style('stroke-width', `${d.widthEdge - 6}px`).style('opacity', d.opacityElem);
+            }
         });
 
         this.d3_contours.each(function (d) {
@@ -548,58 +554,59 @@ SCg.Render.prototype = {
     },
 
     updateLink: function () {
-        var self = this;
+        let self = this;
         this.d3_links.each(function (d) {
-            if (d.contentType !== 'image') return;
-
             if (!d.contentLoaded) {
-                var links = {};
-                links[d.containerId] = d.sc_addr;
+                let links = {};
+                links[d.containerId] = {addr: d.sc_addr, content: d.content, contentType: d.contentType};
                 self.sandbox.createViewersForScLinks(links);
 
-                d.contentLoaded = true;
+                if (d.state !== SCgObjectState.NewInMemory || d.content.length) d.contentLoaded = true;
             }
             else d.need_observer_sync = false;
 
-            var linkDiv = $(document.getElementById("link_" + self.containerId + "_" + d.id));
-            if (!d.sc_addr) {
-                linkDiv.find('.impl').html(d.content);
-                linkDiv.find('img').css({ 'width': '100%', 'height': '100%' })
-            } else {
-                if (d.content != "") {
-                    linkDiv.find('.impl').html(d.content);
-                    linkDiv.find('img').css({ 'width': '100%', 'height': '100%' });
-                } else {
-                    d.content = linkDiv.find('.impl').html();
-                    if (d.content != "") {
-                        d.setAutoType();
-                    }
-                }
+            let linkDiv = $(document.getElementById("link_" + self.containerId + "_" + d.id));
+            if (!d.content.length) {
+                d.content = linkDiv.find('.impl').html();
+            }
+            if (!linkDiv.find('.impl').html().length) {
+                linkDiv.find('.impl').html(d.content)
             }
 
-            var g = d3.select(this)
-
+            const imageDiv = linkDiv.find('img');
+            const pdfDiv = linkDiv.children().find('canvas');
+            let g = d3.select(this).attr("style", 'opacity: ' + d.opacityElem + '; stroke: ' + d.strokeElem + '');
             g.select('rect')
                 .attr('width', function (d) {
-                    d.scale.x = Math.min(linkDiv.find('.impl').outerWidth() + 300, 450) + 10;
-                    return d.scale.x + self.linkBorderWidth;
+                    if (imageDiv.length && !isNaN(imageDiv[0].width)) {
+                        d.scale.x = imageDiv[0].width;
+                    } else if (pdfDiv.length && !isNaN(pdfDiv[0].width)) {
+                        d.scale.x = pdfDiv[0].width;
+                    } else {
+                        d.scale.x = Math.min(linkDiv.find('.impl').outerWidth(), 450) + 10;
+                    }
+                    return d.scale.x + self.linkBorderWidth * 2;
                 })
                 .attr('height', function (d) {
-                    d.scale.y = Math.min(linkDiv.outerHeight() + 300, 350);
-                    return d.scale.y + self.linkBorderWidth;
+                    if (imageDiv.length && !isNaN(imageDiv[0].height)) {
+                        d.scale.y = imageDiv[0].height;
+                    } else if (pdfDiv.length && !isNaN(pdfDiv[0].height)) {
+                        d.scale.y = pdfDiv[0].height;
+                    } else {
+                        d.scale.y = Math.min(linkDiv.outerHeight(), 350);
+                    }
+                    return d.scale.y + self.linkBorderWidth * 2;
                 })
                 .attr('class', function (d) {
                     return self.classState(d, 'SCgLink');
-                }).attr("sc_addr", function (d) {
+                })
+                .attr("sc_addr", function (d) {
                     return d.sc_addr;
                 });
 
             g.selectAll(function () {
                 return this.getElementsByTagName("foreignObject");
             })
-                .text(function (d) {
-                    return d.text;
-                })
                 .attr('width', function (d) {
                     return d.scale.x;
                 })
@@ -608,9 +615,20 @@ SCg.Render.prototype = {
                 });
 
             g.attr("transform", function (d) {
-                return 'translate(' + (d.position.x - (d.scale.x + self.linkBorderWidth) * 0.5) + ', ' + (d.position.y - (d.scale.y + self.linkBorderWidth) * 0.5) + ')';
+                return 'translate(' + (d.position.x - (d.scale.x + self.linkBorderWidth) * 0.5) + ', ' + (d.position.y - (d.scale.y + self.linkBorderWidth) * 0.5) +  ')scale(' + d.scaleElem + ')';
             });
 
+            // Update sc-link identifier (x, y) position according to the sc-link width
+            g.selectAll('text')
+                .text(function (d) {
+                    return d.text;
+                })
+                .attr('x', function (d) {
+                    return d.scale.x + self.linkBorderWidth * 2;
+                })
+                .attr('y', function (d) {
+                    return d.scale.y + self.linkBorderWidth * 4;
+                });
         });
         this.updateLinePoints();
     },

@@ -398,25 +398,45 @@ SCWeb.core.Server = {
     getLinksFormat: async function (links) {
         let formats = {}
 
-        for (let i = 0; i < links.length; i++) {
-            const addrStr = links[i];
-            const addr = new sc.ScAddr(parseInt(addrStr));
+        for (const id in links) {
+            const link = links[id];
+            const addrStr = link.addr;
 
-            const template = new sc.ScTemplate();
-            template.tripleWithRelation(
-                addr,
-                sc.ScType.EdgeDCommonVar,
-                sc.ScType.NodeVar,
-                sc.ScType.EdgeAccessVarPosPerm,
-                new sc.ScAddr(window.scKeynodes["nrel_format"]),
-            );
-            const format_result = await window.scClient.templateSearch(template);
+            if (addrStr && !link.contentType) {
+                const addr = new sc.ScAddr(parseInt(addrStr));
 
-            if (format_result.length) {
-                formats[addrStr] = format_result[0].get(2).value;
+                const template = new sc.ScTemplate();
+                template.tripleWithRelation(
+                    addr,
+                    sc.ScType.EdgeDCommonVar,
+                    sc.ScType.NodeVar,
+                    sc.ScType.EdgeAccessVarPosPerm,
+                    new sc.ScAddr(window.scKeynodes["nrel_format"]),
+                );
+                const format_result = await window.scClient.templateSearch(template);
+
+                if (format_result.length) {
+                    formats[id] = format_result[0].get(2).value;
+                }
+                else {
+                    formats[id] = window.scKeynodes["format_txt"];
+                }
             }
             else {
-                formats[addrStr] = window.scKeynodes["format_txt"];
+                let formatAddr = window.scKeynodes['format_txt'];
+                switch (link.contentType) {
+                    case 'image':
+                        formatAddr = window.scKeynodes['format_png'];
+                        break;
+                    case 'pdf':
+                        formatAddr = window.scKeynodes['format_pdf'];
+                        break;
+                    case 'html':
+                        formatAddr = window.scKeynodes['format_html'];
+                        break;
+                }
+
+                formats[id] = formatAddr;
             }
         }
 

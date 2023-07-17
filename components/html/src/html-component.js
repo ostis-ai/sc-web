@@ -58,7 +58,7 @@ var HtmlViewer = function(sandbox) {
                     var addr = addrs[$(sc_links_el[i]).attr('sys_idtf')];
                     if (addr) {
                         var containerId = this.sandbox.container + '_' + i;
-                        sc_links[containerId] = addr;
+                        sc_links[containerId] = {addr: addr};
                         $(sc_links_el[i]).html('<div class="sc-content" sc_addr="' + addr + '" id="' + containerId + '"></div>');
                     }
                 }
@@ -90,11 +90,15 @@ var HtmlViewer = function(sandbox) {
         return this.addrs;
     }
 
-    this.sandbox.eventGetObjectsToTranslate = $.proxy(this.getObjectsToTranslate, this);
-    this.sandbox.eventApplyTranslation = $.proxy(this.updateTranslation, this);
-    this.sandbox.eventDataAppend = $.proxy(this.receiveData, this);
-    
-    this.sandbox.updateContent();
+    if (this.sandbox.content) {
+        this.receiveData(this.sandbox.content);
+    } else {
+        this.sandbox.eventGetObjectsToTranslate = $.proxy(this.getObjectsToTranslate, this);
+        this.sandbox.eventApplyTranslation = $.proxy(this.updateTranslation, this);
+        this.sandbox.eventDataAppend = $.proxy(this.receiveData, this);
+
+        this.sandbox.updateContent();
+    }
 };
 
 
