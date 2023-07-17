@@ -13,7 +13,26 @@ SCg.Render.prototype = {
         this.scale = 1;
         this.translate = [0, 0];
         this.translate_started = false;
+        this.zoomIn = 1.1;
+        this.zoomOut = 0.9
 
+        this.transformByZoom = function (e) {
+            const svg = e.currentTarget
+            const svgRect = svg.getBoundingClientRect();
+
+            const svgX = e.clientX - svgRect.x;
+            const svgY = e.clientY - svgRect.y;
+
+            const transformX = (svgX - this.translate[0]) / this.scale;
+            const transformY = (svgY - this.translate[1]) / this.scale;
+
+            e.wheelDelta > 0 ? this.scale *= this.zoomIn : this.scale *= this.zoomOut;
+
+            this.translate[0] = svgX - transformX * this.scale;
+            this.translate[1] = svgY - transformY * this.scale;
+
+            this.scene.render._changeContainerTransform()
+        }
         // disable tooltips
         $('#' + this.containerId).parent().addClass('ui-no-tooltip');
 
@@ -39,10 +58,14 @@ SCg.Render.prototype = {
                 self.scene.onMouseUpObject(d);
                 if (d3.event.stopPropagation()) d3.event.stopPropagation();
             })
-            .on("wheel", function(){
+            .on("wheel", function () {
                 var direction = d3.event.wheelDelta < 0 ? 'down' : 'up';
-                if (direction === 'up') self.scene.onMouseWheelUp(this, self);
-                if (direction === 'down') self.scene.onMouseWheelDown(this, self);
+                if (direction === 'up') {
+                    self.transformByZoom(d3.event);
+                }
+                if (direction === 'down') {
+                    self.transformByZoom(d3.event);
+                };
             });
 
         const svg = document.querySelector("svg.SCgSvg");
@@ -464,7 +487,7 @@ SCg.Render.prototype = {
                 });
 
             g.attr("transform", function (d) {
-                return 'translate(' + (d.position.x - (d.scale.x + self.linkBorderWidth) * 0.5) + ', ' + (d.position.y - (d.scale.y + self.linkBorderWidth) * 0.5) +  ')scale(' + d.scaleElem + ')';
+                return 'translate(' + (d.position.x - (d.scale.x + self.linkBorderWidth) * 0.5) + ', ' + (d.position.y - (d.scale.y + self.linkBorderWidth) * 0.5) + ')scale(' + d.scaleElem + ')';
             });
 
             // Update sc-link identifier (x, y) position according to the sc-link width
@@ -785,7 +808,7 @@ SCg.Render.prototype = {
             .on('dblclick', function (d) {
                 self.line_point_idx = -1;
             })
-            .on('mouseup', function(d) {
+            .on('mouseup', function (d) {
                 //this.scene.updateContours(this.scene.selected_objects[0].childs);
                 self.scene.appendAllElementToContours();
             });
@@ -806,7 +829,7 @@ SCg.Render.prototype = {
         if (translate) {
             this.translate[0] = translate[0];
             this.translate[1] = translate[1];
-            this.scale = scale;
+            this.scale = scale || this.scale;
         }
         this.d3_container.attr("transform", "translate(" + this.translate + ")scale(" + this.scale + ")");
     },
@@ -904,7 +927,7 @@ SCg.Render.prototype = {
         if (this.scene.onKeyUp(event))
             d3.event.stopPropagation();
     },
-    
+
     onKeyUp: function (event) {
         // do not send event to other listeners, if it processed in scene
         if (this.scene.onKeyUp(event))

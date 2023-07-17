@@ -43,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Attribute `sc_control_sys_idtf` for sidebar collapse button
 - Add curl to dependencies installation script
 - Add the ability to drag nodes and resize them in scg
+- Zoom scg by cursor
 
 ### Changed
 - View identifiers with scn-component from sc-json
