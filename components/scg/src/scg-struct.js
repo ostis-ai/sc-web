@@ -25,6 +25,7 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
         maxAppendBatchLength = 150,
         maxRemoveBatchLength = 20,
         batchDelayTime = 200,
+        defualtObjectStyles = { node: 1.8, link: 1.5, opacity: 1, widthEdge: 7.5, stroke: '#1E90FF', fill: '#1E90FF' },
         editor = _editor,
         sandbox = _sandbox;
 
@@ -44,91 +45,69 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
             const arc = task[0];
             const addr = task[1];
             const type = task[2];
-            let addrNodeorLink = task[3];
-            let addrEdge = task[5];
-            let addrElemEdgeEnd = task[4];
+            let nodeStyles = task[3];
+            let edgeStyles = task[4];
 
             delete connectorsToAppendTasks[arc];
 
-            if (!addrNodeorLink && sandbox.mainElement) addrNodeorLink = { node: 1.8, link: 1.5, opacity: 1, widthEdge: 7.5, stroke: '#1E90FF', fill: '#1E90FF' };
-            if (!addrEdge && sandbox.mainElement) addrEdge = { node: 1.8, link: 1.5, opacity: 1, widthEdge: 7.5, stroke: '#1E90FF', fill: '#1E90FF' };
+            if (!nodeStyles && sandbox.mainElement) nodeStyles = defualtObjectStyles;
+            if (!edgeStyles && sandbox.mainElement) nodeStyles = defualtObjectStyles;
+            let styles = nodeStyles;
 
-            let newMainNode = editor.scene.getObjectByScAddr(addr);
-            if (newMainNode) {
+            let object = editor.scene.getObjectByScAddr(addr);
+            if (object) {
                 if (sandbox.mainElement) {
-                    if (newMainNode instanceof SCg.ModelEdge) {
-                        newMainNode.setOpacityElem(addrEdge.opacity);
-                        newMainNode.setWidthEdge(addrEdge.widthEdge);
-                        newMainNode.setStrokeElem(addrEdge.stroke);
-                        newMainNode.setFillElem(addrEdge.fill);
+                    if (object instanceof SCg.ModelEdge) {
+                        styles = edgeStyles;
+                        object.setWidthEdge(styles.widthEdge);
+                    } else {
+                        object.setScaleElem(object instanceof SCg.ModelNode ? styles.node : styles.link);
                     }
-                    if (newMainNode instanceof SCg.ModelNode) {
-                        newMainNode.setScaleElem(addrNodeorLink.node);
-                        newMainNode.setOpacityElem(addrNodeorLink.opacity);
-                        newMainNode.setStrokeElem(addrNodeorLink.stroke);
-                        newMainNode.setFillElem(addrNodeorLink.fill);
-                    }
-                    if (newMainNode instanceof SCg.ModelLink) {
-                        newMainNode.setScaleElem(addrNodeorLink.link);
-                        newMainNode.setOpacityElem(addrNodeorLink.opacity);
-                        newMainNode.setStrokeElem(addrNodeorLink.stroke);
-                        newMainNode.setFillElem(addrNodeorLink.fill);
-                    }
+
+                    object.setStrokeElem(styles.stroke);
+                    object.setFillElem(styles.fill);
+                    object.setOpacityElem(styles.opacity);
+
+                    continue;
                 }
-                continue;
             }
 
             if (type & sc_type_node) {
-                let model_node = SCg.Creator.createNode(type, randomPos(), '');
-                editor.scene.appendNode(model_node);
-                editor.scene.objects[addr] = model_node;
-                model_node.setScAddr(addr);
-                if (addrNodeorLink) {
-                    model_node.setScaleElem(addrNodeorLink.node);
-                    model_node.setOpacityElem(addrNodeorLink.opacity);
-                    model_node.setStrokeElem(addrNodeorLink.stroke);
-                    model_node.setFillElem(addrNodeorLink.fill);
-                }
-                model_node.setObjectState(SCgObjectState.FromMemory);
-                resolveIdtf(addr, model_node);
+                object = SCg.Creator.createNode(type, randomPos(), '');
+                if (styles) object.setScaleElem(styles.node);
+                resolveIdtf(addr, object);
             } else if (type & sc_type_arc_mask) {
-                const bObj = editor.scene.getObjectByScAddr(addrNodeorLink);
-                const eObj = editor.scene.getObjectByScAddr(addrElemEdgeEnd);
-                if (bObj && eObj) {
-                    let model_edge = SCg.Creator.createEdge(bObj, eObj, type);
-                    editor.scene.appendEdge(model_edge);
-                    editor.scene.objects[addr] = model_edge;
-                    model_edge.setScAddr(addr);
-                    if (addrEdge) {
-                        model_edge.setOpacityElem(addrEdge.opacity);
-                        model_edge.setWidthEdge(addrEdge.widthEdge);
-                        model_edge.setStrokeElem(addrEdge.stroke);
-                        model_edge.setFillElem(addrEdge.fill);
-                    }
-                    model_edge.setObjectState(SCgObjectState.FromMemory);
-                } else {
+                let bObj = editor.scene.getObjectByScAddr(task[2]);
+                let eObj = editor.scene.getObjectByScAddr(task[3]);
+                if (!bObj || !eObj) {
                     delete appendTasks[i];
 
                     // Not call addAppendTask because scg-filters are used
                     appendTasks.push(task);
                     connectorsToAppendTasks[arc] = appendTasks.length;
+                    continue;
                 }
+                object = SCg.Creator.createEdge(bObj, eObj, type);
+
+                styles = edgeStyles;
+                if (styles) object.setWidthEdge(styles.widthEdge);
             } else if (type & sc_type_link) {
                 const containerId = 'scg-window-' + sandbox.addr + '-' + addr + '-' + new Date().getUTCMilliseconds();
-                let model_link = SCg.Creator.createLink(sc_type_link, randomPos(), containerId);
-                editor.scene.appendLink(model_link);
-                editor.scene.objects[addr] = model_link;
-                model_link.setScAddr(addr);
-                if (addrNodeorLink) {
-                    model_link.setScaleElem(addrNodeorLink.link);
-                    model_link.setOpacityElem(addrNodeorLink.opacity);
-                    model_link.setStrokeElem(addrNodeorLink.stroke);
-                    model_link.setFillElem(addrNodeorLink.fill);
-                }
-                model_link.setObjectState(SCgObjectState.FromMemory);
-                resolveIdtf(addr, model_link);
+                object = SCg.Creator.createLink(randomPos(), containerId);
+
+                if (styles) object.setScaleElem(styles.link);
             }
+
+            object.setOpacityElem(styles.opacity);
+            object.setStrokeElem(styles.stroke);
+            object.setFillElem(styles.fill);
+
+            editor.scene.appendObject(object);
+            editor.scene.objects[addr] = object;
+            object.setScAddr(addr);
+            object.setObjectState(SCgObjectState.FromMemory);
         }
+
         editor.render.update();
         editor.scene.layout();
     };
@@ -168,30 +147,25 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
         debouncedBufferedDoRemoveBatch(removeTasks, maxRemoveBatchLength);
     };
 
-    const getArc = async (arc) => {
+    const getConnectorElements = async (arc) => {
         let scTemplate = new sc.ScTemplate();
         scTemplate.triple(
             [sc.ScType.Unknown, "src"],
-            new sc.ScAddr(arc),
+            arc,
             [sc.ScType.Unknown, "target"]
         );
         let result = await scClient.templateSearch(scTemplate);
-        return [result[0].get("src").value, result[0].get("target").value];
-    };
-
-    const getElementType = async (el) => {
-        return (await scClient.checkElements([new sc.ScAddr(el)]))[0].value;
+        return [result[0].get("src"), result[0].get("target")];
     };
 
     return {
-        update: async function (isAdded, arc, el, scaleElem) {
+        update: async function (isAdded, arc, el, type, styles) {
             if (isAdded) {
-                const type = await getElementType(el);
                 if (type & sc_type_arc_mask) {
-                    const [src, target] = await getArc(el);
-                    addAppendTask(arc, [arc, el, type, src, target, scaleElem]);
+                    const [src, target] = await getConnectorElements(el);
+                    addAppendTask(arc, [arc, el, type, src, target, styles]);
                 } else {
-                    addAppendTask(arc, [arc, el, type, scaleElem]);
+                    addAppendTask(arc, [arc, el, type, styles]);
                 }
             } else {
                 addRemoveTask(arc, el);
