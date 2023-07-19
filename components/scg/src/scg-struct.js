@@ -45,20 +45,16 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
             const arc = task[0];
             const addr = task[1];
             const type = task[2];
-            let nodeStyles = task[3];
-            let edgeStyles = task[4];
+            let styles = task[3];
 
             delete connectorsToAppendTasks[arc];
 
-            if (!nodeStyles && sandbox.mainElement) nodeStyles = defualtObjectStyles;
-            if (!edgeStyles && sandbox.mainElement) nodeStyles = defualtObjectStyles;
-            let styles = nodeStyles;
+            if (!styles && sandbox.mainElement) styles = defualtObjectStyles;
 
             let object = editor.scene.getObjectByScAddr(addr);
             if (object) {
-                if (sandbox.mainElement) {
+                if (styles) {
                     if (object instanceof SCg.ModelEdge) {
-                        styles = edgeStyles;
                         object.setWidthEdge(styles.widthEdge);
                     } else {
                         object.setScaleElem(object instanceof SCg.ModelNode ? styles.node : styles.link);
@@ -89,7 +85,6 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
                 }
                 object = SCg.Creator.createEdge(bObj, eObj, type);
 
-                styles = edgeStyles;
                 if (styles) object.setWidthEdge(styles.widthEdge);
             } else if (type & sc_type_link) {
                 const containerId = 'scg-window-' + sandbox.addr + '-' + addr + '-' + new Date().getUTCMilliseconds();
@@ -98,9 +93,11 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
                 if (styles) object.setScaleElem(styles.link);
             }
 
-            object.setOpacityElem(styles.opacity);
-            object.setStrokeElem(styles.stroke);
-            object.setFillElem(styles.fill);
+            if (styles) {
+                object.setOpacityElem(styles.opacity);
+                object.setStrokeElem(styles.stroke);
+                object.setFillElem(styles.fill);
+            }
 
             editor.scene.appendObject(object);
             editor.scene.objects[addr] = object;
@@ -147,29 +144,19 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
         debouncedBufferedDoRemoveBatch(removeTasks, maxRemoveBatchLength);
     };
 
-    const getConnectorElements = async (arc) => {
-        let scTemplate = new sc.ScTemplate();
-        scTemplate.triple(
-            [sc.ScType.Unknown, "src"],
-            arc,
-            [sc.ScType.Unknown, "target"]
-        );
-        let result = await scClient.templateSearch(scTemplate);
-        return [result[0].get("src"), result[0].get("target")];
-    };
+    const update = async (data) => {
+        const isAdded = data.isAdded;
+        const connectorFromScene = data.connectorFromScene.value;
+        let sceneElement = data.sceneElement.value;
 
-    return {
-        update: async function (isAdded, arc, el, type, styles) {
-            if (isAdded) {
-                if (type & sc_type_arc_mask) {
-                    const [src, target] = await getConnectorElements(el);
-                    addAppendTask(arc, [arc, el, type, src, target, styles]);
-                } else {
-                    addAppendTask(arc, [arc, el, type, styles]);
-                }
-            } else {
-                addRemoveTask(arc, el);
-            }
+        if (isAdded) {
+            const sceneElementType = data.sceneElementType.value;
+            const sceneElementStyles = data.sceneElementStyles;
+
+            addAppendTask(connectorFromScene, [sceneElement, sceneElementType, sceneElementStyles]);
+        }
+        else {
+            addRemoveTask(connectorFromScene, sceneElement);
         }
     };
 }
@@ -463,8 +450,8 @@ function SCgStructTranslator(_editor, _sandbox) {
     const toScTranslator = new SCgStructToScTranslatorImpl(_editor, _sandbox);
 
     return {
-        updateFromSc: async function (added, arc, element, scaleElem) {
-            await fromScTranslator.update(added, arc, element, scaleElem);
+        updateFromSc: async function (data) {
+            await fromScTranslator.update(data);
         },
 
         translateToSc: async function () {
