@@ -274,7 +274,6 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
     } 
     if (this.is_struct && this.eventStructUpdate) {
         const maxNumberOfTriplets = 850;
-        const delayTimeoutAutosize = 300;
         const levelScale1 = { node: 2.3, link: 1.8, opacity: 1, widthEdge: 8, stroke: 'black', fill: '#00a' };
         const levelScale2 = { node: 1.8, link: 1.5, opacity: 1, widthEdge: 7.5, stroke: 'black', fill: '#00a' };
         const levelScale3 = { node: 1.4, link: 1, opacity: 1, widthEdge: 7, stroke: 'black', fill: '#00a' };
@@ -339,7 +338,7 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
         for (let triple of resultLevel.length ? resultLevel : resultLevelWithMainKey) {
 
             scAddr ? mainElements.push(scAddr) && (self.mainElement = scAddr): mainElements.push(triple.get('mainNode').value) && (self.mainElement = triple.get('mainNode').value);
-            self.eventStructUpdate(true, triple.get('edgeFromContourToMainNode').value, triple.get('mainNode').value, levelScales[0]);
+            self.eventStructUpdate(true, triple.get('edgeFromContourToMainNode').value, scAddr ? scAddr : triple.get('mainNode').value, levelScales[0]);
         };
 
         if (scene && !self.isResultWithMainKey) {
@@ -435,7 +434,7 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
             if (withRelation) {
                 scTemplate.triple(
                     [sc.ScType.Unknown, "relationNode"],
-                    [sc.ScType.EdgeAccessVarPosPerm, "edgeFromRelationNodeToedgeFromMainNodeToSecondElem"],
+                    [sc.ScType.EdgeAccessVarPosPerm, "edgeFromRelationNodeToEdgeFromMainNodeToSecondElem"],
                     "edgeFromMainNodeToSecondElem",
                 );
                 scTemplate.triple(
@@ -445,8 +444,8 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
                 );
                 scTemplate.triple(
                     "src",
-                    [sc.ScType.EdgeAccessVarPosPerm, "edgeFromContourToEdgeFromRelationNodeToedgeFromMainNodeToSecondElem"],
-                    "edgeFromRelationNodeToedgeFromMainNodeToSecondElem",
+                    [sc.ScType.EdgeAccessVarPosPerm, "edgeFromContourToEdgeFromRelationNodeToEdgeFromMainNodeToSecondElem"],
+                    "edgeFromRelationNodeToEdgeFromMainNodeToSecondElem",
                 );
             };
 
@@ -517,7 +516,7 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
                         visitedElements.push(relationNode);
                     }
                     self.eventStructUpdate(true, triple.get("edgeFromContourToRelationNode").value, triple.get("relationNode").value, scale);
-                    self.eventStructUpdate(true, triple.get("edgeFromContourToEdgeFromRelationNodeToedgeFromMainNodeToSecondElem").value, triple.get("edgeFromRelationNodeToedgeFromMainNodeToSecondElem").value, scale);
+                    self.eventStructUpdate(true, triple.get("edgeFromContourToEdgeFromRelationNodeToEdgeFromMainNodeToSecondElem").value, triple.get("edgeFromRelationNodeToEdgeFromMainNodeToSecondElem").value, scale);
                 };
             };
             return [...new Set(levelNodes)];

@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Debounced buffered append and remove tasks in scg-update-from-sc-translator
 - Links autoscaling with images and pdf size
 - Reconnection to sc-server
 - Show element text as main idtf without language if main idtf with language is not found
@@ -27,6 +28,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add optional buttons to delete function
 
 ### Fixed
+- Memory leaks if elements removed from scg-scene
+- Remove listeners for scg-elements html-objects if elements were removed
 - Double click by sc-elements that aren't synchronized
 - Check addr before search by it sc-links and sc-nodes
 - Reset sc-links formats after synchronize
@@ -48,6 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - After reloading, the page URL is not replaced
 
 ### Changed
+- Refactor scg-update-from-sc-translator and scg-update-to-sc-translator
 - View identifiers with scn-component from sc-json
 
 ### Removed

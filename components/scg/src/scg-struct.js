@@ -489,8 +489,8 @@ function SCgStructTranslator(_editor, _sandbox) {
     const toScTranslator = new SCgStructToScTranslatorImpl(_editor, _sandbox);
 
     return {
-        updateFromSc: async function (added, element, arc, scaleElem) {
-            await fromScTranslator.update(added, element, arc, scaleElem);
+        updateFromSc: async function (added, arc, element, scaleElem) {
+            await fromScTranslator.update(added, arc, element, scaleElem);
         },
 
         translateToSc: async function () {
