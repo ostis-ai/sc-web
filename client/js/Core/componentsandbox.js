@@ -72,7 +72,7 @@ SCWeb.core.ComponentSandbox = function (options) {
             sc.ScEventType.AddOutgoingEdge,
             async (elAddr, edge, otherAddr) => {
                 if (self.eventStructUpdate && ((await scClient.checkElements([edge]))[0].equal(sc.ScType.EdgeAccessConstPosPerm))) {
-                    self.eventStructUpdate(true, elAddr.value, edge.value);
+                    self.eventStructUpdate(true, edge.value, otherAddr.value);
                 }
             });
         let removeArcEventRequest = new sc.ScEventParams(
@@ -80,7 +80,7 @@ SCWeb.core.ComponentSandbox = function (options) {
             sc.ScEventType.RemoveOutgoingEdge,
             async (elAddr, edge, otherAddr) => {
                 if (self.eventStructUpdate && !(await window.scHelper.checkEdge(elAddr.value, sc.ScType.EdgeAccessConstPosPerm, otherAddr.value))) {
-                    self.eventStructUpdate(false, elAddr.value, edge.value);
+                    self.eventStructUpdate(false, edge.value, otherAddr.value);
                 }
             });
         window.scClient.eventsCreate([addArcEventRequest, removeArcEventRequest])
@@ -332,14 +332,14 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
 
         let mainElements = [];
 
-        if (!scAddr) resultLevel.length ? self.isResultWithMainKey = false : isResultWithMainKey = true;
+        if (!scAddr) resultLevel.length ? self.isResultWithMainKey = false : self.isResultWithMainKey = true;
 
         if (resultLevel.length || resultLevelWithMainKey.length) self.isRrelKeyScElement = true;
         
         for (let triple of resultLevel.length ? resultLevel : resultLevelWithMainKey) {
 
             scAddr ? mainElements.push(scAddr) && (self.mainElement = scAddr): mainElements.push(triple.get('mainNode').value) && (self.mainElement = triple.get('mainNode').value);
-            self.eventStructUpdate(true, triple.get('src').value, triple.get('edgeFromContourToMainNode').value, levelScales[0]);
+            self.eventStructUpdate(true, triple.get('edgeFromContourToMainNode').value, triple.get('mainNode').value, levelScales[0]);
         };
 
         if (scene && !self.isResultWithMainKey) {
@@ -482,14 +482,14 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
                             levelNodes.push(sourceElem);
                             visitedElements.push(sourceElem);
 
-                            self.eventStructUpdate(true, triple.get("src").value, triple.get("edgeFromContourToSecondElem").value, scale);
+                            self.eventStructUpdate(true, triple.get("edgeFromContourToSecondElem").value, triple.get("secondElem").value, scale);
                         };
 
                         let resultEdgeElementsEdges = await window.scClient.templateSearch(scTemplateSearchTargetNodes);
 
                         for (triple of resultEdgeElementsEdges) {
-                            self.eventStructUpdate(true, triple.get("src").value, triple.get("edgeFromContourToSourceElem").value, scale);
-                            self.eventStructUpdate(true, triple.get("src").value, triple.get("edgeFromContourToTargetElem").value, scale);
+                            self.eventStructUpdate(true, triple.get("edgeFromContourToSourceElem").value, sourceElem, scale);
+                            self.eventStructUpdate(true, triple.get("edgeFromContourToTargetElem").value, targetElem, scale);
                         };
                     };
                     edgeToEdge = false;
@@ -499,8 +499,8 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
                 if (!visitedElements.includes(secondElem) && !levelNodes.includes(secondElem)) {
                     levelNodes.push(secondElem);
                     visitedElements.push(secondElem);
-                    self.eventStructUpdate(true, triple.get("src").value, triple.get("edgeFromContourToSecondElem").value, scale);
-                    self.eventStructUpdate(true, triple.get("src").value, triple.get("edgeFromContourToMainEdge").value, scale);
+                    self.eventStructUpdate(true, triple.get("edgeFromContourToSecondElem").value, triple.get("secondElem").value, scale);
+                    self.eventStructUpdate(true, triple.get("edgeFromContourToMainEdge").value, triple.get("edgeFromMainNodeToSecondElem").value, scale);
                 };
                 
                 if (!levelNodes.length) continue;
@@ -516,8 +516,8 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
                         levelNodes.push(relationNode);
                         visitedElements.push(relationNode);
                     }
-                    self.eventStructUpdate(true, triple.get("src").value, triple.get("edgeFromContourToRelationNode").value, scale);
-                    self.eventStructUpdate(true, triple.get("src").value, triple.get("edgeFromContourToEdgeFromRelationNodeToedgeFromMainNodeToSecondElem").value, scale);
+                    self.eventStructUpdate(true, triple.get("edgeFromContourToRelationNode").value, triple.get("relationNode").value, scale);
+                    self.eventStructUpdate(true, triple.get("edgeFromContourToEdgeFromRelationNodeToedgeFromMainNodeToSecondElem").value, triple.get("edgeFromRelationNodeToedgeFromMainNodeToSecondElem").value, scale);
                 };
             };
             return [...new Set(levelNodes)];
@@ -528,15 +528,16 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
 
         let scTemplate = new sc.ScTemplate();
         scTemplate.triple(
-            [new sc.ScAddr(this.addr), "src"],
+            new sc.ScAddr(this.addr),
             [sc.ScType.EdgeAccessVarPosPerm, "edge"],
-            sc.ScType.Unknown);
+            [sc.ScType.Unknown, "trg"]
+        );
         let result = await window.scClient.templateSearch(scTemplate);
         if (result.length > maxNumberOfTriplets) {
             result.splice(maxNumberOfTriplets-1, result.length-maxNumberOfTriplets);
         }
         for (let triple of result) {
-            self.eventStructUpdate(true, triple.get("src").value, triple.get("edge").value, { node: 1, link: 1 });
+            self.eventStructUpdate(true, triple.get("edge").value, triple.get("trg").value, { node: 1, link: 1 });
         }
     }
     else if (this.addr) {

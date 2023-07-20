@@ -6,7 +6,7 @@ const debouncedBuffered = (func, wait) => {
     };
     const debouncedBuffered = (tasks, maxBatchLength) => {
         clearTimeout(timerId);
-        timerId = setTimeout(() => func(tasks), wait);
+        timerId = setTimeout(() => func(tasks.splice(0, tasksLength)), wait);
 
         const tasksLength = tasks.length;
         if (tasksLength === maxBatchLength) {
@@ -19,8 +19,7 @@ const debouncedBuffered = (func, wait) => {
 };
 
 const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
-    let arcMapping = {},
-        appendTasks = [],
+    let appendTasks = [],
         connectorsToAppendTasks = {},
         removeTasks = [],
         maxAppendBatchLength = 150,
@@ -42,11 +41,14 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
     const doAppendBatch = function (batch) {
         for (let i in batch) {
             const task = batch[i];
+            const arc = task[0];
             const addr = task[1];
             const type = task[2];
             let addrNodeorLink = task[3];
             let addrEdge = task[5];
             let addrElemEdgeEnd = task[4];
+
+            delete connectorsToAppendTasks[arc];
 
             if (!addrNodeorLink && sandbox.mainElement) addrNodeorLink = { node: 1.8, link: 1.5, opacity: 1, widthEdge: 7.5, stroke: '#1E90FF', fill: '#1E90FF' };
             if (!addrEdge && sandbox.mainElement) addrEdge = { node: 1.8, link: 1.5, opacity: 1, widthEdge: 7.5, stroke: '#1E90FF', fill: '#1E90FF' };
@@ -105,10 +107,11 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
                     }
                     model_edge.setObjectState(SCgObjectState.FromMemory);
                 } else {
-                    delete connectorsToAppendTasks[task[0]];
                     delete appendTasks[i];
 
-                    addAppendTask(task[0], task);
+                    // Not call addAppendTask because scg-filters are used
+                    appendTasks.push(task);
+                    connectorsToAppendTasks[arc] = appendTasks.length;
                 }
             } else if (type & sc_type_link) {
                 const containerId = 'scg-window-' + sandbox.addr + '-' + addr + '-' + new Date().getUTCMilliseconds();
@@ -125,7 +128,6 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
                 model_link.setObjectState(SCgObjectState.FromMemory);
                 resolveIdtf(addr, model_link);
             }
-
         }
         editor.render.update();
         editor.scene.layout();
@@ -182,24 +184,17 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
     };
 
     return {
-        update: async function (added, element, arc, scaleElem) {
-            if (added) {
-                let [_, el] = await getArc(arc);
-                let t = await getElementType(el);
-                arcMapping[arc] = el;
-                if (t & (sc_type_node | sc_type_link)) {
-                    addAppendTask(arc, [arc, el, t, scaleElem]);
-                } else if (t & sc_type_arc_mask) {
-                    let [src, target] = await getArc(el);
-                    addAppendTask(arc, [arc, el, t, src, target, scaleElem]);
-                } else
-                    throw "Unknown element type " + t;
-            } else {
-                const e = arcMapping[arc];
-                if (e) {
-                    delete arcMapping[arc];
-                    addRemoveTask(arc, e);
+        update: async function (isAdded, arc, el, scaleElem) {
+            if (isAdded) {
+                const type = await getElementType(el);
+                if (type & sc_type_arc_mask) {
+                    const [src, target] = await getArc(el);
+                    addAppendTask(arc, [arc, el, type, src, target, scaleElem]);
+                } else {
+                    addAppendTask(arc, [arc, el, type, scaleElem]);
                 }
+            } else {
+                addRemoveTask(arc, el);
             }
         }
     };
