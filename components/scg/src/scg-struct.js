@@ -1,6 +1,23 @@
+const debounceTime = (func, wait) => {
+    let timerId;
+
+    const clear = () => {
+        clearTimeout(timerId);
+    };
+    const debounced = (...args) => {
+        clearTimeout(timerId);
+        timerId = setTimeout(() => func(...args), wait);
+    };
+
+    return [debounced, clear];
+};
+
 const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
     let arcMapping = {},
-        tasks = {},
+        tasks = [],
+        connectorsToTasks = {},
+        lastTasksLength = 0,
+        maxBatchLength = 150,
         editor = _editor,
         sandbox = _sandbox;
 
@@ -14,14 +31,14 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
         return new SCg.Vector3(100 * Math.random(), 100 * Math.random(), 0);
     }
 
-    const doBatch = function () {
-        for (let i in tasks) {
-            const task = tasks[i];
-            const addr = task[0];
-            const type = task[1];
-            let addrNodeorLink = task[2];
-            let addrEdge = task[4];
-            let addrElemEdgeEnd = task[3];
+    const doBatch = function (batch) {
+        for (let i in batch) {
+            const task = batch[i];
+            const addr = task[1];
+            const type = task[2];
+            let addrNodeorLink = task[3];
+            let addrEdge = task[5];
+            let addrElemEdgeEnd = task[4];
 
             if (!addrNodeorLink && sandbox.mainElement) addrNodeorLink = { node: 1.8, link: 1.5, opacity: 1, widthEdge: 7.5, stroke: '#1E90FF', fill: '#1E90FF' };
             if (!addrEdge && sandbox.mainElement) addrEdge = { node: 1.8, link: 1.5, opacity: 1, widthEdge: 7.5, stroke: '#1E90FF', fill: '#1E90FF' };
@@ -79,6 +96,11 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
                         model_edge.setFillElem(addrEdge.fill);
                     }
                     model_edge.setObjectState(SCgObjectState.FromMemory);
+                } else {
+                    delete connectorsToTasks[task[0]];
+                    delete tasks[i];
+
+                    addTask(task[0], task);
                 }
             } else if (type & sc_type_link) {
                 const containerId = 'scg-window-' + sandbox.addr + '-' + addr + '-' + new Date().getUTCMilliseconds();
@@ -101,14 +123,32 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
         editor.scene.layout();
     };
 
+    const [debouncedDoBatch] = debounceTime((batch) => {
+        doBatch(batch);
+        lastTasksLength = 0;
+    }, 200);
+
     const addTask = function (arc, args) {
-        tasks[arc] = args;
-        doBatch();
+        connectorsToTasks[arc] = tasks.length;
+        tasks.push(args);
+
+        const tasksLength = tasks.length;
+        const batch = tasks.slice(lastTasksLength);
+        const length = batch.length;
+        if (length === maxBatchLength) {
+            lastTasksLength = tasksLength;
+            doBatch(batch);
+        }
+
+        debouncedDoBatch(batch);
     };
 
-    const removeElement = function (addr) {
+    const removeElement = function (arc, addr) {
         const obj = editor.scene.getObjectByScAddr(addr);
         if (obj) {
+            delete tasks[connectorsToTasks[arc]];
+            delete connectorsToTasks[arc];
+
             editor.render.updateRemovedObjects([obj]);
             editor.scene.deleteObjects([obj]);
         }
@@ -138,17 +178,17 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
                 let t = await getElementType(el);
                 arcMapping[arc] = el;
                 if (t & (sc_type_node | sc_type_link)) {
-                    addTask(arc, [el, t, scaleElem]);
+                    addTask(arc, [arc, el, t, scaleElem]);
                 } else if (t & sc_type_arc_mask) {
                     let [src, target] = await getArc(el);
-                    addTask(arc, [el, t, src, target, scaleElem]);
+                    addTask(arc, [arc, el, t, src, target, scaleElem]);
                 } else
                     throw "Unknown element type " + t;
             } else {
                 const e = arcMapping[arc];
                 if (e) {
-                    removeElement(e);
-                    delete tasks[arc];
+                    delete arcMapping[arc];
+                    removeElement(arc, e);
                 }
             }
         }
