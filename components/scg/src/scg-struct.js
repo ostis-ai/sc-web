@@ -1,23 +1,31 @@
-const debounceTime = (func, wait) => {
+const debouncedBuffered = (func, wait) => {
     let timerId;
 
     const clear = () => {
         clearTimeout(timerId);
     };
-    const debounced = (...args) => {
+    const debouncedBuffered = (tasks, maxBatchLength) => {
         clearTimeout(timerId);
-        timerId = setTimeout(() => func(...args), wait);
+        timerId = setTimeout(() => func(tasks), wait);
+
+        const tasksLength = tasks.length;
+        if (tasksLength === maxBatchLength) {
+            const batch = tasks.splice(0, Math.max(maxBatchLength, tasksLength));
+            func(batch);
+        }
     };
 
-    return [debounced, clear];
+    return [debouncedBuffered, clear];
 };
 
 const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
     let arcMapping = {},
-        tasks = [],
-        connectorsToTasks = {},
-        lastTasksLength = 0,
-        maxBatchLength = 150,
+        appendTasks = [],
+        connectorsToAppendTasks = {},
+        removeTasks = [],
+        maxAppendBatchLength = 150,
+        maxRemoveBatchLength = 20,
+        batchDelayTime = 200,
         editor = _editor,
         sandbox = _sandbox;
 
@@ -31,7 +39,7 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
         return new SCg.Vector3(100 * Math.random(), 100 * Math.random(), 0);
     }
 
-    const doBatch = function (batch) {
+    const doAppendBatch = function (batch) {
         for (let i in batch) {
             const task = batch[i];
             const addr = task[1];
@@ -97,10 +105,10 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
                     }
                     model_edge.setObjectState(SCgObjectState.FromMemory);
                 } else {
-                    delete connectorsToTasks[task[0]];
-                    delete tasks[i];
+                    delete connectorsToAppendTasks[task[0]];
+                    delete appendTasks[i];
 
-                    addTask(task[0], task);
+                    addAppendTask(task[0], task);
                 }
             } else if (type & sc_type_link) {
                 const containerId = 'scg-window-' + sandbox.addr + '-' + addr + '-' + new Date().getUTCMilliseconds();
@@ -123,37 +131,39 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
         editor.scene.layout();
     };
 
-    const [debouncedDoBatch] = debounceTime((batch) => {
-        doBatch(batch);
-        lastTasksLength = 0;
-    }, 200);
+    const [debouncedBufferedDoAppendBatch] = debouncedBuffered(doAppendBatch, batchDelayTime);
 
-    const addTask = function (arc, args) {
-        connectorsToTasks[arc] = tasks.length;
-        tasks.push(args);
+    const addAppendTask = function (arc, args) {
+        connectorsToAppendTasks[arc] = appendTasks.length;
+        appendTasks.push(args);
 
-        const tasksLength = tasks.length;
-        const batch = tasks.slice(lastTasksLength);
-        const length = batch.length;
-        if (length === maxBatchLength) {
-            lastTasksLength = tasksLength;
-            doBatch(batch);
-        }
-
-        debouncedDoBatch(batch);
+        debouncedBufferedDoAppendBatch(appendTasks, maxAppendBatchLength);
     };
 
-    const removeElement = function (arc, addr) {
-        const obj = editor.scene.getObjectByScAddr(addr);
-        if (obj) {
-            delete tasks[connectorsToTasks[arc]];
-            delete connectorsToTasks[arc];
+    const doRemoveBatch = function (batch) {
+        for (let i in batch) {
+            const task = batch[i];
+            const arc = task[0];
+            const addr = task[1];
 
+            delete appendTasks[connectorsToAppendTasks[arc]];
+            delete connectorsToAppendTasks[arc];
+
+            const obj = editor.scene.getObjectByScAddr(addr);
+            if (!obj) continue;
             editor.render.updateRemovedObjects([obj]);
             editor.scene.deleteObjects([obj]);
         }
         editor.render.update();
         editor.scene.layout();
+    }
+
+    const [debouncedBufferedDoRemoveBatch] = debouncedBuffered(doRemoveBatch, batchDelayTime);
+
+    const addRemoveTask = function (arc, addr) {
+        removeTasks.push([arc, addr]);
+
+        debouncedBufferedDoRemoveBatch(removeTasks, maxRemoveBatchLength);
     };
 
     const getArc = async (arc) => {
@@ -178,17 +188,17 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
                 let t = await getElementType(el);
                 arcMapping[arc] = el;
                 if (t & (sc_type_node | sc_type_link)) {
-                    addTask(arc, [arc, el, t, scaleElem]);
+                    addAppendTask(arc, [arc, el, t, scaleElem]);
                 } else if (t & sc_type_arc_mask) {
                     let [src, target] = await getArc(el);
-                    addTask(arc, [arc, el, t, src, target, scaleElem]);
+                    addAppendTask(arc, [arc, el, t, src, target, scaleElem]);
                 } else
                     throw "Unknown element type " + t;
             } else {
                 const e = arcMapping[arc];
                 if (e) {
                     delete arcMapping[arc];
-                    removeElement(arc, e);
+                    addRemoveTask(arc, e);
                 }
             }
         }
