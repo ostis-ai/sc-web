@@ -20,12 +20,12 @@ const debouncedBuffered = (func, wait) => {
 
 const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
     let appendTasks = [],
-        connectorsToAppendTasks = {},
+        addrsToAppendTasks = {},
         removeTasks = [],
         maxAppendBatchLength = 150,
         maxRemoveBatchLength = 20,
         batchDelayTime = 200,
-        defualtObjectStyles = { node: 1.8, link: 1.5, opacity: 1, widthEdge: 7.5, stroke: '#1E90FF', fill: '#1E90FF' },
+        defaultObjectStyles = { node: 1.8, link: 1.5, opacity: 1, widthEdge: 7.5, stroke: '#1E90FF', fill: '#1E90FF' },
         editor = _editor,
         sandbox = _sandbox;
 
@@ -42,14 +42,15 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
     const doAppendBatch = function (batch) {
         for (let i in batch) {
             const task = batch[i];
-            const arc = task[0];
-            const addr = task[1];
-            const type = task[2];
-            let styles = task[3];
+            const addr = task[0];
+            const type = task[1];
+            let styles = task[2];
 
-            delete connectorsToAppendTasks[arc];
+            console.log(task);
 
-            if (!styles && sandbox.mainElement) styles = defualtObjectStyles;
+            delete addrsToAppendTasks[addr];
+
+            if (!styles && sandbox.mainElement) styles = defaultObjectStyles;
 
             let object = editor.scene.getObjectByScAddr(addr);
             if (object) {
@@ -63,9 +64,8 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
                     object.setStrokeElem(styles.stroke);
                     object.setFillElem(styles.fill);
                     object.setOpacityElem(styles.opacity);
-
-                    continue;
                 }
+                continue;
             }
 
             if (type & sc_type_node) {
@@ -73,14 +73,14 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
                 if (styles) object.setScaleElem(styles.node);
                 resolveIdtf(addr, object);
             } else if (type & sc_type_arc_mask) {
-                let bObj = editor.scene.getObjectByScAddr(task[2]);
-                let eObj = editor.scene.getObjectByScAddr(task[3]);
+                let bObj = editor.scene.getObjectByScAddr(task[3]);
+                let eObj = editor.scene.getObjectByScAddr(task[4]);
                 if (!bObj || !eObj) {
                     delete appendTasks[i];
 
                     // Not call addAppendTask because scg-filters are used
                     appendTasks.push(task);
-                    connectorsToAppendTasks[arc] = appendTasks.length;
+                    addrsToAppendTasks[addr] = appendTasks.length;
                     continue;
                 }
                 object = SCg.Creator.createEdge(bObj, eObj, type);
@@ -88,7 +88,7 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
                 if (styles) object.setWidthEdge(styles.widthEdge);
             } else if (type & sc_type_link) {
                 const containerId = 'scg-window-' + sandbox.addr + '-' + addr + '-' + new Date().getUTCMilliseconds();
-                object = SCg.Creator.createLink(randomPos(), containerId);
+                object = SCg.Creator.createLink(type, randomPos(), containerId);
 
                 if (styles) object.setScaleElem(styles.link);
             }
@@ -111,8 +111,8 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
 
     const [debouncedBufferedDoAppendBatch] = debouncedBuffered(doAppendBatch, batchDelayTime);
 
-    const addAppendTask = function (arc, args) {
-        connectorsToAppendTasks[arc] = appendTasks.length;
+    const addAppendTask = function (addr, args) {
+        addrsToAppendTasks[addr] = appendTasks.length;
         appendTasks.push(args);
 
         debouncedBufferedDoAppendBatch(appendTasks, maxAppendBatchLength);
@@ -121,11 +121,10 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
     const doRemoveBatch = function (batch) {
         for (let i in batch) {
             const task = batch[i];
-            const arc = task[0];
-            const addr = task[1];
+            const addr = task[0];
 
-            delete appendTasks[connectorsToAppendTasks[arc]];
-            delete connectorsToAppendTasks[arc];
+            delete appendTasks[addrsToAppendTasks[addr]];
+            delete addrsToAppendTasks[addr];
 
             const obj = editor.scene.getObjectByScAddr(addr);
             if (!obj) continue;
@@ -138,27 +137,69 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
 
     const [debouncedBufferedDoRemoveBatch] = debouncedBuffered(doRemoveBatch, batchDelayTime);
 
-    const addRemoveTask = function (arc, addr) {
-        removeTasks.push([arc, addr]);
+    const addRemoveTask = function (addr) {
+        removeTasks.push([addr]);
 
         debouncedBufferedDoRemoveBatch(removeTasks, maxRemoveBatchLength);
     };
 
-    const update = async (data) => {
-        const isAdded = data.isAdded;
-        const connectorFromScene = data.connectorFromScene.value;
-        let sceneElement = data.sceneElement.value;
-
-        if (isAdded) {
-            const sceneElementType = data.sceneElementType.value;
-            const sceneElementStyles = data.sceneElementStyles;
-
-            addAppendTask(connectorFromScene, [sceneElement, sceneElementType, sceneElementStyles]);
-        }
-        else {
-            addRemoveTask(connectorFromScene, sceneElement);
-        }
+    const getConnectorsElements = async (arc) => {
+        let scTemplate = new sc.ScTemplate();
+        scTemplate.triple(
+            [sc.ScType.Unknown, "_source"],
+            new sc.ScAddr(arc),
+            [sc.ScType.Unknown, "_target"]
+        );
+        const result = await scClient.templateSearch(scTemplate);
+        return [result[0].get("_source").value, result[0].get("_target").value];
     };
+
+    const getElementsTypes = async (elements) => {
+        return (await scClient.checkElements(elements.map(el => new sc.ScAddr(el)))).map(type => type.value);
+    };
+
+    return {
+        update: async (data) => {
+            const isAdded = data.isAdded;
+            let sceneElement = data.sceneElement.value;
+
+            if (isAdded) {
+                const sceneElementType = data.sceneElementType
+                    ? data.sceneElementType.value
+                    : (await getElementsTypes([sceneElement]))[0];
+
+                const sceneElementStyles = data.sceneElementStyles;
+
+                if (data.sceneElementSource && data.sceneElementTarget) {
+                    const source = data.sceneElementSource.value;
+                    const sourceType = data.sceneElementSourceType.value;
+                    const sourceStyles = data.sceneElementSourceStyles;
+                    addAppendTask(source, [source, sourceType, sourceStyles]);
+
+                    const target = data.sceneElementTarget.value;
+                    const targetType = data.sceneElementTargetType.value;
+                    const targetStyles = data.sceneElementTargetStyles;
+                    addAppendTask(target, [target, targetType, targetStyles]);
+
+                    addAppendTask(sceneElement, [sceneElement, sceneElementType, sceneElementStyles, source, target]);
+                }
+                else if (sceneElementType & sc_type_arc_mask) {
+                    const [source, target] = await getConnectorsElements(sceneElement);
+                    const [sourceType, targetType] = await getElementsTypes([source, target]);
+
+                    addAppendTask(source, [source, sourceType, null]);
+                    addAppendTask(target, [target, targetType, null]);
+                    addAppendTask(sceneElement, [sceneElement, sceneElementType, sceneElementStyles, source, target]);
+                }
+                else {
+                    addAppendTask(sceneElement, [sceneElement, sceneElementType, sceneElementStyles]);
+                }
+            }
+            else {
+                addRemoveTask(sceneElement);
+            }
+        }
+    }
 }
 
 const SCgStructToScTranslatorImpl = function (_editor, _sandbox) {

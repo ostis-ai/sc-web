@@ -237,7 +237,7 @@ SCg.Render.prototype = {
                         return;
                     if (self.scene.getObjectByScAddr(d.sc_addr) instanceof SCg.ModelEdge)
                         return;
-                    if (self.sandbox.isRrelKeyScElement)
+                    if (self.sandbox.isSceneWithKey)
                         self.sandbox.updateContent(d.sc_addr, self.scene);
                 })
                 .on("dblclick", d => {
