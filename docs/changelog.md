@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Links autoscaling with images and pdf size
+- Reconnection to sc-server
 - Show element text as main idtf without language if main idtf with language is not found
 - Translate sc-links constancy from gwf
 - Add opportunity to create links with constancy mask
