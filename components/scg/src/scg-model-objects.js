@@ -343,8 +343,7 @@ SCg.ModelLink = function (options) {
     this.contentLoaded = false;
     this.containerId = options.containerId;
     this.content = options.content;
-    this.contentType = 'string';
-    this.fileReaderResult = null;
+    this.contentType = null;
 };
 
 SCg.ModelLink.prototype = Object.create(SCg.ModelObject.prototype);
@@ -392,28 +391,9 @@ SCg.ModelLink.prototype.getConnectionPos = function (from, dotPos) {
  */
 SCg.ModelLink.prototype.setContent = function (content, contentType) {
     this.content = content;
-    this.contentType = contentType ? contentType : 'string';
+    this.contentType = contentType;
     this.need_observer_sync = true;
-};
-
-SCg.ModelLink.prototype.setAutoType = function () {
-    function isHTML(str) {
-        return /<[a-z][\s\S]*>/i.test(str);
-    }
-
-    function isFloat(value) {
-        return !isNaN(value) && value.toString().indexOf('.') != -1;
-    }
-
-    if (isHTML(this.content)) {
-        this.contentType = 'html';
-    } else if (isFloat(this.content)) {
-        this.contentType = 'float';
-    } else if (!isNaN(this.content)) {
-        this.contentType = 'int32';
-    } else {
-        this.contentType = 'string';
-    }
+    this.contentLoaded = false;
 };
 
 // --------------- arc -----------
@@ -474,7 +454,6 @@ SCg.ModelEdge.prototype.destroy = function () {
  *      sc.g-object, that will be the source of edge
  */
 SCg.ModelEdge.prototype.setSource = function (scg_obj) {
-
     if (this.source == scg_obj) return; // do nothing
 
     if (this.source)

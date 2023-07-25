@@ -1,4 +1,4 @@
-var ScFileLinkTypes = {
+let ScFileLinkTypes = {
     html: "html",
     pdf: "pdf",
     image: "image"
@@ -10,6 +10,27 @@ class ScFileLinkHelper {
         this.type = this.getFileType();
         this.fileArrayBuffer = fileArrayBuffer;
     }
+
+    getFileType() {
+        const type = this.file.type;
+        if (type.indexOf(ScFileLinkTypes.image) > -1) {
+            return ScFileLinkTypes.image;
+        } else if (type.indexOf(ScFileLinkTypes.html) > -1) {
+            return ScFileLinkTypes.html;
+        } else if (type.indexOf(ScFileLinkTypes.pdf) > -1) {
+            return ScFileLinkTypes.pdf;
+        } else {
+            throw "Error in ScFileLinkHelper.getFileType"
+        }
+    }
+
+    toBase64(arrayBuffer) {
+        return btoa(
+            new Uint8Array(arrayBuffer)
+                .reduce((data, byte) => data + String.fromCharCode(byte), '')
+        )
+    }
+
     htmlViewResult() {
         switch (this.type) {
             case ScFileLinkTypes.html:
@@ -22,25 +43,13 @@ class ScFileLinkHelper {
                 throw "Error in ScFileLinkHelper.htmlViewResult"
         }
     }
-    getFileType() {
-        var type = this.file.type;
-        if (type.indexOf(ScFileLinkTypes.image) > -1) {
-            return ScFileLinkTypes.image;
-        } else if (type.indexOf(ScFileLinkTypes.html) > -1) {
-            return ScFileLinkTypes.html;
-        } else if (type.indexOf(ScFileLinkTypes.pdf) > -1) {
-            return ScFileLinkTypes.pdf;
-        } else {
-            throw "Error in ScFileLinkHelper.getFileType"
-        }
-    }
     htmlView() {
-        return new TextDecoder().decode(this.fileArrayBuffer);
+        this.parseHtml();
     }
     pdfView() {
-        return "[PDF file]";
+        return this.toBase64(this.fileArrayBuffer);
     }
     imageView() {
-        return '<img src="data:image/png;base64,' + btoa(String.fromCharCode.apply(null, new Uint8Array(this.fileArrayBuffer))) + '" alt="Image">'
+        return this.toBase64(this.fileArrayBuffer)
     }
 }

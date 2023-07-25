@@ -82,3 +82,7 @@ build_kb.sh
 .idea/
 
 sc-server*
+
+secret.txt
+
+client/static/components/html

@@ -86,6 +86,10 @@ SCg.Editor.prototype = {
         this.canEdit = !!params.canEdit;
         this.initUI();
 
+        SCWeb.core.EventManager.subscribe("render/update", null, () => {
+            this.scene.updateRender();
+            this.scene.updateLinkVisual();
+        });
     },
 
     /**
@@ -118,7 +122,20 @@ SCg.Editor.prototype = {
                                 "Error to get edges type change panel");
                         },
                         complete: function () {
-                            self.bindToolEvents();
+                            $.ajax({
+                                url: 'static/components/html/scg-delete-panel.html',
+                                dataType: 'html',
+                                success: function (response) {
+                                    self.delete_panel_content = response;
+                                },
+                                error: function () {
+                                    SCgDebug.error(
+                                        "Error to get delete panel");
+                                },
+                                complete: function () {
+                                    self.bindToolEvents();
+                                }
+                            })
                         }
                     });
                 }
@@ -418,12 +435,11 @@ SCg.Editor.prototype = {
                 if (!result.length) return;
 
                 return result[0].get("_node");
-
             }
 
             const wrapperChangeApply = async (obj, input, self) => {
                 const addrNodeEnterValue = await checkEnterValue(input[0].value);
-                if (obj.text != input.val() && !self._selectedIdtf && !addrNodeEnterValue) {
+                if (obj.text !== input.val() && !self._selectedIdtf && !addrNodeEnterValue) {
                     self.scene.commandManager.execute(new SCgCommandChangeIdtf(obj, input.val()));
                 }
 
@@ -564,7 +580,7 @@ SCg.Editor.prototype = {
 
 
         this.toolSetContent().click(function () {
-            var tool = $(this);
+            let tool = $(this);
             const startValueLink = self.scene.selected_objects[0].content.trim();
 
             function stop_modal() {
@@ -579,88 +595,65 @@ SCg.Editor.prototype = {
             });
             $(this).popover('show');
 
-            var obj = self.scene.selected_objects[0];
-            var input = $(container + ' #scg-set-content-input');
-            var input_content = $(container + " input#content[type='file']");
-            var input_content_type = $(container + " #scg-set-content-type");
+            const obj = self.scene.selected_objects[0];
+            const input = $(container + ' #scg-set-content-input');
+            const input_content = $(container + " input#content[type='file']");
             input.val(self.scene.selected_objects[0].content);
-            input_content_type.val(self.scene.selected_objects[0].contentType);
             setTimeout(function () {
                 input.focus();
             }, 1);
 
-            if (input.val() && (obj.contentType === 'image' || obj.contentType === 'html')) {
-                $(container + ' .popover-content').prepend(input.val());
-                $(container + ' .popover-content').children('img').css({ 'height': '150px', 'width': '150px' });
-                input.val('');
-            };
-
             const wrapperRenameAttachLink = async () => {
-                var endValueLink = input.val().trim();
-                var file = input_content[0].files[0];
+                const endValueLink = input.val().trim();
+                const file = input_content[0].files[0];
                 if ((startValueLink === endValueLink && obj.sc_addr) && !file) stop_modal();
                 obj.changedValue = true;
 
                 let addrMainConcept;
-                let templateAddr = new sc.ScTemplate();
-
-                templateAddr.tripleWithRelation(
-                    [sc.ScType.NodeVar, "_node"],
-                    sc.ScType.EdgeDCommonVar,
-                    new sc.ScAddr(obj.sc_addr),
-                    sc.ScType.EdgeAccessVarPosPerm,
-                    new sc.ScAddr(window.scKeynodes['nrel_main_idtf'])
-                );
-                addrMainConcept = await window.scClient.templateSearch(templateAddr)
-                    .then(result => {
-                        if (!result.length) return;
-                        return result[0].get("_node").value;
-                    });
-
+                if (obj.sc_addr) {
+                    let templateAddr = new sc.ScTemplate();
+                    templateAddr.tripleWithRelation(
+                        [sc.ScType.NodeVar, "_node"],
+                        sc.ScType.EdgeDCommonVar,
+                        new sc.ScAddr(obj.sc_addr),
+                        sc.ScType.EdgeAccessVarPosPerm,
+                        new sc.ScAddr(window.scKeynodes['nrel_main_idtf'])
+                    );
+                    addrMainConcept = await window.scClient.templateSearch(templateAddr)
+                        .then(result => {
+                            if (!result.length) return;
+                            return result[0].get("_node").value;
+                        });
+                }
                 if (addrMainConcept) {
                     const objMainConcept = self.scene.getObjectByScAddr(Number(addrMainConcept));
                     self.scene.commandManager.execute(new SCgCommandChangeIdtf(objMainConcept, input.val()));
                     document.querySelector(`[sc_addr="${addrMainConcept}"]`).nextSibling.textContent = input.val();
-                };
+                }
 
                 if (startValueLink !== endValueLink && obj.sc_addr) {
                     obj.changedValue = true;
                 }
 
-                if (file != undefined) {
-                    setTimeout(() => {
-                        if (obj.contentType === 'image') {
-                            self.scene.commandManager.execute(new SCgCommandChangeContent(
-                                obj,
-                                obj.content,
-                                obj.contentType,
-                                null,
-                            ));
-                            stop_modal();
-                        };
-                    }, 100);
-                    var fileReader = new FileReader();
+                if (file) {
+                    let fileReader = new FileReader();
                     fileReader.onload = function () {
-                        var scLinkHelper = new ScFileLinkHelper(file, this.result);
-                        if (obj.fileReaderResult != scLinkHelper.fileArrayBuffer || obj.contentType !=
-                            scLinkHelper.type) {
-                            if (obj.sc_addr) obj.changedValue = true;
-                            self.scene.commandManager.execute(new SCgCommandChangeContent(
-                                obj,
-                                scLinkHelper.htmlViewResult(),
-                                scLinkHelper.type,
-                                scLinkHelper.fileArrayBuffer,
-                            ));
-                        }
+                        const scLinkHelper = new ScFileLinkHelper(file, this.result);
+                        if (obj.sc_addr) obj.changedValue = true;
+                        self.scene.commandManager.execute(new SCgCommandChangeContent(
+                            obj,
+                            scLinkHelper.htmlViewResult(),
+                            scLinkHelper.type,
+                        ));
                         stop_modal();
                     };
                     fileReader.readAsArrayBuffer(file);
                 } else {
-                    if (obj.content != input.val() || obj.contentType != input_content_type.val()) {
+                    if (obj.content !== input.val()) {
                         if (obj.sc_addr) obj.changedValue = true;
-                        self.scene.commandManager.execute(new SCgCommandChangeContent(obj,
+                        self.scene.commandManager.execute(new SCgCommandChangeContent(
+                            obj,
                             input.val(),
-                            input_content_type.val(),
                             null
                         ));
                     }
@@ -668,10 +661,10 @@ SCg.Editor.prototype = {
                 }
             }
 
-            input.keypress(function (e) {
-                if (e.keyCode == KeyCode.Enter || e.keyCode == KeyCode.Escape) {
-                    if (e.keyCode == KeyCode.Enter) {
-                        wrapperRenameAttachLink();
+            input.keypress(async function (e) {
+                if (e.keyCode === KeyCode.Enter || e.keyCode === KeyCode.Escape) {
+                    if (e.keyCode === KeyCode.Enter) {
+                        wrapperRenameAttachLink().then(null);
                     }
                     stop_modal();
                     e.preventDefault();
@@ -679,11 +672,7 @@ SCg.Editor.prototype = {
             });
             // process controls
             $(container + ' #scg-set-content-apply').click(async function () {
-                wrapperRenameAttachLink();
-                setTimeout(() => {
-                    self.scene.updateLinkVisual();
-                    self.scene.updateRender();
-                }, 100)
+                wrapperRenameAttachLink().then(null);
             });
             $(container + ' #scg-set-content-cancel').click(function () {
                 stop_modal();
@@ -691,30 +680,99 @@ SCg.Editor.prototype = {
         });
 
         this.toolDelete().click(async function () {
-            if (self.scene.selected_objects.length > 0) {
-                if (self.scene.selected_objects.length > 1) {
-                    const cantDelete = [];
-                    const deletableObjects = await Promise.all(self.scene.selected_objects.filter(obj => obj.sc_addr).map(async (obj) => {
-                        const canDelete = await self.checkCanDelete(obj.sc_addr);
-                        if (canDelete) {
-                            cantDelete.push(obj);
-                        } else {
-                            return obj;
-                        }
-                    })).then(arr => arr.filter(Boolean));
+            if (!self.scene.selected_objects.length) return;
 
-                    function diffArray(arr1, arr2) {
-                        return arr1.filter(item => !arr2.includes(item));
-                    }
-                    self.scene.deleteObjects(diffArray(self.scene.selected_objects, cantDelete));
-                    self.scene.addDeletedObjects(deletableObjects);
-                } else {
-                    self.scene.deleteObjects(self.scene.selected_objects);
-                    self.scene.addDeletedObjects(self.scene.selected_objects);
-                }
+            DeleteButtons.init();
+
+            self.scene.setModal(SCgModalMode.SCgModalType);
+            self.onModalChanged();
+            var tool = $(this);
+
+            function stop_modal() {
+                tool.popover('destroy');
+                self.scene.setEditMode(SCgEditMode.SCgModeSelect);
+                self.scene.setModal(SCgModalMode.SCgModalNone);
             }
-            self.hideTool(self.toolDelete())
-            select.button('toggle');
+
+            el = $(this);
+            el.popover({
+                content: self.delete_panel_content,
+                container: container,
+                html: true,
+                delay: {
+                    show: 500,
+                    hide: 100
+                }
+            }).popover('show');
+            cont.find('.popover-content').append(
+                '<button id="scg-close-btn" type="button" class="close scg-close-btn-fragments-window">&times;</button>'
+            );
+
+            if (self.scene.selected_objects.length === 1) {
+                if (!self.scene.selected_objects[0].sc_addr) {
+                    cont.find('.delete-from-db-btn').prop('disabled', true).addClass('disabled-delete-btn');
+                }
+                const isDeletable = await self.checkCanDelete(
+                    self.scene.selected_objects[0].sc_addr
+                );
+                if (isDeletable) cont.find('.delete-from-db-btn').prop('disabled', true).addClass('disabled-delete-btn');
+            } else {
+                const result = await Promise.all(
+                    self.scene.selected_objects.map(async (selected_object) => {
+                        if (!selected_object.sc_addr) return null
+                        return await self.checkCanDelete(selected_object.sc_addr)
+                    })
+                );
+                result.every((elem) => elem === false)
+                    ? null
+                    : cont.find('.delete-from-db-btn').prop('disabled', true).addClass('disabled-delete-btn');
+            }
+
+            cont.find('.popover').addClass('scg-tool-fragments-popover');
+            cont.find('.popover-content').addClass('scg-tool-fragments-popover-content');
+            cont.find('.popover>.arrow').addClass('scg-tool-popover-arrow-hide');
+            
+            cont.find('#scg-close-btn').click(function () {
+                stop_modal();
+                select.button('toggle');
+            });
+
+            cont.find('.delete-from-db-btn').click(async function (e) {
+                e.stopImmediatePropagation();
+                if (self.scene.selected_objects.length > 0) {
+                    if (self.scene.selected_objects.length > 1) {
+                        const cantDelete = [];
+                        const deletableObjects = await Promise.all(self.scene.selected_objects.filter(obj => obj.sc_addr).map(async (obj) => {
+                            const canDelete = await self.checkCanDelete(obj.sc_addr);
+                            if (canDelete) {
+                                cantDelete.push(obj);
+                            } else {
+                                return obj;
+                            }
+                        })).then(arr => arr.filter(Boolean));
+
+                        function diffArray(arr1, arr2) {
+                            return arr1.filter(item => !arr2.includes(item));
+                        }
+                        self.scene.deleteObjects(diffArray(self.scene.selected_objects, cantDelete));
+                        self.scene.addDeletedObjects(deletableObjects);
+                    } else {
+                        self.scene.deleteObjects(self.scene.selected_objects);
+                        self.scene.addDeletedObjects(self.scene.selected_objects);
+                    }
+                }
+                self.hideTool(self.toolDelete())
+                stop_modal();
+                select.button('toggle');
+            })
+
+            cont.find('.delete-from-scene-btn').click(async function (e) {
+                e.stopImmediatePropagation();
+                self.scene.deleteObjects(self.scene.selected_objects);
+                stop_modal();
+                self.hideTool(self.toolDelete())
+                select.button('toggle');
+            })
         });
 
         this.toolClear().click(function () {
@@ -876,6 +934,8 @@ SCg.Editor.prototype = {
     },
 
     checkCanDelete: async function (addr) {
+        if (!addr) return true;
+
         let template = new sc.ScTemplate();
         template.triple(
             new sc.ScAddr(window.scKeynodes["basic_ontology_structure"]),
@@ -910,17 +970,10 @@ SCg.Editor.prototype = {
             this.hideTool(this.toolSetContent());
             this.hideTool(this.toolDelete());
 
-            if (this.scene.selected_objects.length > 0 && !this.scene.clear) {
-                if (this.scene.selected_objects.length === 1) {
-                    const isDeletable = await self.checkCanDelete(this.scene.selected_objects[0].sc_addr);
-                    isDeletable ? this.hideTool(this.toolDelete()) : this.showTool(this.toolDelete());
-                } else {
-                    const result = await Promise.all(this.scene.selected_objects.map(async (selected_object) => (
-                        await self.checkCanDelete(selected_object.sc_addr)
-                    )));
-                    result.every(elem => elem === 1) ? this.hideTool(this.toolDelete()) : this.showTool(this.toolDelete());
-                }
-            }
+            this.scene.selected_objects.length > 0 && !this.scene.clear
+                ? this.showTool(this.toolDelete())
+                : this.hideTool(this.toolDelete())
+
             if (this.scene.selected_objects.length > 1) {
                 if (this.scene.isSelectedObjectAllArcsOrAllNodes() && !this.scene.isSelectedObjectAllHaveScAddr()) {
                     this.showTool(this.toolChangeType());

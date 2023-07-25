@@ -18,6 +18,7 @@ SCWeb.core.ComponentSandbox = function (options) {
     this.container_selector = "#" + SCWeb.ui.Core.selectorWindowScAddr(options.window_id);
     this.wrap_selector = '#' + this.container + '_wrap';
     this.addr = parseInt(options.addr);
+    this.content = options.content;
     this.is_struct = options.is_struct;
     this.format_addr = options.format_addr;
     this.is_editor = options.canEdit;
@@ -216,7 +217,7 @@ SCWeb.core.ComponentSandbox.prototype._appendChilds = function (windows) {
         if (!windows.hasOwnProperty(cntId))
             continue;
         if (this.childs[cntId])
-            console.warn("Duplicate child container " + cntId);
+            delete this.childs[cntId]
         this.childs[cntId] = windows[cntId];
     }
 };
@@ -241,7 +242,7 @@ SCWeb.core.ComponentSandbox.prototype.updateAnswer = function () {
  */
 SCWeb.core.ComponentSandbox.prototype.createViewersForScLinks = async function (containers_map) {
     return new Promise((resolve, reject) => {
-        var self = this;
+        let self = this;
         SCWeb.ui.WindowManager.createViewersForScLinks(containers_map).then(function (windows) {
             self._appendChilds(windows);
             resolve(windows);
@@ -254,7 +255,7 @@ SCWeb.core.ComponentSandbox.prototype.createViewersForScLinks = async function (
  * @param {Object} containers_map Map of viewer containers (id: id of container, value: {key: sc-struct addr, ext_lang_addr: sc-addr of external language}})
  */
 SCWeb.core.ComponentSandbox.prototype.createViewersForScStructs = function (containers_map) {
-    var windows = SCWeb.ui.WindowManager.createViewersForScStructs(containers_map);
+    let windows = SCWeb.ui.WindowManager.createViewersForScStructs(containers_map);
     this._appendChilds(windows);
     return windows;
 };
@@ -538,7 +539,7 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
             self.eventStructUpdate(true, triple.get("src").value, triple.get("edge").value, { node: 1, link: 1 });
         }
     }
-    else {
+    else if (this.addr) {
         let content = await window.scClient.getLinkContents([new sc.ScAddr(this.addr)]);
         await self.onDataAppend(content[0].data);
     }

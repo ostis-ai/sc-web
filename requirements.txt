@@ -3,4 +3,4 @@ future
 sqlalchemy
 numpy
 configparser
-py-sc-client==0.2.4
+py-sc-client==0.3.0

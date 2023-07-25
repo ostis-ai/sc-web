@@ -93,6 +93,7 @@ module.exports = function(grunt) {
                       scgDirPath + '/src/command/delete-objects.js',
                       scgDirPath + '/src/command/move-object.js',
                       scgDirPath + '/src/command/move-line-point.js',
+                      scgDirPath + '/src/deleteScgButtons.js',
                       scgDirPath + '/src/command/get-node-from-memory.js',
                       scgDirPath + '/src/command/wrapper-command.js'],
                 dest: scgDirPath + 'static/components/js/scg/scg.js'
