@@ -813,7 +813,7 @@ SCg.Editor.prototype = {
         const updateConfirmedData = async function () {
             self._disableTool(self.toolIntegrate());
             if (self.translateToSc)
-                self.translateToSc(self.scene, function () {
+                self.translateToSc(() => {
                     self._enableTool(self.toolIntegrate());
                 });
 

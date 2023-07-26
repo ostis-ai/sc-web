@@ -206,8 +206,7 @@ SCg.Render.prototype = {
 
     // -------------- draw -----------------------
     update: function () {
-
-        var self = this;
+        let self = this;
 
         function eventsWrap(selector) {
             selector.on('mouseover', function (d) {
@@ -260,15 +259,14 @@ SCg.Render.prototype = {
                     return '#' + SCgAlphabet.getDefId(d.sc_type);
                 })
                 .attr('class', 'sc-no-default-cmd ui-no-tooltip');
-        };
-
+        }
 
         // add nodes that haven't visual
         this.d3_nodes = this.d3_nodes.data(this.scene.nodes, function (d) {
             return d.id;
         });
 
-        var g = this.d3_nodes.enter().append('svg:g')
+        let g = this.d3_nodes.enter().append('svg:g')
             .attr('class', function (d) {
                 return self.classState(d, (d.sc_type & sc_type_constancy_mask) ? 'SCgNode' : 'SCgNodeEmpty');
             })
@@ -393,18 +391,37 @@ SCg.Render.prototype = {
         this.updateObjects();
     },
 
+    updateRemovedObjects: function (removableObjects) {
+        function eventsUnwrap(selector) {
+            selector.on('mouseover', null)
+                .on('mouseout', null)
+                .on('mousedown', null)
+                .on('mouseup', null)
+                .on("dblclick", null);
+        }
+
+        const objects = this.d3_container.append('svg:g').selectAll('g');
+        const d3_removable_objects = objects.data(removableObjects, function (d) {
+            return d.id;
+        });
+
+        const g = d3_removable_objects.enter().append('svg:g');
+
+        eventsUnwrap(g);
+
+        d3_removable_objects.exit().remove();
+    },
 
     // -------------- update objects --------------------------
     updateObjects: function () {
-
-        var self = this;
+        let self = this;
         this.d3_nodes.each(function (d) {
 
             if (!d.need_observer_sync) return; // do nothing
 
             d.need_observer_sync = false;
 
-            var g = d3.select(this)
+            let g = d3.select(this)
                 .attr("transform", 'translate(' + d.position.x + ', ' + d.position.y + ')scale(' + d.scaleElem + ')')
                 .attr('class', function (d) {
                     return self.classState(d, (d.sc_type & sc_type_constancy_mask) ? 'SCgNode' : 'SCgNodeEmpty');
@@ -510,7 +527,7 @@ SCg.Render.prototype = {
 
             if (d.need_update)
                 d.update();
-            var d3_edge = d3.select(this);
+            let d3_edge = d3.select(this);
 
             SCgAlphabet.updateEdge(d, d3_edge, self.containerId);
             d3_edge.attr('class', function (d) {
@@ -535,7 +552,7 @@ SCg.Render.prototype = {
                 if (d.need_update)
                     d.update();
 
-                var d3_contour = d3.select(this);
+                let d3_contour = d3.select(this);
 
                 d3_contour.attr('class', function (d) {
                     return self.classState(d, 'SCgContour');

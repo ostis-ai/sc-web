@@ -3,26 +3,25 @@ SCgComponent = {
     formats: ['format_scg_json'],
     struct_support: true,
     factory: function (sandbox) {
-        return new scgViewerWindow(sandbox);
+        return new SCgViewerWindow(sandbox);
     }
 };
 
 
 /**
- * scgViewerWindow
- * @param config
+ * SCgViewerWindow
+ * @param sandbox
  * @constructor
  */
-var scgViewerWindow = function (sandbox) {
+const SCgViewerWindow = function (sandbox) {
+    const self = this;
 
-    this.domContainer = sandbox.container;
     this.sandbox = sandbox;
     this.tree = new SCg.Tree();
     this.editor = new SCg.Editor();
 
-    var self = this;
     if (sandbox.is_struct) {
-        this.scStructTranslator = new scgScStructTranslator(this.editor, this.sandbox);
+        this.scStructTranslator = new SCgStructTranslator(this.editor, this.sandbox);
     }
 
     const autocompletionVariants = function (keyword, callback) {
@@ -38,8 +37,8 @@ var scgViewerWindow = function (sandbox) {
             sandbox: sandbox,
             containerId: sandbox.container,
             autocompletionVariants: autocompletionVariants,
-            translateToSc: function (scene, callback) {
-                return self.scStructTranslator.translateToSc(callback);
+            translateToSc: function (callback) {
+                return self.scStructTranslator.translateToSc().then(callback).catch(callback);
             },
             canEdit: this.sandbox.canEdit(),
             resolveControls: this.sandbox.resolveElementsAddr,
@@ -48,56 +47,12 @@ var scgViewerWindow = function (sandbox) {
 
 
     this.receiveData = function (data) {
-        var dfd = new jQuery.Deferred();
-
-        /*this.collectTriples(data);
-         this.tree.build(this.triples);*/
         this._buildGraph(data);
-
-        dfd.resolve();
-        return dfd.promise();
-    };
-
-    this.collectTriples = function (data) {
-
-        this.triples = [];
-
-        var elements = {};
-        var edges = [];
-        for (var i = 0; i < data.length; i++) {
-            var el = data[i];
-
-            elements[el.id] = el;
-            if (el.el_type & sc_type_arc_mask) {
-                edges.push(el);
-            }
-        }
-
-        var founded = true;
-        while (edges.length > 0 && founded) {
-            founded = false;
-            for (idx in edges) {
-                var obj = edges[idx];
-                var beginEl = elements[obj.begin];
-                var endEl = elements[obj.end];
-
-                // try to get begin and end object for arc
-                if (beginEl && endEl) {
-                    founded = true;
-                    edges.splice(idx, 1);
-
-                    this.triples.push([beginEl, {type: obj.el_type, addr: obj.id}, endEl]);
-                }
-            }
-        }
-
-        alert(this.triples.length);
     };
 
     this._buildGraph = function (data) {
-
         var elements = {};
-        var edges = new Array();
+        var edges = [];
         for (var i = 0; i < data.length; i++) {
             var el = data[i];
 
@@ -161,8 +116,8 @@ var scgViewerWindow = function (sandbox) {
     };
 
     this.applyTranslation = function (namesMap) {
-        for (addr in namesMap) {
-            var obj = this.editor.scene.getObjectByScAddr(addr);
+        for (let addr in namesMap) {
+            const obj = this.editor.scene.getObjectByScAddr(addr);
             if (obj) {
                 obj.text = namesMap[addr];
             }
@@ -172,7 +127,7 @@ var scgViewerWindow = function (sandbox) {
 
 
     this.eventStructUpdate = function () {
-        self.scStructTranslator.updateFromSc.apply(self.scStructTranslator, arguments);
+        self.scStructTranslator.updateFromSc.apply(self.scStructTranslator, arguments).then(null);
     };
 
     // delegate event handlers
