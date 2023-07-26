@@ -116,7 +116,6 @@ SCWeb.core.Main = {
 
             SCWeb.core.Main.doDefaultCommandWithSystemIdentifier(sys_id);
             SCWeb.core.Main.mode = modeUrl ?? 0;
-            window.history.replaceState(null, null, window.location.pathname);
             if (scg_view) {
                 const hide_tools = urlObject['hide_tools'];
                 const hide_borders = urlObject['hide_borders'];
@@ -186,7 +185,6 @@ SCWeb.core.Main = {
                 }
             }
             SCWeb.core.Main.doCommandByIdentifier(command_identifier, args);
-            window.history.replaceState(null, null, window.location.pathname);
             return true;
         }
         return false;
