@@ -1,19 +1,3 @@
-var SCgEditMode = {
-    SCgModeSelect: 0,
-    SCgModeEdge: 1,
-    SCgModeBus: 2,
-    SCgModeContour: 3,
-    SCgModeLink: 4,
-    SCgModeViewOnly: 5,
-
-    /**
-     * Check if specified mode is valid
-     */
-    isValid: function (mode) {
-        return (mode >= this.SCgModeSelect) && (mode <= this.SCgModeContour);
-    }
-};
-
 var clipScgText = "clipScgText";
 
 var SCgModalMode = {

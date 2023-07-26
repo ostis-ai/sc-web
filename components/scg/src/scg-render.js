@@ -241,7 +241,8 @@ SCg.Render.prototype = {
                         self.sandbox.updateContent(d.sc_addr, self.scene);
                 })
                 .on("dblclick", d => {
-                    if (SCWeb.core.Main.mode === SCgEditMode.SCgModeViewOnly) return;
+                    if (SCWeb.core.Main.editMode === SCgEditMode.SCgViewOnly) return;
+                    if (SCWeb.core.Main.viewMode === SCgViewMode.DistanceBasedSCgView) return;
 
                     if (!d.sc_addr) return;
 
@@ -535,7 +536,7 @@ SCg.Render.prototype = {
                     return d.sc_addr;
                 });
 
-            if (SCWeb.core.Main.mode === SCgEditMode.SCgModeViewOnly) {
+            if (SCWeb.core.Main.viewMode === SCgViewMode.DistanceBasedSCgView) {
                 d3_edge.select('.SCgEdgeEndArrowCommon').style('stroke-width', `${d.widthEdge}px`).style('opacity', d.opacityElem);
                 d3_edge.select('.SCgEdgeEndArrowAccess').style('stroke-width', `${d.widthEdge - 6}px`).style('opacity', d.opacityElem);
             }

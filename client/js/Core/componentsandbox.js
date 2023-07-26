@@ -33,11 +33,6 @@ SCWeb.core.ComponentSandbox = function (options) {
     this.eventWindowActiveChanged = null;
     this.eventDataAppend = null;
 
-    /* function (added, arc, element)
-     * - added - true, when element added; false - element removed
-     * - arc - sc-addr of arc that connect struct with element
-     * - element - sc-addr of added(removed) sc-element
-     */
     this.eventStructUpdate = null;
 
     this.event_add_element = null;
@@ -193,36 +188,9 @@ SCWeb.core.ComponentSandbox.prototype.getKeynode = function (sys_idtf) {
     return null;
 };
 
-SCWeb.core.ComponentSandbox.prototype.getIdentifiers = function (addr_list, callback) {
-    SCWeb.core.Server.resolveIdentifiers(addr_list).then(callback);
-};
-
 SCWeb.core.ComponentSandbox.prototype.getIdentifier = function (addr, callback) {
     SCWeb.core.Server.resolveIdentifiers([addr]).then(function (idtfs) {
         callback(idtfs[addr]);
-    });
-};
-
-SCWeb.core.ComponentSandbox.prototype.resolveAddrs = function (idtf_list, callback) {
-
-    var arguments = [];
-    var result = {};
-    for (idx in idtf_list) {
-        var idtf = idtf_list[idx];
-        var addr = SCWeb.core.scAddrsDict[idtf];
-        if (addr)
-            result[idtf] = addr;
-        else
-            arguments.push(idtf);
-    }
-
-    SCWeb.core.Server.resolveScAddr(arguments).then(function (data) {
-
-        for (var key in data) {
-            if (data.hasOwnProperty(key))
-                SCWeb.core.scAddrsDict[key] = data[key];
-        }
-        callback(SCWeb.core.scAddrsDict);
     });
 };
 
@@ -248,7 +216,6 @@ SCWeb.core.ComponentSandbox.prototype.updateAnswer = function () {
     return SCWeb.core.Main.getTranslatedAnswer(this.command_state)
         .then(performAnswer);
 }
-
 
 /**
  * Create viewers for specified sc-links
@@ -712,7 +679,7 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
     }
 
     if (this.is_struct && this.eventStructUpdate) {
-        if (SCWeb.core.Main.mode === SCgEditMode.SCgModeViewOnly) {
+        if (SCWeb.core.Main.viewMode === SCgViewMode.DistanceBasedSCgView) {
             updateScgViewOnlyWindow(sceneAddr).then(null);
         } else {
             updateScgWindow(sceneAddr).then(null);

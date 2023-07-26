@@ -1,7 +1,7 @@
 SCWeb.ui.Core = {
 
-    init: function (data, callback) {
-        var self = this;
+    init: function (data) {
+        let self = this;
         return new Promise(resolve => {
 
             this.tooltip_interval = null;

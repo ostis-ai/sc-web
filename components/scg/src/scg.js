@@ -150,7 +150,7 @@ SCg.Editor.prototype = {
                 self.hideTool(self.toolUndo());
                 self.hideTool(self.toolRedo());
             }
-            if (SCWeb.core.Main.mode === SCgEditMode.SCgModeViewOnly) {
+            if (SCWeb.core.Main.editMode === SCgEditMode.SCgViewOnly) {
                 self.hideTool(self.toolSwitch());
                 self.hideTool(self.toolSelect());
                 self.hideTool(self.toolLink());
@@ -161,7 +161,7 @@ SCg.Editor.prototype = {
             if (self.resolveControls)
                 self.resolveControls(tools_container);
         });
-        this.scene.setEditMode(SCWeb.core.Main.mode);
+        this.scene.setEditMode(SCWeb.core.Main.editMode);
         this.scene.event_selection_changed = function () {
             self.onSelectionChanged();
         };
@@ -958,7 +958,7 @@ SCg.Editor.prototype = {
             return !(await self.checkCanDelete(addr));
         }
 
-        if (SCWeb.core.Main.mode === SCgEditMode.SCgModeViewOnly) {
+        if (SCWeb.core.Main.editMode === SCgEditMode.SCgViewOnly) {
             this.hideTool(this.toolChangeIdtf());
             this.hideTool(this.toolChangeType());
             this.hideTool(this.toolSetContent());

@@ -2,7 +2,7 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
     let appendTasks = [],
         addrsToAppendTasks = {},
         removeTasks = [],
-        maxAppendBatchLength = 20,
+        maxAppendBatchLength = 150,
         maxRemoveBatchLength = 20,
         batchDelayTime = 500,
         defaultObjectStyles = { node: 1.8, link: 1.5, opacity: 1, widthEdge: 7.5, stroke: '#1E90FF', fill: '#1E90FF' },
@@ -19,14 +19,14 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
         return new SCg.Vector3(100 * Math.random(), 100 * Math.random(), 0);
     }
 
-    const debouncedBuffered = (func, wait) => {
+    const debounceBuffered = (func, wait) => {
         let timerId;
 
         const clear = () => {
             clearTimeout(timerId);
         };
 
-        const debouncedBuffered = (tasks, maxBatchLength) => {
+        const debounceBuffered = (tasks, maxBatchLength) => {
             clearTimeout(timerId);
             timerId = setTimeout(() => {
                 func(tasks.splice(0, tasks.length));
@@ -40,7 +40,7 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
             }
         };
 
-        return [debouncedBuffered, clear];
+        return [debounceBuffered, clear];
     };
 
     const doAppendBatch = function (batch) {
@@ -83,7 +83,8 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
                     delete appendTasks[i];
 
                     // Not call addAppendTask because scg-filters are used
-                    addAppendTask(addr, task);
+                    addrsToAppendTasks[addr] = appendTasks.length;
+                    appendTasks.push(task);
                     continue;
                 }
                 object = SCg.Creator.createEdge(bObj, eObj, type);
@@ -114,7 +115,7 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
         })();
     };
 
-    const [debouncedBufferedDoAppendBatch] = debouncedBuffered(doAppendBatch, batchDelayTime);
+    const [debouncedBufferedDoAppendBatch] = debounceBuffered(doAppendBatch, batchDelayTime);
 
     const addAppendTask = function (addr, args) {
         addrsToAppendTasks[addr] = appendTasks.length;
@@ -139,7 +140,7 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
         editor.render.update();
     }
 
-    const [debouncedBufferedDoRemoveBatch] = debouncedBuffered(doRemoveBatch, batchDelayTime);
+    const [debouncedBufferedDoRemoveBatch] = debounceBuffered(doRemoveBatch, batchDelayTime);
 
     const addRemoveTask = function (addr) {
         removeTasks.push([addr]);
