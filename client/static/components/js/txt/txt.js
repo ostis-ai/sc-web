@@ -15,12 +15,11 @@ const TextViewer = function(sandbox){
         container.empty();
         container.addClass('sc-content-string');
         container.text(data);
-
-        SCWeb.core.EventManager.emit("render/update");
     };
 
     if (sandbox.content) {
         this.receiveData(sandbox.content);
+        SCWeb.core.EventManager.emit("render/update");
     } else {
         this.sandbox.eventDataAppend = this.receiveData;
         this.sandbox.updateContent();

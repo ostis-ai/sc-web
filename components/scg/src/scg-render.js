@@ -59,13 +59,13 @@ SCg.Render.prototype = {
                 if (d3.event.stopPropagation()) d3.event.stopPropagation();
             })
             .on("wheel", function () {
-                var direction = d3.event.wheelDelta < 0 ? 'down' : 'up';
+                const direction = d3.event.wheelDelta < 0 ? 'down' : 'up';
                 if (direction === 'up') {
                     self.transformByZoom(d3.event);
                 }
                 if (direction === 'down') {
                     self.transformByZoom(d3.event);
-                };
+                }
             });
 
         const svg = document.querySelector("svg.SCgSvg");
@@ -416,7 +416,6 @@ SCg.Render.prototype = {
     updateObjects: function () {
         let self = this;
         this.d3_nodes.each(function (d) {
-
             if (!d.need_observer_sync) return; // do nothing
 
             d.need_observer_sync = false;
@@ -521,7 +520,6 @@ SCg.Render.prototype = {
         });
 
         this.d3_edges.each(function (d) {
-
             if (!d.need_observer_sync) return; // do nothing
             d.need_observer_sync = false;
 
@@ -544,7 +542,6 @@ SCg.Render.prototype = {
         });
 
         this.d3_contours.each(function (d) {
-
             d3.select(this).attr('d', function (d) {
 
                 if (!d.need_observer_sync) return; // do nothing
@@ -582,7 +579,6 @@ SCg.Render.prototype = {
         });
 
         this.d3_buses.each(function (d) {
-
             if (!d.need_observer_sync) return; // do nothing
             d.need_observer_sync = false;
 
@@ -826,7 +822,6 @@ SCg.Render.prototype = {
                 self.line_point_idx = -1;
             })
             .on('mouseup', function (d) {
-                //this.scene.updateContours(this.scene.selected_objects[0].childs);
                 self.scene.appendAllElementToContours();
             });
 
@@ -835,11 +830,6 @@ SCg.Render.prototype = {
                 return 'translate(' + d.pos.x + ',' + d.pos.y + ')';
             });
         });
-
-        // if (this.scene.selected_objects[0] instanceof SCg.ModelContour) {
-        //     //this.scene.updateContours(this.scene.selected_objects[0].childs);
-        //     this.scene.appendAllElementToContours();
-        // }
     },
 
     _changeContainerTransform: function (translate, scale) {

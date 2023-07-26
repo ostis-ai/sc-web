@@ -55,7 +55,7 @@ SCg.LayoutAlgorithmForceBased.prototype.start = function () {
         .nodes(this.nodes)
         .links(this.edges)
         .size(this.rect)
-        .friction(0.9)
+        .friction(0.5)
         .gravity(0.03)
         .linkDistance(function (edge) {
             const p1 = edge.source.object.getConnectionPos(edge.target.object.position, edge.object.source_dot);
