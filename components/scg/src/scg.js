@@ -649,12 +649,20 @@ SCg.Editor.prototype = {
                     };
                     fileReader.readAsArrayBuffer(file);
                 } else {
+                    const preDefineStringContentType = function (content) {
+                        function isHTML(str) {
+                            return /<[a-z][\s\S]*>/i.test(str);
+                        }
+
+                        return isHTML(content) ? 'html' : 'string';
+                    }
+
                     if (obj.content !== input.val()) {
                         if (obj.sc_addr) obj.changedValue = true;
                         self.scene.commandManager.execute(new SCgCommandChangeContent(
                             obj,
                             input.val(),
-                            null
+                            preDefineStringContentType(input.val()),
                         ));
                     }
                     stop_modal();
