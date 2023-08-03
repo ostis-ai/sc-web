@@ -447,7 +447,7 @@ SCg.Render.prototype = {
 
             if (!d.contentLoaded) {
                 let links = {};
-                links[d.containerId] = {addr: d.sc_addr, content: d.content, contentType: d.contentType};
+                links[d.containerId] = {addr: d.sc_addr, content: d.content, contentType: d.contentType, state: d.state};
                 self.sandbox.createViewersForScLinks(links);
 
                 if (d.state !== SCgObjectState.NewInMemory || d.content.length) d.contentLoaded = true;
@@ -603,7 +603,7 @@ SCg.Render.prototype = {
         this.d3_links.each(function (d) {
             if (!d.contentLoaded) {
                 let links = {};
-                links[d.containerId] = {addr: d.sc_addr, content: d.content, contentType: d.contentType};
+                links[d.containerId] = {addr: d.sc_addr, content: d.content, contentType: d.contentType, state: d.state};
                 self.sandbox.createViewersForScLinks(links);
 
                 if (d.state !== SCgObjectState.NewInMemory || d.content.length) d.contentLoaded = true;
