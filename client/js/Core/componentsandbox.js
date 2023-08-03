@@ -20,6 +20,7 @@ SCWeb.core.ComponentSandbox = function (options) {
     this.contentBucketSize = 20;
     this.appendContentTimeoutId = 0;
     this.appendContentTimeout = 2;
+    this.maxSCgTriplesNumber = 300;
     this.content = options.content;
     this.is_struct = options.is_struct;
     this.format_addr = options.format_addr;
@@ -253,13 +254,13 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
 
     const splitResult = (result, maxNumberOfTriplets) => {
         if (result.length < maxNumberOfTriplets) return result;
-        return result.splice(maxNumberOfTriplets - 1, result.length - maxNumberOfTriplets);
+        return result.splice(0, maxNumberOfTriplets);
     };
     const filterResult = (triples, sceneElementTypes, filterList) => {
         triples = triples.filter((triple, index) => sceneElementTypes[index].isEdge());
         sceneElementTypes = sceneElementTypes.filter(type => type.isEdge());
         if (filterList) triples = triples.filter(triple => !filterList.some(element => element === triple.get("_scene_edge").value));
-        triples = splitResult(triples, 800);
+        triples = splitResult(triples, self.maxSCgTriplesNumber);
         return [triples, sceneElementTypes];
     };
 
@@ -348,8 +349,8 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
         };
 
         const searchAllLevelEdges = async function (elementsArr, allLevelStyles, level, visitedElements) {
-            const prevLevelStyles = level >= allLevelStyles.length ? allLevelStyles.slice(-2) : allLevelStyles[level - 1];
-            const levelStyles = level >= allLevelStyles.length ? allLevelStyles.slice(-1) : allLevelStyles[level];
+            const prevLevelStyles = level >= allLevelStyles.length ? allLevelStyles[allLevelStyles.length - 2] : allLevelStyles[level - 1];
+            const levelStyles = level >= allLevelStyles.length ? allLevelStyles[allLevelStyles.length - 1] : allLevelStyles[level];
 
             let newElementsArr = [];
             for (let i = 0; i < elementsArr.length; i++) {
@@ -446,15 +447,15 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
             for (let i = 0; i < triples.length; ++i) {
                 const triple = triples[i];
 
+                const mainElementEdgeSource = triple.get("_main_element_edge_source");
+                const mainElementEdgeTarget = triple.get("_main_element_edge_target");
+                if (!mainElementEdgeSource.isValid() && !mainElementEdgeTarget.isValid()) continue;
+
                 const mainElementEdge = triple.get("_main_element_edge");
                 const mainElementEdgeHash = mainElementEdge.value;
                 const mainElementEdgeType = mainElementEdgeTypes[i];
                 if (visitedElements.has(mainElementEdgeHash)) continue;
                 newVisitedElements.add(mainElementEdgeHash);
-
-                const mainElementEdgeSource = triple.get("_main_element_edge_source");
-                const mainElementEdgeTarget = triple.get("_main_element_edge_target");
-                if (!mainElementEdgeSource.isValid() && !mainElementEdgeTarget.isValid()) continue;
 
                 const mainElementEdgeSourceHash = mainElementEdgeSource.value;
                 const mainElementEdgeSourceType = mainElementEdgeSourceTypes[i];

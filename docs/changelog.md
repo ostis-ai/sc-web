@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Edit mode DistanceBasedSCgView with url argument `view_mode`
 - Debounced buffered append and remove tasks in scg-update-from-sc-translator
 - Links autoscaling with images and pdf size
 - Reconnection to sc-server
@@ -53,6 +54,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Refactor scg-update-from-sc-translator and scg-update-to-sc-translator
 - View identifiers with scn-component from sc-json
+
+### Deprecated
+- Deprecate url argument `mode` by `edit_mode`
+- Deprecate url argument `edit_mode` value `scg_just_view` by `scg_view_only`
+- Deprecate url flag `scg_structure_view_only` by `full_screen_scg`
 
 ### Removed
 - Popover view for set link content
