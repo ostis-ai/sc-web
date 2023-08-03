@@ -82,9 +82,7 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
                 if (!bObj || !eObj) {
                     delete appendTasks[i];
 
-                    // Not call addAppendTask because scg-filters are used
-                    addrsToAppendTasks[addr] = appendTasks.length;
-                    appendTasks.push(task);
+                    addAppendTask(addr, task);
                     continue;
                 }
                 object = SCg.Creator.createEdge(bObj, eObj, type);
@@ -188,7 +186,7 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
 
                     addAppendTask(sceneElement, [sceneElement, sceneElementType, sceneElementStyles, source, target]);
                 }
-                else if (sceneElementType & sc_type_arc_mask) {
+                else if (data.sceneElementType.isEdge()) {
                     const [source, target] = await getConnectorsElements(sceneElement);
                     const [sourceType, targetType] = await getElementsTypes([source, target]);
 
