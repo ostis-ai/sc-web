@@ -59,13 +59,7 @@ SCg.Render.prototype = {
                 if (d3.event.stopPropagation()) d3.event.stopPropagation();
             })
             .on("wheel", function () {
-                const direction = d3.event.wheelDelta < 0 ? 'down' : 'up';
-                if (direction === 'up') {
-                    self.transformByZoom(d3.event);
-                }
-                if (direction === 'down') {
-                    self.transformByZoom(d3.event);
-                }
+                self.transformByZoom(d3.event);
             });
 
         const svg = document.querySelector("svg.SCgSvg");

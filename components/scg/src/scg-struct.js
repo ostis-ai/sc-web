@@ -35,7 +35,7 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
             }, wait);
 
             if (tasks.length === maxBatchLength) {
-                const batch = tasks.splice(0, Math.max(tasks.length, maxBatchLength));
+                const batch = tasks.splice(0, tasks.length);
                 func(batch);
             }
         };
@@ -80,8 +80,6 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
                 const bObj = editor.scene.getObjectByScAddr(task[3]);
                 const eObj = editor.scene.getObjectByScAddr(task[4]);
                 if (!bObj || !eObj) {
-                    delete appendTasks[i];
-
                     addAppendTask(addr, task);
                     continue;
                 }
@@ -150,57 +148,71 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
         let scTemplate = new sc.ScTemplate();
         scTemplate.triple(
             [sc.ScType.Unknown, "_source"],
-            new sc.ScAddr(arc),
+            arc,
             [sc.ScType.Unknown, "_target"]
         );
         const result = await scClient.templateSearch(scTemplate);
-        return [result[0].get("_source").value, result[0].get("_target").value];
+        return [result[0].get("_source"), result[0].get("_target")];
     };
 
     const getElementsTypes = async (elements) => {
-        return (await scClient.checkElements(elements.map(el => new sc.ScAddr(el)))).map(type => type.value);
+        return await scClient.checkElements(elements);
+    };
+
+    const update = async (data) => {
+        const isAdded = data.isAdded;
+        const sceneElement = data.sceneElement;
+        const sceneElementHash = sceneElement.value;
+
+        if (isAdded) {
+            const sceneElementType = data.sceneElementType
+                ? data.sceneElementType
+                : (await getElementsTypes([sceneElement]))[0];
+            const sceneElementTypeValue = sceneElementType.value;
+
+            const sceneElementStyles = data.sceneElementStyles;
+
+            if (data.sceneElementSource && data.sceneElementTarget) {
+                const sourceHash = data.sceneElementSource.value;
+                const sourceTypeValue = data.sceneElementSourceType.value;
+                const sourceStyles = data.sceneElementSourceStyles;
+                addAppendTask(sourceHash, [sourceHash, sourceTypeValue, sourceStyles]);
+
+                const targetHash = data.sceneElementTarget.value;
+                const targetTypeValue = data.sceneElementTargetType.value;
+                const targetStyles = data.sceneElementTargetStyles;
+                addAppendTask(targetHash, [targetHash, targetTypeValue, targetStyles]);
+
+                addAppendTask(
+                    sceneElementHash,
+                    [sceneElementHash, sceneElementTypeValue, sceneElementStyles, sourceHash, targetHash]
+                );
+            }
+            else if (sceneElementType && sceneElementType.isEdge()) {
+                const [source, target] = await getConnectorsElements(sceneElement);
+                const [sourceType, targetType] = await getElementsTypes([source, target]);
+
+                const [sourceHash, targetHash] = [source.value, target.value];
+
+                await update({isAdded: true, sceneElement: source, sceneElementType: sourceType});
+                await update({isAdded: true, sceneElement: target, sceneElementType: targetType});
+                addAppendTask(
+                    sceneElementHash,
+                    [sceneElementHash, sceneElementTypeValue, sceneElementStyles, sourceHash, targetHash]
+                );
+            }
+            else {
+                addAppendTask(sceneElementHash, [sceneElementHash, sceneElementTypeValue, sceneElementStyles]);
+            }
+        }
+        else {
+            addRemoveTask(sceneElementHash);
+        }
     };
 
     return {
         update: async (data) => {
-            const isAdded = data.isAdded;
-            let sceneElement = data.sceneElement.value;
-
-            if (isAdded) {
-                const sceneElementType = data.sceneElementType
-                    ? data.sceneElementType.value
-                    : (await getElementsTypes([sceneElement]))[0];
-
-                const sceneElementStyles = data.sceneElementStyles;
-
-                if (data.sceneElementSource && data.sceneElementTarget) {
-                    const source = data.sceneElementSource.value;
-                    const sourceType = data.sceneElementSourceType.value;
-                    const sourceStyles = data.sceneElementSourceStyles;
-                    addAppendTask(source, [source, sourceType, sourceStyles]);
-
-                    const target = data.sceneElementTarget.value;
-                    const targetType = data.sceneElementTargetType.value;
-                    const targetStyles = data.sceneElementTargetStyles;
-                    addAppendTask(target, [target, targetType, targetStyles]);
-
-                    addAppendTask(sceneElement, [sceneElement, sceneElementType, sceneElementStyles, source, target]);
-                }
-                else if (data.sceneElementType.isEdge()) {
-                    const [source, target] = await getConnectorsElements(sceneElement);
-                    const [sourceType, targetType] = await getElementsTypes([source, target]);
-
-                    addAppendTask(source, [source, sourceType, null]);
-                    addAppendTask(target, [target, targetType, null]);
-                    addAppendTask(sceneElement, [sceneElement, sceneElementType, sceneElementStyles, source, target]);
-                }
-                else {
-                    addAppendTask(sceneElement, [sceneElement, sceneElementType, sceneElementStyles]);
-                }
-            }
-            else {
-                addRemoveTask(sceneElement);
-            }
+            await update(data);
         }
     }
 }

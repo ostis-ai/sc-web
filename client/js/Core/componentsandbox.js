@@ -303,11 +303,10 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
 
         self.layout = () => {
             scAddr ? self.scene.updateRender() : self.scene.layout();
-            //self.scene.layout();
         };
 
         self.postLayout = () => {
-            //scAddr ? self.scene.layout() : self.scene.updateRender();
+            scAddr ? self.scene.layout() : self.scene.updateRender();
         };
 
         const getSceneElementsByRelation = async (relation) => {
