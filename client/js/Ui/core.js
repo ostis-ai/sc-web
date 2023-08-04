@@ -32,9 +32,10 @@ SCWeb.ui.Core = {
               self.resolveElementsAddr('body'),
             ]).then(function () {
 
-                document.getElementById('header').style.display = "block";
-                document.getElementById('search-panel').style.display = "block";
-                document.getElementById('footer').style.display = "block";
+                $('#header').removeClass('no_display');
+                $('#search-panel').removeClass('no_display');
+                $('#footer').removeClass('no_display');
+                // Display interface elements only after page load
 
                 // listen clicks on sc-elements
                 var sc_elements_cmd_selector = '[sc_addr]:not(.sc-window, .sc-no-default-cmd)';

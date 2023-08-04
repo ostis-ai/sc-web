@@ -30,7 +30,7 @@
 
 
 <script>var serverHost = "{{ public_url }}" </script>
-<nav id="header" class="navbar navbar-default" style="display: none;">
+<nav id="header" class="navbar navbar-default no_display">
     <div class="container-fluid" style="
     padding-left: 0px;
 ">
@@ -135,7 +135,7 @@
                 </button>
             </div>
             
-            <div id="search-panel" style="display: none;">
+            <div id="search-panel" class="no_display">
                 <form role="search">
                     <div class="form-group">
                         <input id="search-input" type="text" class="typeahead form-control" x-webkit-speech sc_control_sys_idtf="ui_control_search_idtf_edit" style="width: 250px;" data-provide="typeahead" autocomplete="off">
@@ -147,7 +147,7 @@
         <div id="window-container" class="col-xs-10 col-sm-10 col-md-10">{# Windows will be added later #}</div>
     </div>
 
-    <div id="footer" class="navbar navbar-default navbar-fixed-bottom" style="display: none;">
+    <div id="footer" class="navbar navbar-default navbar-fixed-bottom no_display">
         <div class="navbar-inner">
             <div id="arguments_container" class="argument-container">
                 <div class="btn-group">
