@@ -31,11 +31,9 @@ SCWeb.ui.Core = {
               SCWeb.ui.KeyboardHandler.init(SCWeb.ui.WindowManager),
               self.resolveElementsAddr('body'),
             ]).then(function () {
-
-                $('#header').removeClass('no_display');
-                $('#search-panel').removeClass('no_display');
-                $('#footer').removeClass('no_display');
+                
                 // Display interface elements only after page load
+                $('#header, #search-panel, #footer').removeClass('no_display');
 
                 // listen clicks on sc-elements
                 var sc_elements_cmd_selector = '[sc_addr]:not(.sc-window, .sc-no-default-cmd)';
