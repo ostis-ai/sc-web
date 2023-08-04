@@ -402,7 +402,7 @@ SCWeb.core.Server = {
             const link = links[id];
             const addrStr = link.addr;
 
-            if (addrStr && !link.contentType) {
+            if (addrStr && link.state !== SCgObjectState.NewInMemory) {
                 const addr = new sc.ScAddr(parseInt(addrStr));
 
                 const template = new sc.ScTemplate();
