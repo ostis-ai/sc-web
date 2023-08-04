@@ -32,6 +32,10 @@ SCWeb.ui.Core = {
               self.resolveElementsAddr('body'),
             ]).then(function () {
 
+                document.getElementById('header').style.display = "block";
+                document.getElementById('search-panel').style.display = "block";
+                document.getElementById('footer').style.display = "block";
+
                 // listen clicks on sc-elements
                 var sc_elements_cmd_selector = '[sc_addr]:not(.sc-window, .sc-no-default-cmd)';
                 $('#window-container,#help-modal').delegate(sc_elements_cmd_selector, 'click', function (e) {
