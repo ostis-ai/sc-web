@@ -6,6 +6,17 @@ ScHelper.prototype.init = function () {
   return Promise.resolve();
 };
 
+ScHelper.prototype.getConnectorElements = async function (arc) {
+  let scTemplate = new sc.ScTemplate();
+  scTemplate.triple(
+      [sc.ScType.Unknown, "_source"],
+      arc,
+      [sc.ScType.Unknown, "_target"]
+  );
+  const result = await scClient.templateSearch(scTemplate);
+  return [result[0].get("_source"), result[0].get("_target")];
+};
+
 /*! Check if there are specified arc between two objects
  * @param {String} addr1 sc-addr of source sc-element
  * @param {int} type type of sc-edge, that need to be checked for existing
@@ -20,7 +31,7 @@ ScHelper.prototype.checkEdge = async function (addr1, type, addr2) {
   addr2 = new sc.ScAddr(addr2);
   template.triple(addr1, type, addr2);
   let result = await this.scClient.templateSearch(template);
-  return result.length !== 0
+  return result.length !== 0;
 };
 
 /*! Function to get elements of specified set

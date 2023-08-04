@@ -30,7 +30,6 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
             clearTimeout(timerId);
             timerId = setTimeout(() => {
                 func(tasks.splice(0, tasks.length));
-                tasks.splice(0, tasks.length);
                 sandbox.postLayout();
             }, wait);
 
@@ -56,7 +55,7 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
 
             let object = editor.scene.getObjectByScAddr(addr);
             if (object) {
-                if (styles) {
+                if (sandbox.scAddr && styles) {
                     if (object instanceof SCg.ModelNode) {
                         object.setScaleElem(styles.node);
                     } else if (object instanceof SCg.ModelEdge) {
@@ -144,17 +143,6 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
         debouncedBufferedDoRemoveBatch(removeTasks, maxRemoveBatchLength);
     };
 
-    const getConnectorsElements = async (arc) => {
-        let scTemplate = new sc.ScTemplate();
-        scTemplate.triple(
-            [sc.ScType.Unknown, "_source"],
-            arc,
-            [sc.ScType.Unknown, "_target"]
-        );
-        const result = await scClient.templateSearch(scTemplate);
-        return [result[0].get("_source"), result[0].get("_target")];
-    };
-
     const getElementsTypes = async (elements) => {
         return await scClient.checkElements(elements);
     };
@@ -176,12 +164,12 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
                 const sourceHash = data.sceneElementSource.value;
                 const sourceTypeValue = data.sceneElementSourceType.value;
                 const sourceStyles = data.sceneElementSourceStyles;
-                addAppendTask(sourceHash, [sourceHash, sourceTypeValue, sourceStyles]);
+                if (!data.sceneElementSourceType.isEdge()) addAppendTask(sourceHash, [sourceHash, sourceTypeValue, sourceStyles]);
 
                 const targetHash = data.sceneElementTarget.value;
                 const targetTypeValue = data.sceneElementTargetType.value;
                 const targetStyles = data.sceneElementTargetStyles;
-                addAppendTask(targetHash, [targetHash, targetTypeValue, targetStyles]);
+                if (!data.sceneElementTargetType.isEdge()) addAppendTask(targetHash, [targetHash, targetTypeValue, targetStyles]);
 
                 addAppendTask(
                     sceneElementHash,
@@ -189,7 +177,7 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
                 );
             }
             else if (sceneElementType && sceneElementType.isEdge()) {
-                const [source, target] = await getConnectorsElements(sceneElement);
+                const [source, target] = await window.scHelper.getConnectorElements(sceneElement);
                 const [sourceType, targetType] = await getElementsTypes([source, target]);
 
                 const [sourceHash, targetHash] = [source.value, target.value];
