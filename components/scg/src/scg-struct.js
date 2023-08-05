@@ -55,7 +55,7 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
 
             let object = editor.scene.getObjectByScAddr(addr);
             if (object) {
-                if (sandbox.scAddr && styles) {
+                if (styles && sandbox.scAddr) {
                     if (object instanceof SCg.ModelNode) {
                         object.setScaleElem(styles.node);
                     } else if (object instanceof SCg.ModelEdge) {
@@ -105,9 +105,7 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
             object.setObjectState(SCgObjectState.FromMemory);
         }
 
-        (async () => {
-            sandbox.layout();
-        })();
+        sandbox.layout();
     };
 
     const [debounceBufferedDoAppendBatch] = debounceBuffered(doAppendBatch, batchDelayTime);
@@ -115,6 +113,8 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
     const addAppendTask = function (addr, args) {
         addrsToAppendTasks[addr] = appendTasks.length;
         appendTasks.push(args);
+
+        console.log(appendTasks.length);
 
         debounceBufferedDoAppendBatch(appendTasks, maxAppendBatchLength);
     };
@@ -178,6 +178,8 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
             }
             else if (sceneElementType && sceneElementType.isEdge()) {
                 const [source, target] = await window.scHelper.getConnectorElements(sceneElement);
+                if (!source.isValid() || !target.isValid()) return;
+
                 const [sourceType, targetType] = await getElementsTypes([source, target]);
 
                 const [sourceHash, targetHash] = [source.value, target.value];

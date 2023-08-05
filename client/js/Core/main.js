@@ -184,9 +184,7 @@ SCWeb.core.Main = {
 
         this.waitForElm('.scg-tools-panel').then(() => {
             if (hideTools) {
-                SCWeb.core.Main.editMode === SCgEditMode.SCgViewOnly
-                    ? $('.scg-tools-panel').css({ 'display': 'block' })
-                    : $('.scg-tools-panel').css({ 'display': 'none' });
+                $('.scg-tools-panel').css({ 'display': 'block' });
             }
         });
     },

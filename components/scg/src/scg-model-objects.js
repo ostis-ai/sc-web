@@ -114,49 +114,31 @@ SCg.ModelObject.prototype.setPosition = function (pos) {
 SCg.ModelObject.prototype.setScale = function (scale) {
     this.scale = scale;
     this.need_observer_sync = true;
-
-    this.requestUpdate();
-    this.update();
 };
 
 SCg.ModelObject.prototype.setScaleElem = function (scale) {
     this.scaleElem = scale;
     this.need_observer_sync = true;
-
-    this.requestUpdate();
-    this.update();
 };
 
 SCg.ModelObject.prototype.setOpacityElem = function (opacity) {
     this.opacityElem = opacity;
     this.need_observer_sync = true;
-
-    this.requestUpdate();
-    this.update();
 };
 
 SCg.ModelObject.prototype.setStrokeElem = function (stroke) {
     this.strokeElem = stroke;
     this.need_observer_sync = true;
-
-    this.requestUpdate();
-    this.update();
 };
 
 SCg.ModelObject.prototype.setFillElem = function (fill) {
     this.fillElem = fill;
     this.need_observer_sync = true;
-
-    this.requestUpdate();
-    this.update();
 };
 
 SCg.ModelObject.prototype.setWidthEdge = function (width) {
     this.widthEdge = width;
     this.need_observer_sync = true;
-
-    this.requestUpdate();
-    this.update();
 };
 
 /**
@@ -194,7 +176,6 @@ SCg.ModelObject.prototype.notifyEdgesUpdate = function () {
  * Notify connected bus to sync
  */
 SCg.ModelObject.prototype.notifyBusUpdate = function () {
-
     if (this.bus != undefined) {
         this.bus.need_update = true;
         this.bus.need_observer_sync = true;

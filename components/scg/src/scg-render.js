@@ -157,8 +157,7 @@ SCg.Render.prototype = {
     },
 
     classState: function (obj, base) {
-
-        var res = 'sc-no-default-cmd ui-no-tooltip SCgElement';
+        let res = 'sc-no-default-cmd ui-no-tooltip SCgElement';
 
         if (base)
             res += ' ' + base;
@@ -182,16 +181,14 @@ SCg.Render.prototype = {
             default:
                 res += ' SCgStateNormal';
         }
-        ;
 
         return res;
     },
 
     classToogle: function (o, cl, flag) {
-
-        var item = d3.select(o);
-        var str = item.attr("class");
-        var res = str ? str.replace(cl, '') : '';
+        let item = d3.select(o);
+        let str = item.attr("class");
+        let res = str ? str.replace(cl, '') : '';
         res = res.replace('  ', ' ');
         if (flag)
             res += ' ' + cl;
@@ -223,20 +220,22 @@ SCg.Render.prototype = {
                     if (d3.event.stopPropagation())
                         d3.event.stopPropagation();
                 })
-                .on('click', function (d) {
-                    self.scene.onMouseUpObject(d);
+                .on("dblclick", d => {
                     if (d3.event.stopPropagation())
                         d3.event.stopPropagation();
-                    if (self.sandbox.mainElement === d.sc_addr)
+                    if (SCWeb.core.Main.viewMode === SCgViewMode.DistanceBasedSCgView) {
+                        if (self.sandbox.mainElement === d.sc_addr)
+                            return;
+                        if (self.scene.getObjectByScAddr(d.sc_addr) instanceof SCg.ModelEdge)
+                            return;
+
+                        if (self.sandbox.isSceneWithKey) {
+                            self.sandbox.updateContent(d.sc_addr, self.scene);
+                        }
                         return;
-                    if (self.scene.getObjectByScAddr(d.sc_addr) instanceof SCg.ModelEdge)
-                        return;
-                    if (self.sandbox.isSceneWithKey)
-                        self.sandbox.updateContent(d.sc_addr, self.scene);
-                })
-                .on("dblclick", d => {
+                    }
+
                     if (SCWeb.core.Main.editMode === SCgEditMode.SCgViewOnly) return;
-                    if (SCWeb.core.Main.viewMode === SCgViewMode.DistanceBasedSCgView) return;
 
                     if (!d.sc_addr) return;
 
@@ -412,15 +411,14 @@ SCg.Render.prototype = {
         let self = this;
         this.d3_nodes.each(function (d) {
             if (!d.need_observer_sync) return; // do nothing
-
             d.need_observer_sync = false;
 
             let g = d3.select(this)
                 .attr("transform", 'translate(' + d.position.x + ', ' + d.position.y + ')scale(' + d.scaleElem + ')')
+                .attr("style", 'opacity: ' + d.opacityElem)
                 .attr('class', function (d) {
                     return self.classState(d, (d.sc_type & sc_type_constancy_mask) ? 'SCgNode' : 'SCgNodeEmpty');
-                })
-                .attr("style", 'opacity: ' + d.opacityElem + '; stroke: ' + d.strokeElem + '')
+                });
 
             g.select('use')
                 .attr('xlink:href', function (d) {
@@ -458,7 +456,7 @@ SCg.Render.prototype = {
 
             const imageDiv = linkDiv.find('img');
             const pdfDiv = linkDiv.children().find('canvas');
-            let g = d3.select(this).attr("style", 'opacity: ' + d.opacityElem + '; stroke: ' + d.strokeElem + '');
+            let g = d3.select(this);
             g.select('rect')
                 .attr('width', function (d) {
                     if (imageDiv.length && !isNaN(imageDiv[0].width)) {
@@ -480,6 +478,7 @@ SCg.Render.prototype = {
                     }
                     return d.scale.y + self.linkBorderWidth * 2;
                 })
+                .attr("style", 'opacity: ' + d.opacityElem)
                 .attr('class', function (d) {
                     return self.classState(d, 'SCgLink');
                 })
@@ -538,7 +537,6 @@ SCg.Render.prototype = {
 
         this.d3_contours.each(function (d) {
             d3.select(this).attr('d', function (d) {
-
                 if (!d.need_observer_sync) return; // do nothing
 
                 if (d.need_update)
@@ -611,7 +609,7 @@ SCg.Render.prototype = {
 
             const imageDiv = linkDiv.find('img');
             const pdfDiv = linkDiv.children().find('canvas');
-            let g = d3.select(this).attr("style", 'opacity: ' + d.opacityElem + '; stroke: ' + d.strokeElem + '');
+            let g = d3.select(this);
             g.select('rect')
                 .attr('width', function (d) {
                     if (imageDiv.length && !isNaN(imageDiv[0].width)) {
@@ -633,6 +631,7 @@ SCg.Render.prototype = {
                     }
                     return d.scale.y + self.linkBorderWidth * 2;
                 })
+                .attr("style", 'opacity: ' + d.opacityElem)
                 .attr('class', function (d) {
                     return self.classState(d, 'SCgLink');
                 })
@@ -698,6 +697,27 @@ SCg.Render.prototype = {
             d.need_update = true;
         });
         this.update();
+    },
+
+    requestUpdateObjects: function () {
+        this.d3_nodes.each(function (d) {
+            d.need_observer_sync = true;
+        });
+        this.d3_links.each(function (d) {
+            d.need_observer_sync = true;
+        });
+        this.d3_edges.each(function (d) {
+            d.need_observer_sync = true;
+            d.need_update = true;
+        });
+        this.d3_contours.each(function (d) {
+            d.need_observer_sync = true;
+            d.need_update = true;
+        });
+        this.d3_buses.each(function (d) {
+            d.need_observer_sync = true;
+            d.need_update = true;
+        });
     },
 
     updateDragLine: function () {
@@ -938,9 +958,7 @@ SCg.Render.prototype = {
 
     // ------- help functions -----------
     getContainerSize: function () {
-        var el = document.getElementById(this.containerId);
+        const el = document.getElementById(this.containerId);
         return [el.clientWidth, el.clientHeight];
     }
-
-
 }

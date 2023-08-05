@@ -506,15 +506,16 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
             self.scene.updateRender();
         };
 
-        const splitResult = (result, maxNumberOfTriplets) => {
+        const splitArray = (result, maxNumberOfTriplets) => {
             if (result.length < maxNumberOfTriplets) return result;
             return result.splice(0, maxNumberOfTriplets);
         };
-        const filterResult = (triples, sceneElementTypes, filterList) => {
+        const filterTriples = (triples, sceneElementTypes, filterList) => {
             triples = triples.filter((triple, index) => sceneElementTypes[index].isEdge());
             sceneElementTypes = sceneElementTypes.filter(type => type.isEdge());
             if (filterList) triples = triples.filter(triple => !filterList.some(element => element === triple.get("_scene_edge").value));
-            triples = splitResult(triples, self.maxSCgTriplesNumber);
+            triples = splitArray(triples, self.maxSCgTriplesNumber);
+            sceneElementTypes = splitArray(sceneElementTypes, self.maxSCgTriplesNumber);
             return [triples, sceneElementTypes];
         };
 
@@ -531,7 +532,7 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
             };
         });
         let sceneElementTypes = await scClient.checkElements(triples.map(triple => triple.sceneElement));
-        [triples, sceneElementTypes] = filterResult(triples, sceneElementTypes, null);
+        [triples, sceneElementTypes] = filterTriples(triples, sceneElementTypes, null);
 
         for (let i = 0; i < triples.length; ++i) {
             const triple = triples[i];
