@@ -47,6 +47,30 @@ ScHelper.prototype.getSetElements = async function (addr) {
   return result.map(x => x.get(2).value);
 };
 
+ScHelper.prototype.getStructureElementsByRelation = async function (structure, relation) {
+  let template = new sc.ScTemplate();
+  template.tripleWithRelation(
+    structure,
+    [sc.ScType.EdgeAccessVarPosPerm, "_edge_from_scene"],
+    [sc.ScType.Unknown, "_main_node"],
+    sc.ScType.EdgeAccessVarPosPerm,
+    relation,
+  );
+
+  const result = await window.scClient.templateSearch(template);
+  return result.map((triple) => {
+    return {connectorFromStructure: triple.get("_edge_from_scene"), structureElement: triple.get("_main_node")};
+  });
+};
+
+ScHelper.prototype.getStructureMainKeyElements = async function (structure) {
+  return await this.getStructureElementsByRelation(structure, new sc.ScAddr(window.scKeynodes['rrel_main_key_sc_element']));
+};
+
+ScHelper.prototype.getStructureKeyElements = async function (structure) {
+  return await this.getStructureElementsByRelation(structure, new sc.ScAddr(window.scKeynodes['rrel_key_sc_element']));
+};
+
 /*! Function resolve commands hierarchy for main menu.
  * It returns main menu command object, that contains whole hierarchy as a child objects
  */

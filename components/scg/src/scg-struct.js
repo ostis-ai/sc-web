@@ -110,13 +110,13 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
         })();
     };
 
-    const [debouncedBufferedDoAppendBatch] = debounceBuffered(doAppendBatch, batchDelayTime);
+    const [debounceBufferedDoAppendBatch] = debounceBuffered(doAppendBatch, batchDelayTime);
 
     const addAppendTask = function (addr, args) {
         addrsToAppendTasks[addr] = appendTasks.length;
         appendTasks.push(args);
 
-        debouncedBufferedDoAppendBatch(appendTasks, maxAppendBatchLength);
+        debounceBufferedDoAppendBatch(appendTasks, maxAppendBatchLength);
     };
 
     const doRemoveBatch = function (batch) {
@@ -135,12 +135,12 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
         editor.render.update();
     }
 
-    const [debouncedBufferedDoRemoveBatch] = debounceBuffered(doRemoveBatch, batchDelayTime);
+    const [debounceBufferedDoRemoveBatch] = debounceBuffered(doRemoveBatch, batchDelayTime);
 
     const addRemoveTask = function (addr) {
         removeTasks.push([addr]);
 
-        debouncedBufferedDoRemoveBatch(removeTasks, maxRemoveBatchLength);
+        debounceBufferedDoRemoveBatch(removeTasks, maxRemoveBatchLength);
     };
 
     const getElementsTypes = async (elements) => {
