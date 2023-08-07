@@ -12,13 +12,15 @@ var SCgAlphabet = {
         // edge markers
         defs.append('svg:marker')
             .attr('id', 'end-arrow-access_' + containerId).attr('viewBox', '0 -5 10 10').attr('refX', 0)
-            .attr('markerWidth', 5).attr('markerHeight', 10).attr('orient', 'auto')
+            .attr('markerWidth', 8).attr('markerHeight', 14).attr('orient', 'auto')
+            .attr('markerUnits', 'userSpaceOnUse')
             .append('svg:path')
             .attr('d', 'M0,-4L10,0L0,4').attr('fill', '#000');
 
         defs.append('svg:marker')
             .attr('id', 'end-arrow-common_' + containerId).attr('viewBox', '0 -5 10 10').attr('refX', 0)
-            .attr('markerWidth', 1.5).attr('markerHeight', 6).attr('orient', 'auto')
+            .attr('markerWidth', 10).attr('markerHeight', 16).attr('orient', 'auto')
+            .attr('markerUnits', 'userSpaceOnUse')
             .append('svg:path')
             .attr('d', 'M0,-4L10,0L0,4').attr('fill', '#000');
 
