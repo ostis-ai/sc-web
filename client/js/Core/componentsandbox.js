@@ -21,6 +21,7 @@ SCWeb.core.ComponentSandbox = function (options) {
     this.appendContentTimeoutId = 0;
     this.appendContentTimeout = 2;
     this.maxSCgTriplesNumber = 300;
+    this.distanceBasedSCgObjectStyles = { node: 1.8, link: 1.5, opacity: 1, widthEdge: 7.5 };
     this.content = options.content;
     this.is_struct = options.is_struct;
     this.format_addr = options.format_addr;
@@ -76,6 +77,8 @@ SCWeb.core.ComponentSandbox = function (options) {
                             isAdded: true,
                             connectorFromScene: edge,
                             sceneElement: otherAddr,
+                            sceneElementStyles: this.distanceBasedSCgObjectStyles,
+                            sceneElementState: SCgObjectState.NewInMemory
                         });
                     }
                 }
@@ -253,13 +256,13 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
     if (scene) self.scene = scene;
 
     const updateDistanceBasedSCgWindow = async (sceneAddr) => {
-        const level1Styles = { node: 2.3, link: 1.8, opacity: 1, widthEdge: 8, stroke: 'black', fill: '#00a' };
-        const level2Styles = { node: 1.8, link: 1.5, opacity: 1, widthEdge: 7.5, stroke: 'black', fill: '#00a' };
-        const level3Styles = { node: 1.4, link: 1, opacity: 1, widthEdge: 7, stroke: 'black', fill: '#00a' };
-        const level4Styles = { node: 1, link: 1, opacity: 1, widthEdge: 6.5, stroke: 'black', fill: '#00a' };
-        const level5Styles = { node: 1, link: 1, opacity: 0.8, widthEdge: 6.5, stroke: 'black', fill: '#00a' };
-        const level6Styles = { node: 1, link: 1, opacity: 0.6, widthEdge: 6.5, stroke: 'black', fill: '#00a' };
-        const level7Styles = { node: 1, link: 1, opacity: 0.4, widthEdge: 6.5, stroke: 'black', fill: '#00a' };
+        const level1Styles = { node: 2.3, link: 1.8, opacity: 1, widthEdge: 8 };
+        const level2Styles = { node: 1.8, link: 1.5, opacity: 1, widthEdge: 7.5 };
+        const level3Styles = { node: 1.4, link: 1, opacity: 1, widthEdge: 7 };
+        const level4Styles = { node: 1, link: 1, opacity: 1, widthEdge: 6.5 };
+        const level5Styles = { node: 1, link: 1, opacity: 0.8, widthEdge: 6.5 };
+        const level6Styles = { node: 1, link: 1, opacity: 0.6, widthEdge: 6.5 };
+        const level7Styles = { node: 1, link: 1, opacity: 0.4, widthEdge: 6.5 };
 
         const allLevelStyles = [
             level1Styles, level2Styles, level3Styles, level4Styles, level5Styles, level6Styles, level7Styles

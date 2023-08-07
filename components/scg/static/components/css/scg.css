@@ -204,11 +204,11 @@ path.SCgBusPath {
     stroke-width: 5px;
 }
 
-/* ----- States ----- */
 .SCgElement {
     cursor: pointer;
 }
 
+/* ----- Default SCg states ----- */
 .SCgStateNormal {
     stroke: #777;
 }
@@ -246,6 +246,48 @@ path.SCgBusPath {
 }
 
 .SCgStateSelected.SCgStateHighlighted {
+    stroke: #FD8E00;
+}
+
+
+/* ----- Distance based SCg states ----- */
+.DBSCg.SCgStateNormal {
+    stroke: #777;
+}
+
+.DBSCg.SCgStateNormal.SCgStateHighlighted {
+    stroke: #BBB;
+}
+
+.DBSCg.SCgStateMergedWithMemory {
+    stroke: #076EDD;
+}
+
+.DBSCg.SCgStateMergedWithMemory.SCgStateHighlighted {
+    stroke: #7189A3;
+}
+
+.DBSCg.SCgStateNewInMemory {
+    stroke: #1E90FF;
+}
+
+.DBSCg.SCgStateNewInMemory.SCgStateHighlighted {
+    stroke: #AEB893;
+}
+
+.DBSCg.SCgStateFromMemory {
+    stroke: #000;
+}
+
+.DBSCg.SCgStateFromMemory.SCgStateHighlighted {
+    stroke: #444;
+}
+
+.DBSCg.SCgStateSelected {
+    stroke: #C73E00;
+}
+
+.DBSCg.SCgStateSelected.SCgStateHighlighted {
     stroke: #FD8E00;
 }
 

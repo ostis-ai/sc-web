@@ -5,7 +5,6 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
         maxAppendBatchLength = 150,
         maxRemoveBatchLength = 20,
         batchDelayTime = 500,
-        defaultObjectStyles = { node: 1.8, link: 1.5, opacity: 1, widthEdge: 7.5, stroke: '#1E90FF', fill: '#1E90FF' },
         editor = _editor,
         sandbox = _sandbox;
 
@@ -43,66 +42,58 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
     };
 
     const doAppendBatch = function (batch) {
+        const applyObjectStyles = function (object, styles) {
+            if (object instanceof SCg.ModelNode) {
+                object.setScaleElem(styles.node);
+            } else if (object instanceof SCg.ModelEdge) {
+                object.setWidthEdge(styles.widthEdge);
+            } else {
+                object.setScaleElem(styles.link);
+            }
+
+            object.setOpacityElem(styles.opacity);
+        };
+
         for (let i in batch) {
             const task = batch[i];
             const addr = task[0];
             const type = task[1];
-            let styles = task[2];
+            let state = task[2];
+            const styles = task[3];
+
+            if (!state) state = SCgObjectState.FromMemory;
 
             delete addrsToAppendTasks[addr];
 
-            if (!styles && sandbox.mainElement) styles = defaultObjectStyles;
-
             let object = editor.scene.getObjectByScAddr(addr);
             if (object) {
-                if (styles && sandbox.scAddr) {
-                    if (object instanceof SCg.ModelNode) {
-                        object.setScaleElem(styles.node);
-                    } else if (object instanceof SCg.ModelEdge) {
-                        object.setWidthEdge(styles.widthEdge);
-                    } else {
-                        object.setScaleElem(styles.link);
-                    }
-
-                    object.setStrokeElem(styles.stroke);
-                    object.setFillElem(styles.fill);
-                    object.setOpacityElem(styles.opacity);
-                }
+                if (styles && sandbox.scAddr) applyObjectStyles(object, styles);
+                object.setObjectState(state);
                 continue;
             }
 
             if (type & sc_type_node) {
                 object = SCg.Creator.createNode(type, randomPos(), '');
-                if (styles) object.setScaleElem(styles.node);
                 resolveIdtf(addr, object);
             } else if (type & sc_type_arc_mask) {
-                const bObj = editor.scene.getObjectByScAddr(task[3]);
-                const eObj = editor.scene.getObjectByScAddr(task[4]);
+                const bObj = editor.scene.getObjectByScAddr(task[4]);
+                const eObj = editor.scene.getObjectByScAddr(task[5]);
                 if (!bObj || !eObj) {
                     addAppendTask(addr, task);
                     continue;
                 }
                 object = SCg.Creator.createEdge(bObj, eObj, type);
-
-                if (styles) object.setWidthEdge(styles.widthEdge);
             } else if (type & sc_type_link) {
                 const containerId = 'scg-window-' + sandbox.addr + '-' + addr + '-' + new Date().getUTCMilliseconds();
                 object = SCg.Creator.createLink(type, randomPos(), containerId);
-
-                if (styles) object.setScaleElem(styles.link);
                 resolveIdtf(addr, object);
             }
 
-            if (styles) {
-                object.setOpacityElem(styles.opacity);
-                object.setStrokeElem(styles.stroke);
-                object.setFillElem(styles.fill);
-            }
-
+            if (styles) applyObjectStyles(object, styles);
             editor.scene.appendObject(object);
             editor.scene.objects[addr] = object;
             object.setScAddr(addr);
-            object.setObjectState(SCgObjectState.FromMemory);
+            object.setObjectState(state);
         }
 
         sandbox.layout();
@@ -113,8 +104,6 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
     const addAppendTask = function (addr, args) {
         addrsToAppendTasks[addr] = appendTasks.length;
         appendTasks.push(args);
-
-        console.log(appendTasks.length);
 
         debounceBufferedDoAppendBatch(appendTasks, maxAppendBatchLength);
     };
@@ -159,21 +148,26 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
             const sceneElementTypeValue = sceneElementType.value;
 
             const sceneElementStyles = data.sceneElementStyles;
+            const sceneElementState = data.sceneElementState;
 
             if (data.sceneElementSource && data.sceneElementTarget) {
                 const sourceHash = data.sceneElementSource.value;
                 const sourceTypeValue = data.sceneElementSourceType.value;
                 const sourceStyles = data.sceneElementSourceStyles;
-                if (!data.sceneElementSourceType.isEdge()) addAppendTask(sourceHash, [sourceHash, sourceTypeValue, sourceStyles]);
+                if (!data.sceneElementSourceType.isEdge()) {
+                    addAppendTask(sourceHash, [sourceHash, sourceTypeValue, sceneElementState, sourceStyles]);
+                }
 
                 const targetHash = data.sceneElementTarget.value;
                 const targetTypeValue = data.sceneElementTargetType.value;
                 const targetStyles = data.sceneElementTargetStyles;
-                if (!data.sceneElementTargetType.isEdge()) addAppendTask(targetHash, [targetHash, targetTypeValue, targetStyles]);
+                if (!data.sceneElementTargetType.isEdge()) {
+                    addAppendTask(targetHash, [targetHash, targetTypeValue, sceneElementState, targetStyles]);
+                }
 
                 addAppendTask(
                     sceneElementHash,
-                    [sceneElementHash, sceneElementTypeValue, sceneElementStyles, sourceHash, targetHash]
+                    [sceneElementHash, sceneElementTypeValue, sceneElementState, sceneElementStyles, sourceHash, targetHash]
                 );
             }
             else if (sceneElementType && sceneElementType.isEdge()) {
@@ -184,15 +178,17 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
 
                 const [sourceHash, targetHash] = [source.value, target.value];
 
-                await update({isAdded: true, sceneElement: source, sceneElementType: sourceType});
-                await update({isAdded: true, sceneElement: target, sceneElementType: targetType});
+                await update(
+                    {isAdded: true, sceneElement: source, sceneElementType: sourceType, sceneElementState: sceneElementState});
+                await update(
+                    {isAdded: true, sceneElement: target, sceneElementType: targetType, sceneElementState: sceneElementState});
                 addAppendTask(
                     sceneElementHash,
-                    [sceneElementHash, sceneElementTypeValue, sceneElementStyles, sourceHash, targetHash]
+                    [sceneElementHash, sceneElementTypeValue, sceneElementState, sceneElementStyles, sourceHash, targetHash]
                 );
             }
             else {
-                addAppendTask(sceneElementHash, [sceneElementHash, sceneElementTypeValue, sceneElementStyles]);
+                addAppendTask(sceneElementHash, [sceneElementHash, sceneElementTypeValue, sceneElementState, sceneElementStyles]);
             }
         }
         else {

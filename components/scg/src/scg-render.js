@@ -159,14 +159,13 @@ SCg.Render.prototype = {
     classState: function (obj, base) {
         let res = 'sc-no-default-cmd ui-no-tooltip SCgElement';
 
-        if (base)
-            res += ' ' + base;
+        if (SCWeb.core.Main.viewMode === SCgViewMode.DistanceBasedSCgView) res += ' DBSCg ';
 
-        if (obj.is_selected)
-            res += ' SCgStateSelected';
+        if (base) res += ' ' + base;
 
-        if (obj.is_highlighted)
-            res += ' SCgStateHighlighted ';
+        if (obj.is_selected) res += ' SCgStateSelected';
+
+        if (obj.is_highlighted) res += ' SCgStateHighlighted ';
 
         switch (obj.state) {
             case SCgObjectState.FromMemory:

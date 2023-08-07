@@ -174,26 +174,21 @@
 
 
     <script type="text/javascript">
-
         $(document).ready(function() {
-
             $('#windows-list').click(function () {
                 $('#static-window-container').toggle();
             });
 
             SCWeb.ui.Locker.show();
-            var params = {
-                        menu_container_id: 'menu_container',
-                        {% if first_time == "1" %}first_time: true,{% end %}
-                    };
+            let params = {
+                menu_container_id: 'menu_container',
+                {% if first_time == "1" %}first_time: true,{% end %}
+            }
             $.when(SCWeb.core.Main.init(params)).done(function() {
                 SCWeb.ui.Locker.hide();
             });
         });
-
-
     </script>
-
 
 <div id="sc-ui-locker">
     <div id="sc-ui-locker-text">Loading...</div>

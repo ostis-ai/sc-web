@@ -1,11 +1,11 @@
-var SCgObjectState = {
+const SCgObjectState = {
     Normal: 0,
     MergedWithMemory: 1,
     NewInMemory: 2,
     FromMemory: 3
 };
 
-var ObjectId = 0;
+let ObjectId = 0;
 
 /**
  * Initialize sc.g-object with specified options.
@@ -77,7 +77,6 @@ SCg.ModelObject = function (options) {
     this.scene = null;
     this.bus = null;
     this.contour = null;
-
 };
 
 SCg.ModelObject.prototype = {
@@ -123,16 +122,6 @@ SCg.ModelObject.prototype.setScaleElem = function (scale) {
 
 SCg.ModelObject.prototype.setOpacityElem = function (opacity) {
     this.opacityElem = opacity;
-    this.need_observer_sync = true;
-};
-
-SCg.ModelObject.prototype.setStrokeElem = function (stroke) {
-    this.strokeElem = stroke;
-    this.need_observer_sync = true;
-};
-
-SCg.ModelObject.prototype.setFillElem = function (fill) {
-    this.fillElem = fill;
     this.need_observer_sync = true;
 };
 
