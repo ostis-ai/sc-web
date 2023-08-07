@@ -12,17 +12,20 @@ SCWeb.core.CommandState = function (command_addr, command_args, format, lang) {
  * @param options
  */
 SCWeb.core.ComponentSandbox = function (options) {
-
     this.command_state = options.command_state;
     this.container = options.container;
     this.container_selector = "#" + SCWeb.ui.Core.selectorWindowScAddr(options.window_id);
-    this.wrap_selector = '#' + this.container + '_wrap';
     this.addr = parseInt(options.addr);
+    this.contentBucket = [];
+    this.contentBucketSize = 20;
+    this.appendContentTimeoutId = 0;
+    this.appendContentTimeout = 2;
+    this.maxSCgTriplesNumber = 300;
     this.content = options.content;
     this.is_struct = options.is_struct;
     this.format_addr = options.format_addr;
     this.is_editor = options.canEdit;
-    this.isRrelKeyScElement = false;
+    this.isSceneWithKey = false;
     this.mainElement = null;
 
     this.eventGetObjectsToTranslate = null;
@@ -31,11 +34,6 @@ SCWeb.core.ComponentSandbox = function (options) {
     this.eventWindowActiveChanged = null;
     this.eventDataAppend = null;
 
-    /* function (added, element, arc)
-     * - added - true, when element added; false - element removed
-     * - element - sc-addr of added(removed) sc-element
-     * - arc - sc-addr of arc that connect struct with element
-     */
     this.eventStructUpdate = null;
 
     this.event_add_element = null;
@@ -71,16 +69,29 @@ SCWeb.core.ComponentSandbox = function (options) {
             new sc.ScAddr(this.addr),
             sc.ScEventType.AddOutgoingEdge,
             async (elAddr, edge, otherAddr) => {
-                if (self.eventStructUpdate && ((await scClient.checkElements([edge]))[0].equal(sc.ScType.EdgeAccessConstPosPerm))) {
-                    self.eventStructUpdate(true, edge.value, otherAddr.value);
+                if (self.eventStructUpdate) {
+                    const type = (await scClient.checkElements([edge]))[0];
+                    if (type.equal(sc.ScType.EdgeAccessConstPosPerm)) {
+                        self.eventStructUpdate({
+                            isAdded: true,
+                            connectorFromScene: edge,
+                            sceneElement: otherAddr,
+                            sceneElementState: SCgObjectState.NewInMemory
+                        });
+                    }
                 }
             });
         let removeArcEventRequest = new sc.ScEventParams(
             new sc.ScAddr(this.addr),
             sc.ScEventType.RemoveOutgoingEdge,
             async (elAddr, edge, otherAddr) => {
-                if (self.eventStructUpdate && !(await window.scHelper.checkEdge(elAddr.value, sc.ScType.EdgeAccessConstPosPerm, otherAddr.value))) {
-                    self.eventStructUpdate(false, edge.value, otherAddr.value);
+                if (self.eventStructUpdate
+                    && !(await window.scHelper.checkEdge(elAddr.value, sc.ScType.EdgeAccessConstPosPerm, otherAddr.value))) {
+                    self.eventStructUpdate({
+                        isAdded: false,
+                        connectorFromScene: edge,
+                        sceneElement: otherAddr
+                    });
                 }
             });
         window.scClient.eventsCreate([addArcEventRequest, removeArcEventRequest])
@@ -179,36 +190,9 @@ SCWeb.core.ComponentSandbox.prototype.getKeynode = function (sys_idtf) {
     return null;
 };
 
-SCWeb.core.ComponentSandbox.prototype.getIdentifiers = function (addr_list, callback) {
-    SCWeb.core.Server.resolveIdentifiers(addr_list).then(callback);
-};
-
 SCWeb.core.ComponentSandbox.prototype.getIdentifier = function (addr, callback) {
     SCWeb.core.Server.resolveIdentifiers([addr]).then(function (idtfs) {
         callback(idtfs[addr]);
-    });
-};
-
-SCWeb.core.ComponentSandbox.prototype.resolveAddrs = function (idtf_list, callback) {
-
-    var arguments = [];
-    var result = {};
-    for (idx in idtf_list) {
-        var idtf = idtf_list[idx];
-        var addr = SCWeb.core.scAddrsDict[idtf];
-        if (addr)
-            result[idtf] = addr;
-        else
-            arguments.push(idtf);
-    }
-
-    SCWeb.core.Server.resolveScAddr(arguments).then(function (data) {
-
-        for (var key in data) {
-            if (data.hasOwnProperty(key))
-                SCWeb.core.scAddrsDict[key] = data[key];
-        }
-        callback(SCWeb.core.scAddrsDict);
     });
 };
 
@@ -235,7 +219,6 @@ SCWeb.core.ComponentSandbox.prototype.updateAnswer = function () {
         .then(performAnswer);
 }
 
-
 /**
  * Create viewers for specified sc-links
  * @param {Object} containers_map Map of viewer containers (key: sc-link addr, value: id of container)
@@ -260,289 +243,332 @@ SCWeb.core.ComponentSandbox.prototype.createViewersForScStructs = function (cont
     return windows;
 };
 
-/*! Function takes content of sc-link or sctructure from server and call event handlers
+/*! Function takes content of sc-link or structure from server and call event handlers
  * {String} contentType type of content data (@see scClient.getLinkContent). If it's null, then
  * data will be returned as string
  */
-SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, scene, contentType) {
-    let edgeToEdge = false;
-    let relationNodes = [];    
-    var self = this;
+SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, scene) {
+    let self = this;
+    const sceneAddr = new sc.ScAddr(self.addr);
+    if (scAddr) self.scAddr = new sc.ScAddr(scAddr);
+    if (scene) self.scene = scene;
 
-    if (scene) {
-        self.scene = scene;
-    } 
-    if (this.is_struct && this.eventStructUpdate) {
-        const maxNumberOfTriplets = 850;
-        const levelScale1 = { node: 2.3, link: 1.8, opacity: 1, widthEdge: 8, stroke: 'black', fill: '#00a' };
-        const levelScale2 = { node: 1.8, link: 1.5, opacity: 1, widthEdge: 7.5, stroke: 'black', fill: '#00a' };
-        const levelScale3 = { node: 1.4, link: 1, opacity: 1, widthEdge: 7, stroke: 'black', fill: '#00a' };
-        const levelScale4 = { node: 1, link: 1, opacity: 1, widthEdge: 6.5, stroke: 'black', fill: '#00a' };
-        const levelScale5 = { node: 1, link: 1, opacity: 0.8, widthEdge: 6.5, stroke: 'black', fill: '#00a' };
-        const levelScale6 = { node: 1, link: 1, opacity: 0.6, widthEdge: 6.5, stroke: 'black', fill: '#00a' };
-        const levelScale7 = { node: 1, link: 1, opacity: 0.4, widthEdge: 6.5, stroke: 'black', fill: '#00a' };
-
-        const levelScales = [levelScale1, levelScale2, levelScale3, levelScale4, levelScale5, levelScale6, levelScale7];
-        
-        const checkEdge = (scAddr) => {
-            let elem = self.scene.getObjectByScAddr(scAddr);
-            if (elem instanceof SCg.ModelEdge) return true;
-            return false;
+    const updateDistanceBasedSCgWindow = async (sceneAddr) => {
+        self.layout = () => {
+            self.scAddr ? self.scene.updateRender() : self.scene.layout();
         };
 
-        let scTemplateMainlevel = new sc.ScTemplate();        
-        let scTemplateMainlevelWithMainKey = new sc.ScTemplate();   
+        self.postLayout = () => {
+            self.scAddr ? self.scene.layout() : self.scene.updateRender();
+        };
 
-        if (scAddr && !self.isResultWithMainKey) {
-            scTemplateMainlevel.triple(
-                [new sc.ScAddr(self.addr), "src"],
-                [sc.ScType.EdgeAccessVarPosPerm, "edgeFromContourToMainNode"],
-                new sc.ScAddr(scAddr),
-            )
-        };
-        if (scAddr && self.isResultWithMainKey) {
-            scTemplateMainlevelWithMainKey.triple(
-                [new sc.ScAddr(self.addr), "src"],
-                [sc.ScType.EdgeAccessVarPosPerm, "edgeFromContourToMainNode"],
-                new sc.ScAddr(scAddr),
-            )
-        };
-        if (!scAddr) {
-            scTemplateMainlevel.tripleWithRelation(
-                [new sc.ScAddr(self.addr), "src"],
-                [sc.ScType.EdgeAccessVarPosPerm, "edgeFromContourToMainNode"],
-                [sc.ScType.Unknown, "mainNode"],
-                sc.ScType.EdgeAccessVarPosPerm,
-                new sc.ScAddr(window.scKeynodes['rrel_key_sc_element']),
+        const verifyStructureElement = async (structure, element) => {
+            let template = new sc.ScTemplate();
+            template.triple(
+                structure,
+                [sc.ScType.EdgeAccessVarPosPerm, "_edge_from_scene"],
+                [element, "_main_node"]
             );
-        };
-        if (!scAddr) {
-            scTemplateMainlevelWithMainKey.tripleWithRelation(
-                [new sc.ScAddr(self.addr), "src"],
-                [sc.ScType.EdgeAccessVarPosPerm, "edgeFromContourToMainNode"],
-                [sc.ScType.Unknown, "mainNode"],
-                sc.ScType.EdgeAccessVarPosPerm,
-                new sc.ScAddr(window.scKeynodes['rrel_main_key_sc_element']),
-            );
-        };
-        
-        let resultLevel = await window.scClient.templateSearch(scTemplateMainlevel);
-        let resultLevelWithMainKey = await window.scClient.templateSearch(scTemplateMainlevelWithMainKey);
 
-        let mainElements = [];
-
-        if (!scAddr) resultLevel.length ? self.isResultWithMainKey = false : self.isResultWithMainKey = true;
-
-        if (resultLevel.length || resultLevelWithMainKey.length) self.isRrelKeyScElement = true;
-        
-        for (let triple of resultLevel.length ? resultLevel : resultLevelWithMainKey) {
-
-            scAddr ? mainElements.push(scAddr) && (self.mainElement = scAddr): mainElements.push(triple.get('mainNode').value) && (self.mainElement = triple.get('mainNode').value);
-            self.eventStructUpdate(true, triple.get('edgeFromContourToMainNode').value, scAddr ? scAddr : triple.get('mainNode').value, levelScales[0]);
+            const result = await scClient.templateSearch(template);
+            return result.map((triple) => {
+                return {connectorFromStructure: triple.get("_edge_from_scene"), structureElement: triple.get("_main_node")};
+            });
         };
 
-        if (scene && !self.isResultWithMainKey) {
-            let isEdge = scAddr ? scene.getObjectByScAddr(scAddr).edges[0].target : scene.getObjectByScAddr(resultLevel.get('mainNode').value).edges[0].target;
-            isEdge instanceof SCg.ModelEdge ? edgeToEdge = true : edgeToEdge = false;
-        };
-        if (scene && self.isResultWithMainKey) {
-            let isEdge = scAddr ? scene.getObjectByScAddr(scAddr).edges[0].target : scene.getObjectByScAddr(resultLevelWithMainKey.get('mainNode').value).edges[0].target;
-            isEdge instanceof SCg.ModelEdge ? edgeToEdge = true : edgeToEdge = false;
-        };
-
-        let searchAllLevelEdges = async function (elementsArr, levelScales, level, visitedElements) {
-            let levelScale;
-
-            level > 6 ? levelScale = levelScale7 : levelScale = levelScales[level];
-
+        const searchAllLevelEdges = async function (elementsArr, visitedElements, tracedElements) {
             let newElementsArr = [];
             for (let i = 0; i < elementsArr.length; i++) {
-                
-                let elements = elementsArr[i];
-                for (let j = 0; j < elements.length; j++) {
-                    let elem = elements[j];
-                    let newElements = await searchLevelEdges(elem, levelScale, visitedElements);
-                    if (newElements.length) newElementsArr.push(newElements);
+
+                let levelElements = elementsArr[i];
+                for (let elementHash in levelElements) {
+                    if (visitedElements.has(elementHash)) continue;
+                    visitedElements.add(elementHash);
+
+                    const element = new sc.ScAddr(parseInt(elementHash));
+
+                    const [elementType, level, edgeFromScene] = Object.values(levelElements[elementHash]);
+                    const nextLevel = level >= SCgObjectLevel.Count - 1 ? SCgObjectLevel.Seventh : level + 1;
+
+                    const searchFunc = elementType.isEdge() ? searchLevelEdgeElements : searchLevelEdges;
+                    const newElements = await searchFunc(
+                        edgeFromScene, element, elementType, level, nextLevel, tracedElements);
+                    if (Object.keys(newElements).length) newElementsArr.push(newElements);
                 }
-                await searchAllLevelEdges(newElementsArr, levelScales, level + 1, visitedElements);
+            }
+
+            if (newElementsArr.length) await searchAllLevelEdges(newElementsArr, visitedElements, tracedElements);
+        };
+
+        const searchLevelEdges = async function (
+            edgeFromScene, mainElement, mainElementType, level, nextLevel, tracedElements) {
+            let nextLevelElements = {};
+
+            await searchLevelEdgesByDirection(
+                edgeFromScene, mainElement, mainElementType,
+                level, nextLevel, nextLevelElements, tracedElements, true
+            );
+            await searchLevelEdgesByDirection(
+                edgeFromScene, mainElement, mainElementType,
+                level, nextLevel, nextLevelElements, tracedElements, false
+            );
+
+            return nextLevelElements;
+        };
+
+        const searchLevelEdgeElements = async function (
+            edgeFromScene, mainElement, mainElementType, level, nextLevel, tracedElements) {
+            let nextLevelElements = {};
+
+            await searchLevelConnectorElements(
+                edgeFromScene, mainElement, mainElementType,
+                level, nextLevel, nextLevelElements, tracedElements
+            );
+            await searchLevelEdgesByDirection(
+                edgeFromScene, mainElement, mainElementType,
+                level, nextLevel, nextLevelElements, tracedElements, true
+            );
+            await searchLevelEdgesByDirection(
+                edgeFromScene, mainElement, mainElementType,
+                level, nextLevel, nextLevelElements, tracedElements, false
+            );
+
+            return nextLevelElements;
+        };
+
+        const searchLevelConnectorElements = async function (
+            edgeFromScene, mainElement, mainElementType,
+            level, nextLevel, nextLevelElements, tracedElements
+        ) {
+            const mainElementHash = mainElement.value;
+            if (tracedElements.has(mainElementHash)) return;
+            tracedElements.add(mainElementHash);
+
+            const connectorElements = await window.scHelper.getConnectorElements(mainElement);
+            const [sourceElement, targetElement] = connectorElements;
+            const [sourceElementType, targetElementType] = await scClient.checkElements(connectorElements);
+
+            if (!edgeFromScene) {
+                let scTemplateSearchEdgeElements = new sc.ScTemplate();
+                scTemplateSearchEdgeElements.triple(
+                    sceneAddr,
+                    [sc.ScType.EdgeAccessVarPosPerm, "_edge_from_scene"],
+                    mainElement,
+                );
+                const result = await scClient.templateSearch(scTemplateSearchEdgeElements);
+                edgeFromScene = result.length ? result[0].get("_edge_from_scene") : mainElement;
+            }
+
+            const sourceElementHash = sourceElement.value;
+            nextLevelElements[sourceElementHash] = {type: sourceElementType, level: nextLevel};
+
+            const targetElementHash = targetElement.value;
+            nextLevelElements[targetElementHash] = {type: targetElementType, level: nextLevel};
+
+            self.eventStructUpdate({
+                isAdded: true,
+                connectorFromScene: edgeFromScene,
+                sceneElement: mainElement,
+                sceneElementType: mainElementType,
+                sceneElementLevel: level,
+                sceneElementSource: sourceElement,
+                sceneElementSourceType: sourceElementType,
+                sceneElementSourceLevel: nextLevel,
+                sceneElementTarget: targetElement,
+                sceneElementTargetType: targetElementType,
+                sceneElementTargetLevel: nextLevel,
+            });
+        }
+
+        const searchLevelEdgesByDirection = async function (
+            edgeFromScene, mainElement, mainElementType,
+            level, nextLevel, nextLevelElements, tracedElements, withIncomingEdge) {
+            let scTemplate = new sc.ScTemplate();
+            scTemplate.triple(
+                sceneAddr,
+                [sc.ScType.EdgeAccessVarPosPerm, "_edge_from_scene"],
+                [sc.ScType.Unknown, "_scene_edge"],
+            );
+            if (withIncomingEdge) {
+                scTemplate.triple(
+                    [sc.ScType.Unknown, "_scene_edge_source"],
+                    "_scene_edge",
+                    mainElement,
+                );
+            } else {
+                scTemplate.triple(
+                    mainElement,
+                    "_scene_edge",
+                    [sc.ScType.Unknown, "_scene_edge_target"],
+                );
+            }
+            const constructions = await scClient.templateSearch(scTemplate);
+
+            const sceneEdgeTypes = await scClient.checkElements(
+                constructions.map(triple => triple.get("_scene_edge")));
+            const sceneEdgeElementTypes = await scClient.checkElements(
+                constructions.map(triple => withIncomingEdge
+                    ? triple.get("_scene_edge_source") : triple.get("_scene_edge_target")));
+
+            for (let i = 0; i < constructions.length; ++i) {
+                const construction = constructions[i];
+
+                edgeFromScene = construction.get("_edge_from_scene");
+
+                const sceneEdge = construction.get("_scene_edge");
+                const sceneEdgeHash = sceneEdge.value;
+                const sceneEdgeType = sceneEdgeTypes[i];
+
+                const sceneEdgeElement = withIncomingEdge
+                    ? construction.get("_scene_edge_source")
+                    : construction.get("_scene_edge_target");
+                // if we searched scene structure we'll skip it
+                if (sceneEdgeElement.equal(sceneAddr)) continue;
+
+                if (tracedElements.has(sceneEdgeHash)) continue;
+                tracedElements.add(sceneEdgeHash);
+                nextLevelElements[sceneEdgeHash] = {
+                    type: sceneEdgeType, level: nextLevel, connectorFromScene: edgeFromScene};
+
+                const sceneEdgeElementHash = sceneEdgeElement.value;
+                const sceneEdgeElementType = sceneEdgeElementTypes[i];
+                nextLevelElements[sceneEdgeElementHash] = {type: sceneEdgeElementType, level: nextLevel};
+
+                self.eventStructUpdate({
+                    isAdded: true,
+                    connectorFromScene: edgeFromScene,
+                    sceneElement: sceneEdge,
+                    sceneElementType: sceneEdgeType,
+                    sceneElementLevel: nextLevel,
+                    sceneElementSource: withIncomingEdge ? sceneEdgeElement : mainElement,
+                    sceneElementSourceType: withIncomingEdge ? sceneEdgeElementType : mainElementType,
+                    sceneElementSourceLevel: withIncomingEdge ? nextLevel : level,
+                    sceneElementTarget: withIncomingEdge ? mainElement : sceneEdgeElement,
+                    sceneElementTargetType: withIncomingEdge ? mainElementType : sceneEdgeElementType,
+                    sceneElementTargetLevel: withIncomingEdge ? level : nextLevel,
+                });
             }
         };
 
-        let searchLevelEdges = async function (mainElem, scale, visitedElements) {
-            let outgoingLevelNodesWithRelation = await searchLevelEdgesByDirection(mainElem, scale, visitedElements, false, true);
-            let outgoingLevelNodesNotWithRelation = await searchLevelEdgesByDirection(mainElem, scale, visitedElements, false, false);
-            let incomingLevelNodesNotWithRelation = await searchLevelEdgesByDirection(mainElem, scale, visitedElements, true, false);
-            let incomingLevelNodesWithRelation = await searchLevelEdgesByDirection(mainElem, scale, visitedElements, true, true);
-            return [...incomingLevelNodesWithRelation, ...incomingLevelNodesNotWithRelation, ...outgoingLevelNodesWithRelation, ...outgoingLevelNodesNotWithRelation];
+        let keyElements = self.scAddr
+            ? await verifyStructureElement(sceneAddr, self.scAddr)
+            : await window.scHelper.getStructureMainKeyElements(sceneAddr);
+        if (!keyElements.length) keyElements = await window.scHelper.getStructureKeyElements(sceneAddr);
+        if (keyElements.length) self.isSceneWithKey = true;
+        if (!keyElements.length) return false;
+
+        const elementTypes = await scClient.checkElements(keyElements.map(triple => triple.structureElement));
+
+        let mainElements = {};
+        for (let i = 0; i < keyElements.length; ++i) {
+            const triple = keyElements[i];
+            const edgeFromScene = triple.connectorFromStructure;
+            const sceneElement = triple.structureElement;
+            const sceneElementType = elementTypes[i];
+            const level = SCgObjectLevel.First;
+
+            mainElements[sceneElement.value] = {
+                type: sceneElementType, level: level, connectorFromScene: edgeFromScene};
+            self.mainElement = sceneElement;
+
+            self.eventStructUpdate({
+                isAdded: true,
+                connectorFromScene: edgeFromScene,
+                sceneElement: sceneElement,
+                sceneElementType: sceneElementType,
+                sceneElementLevel: level,
+            });
+        }
+
+        await searchAllLevelEdges([mainElements], new Set(), new Set());
+        return true;
+    }
+
+    const updateDefaultSCgWindow = async (sceneAddr) => {
+        self.layout = () => {
+            self.scene.layout();
         };
 
-        let searchLevelEdgesByDirection = async function (mainElem, scale, visitedElements, incomingEdge, withRelation) {
-            let levelNodes = [];
-
-            let scTemplateSearchEdgeElements = new sc.ScTemplate();
-
-            if (edgeToEdge) {
-                scTemplateSearchEdgeElements.triple(
-                    new sc.ScAddr(mainElem),
-                    sc.ScType.EdgeAccessVarPosPerm,
-                    [sc.ScType.Unknown, "secondElem"],
-                );
-
-                scTemplateSearchEdgeElements.triple(
-                    [new sc.ScAddr(self.addr), "src"],
-                    [sc.ScType.EdgeAccessVarPosPerm, "edgeFromContourToSecondElem"],
-                    "secondElem",
-                );
-
-                scTemplateSearchEdgeElements.triple(
-                    [sc.ScType.Unknown, "sourceElem"],
-                    "secondElem",
-                    [sc.ScType.Unknown, "targetElem"],
-                );
-            };
-
-            let resultEdgeElements = await window.scClient.templateSearch(scTemplateSearchEdgeElements);
-
-            let scTemplate = new sc.ScTemplate();
-            scTemplate.triple(
-                [new sc.ScAddr(self.addr), "src"],
-                [sc.ScType.EdgeAccessVarPosPerm, "edgeFromContourToMainEdge"],
-                [sc.ScType.Unknown, "edgeFromMainNodeToSecondElem"],
-            );
-
-            if (incomingEdge) {
-                scTemplate.triple(
-                    [sc.ScType.Unknown, "secondElem"],
-                    "edgeFromMainNodeToSecondElem",
-                    new sc.ScAddr(mainElem),
-                );
-            };
-            if (!incomingEdge) {
-                scTemplate.triple(
-                    new sc.ScAddr(mainElem),
-                    "edgeFromMainNodeToSecondElem",
-                    [sc.ScType.Unknown, "secondElem"],
-                );
-            };
-
-            scTemplate.triple(
-                "src",
-                [sc.ScType.EdgeAccessVarPosPerm, "edgeFromContourToSecondElem"],
-                "secondElem",
-            );
-
-            if (withRelation) {
-                scTemplate.triple(
-                    [sc.ScType.Unknown, "relationNode"],
-                    [sc.ScType.EdgeAccessVarPosPerm, "edgeFromRelationNodeToEdgeFromMainNodeToSecondElem"],
-                    "edgeFromMainNodeToSecondElem",
-                );
-                scTemplate.triple(
-                    "src",
-                    [sc.ScType.EdgeAccessVarPosPerm, "edgeFromContourToRelationNode"],
-                    "relationNode",
-                );
-                scTemplate.triple(
-                    "src",
-                    [sc.ScType.EdgeAccessVarPosPerm, "edgeFromContourToEdgeFromRelationNodeToEdgeFromMainNodeToSecondElem"],
-                    "edgeFromRelationNodeToEdgeFromMainNodeToSecondElem",
-                );
-            };
-
-            let result = await window.scClient.templateSearch(scTemplate);
-            for (let triple of result) {
-                const secondElem = triple.get("secondElem").value;
-                if (checkEdge(secondElem) && !edgeToEdge) continue;
-
-                if (edgeToEdge) {
-                    relationNodes.push(mainElem);
-
-                    for (triple of resultEdgeElements) {
-                        const targetElem = triple.get("targetElem").value;
-                        const sourceElem = triple.get("sourceElem").value;
-
-                        let scTemplateSearchTargetNodes = new sc.ScTemplate();
-                        scTemplateSearchTargetNodes.triple(
-                            [new sc.ScAddr(self.addr), "src"],
-                            [sc.ScType.EdgeAccessVarPosPerm, "edgeFromContourToTargetElem"],
-                            new sc.ScAddr(targetElem),
-                        );
-
-                        scTemplateSearchTargetNodes.triple(
-                            "src",
-                            [sc.ScType.EdgeAccessVarPosPerm, "edgeFromContourToSourceElem"],
-                            new sc.ScAddr(sourceElem),
-                        );
-                        
-                        if (!visitedElements.includes(targetElem) && !levelNodes.includes(targetElem) || !visitedElements.includes(sourceElem) && !levelNodes.includes(sourceElem)) {
-                                
-                            levelNodes.push(targetElem);
-                            visitedElements.push(targetElem);
-                            levelNodes.push(sourceElem);
-                            visitedElements.push(sourceElem);
-
-                            self.eventStructUpdate(true, triple.get("edgeFromContourToSecondElem").value, triple.get("secondElem").value, scale);
-                        };
-
-                        let resultEdgeElementsEdges = await window.scClient.templateSearch(scTemplateSearchTargetNodes);
-
-                        for (triple of resultEdgeElementsEdges) {
-                            self.eventStructUpdate(true, triple.get("edgeFromContourToSourceElem").value, sourceElem, scale);
-                            self.eventStructUpdate(true, triple.get("edgeFromContourToTargetElem").value, targetElem, scale);
-                        };
-                    };
-                    edgeToEdge = false;
-                    continue;
-                };
-
-                if (!visitedElements.includes(secondElem) && !levelNodes.includes(secondElem)) {
-                    levelNodes.push(secondElem);
-                    visitedElements.push(secondElem);
-                    self.eventStructUpdate(true, triple.get("edgeFromContourToSecondElem").value, triple.get("secondElem").value, scale);
-                    self.eventStructUpdate(true, triple.get("edgeFromContourToMainEdge").value, triple.get("edgeFromMainNodeToSecondElem").value, scale);
-                };
-                
-                if (!levelNodes.length) continue;
-                if (secondElem === mainElements[0]) continue;
-
-                if (withRelation) {
-                    if (scAddr === mainElements[0] && edgeToEdge) continue;
-                    let relationNode = triple.get("relationNode").value;
-
-                    if (relationNodes.includes(relationNode)) continue;
-
-                    if (!visitedElements.includes(relationNode) && !levelNodes.includes(relationNode)) {
-                        levelNodes.push(relationNode);
-                        visitedElements.push(relationNode);
-                    }
-                    self.eventStructUpdate(true, triple.get("edgeFromContourToRelationNode").value, triple.get("relationNode").value, scale);
-                    self.eventStructUpdate(true, triple.get("edgeFromContourToEdgeFromRelationNodeToEdgeFromMainNodeToSecondElem").value, triple.get("edgeFromRelationNodeToEdgeFromMainNodeToSecondElem").value, scale);
-                };
-            };
-            return [...new Set(levelNodes)];
+        self.postLayout = () => {
+            self.scene.updateRender();
         };
 
-        searchAllLevelEdges([mainElements], levelScales, 1, [...mainElements]);
-        if (mainElements.length) return;
+        const splitArray = (result, maxNumberOfTriplets) => {
+            if (result.length < maxNumberOfTriplets) return result;
+            return result.splice(0, maxNumberOfTriplets);
+        };
+        const filterTriples = (triples, sceneElementTypes, filterList) => {
+            triples = triples.filter((triple, index) => sceneElementTypes[index].isEdge());
+            sceneElementTypes = sceneElementTypes.filter(type => type.isEdge());
+            if (filterList) triples = triples.filter(triple => !filterList.some(element => element === triple.get("_scene_edge").value));
+            triples = splitArray(triples, self.maxSCgTriplesNumber);
+            sceneElementTypes = splitArray(sceneElementTypes, self.maxSCgTriplesNumber);
+            return [triples, sceneElementTypes];
+        };
 
         let scTemplate = new sc.ScTemplate();
         scTemplate.triple(
-            new sc.ScAddr(this.addr),
-            [sc.ScType.EdgeAccessVarPosPerm, "edge"],
-            [sc.ScType.Unknown, "trg"]
+            sceneAddr,
+            [sc.ScType.EdgeAccessVarPosPerm, "_edge_from_scene"],
+            [sc.ScType.Unknown, "_scene_edge"],
         );
-        let result = await window.scClient.templateSearch(scTemplate);
-        if (result.length > maxNumberOfTriplets) {
-            result.splice(maxNumberOfTriplets-1, result.length-maxNumberOfTriplets);
+        let triples = (await scClient.templateSearch(scTemplate)).map((triple) => {
+            return {
+                connectorFromScene: triple.get("_edge_from_scene"),
+                sceneElement: triple.get("_scene_edge"),
+            };
+        });
+        let sceneElementTypes = await scClient.checkElements(triples.map(triple => triple.sceneElement));
+        [triples, sceneElementTypes] = filterTriples(triples, sceneElementTypes, null);
+
+        for (let i = 0; i < triples.length; ++i) {
+            const triple = triples[i];
+            triple.isAdded = true;
+            triple.sceneElementType = sceneElementTypes[i];
+
+            self.eventStructUpdate(triple);
         }
-        for (let triple of result) {
-            self.eventStructUpdate(true, triple.get("edge").value, triple.get("trg").value, { node: 1, link: 1 });
+    };
+
+    const updateLinkWindow = async (linkAddr) => {
+        const forceAppendData = async (oldBucket) => {
+            for (let content of oldBucket) {
+                await self.onDataAppend(content.data);
+            }
+        };
+
+        const sliceAndForceAppendData = async () => {
+            const oldBucket = self.contentBucket.slice();
+            self.contentBucket = [];
+            await forceAppendData(await scClient.getLinkContents(oldBucket));
+        };
+
+        const appendData = async (element) => {
+            self.contentBucket.push(element);
+            if (self.appendContentTimeoutId) clearTimeout(self.appendContentTimeoutId);
+
+            if (self.contentBucket.length > self.contentBucketSize) {
+                clearTimeout(self.appendContentTimeoutId);
+                await sliceAndForceAppendData();
+            }
+            else {
+                self.appendContentTimeoutId = setTimeout(sliceAndForceAppendData, self.appendContentTimeout);
+            }
+        };
+
+        await appendData(linkAddr);
+    };
+
+    if (this.is_struct && this.eventStructUpdate) {
+        if (SCWeb.core.Main.viewMode === SCgViewMode.DistanceBasedSCgView) {
+            updateDistanceBasedSCgWindow(sceneAddr).then(result => {
+                if (!result) updateDefaultSCgWindow(sceneAddr).then(null);
+            });
+        } else {
+            updateDefaultSCgWindow(sceneAddr).then(null);
         }
     }
-    else if (this.addr) {
-        let content = await window.scClient.getLinkContents([new sc.ScAddr(this.addr)]);
-        await self.onDataAppend(content[0].data);
-    }
+    else if (sceneAddr) updateLinkWindow(sceneAddr).then(null);
 };
 
 // ------ Translation ---------

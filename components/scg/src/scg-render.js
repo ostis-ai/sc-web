@@ -59,13 +59,7 @@ SCg.Render.prototype = {
                 if (d3.event.stopPropagation()) d3.event.stopPropagation();
             })
             .on("wheel", function () {
-                var direction = d3.event.wheelDelta < 0 ? 'down' : 'up';
-                if (direction === 'up') {
-                    self.transformByZoom(d3.event);
-                }
-                if (direction === 'down') {
-                    self.transformByZoom(d3.event);
-                };
+                self.transformByZoom(d3.event);
             });
 
         const svg = document.querySelector("svg.SCgSvg");
@@ -163,17 +157,15 @@ SCg.Render.prototype = {
     },
 
     classState: function (obj, base) {
+        let res = ' sc-no-default-cmd ui-no-tooltip SCgElement';
 
-        var res = 'sc-no-default-cmd ui-no-tooltip SCgElement';
+        if (SCWeb.core.Main.viewMode === SCgViewMode.DistanceBasedSCgView) res += ' DBSCgView';
 
-        if (base)
-            res += ' ' + base;
+        if (base) res += ' ' + base;
 
-        if (obj.is_selected)
-            res += ' SCgStateSelected';
+        if (obj.is_selected) res += ' SCgStateSelected';
 
-        if (obj.is_highlighted)
-            res += ' SCgStateHighlighted ';
+        if (obj.is_highlighted) res += ' SCgStateHighlighted ';
 
         switch (obj.state) {
             case SCgObjectState.FromMemory:
@@ -188,16 +180,14 @@ SCg.Render.prototype = {
             default:
                 res += ' SCgStateNormal';
         }
-        ;
 
         return res;
     },
 
     classToogle: function (o, cl, flag) {
-
-        var item = d3.select(o);
-        var str = item.attr("class");
-        var res = str ? str.replace(cl, '') : '';
+        let item = d3.select(o);
+        let str = item.attr("class");
+        let res = str ? str.replace(cl, '') : '';
         res = res.replace('  ', ' ');
         if (flag)
             res += ' ' + cl;
@@ -229,19 +219,22 @@ SCg.Render.prototype = {
                     if (d3.event.stopPropagation())
                         d3.event.stopPropagation();
                 })
-                .on('click', function (d) {
-                    self.scene.onMouseUpObject(d);
+                .on("dblclick", d => {
                     if (d3.event.stopPropagation())
                         d3.event.stopPropagation();
-                    if (self.sandbox.mainElement === d.sc_addr)
+                    if (SCWeb.core.Main.viewMode === SCgViewMode.DistanceBasedSCgView) {
+                        if (self.sandbox.mainElement === d.sc_addr)
+                            return;
+                        if (self.scene.getObjectByScAddr(d.sc_addr) instanceof SCg.ModelEdge)
+                            return;
+
+                        if (self.sandbox.isSceneWithKey) {
+                            self.sandbox.updateContent(d.sc_addr, self.scene);
+                        }
                         return;
-                    if (self.scene.getObjectByScAddr(d.sc_addr) instanceof SCg.ModelEdge)
-                        return;
-                    if (self.sandbox.isRrelKeyScElement)
-                        self.sandbox.updateContent(d.sc_addr, self.scene);
-                })
-                .on("dblclick", d => {
-                    if (SCWeb.core.Main.mode === SCgEditMode.SCgModeViewOnly) return;
+                    }
+
+                    if (SCWeb.core.Main.editMode === SCgEditMode.SCgViewOnly) return;
 
                     if (!d.sc_addr) return;
 
@@ -267,11 +260,13 @@ SCg.Render.prototype = {
         });
 
         let g = this.d3_nodes.enter().append('svg:g')
-            .attr('class', function (d) {
-                return self.classState(d, (d.sc_type & sc_type_constancy_mask) ? 'SCgNode' : 'SCgNodeEmpty');
-            })
             .attr("transform", function (d) {
-                return 'translate(' + d.position.x + ', ' + d.position.y + ')';
+                return 'translate(' + d.position.x + ', ' + d.position.y + ')scale(' + SCgAlphabet.classScale(d) + ')';
+            })
+            .attr('class', function (d) {
+                let classStyle = (d.sc_type & sc_type_constancy_mask) ? 'SCgNode' : 'SCgNodeEmpty';
+                classStyle += ' ' + SCgAlphabet.classLevel(d);
+                return self.classState(d, classStyle);
             });
         eventsWrap(g);
         appendNodeVisual(g);
@@ -297,7 +292,7 @@ SCg.Render.prototype = {
 
         g = this.d3_links.enter().append('svg:g')
             .attr("transform", function (d) {
-                return 'translate(' + d.position.x + ', ' + d.position.y + ')';
+                return 'translate(' + d.position.x + ', ' + d.position.y + ')scale(' + SCgAlphabet.classScale(d) + ')';
             })
 
         g.append('svg:rect')
@@ -342,7 +337,8 @@ SCg.Render.prototype = {
         // add edges that haven't visual
         g = this.d3_edges.enter().append('svg:g')
             .attr('class', function (d) {
-                return self.classState(d, 'SCgEdge');
+                const classStyle = 'SCgEdge ' + SCgAlphabet.classLevel(d);
+                return self.classState(d, classStyle);
             })
             .attr('pointer-events', 'visibleStroke');
 
@@ -416,17 +412,18 @@ SCg.Render.prototype = {
     updateObjects: function () {
         let self = this;
         this.d3_nodes.each(function (d) {
-
             if (!d.need_observer_sync) return; // do nothing
-
             d.need_observer_sync = false;
 
             let g = d3.select(this)
-                .attr("transform", 'translate(' + d.position.x + ', ' + d.position.y + ')scale(' + d.scaleElem + ')')
-                .attr('class', function (d) {
-                    return self.classState(d, (d.sc_type & sc_type_constancy_mask) ? 'SCgNode' : 'SCgNodeEmpty');
+                .attr("transform", function (d) {
+                    return 'translate(' + d.position.x + ', ' + d.position.y + ')scale(' + SCgAlphabet.classScale(d) + ')';
                 })
-                .attr("style", 'opacity: ' + d.opacityElem + '; stroke: ' + d.strokeElem + '')
+                .attr('class', function (d) {
+                    let classStyle = (d.sc_type & sc_type_constancy_mask) ? 'SCgNode' : 'SCgNodeEmpty';
+                    classStyle += ' ' + SCgAlphabet.classLevel(d);
+                    return self.classState(d, classStyle);
+                });
 
             g.select('use')
                 .attr('xlink:href', function (d) {
@@ -435,7 +432,6 @@ SCg.Render.prototype = {
                 .attr("sc_addr", function (d) {
                     return d.sc_addr;
                 });
-            g.select('text').style('fill', d.fillElem);
 
             g.selectAll('text').text(function (d) {
                 return d.text;
@@ -464,7 +460,7 @@ SCg.Render.prototype = {
 
             const imageDiv = linkDiv.find('img');
             const pdfDiv = linkDiv.children().find('canvas');
-            let g = d3.select(this).attr("style", 'opacity: ' + d.opacityElem + '; stroke: ' + d.strokeElem + '');
+            let g = d3.select(this);
             g.select('rect')
                 .attr('width', function (d) {
                     if (imageDiv.length && !isNaN(imageDiv[0].width)) {
@@ -487,7 +483,8 @@ SCg.Render.prototype = {
                     return d.scale.y + self.linkBorderWidth * 2;
                 })
                 .attr('class', function (d) {
-                    return self.classState(d, 'SCgLink');
+                    const classStyle = 'SCgLink ' + SCgAlphabet.classLevel(d);
+                    return self.classState(d, classStyle);
                 })
                 .attr("sc_addr", function (d) {
                     return d.sc_addr;
@@ -504,7 +501,9 @@ SCg.Render.prototype = {
                 });
 
             g.attr("transform", function (d) {
-                return 'translate(' + (d.position.x - (d.scale.x + self.linkBorderWidth) * 0.5) + ', ' + (d.position.y - (d.scale.y + self.linkBorderWidth) * 0.5) + ')scale(' + d.scaleElem + ')';
+                return 'translate(' + (d.position.x - (d.scale.x + self.linkBorderWidth) * 0.5)
+                    + ', ' + (d.position.y - (d.scale.y + self.linkBorderWidth) * 0.5)
+                    + ')scale(' + SCgAlphabet.classScale(d) + ')';
             });
 
             // Update sc-link identifier (x, y) position according to the sc-link width
@@ -521,7 +520,6 @@ SCg.Render.prototype = {
         });
 
         this.d3_edges.each(function (d) {
-
             if (!d.need_observer_sync) return; // do nothing
             d.need_observer_sync = false;
 
@@ -531,22 +529,16 @@ SCg.Render.prototype = {
 
             SCgAlphabet.updateEdge(d, d3_edge, self.containerId);
             d3_edge.attr('class', function (d) {
-                return self.classState(d, 'SCgEdge');
+                const classStyle = 'SCgEdge ' + SCgAlphabet.classLevel(d);
+                return self.classState(d, classStyle);
             })
                 .attr("sc_addr", function (d) {
                     return d.sc_addr;
                 });
-
-            if (SCWeb.core.Main.mode === SCgEditMode.SCgModeViewOnly) {
-                d3_edge.select('.SCgEdgeEndArrowCommon').style('stroke-width', `${d.widthEdge}px`).style('opacity', d.opacityElem);
-                d3_edge.select('.SCgEdgeEndArrowAccess').style('stroke-width', `${d.widthEdge - 6}px`).style('opacity', d.opacityElem);
-            }
         });
 
         this.d3_contours.each(function (d) {
-
             d3.select(this).attr('d', function (d) {
-
                 if (!d.need_observer_sync) return; // do nothing
 
                 if (d.need_update)
@@ -582,7 +574,6 @@ SCg.Render.prototype = {
         });
 
         this.d3_buses.each(function (d) {
-
             if (!d.need_observer_sync) return; // do nothing
             d.need_observer_sync = false;
 
@@ -620,7 +611,7 @@ SCg.Render.prototype = {
 
             const imageDiv = linkDiv.find('img');
             const pdfDiv = linkDiv.children().find('canvas');
-            let g = d3.select(this).attr("style", 'opacity: ' + d.opacityElem + '; stroke: ' + d.strokeElem + '');
+            let g = d3.select(this);
             g.select('rect')
                 .attr('width', function (d) {
                     if (imageDiv.length && !isNaN(imageDiv[0].width)) {
@@ -643,7 +634,8 @@ SCg.Render.prototype = {
                     return d.scale.y + self.linkBorderWidth * 2;
                 })
                 .attr('class', function (d) {
-                    return self.classState(d, 'SCgLink');
+                    const classStyle = 'SCgLink ' + SCgAlphabet.classLevel(d);
+                    return self.classState(d, classStyle);
                 })
                 .attr("sc_addr", function (d) {
                     return d.sc_addr;
@@ -660,7 +652,9 @@ SCg.Render.prototype = {
                 });
 
             g.attr("transform", function (d) {
-                return 'translate(' + (d.position.x - (d.scale.x + self.linkBorderWidth) * 0.5) + ', ' + (d.position.y - (d.scale.y + self.linkBorderWidth) * 0.5) +  ')scale(' + d.scaleElem + ')';
+                return 'translate(' + (d.position.x - (d.scale.x + self.linkBorderWidth) * 0.5)
+                    + ', ' + (d.position.y - (d.scale.y + self.linkBorderWidth) * 0.5)
+                    + ')scale(' + SCgAlphabet.classScale(d) + ')';
             });
 
             // Update sc-link identifier (x, y) position according to the sc-link width
@@ -707,6 +701,27 @@ SCg.Render.prototype = {
             d.need_update = true;
         });
         this.update();
+    },
+
+    requestUpdateObjects: function () {
+        this.d3_nodes.each(function (d) {
+            d.need_observer_sync = true;
+        });
+        this.d3_links.each(function (d) {
+            d.need_observer_sync = true;
+        });
+        this.d3_edges.each(function (d) {
+            d.need_observer_sync = true;
+            d.need_update = true;
+        });
+        this.d3_contours.each(function (d) {
+            d.need_observer_sync = true;
+            d.need_update = true;
+        });
+        this.d3_buses.each(function (d) {
+            d.need_observer_sync = true;
+            d.need_update = true;
+        });
     },
 
     updateDragLine: function () {
@@ -826,7 +841,6 @@ SCg.Render.prototype = {
                 self.line_point_idx = -1;
             })
             .on('mouseup', function (d) {
-                //this.scene.updateContours(this.scene.selected_objects[0].childs);
                 self.scene.appendAllElementToContours();
             });
 
@@ -835,11 +849,6 @@ SCg.Render.prototype = {
                 return 'translate(' + d.pos.x + ',' + d.pos.y + ')';
             });
         });
-
-        // if (this.scene.selected_objects[0] instanceof SCg.ModelContour) {
-        //     //this.scene.updateContours(this.scene.selected_objects[0].childs);
-        //     this.scene.appendAllElementToContours();
-        // }
     },
 
     _changeContainerTransform: function (translate, scale) {
@@ -953,9 +962,7 @@ SCg.Render.prototype = {
 
     // ------- help functions -----------
     getContainerSize: function () {
-        var el = document.getElementById(this.containerId);
+        const el = document.getElementById(this.containerId);
         return [el.clientWidth, el.clientHeight];
     }
-
-
 }

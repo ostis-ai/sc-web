@@ -14,8 +14,8 @@ SCgSelectListener.prototype = {
     },
 
     onMouseMove: function (x, y) {
-        let self= this;
-        const offset= new SCg.Vector3(x - this.scene.mouse_pos.x, y - this.scene.mouse_pos.y, 0);
+        let self = this;
+        const offset = new SCg.Vector3(x - this.scene.mouse_pos.x, y - this.scene.mouse_pos.y, 0);
         this.scene.mouse_pos.x = x;
         this.scene.mouse_pos.y = y;
         if (this.scene.focused_object) {
@@ -36,6 +36,8 @@ SCgSelectListener.prototype = {
     },
 
     onMouseDoubleClick: function (x, y) {
+        if (SCWeb.core.Main.editMode === SCgEditMode.SCgViewOnly) return false;
+
         if (this.scene.pointed_object && !(this.scene.pointed_object instanceof SCg.ModelContour)) {
             return false;
         }

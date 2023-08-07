@@ -1,19 +1,3 @@
-var SCgEditMode = {
-    SCgModeSelect: 0,
-    SCgModeEdge: 1,
-    SCgModeBus: 2,
-    SCgModeContour: 3,
-    SCgModeLink: 4,
-    SCgModeViewOnly: 5,
-
-    /**
-     * Check if specified mode is valid
-     */
-    isValid: function (mode) {
-        return (mode >= this.SCgModeSelect) && (mode <= this.SCgModeContour);
-    }
-};
-
 var clipScgText = "clipScgText";
 
 var SCgModalMode = {
@@ -54,8 +38,7 @@ SCg.Scene = function (options) {
     new SCgEdgeListener(this),
     new SCgBusListener(this),
     new SCgContourListener(this),
-    new SCgLinkListener(this),
-    new SCgViewOnlyListener(this)]
+    new SCgLinkListener(this)]
     this.listener = this.listener_array[0];
     this.commandManager = new SCgCommandManager();
     this.render = options.render;
@@ -556,11 +539,10 @@ SCg.Scene.prototype = {
      * @param {SCgEditMode} mode New edit mode
      */
     setEditMode: function (mode) {
-
-        if (this.edit_mode == mode) return; // do nothing
+        if (this.edit_mode === mode) return; // do nothing
 
         this.edit_mode = mode;
-        this.listener = this.listener_array[mode];
+        this.listener = this.listener_array[mode] ? this.listener_array[mode] : this.listener_array[0];
 
         this.focused_object = null;
         this.edge_data.source = null;

@@ -12,13 +12,15 @@ var SCgAlphabet = {
         // edge markers
         defs.append('svg:marker')
             .attr('id', 'end-arrow-access_' + containerId).attr('viewBox', '0 -5 10 10').attr('refX', 0)
-            .attr('markerWidth', 5).attr('markerHeight', 10).attr('orient', 'auto')
+            .attr('markerWidth', 8).attr('markerHeight', 14).attr('orient', 'auto')
+            .attr('markerUnits', 'userSpaceOnUse')
             .append('svg:path')
             .attr('d', 'M0,-4L10,0L0,4').attr('fill', '#000');
 
         defs.append('svg:marker')
             .attr('id', 'end-arrow-common_' + containerId).attr('viewBox', '0 -5 10 10').attr('refX', 0)
-            .attr('markerWidth', 1.5).attr('markerHeight', 6).attr('orient', 'auto')
+            .attr('markerWidth', 10).attr('markerHeight', 16).attr('orient', 'auto')
+            .attr('markerUnits', 'userSpaceOnUse')
             .append('svg:path')
             .attr('d', 'M0,-4L10,0L0,4').attr('fill', '#000');
 
@@ -70,9 +72,10 @@ var SCgAlphabet = {
 
         g = defs.append('svg:g').attr('id', 'scg.node.const.class');
         g.append('svg:use').attr('xlink:href', '#scg.node.const.outer');
-        g.append('svg:line').attr('x1', '-10').attr('x2', '10').attr('y1', '0').attr('y2', '0').attr('stroke-width', '3').attr('transform', 'rotate(45, 0, 0)');
-        g.append('svg:line').attr('x1', '-10').attr('x2', '10').attr('y1', '0').attr('y2', '0').attr('stroke-width', '3').attr('transform', 'rotate(-45, 0, 0)');
-        g.append('svg:line').attr('x1', '-10').attr('x2', '10').attr('y1', '0').attr('y2', '0').attr('stroke-width', '3');
+        g.append('svg:line').attr('x1', '-10').attr('x2', '10').attr('y1', '-3').attr('y2', '-3').attr('stroke-width', '2.4')
+        g.append('svg:line').attr('x1', '-10').attr('x2', '10').attr('y1', '3').attr('y2', '3').attr('stroke-width', '2.4');
+        g.append('svg:line').attr('x1', '-3').attr('x2', '-3').attr('y1', '-10').attr('y2', '10').attr('stroke-width', '2.4');
+        g.append('svg:line').attr('x1', '3').attr('x2', '3').attr('y1', '-10').attr('y2', '10').attr('stroke-width', '2.4');
         this.appendText(g);
 
         g = defs.append('svg:g').attr('id', 'scg.node.const.abstract');//.attr('clip-path', 'url(#scg.node.const.clip)');
@@ -201,43 +204,96 @@ var SCgAlphabet = {
         this.scType2Str[sc_type_link] = 'scg.link';
     },
 
+    classLevel: function (obj) {
+        let levelStyle;
+        switch (obj.level) {
+            case SCgObjectLevel.First:
+                levelStyle = 'DBSCgFirstLevelView';
+                break;
+            case SCgObjectLevel.Second:
+                levelStyle = 'DBSCgSecondLevelView';
+                break;
+            case SCgObjectLevel.Third:
+                levelStyle = 'DBSCgThirdLevelView';
+                break;
+            case SCgObjectLevel.Fourth:
+                levelStyle = 'DBSCgFourthLevelView';
+                break;
+            case SCgObjectLevel.Fifth:
+                levelStyle = 'DBSCgFifthLevelView';
+                break;
+            case SCgObjectLevel.Sixth:
+                levelStyle = 'DBSCgSixthLevelView';
+                break;
+            case SCgObjectLevel.Seventh:
+                levelStyle = 'DBSCgSeventhLevelView';
+                break;
+            default:
+                levelStyle = '';
+        }
+
+        return levelStyle;
+    },
+
+    classScale: function (obj) {
+        let scale;
+        switch (obj.level) {
+            case SCgObjectLevel.First:
+                scale = 2.3;
+                break;
+            case SCgObjectLevel.Second:
+                scale = 1.8;
+                break;
+            case SCgObjectLevel.Third:
+                scale = 1.5;
+                break;
+            case SCgObjectLevel.Fourth:
+            case SCgObjectLevel.Fifth:
+            case SCgObjectLevel.Sixth:
+            case SCgObjectLevel.Seventh:
+            default:
+                scale = 1;
+        }
+
+        return scale;
+    },
+
     /**
      * All sc.g-edges represented by group of paths, so we need to update whole group.
      * This function do that work
-     * @param egde {SCg.ModelEdge} Object that represent sc.g-edge
-     * @param d3_group {} Object that represents svg group
+     * @param edge {SCg.ModelEdge} Object that represent sc.g-edge
+     * @param d3_group Object that represents svg group
      */
     updateEdge: function (edge, d3_group, containerId) {
-
         // first of all we need to determine if edge has an end marker
-        var has_marker = edge.hasArrow();
+        let has_marker = edge.hasArrow();
 
         // now calculate target and source positions
-        var pos_src = edge.source_pos.clone();
-        var pos_trg = edge.target_pos.clone();
+        let pos_src = edge.source_pos.clone();
+        let pos_trg = edge.target_pos.clone();
 
         // if we have an arrow, then need to fix end position
         if (has_marker) {
-            var prev_pos = pos_src;
+            let prev_pos = pos_src;
             if (edge.points.length > 0) {
                 prev_pos = new SCg.Vector3(edge.points[edge.points.length - 1].x, edge.points[edge.points.length - 1].y, 0);
             }
 
-            var dv = pos_trg.clone().sub(prev_pos);
-            var len = dv.length();
+            let dv = pos_trg.clone().sub(prev_pos);
+            let len = dv.length();
             dv.normalize();
             pos_trg = prev_pos.clone().add(dv.multiplyScalar(len - 10));
         }
 
         // make position path
-        var position_path = 'M' + pos_src.x + ',' + pos_src.y;
-        for (idx in edge.points) {
+        let position_path = 'M' + pos_src.x + ',' + pos_src.y;
+        for (let idx in edge.points) {
             position_path += 'L' + edge.points[idx].x + ',' + edge.points[idx].y;
         }
         position_path += 'L' + pos_trg.x + ',' + pos_trg.y;
 
-        var sc_type_str = edge.sc_type.toString();
-        if (d3_group['sc_type'] != sc_type_str) {
+        const sc_type_str = edge.sc_type.toString();
+        if (d3_group['sc_type'] !== sc_type_str) {
             d3_group.attr('sc_type', sc_type_str);
 
             // remove old
@@ -248,11 +304,12 @@ var SCgAlphabet = {
             // if it accessory, then append main line
             if (edge.sc_type & sc_type_arc_access) {
 
-                var main_style = 'SCgEdgeAccessPerm';
+                let main_style = 'SCgEdgeAccessPerm';
                 if (edge.sc_type & sc_type_arc_temp) {
                     main_style = edge.sc_type & sc_type_var ? 'SCgEdgeAccessTempVar' : 'SCgEdgeAccessTemp';
                 }
 
+                main_style += ' ' + SCgAlphabet.classLevel(edge);
                 var p = d3_group.append('svg:path')
                     .classed(main_style, true)
                     .classed('SCgEdgeEndArrowAccess', true)
@@ -263,53 +320,52 @@ var SCgAlphabet = {
                     p.classed('SCgEdgeVarDashAccessPerm', (edge.sc_type & sc_type_var) && (edge.sc_type & sc_type_arc_perm));
                 } else {
                     d3_group.append('svg:path')
-                        .classed('SCgEdgeAccessComonDash', true)
+                        .classed('SCgEdgeAccessCommonDash', true)
                         .attr('d', position_path);
                 }
 
                 if (edge.sc_type & sc_type_arc_neg) {
                     d3_group.append('svg:path')
-                        .classed('SCgEdgePermNegDash', true)
+                        .classed('SCgEdgePermNegDash ' + SCgAlphabet.classLevel(edge), true)
                         .attr('d', position_path);
                 }
             } else if (edge.sc_type & (sc_type_arc_common | sc_type_edge_common)) {
-
+                let main_style = 'SCgEdgeCommonBack';
                 if (edge.sc_type & sc_type_edge_common) {
                     d3_group.append('svg:path')
-                        .classed('SCgEdgeCommonBack', true)
+                        .classed(main_style, true)
                         .attr('d', position_path);
                 }
 
                 if (edge.sc_type & sc_type_arc_common) {
                     d3_group.append('svg:path')
                         .classed('SCgEdgeCommonBack', true)
-                        .classed('SCgEdgeEndArrowCommon', edge.sc_type & sc_type_arc_common)
+                        .classed('SCgEdgeEndArrowCommon ' + SCgAlphabet.classLevel(edge), edge.sc_type & sc_type_arc_common)
                         .style("marker-end", "url(#end-arrow-common_" + containerId + ")")
                         .attr('d', position_path);
                 }
 
                 d3_group.append('svg:path')
-                    .classed('SCgEdgeCommonForeground', true)
+                    .classed('SCgEdgeCommonForeground ' + SCgAlphabet.classLevel(edge), true)
                     .attr('d', position_path)
 
                 if (edge.sc_type & sc_type_constancy_mask) {
                     if (edge.sc_type & sc_type_var) {
                         d3_group.append('svg:path')
-                            .classed('SCgEdgeCommonForegroundVar', true)
-                            .classed('SCgEdgeVarDashCommon', true)
+                            .classed('SCgEdgeVarDashCommon ' + SCgAlphabet.classLevel(edge), true)
                             .attr('d', position_path);
                     }
                 } else {
                     d3_group.append('svg:path')
-                        .classed('SCgEdgeAccessPerm', true)
-                        .classed('SCgEdgeVarDashCommon', true)
+                        .classed('SCgEdgeVarDashCommon ' + SCgAlphabet.classLevel(edge), true)
                         .attr('d', position_path);
                 }
 
             } else {
                 // unknown
+                let main_style = 'SCgEdgeUnknown ' + SCgAlphabet.classLevel(edge);
                 d3_group.append('svg:path')
-                    .classed('SCgEdgeUnknown', true)
+                    .classed(main_style, true)
                     .attr('d', position_path);
             }
 
@@ -319,7 +375,7 @@ var SCgAlphabet = {
                 .attr('d', position_path);
         }
 
-        // now we need to draw fuz markers (for now it not supported)
+        // now we need to draw fuz markers (for now it is not supported)
         if (edge.sc_type & sc_type_arc_fuz) {
             d3_group.selectAll('path').attr('stroke', '#f00');
             d3_group.append('svg:path')

@@ -3,8 +3,43 @@ const scKeynodes = null;
 const currentYear = new Date().getFullYear();
 const last_page_cmd_args = 'last_page_cmd_args';
 
-const modes = {
-    'scg_just_view': 5,
+const SCgEditMode = {
+    SCgModeSelect: 0,
+    SCgModeEdge: 1,
+    SCgModeBus: 2,
+    SCgModeContour: 3,
+    SCgModeLink: 4,
+    SCgViewOnly: 5,
+
+    /**
+     * Check if specified mode is valid
+     */
+    isValid: function (mode) {
+        return (mode >= this.SCgModeSelect) && (mode <= this.SCgViewOnly);
+    }
+};
+
+const SCgViewMode = {
+    DefaultSCgView: 1,
+    DistanceBasedSCgView: 2,
+
+    /**
+     * Check if specified mode is valid
+     */
+    isValid: function (mode) {
+        return (mode >= this.DefaultSCgView) && (mode <= this.DistanceBasedSCgView);
+    }
+};
+
+// backward compatibility [scg_just_view <- scg_view_only]
+const editModes = {
+    'scg_just_view': SCgEditMode.SCgViewOnly,
+    'scg_view_only': SCgEditMode.SCgViewOnly,
+};
+
+const viewModes = {
+    'default_scg_view': SCgViewMode.DefaultSCgView,
+    'distance_based_scg_view': SCgViewMode.DistanceBasedSCgView,
 };
 
 function ScClientCreate() {
@@ -17,7 +52,8 @@ function ScClientCreate() {
 }
 
 SCWeb.core.Main = {
-    mode: 0,
+    editMode: 0,
+    viewMode: 0,
     window_types: [],
     idtf_modes: [],
     menu_commands: {},
@@ -32,8 +68,6 @@ SCWeb.core.Main = {
     init: function (params) {
         return new Promise((resolve) => {
             const self = this;
-            //SCWeb.ui.Locker.show();
-
             SCWeb.core.Server._initialize();
             ScClientCreate().then(function (client) {
                 window.scClient = client;
@@ -42,47 +76,40 @@ SCWeb.core.Main = {
 
                 window.scKeynodes.init().then(function () {
                     window.scHelper.init().then(function () {
-
-                        if (window._unit_tests)
-                            window._unit_tests();
-
                         SCWeb.ui.TaskPanel.init().then(function () {
                             SCWeb.core.Server.init(function (data) {
-                                const url = parseURL(window.location.href);
-
-                                url.searchObject.mode = modes[url.searchObject.mode] ?? 0;
-
-                                self.menu_commands = data.menu_commands;
-                                self.user = data.user;
-
-                                data.menu_container_id = params.menu_container_id;
-                                data.mode = Number(url.searchObject.mode);
-
-                                SCWeb.core.Translation.fireLanguageChanged(self.user.current_lang);
-
-                                Promise.all([SCWeb.ui.Core.init(data),
-                                SCWeb.core.ComponentManager.init(),
-                                SCWeb.core.Translation.update()
-                                ])
-                                    .then(function () {
-                                        resolve();
-
-                                        if (url.searchObject && SCWeb.core.Main.pageShowedForUrlParameters(url.searchObject)) {
-                                            return;
-                                        }
-                                        SCWeb.core.Main.showDefaultPage(params);
-                                    });
+                                self.parseUrl(data, params).then(resolve);
                             });
                         });
                     });
-
                 });
             });
         })
     },
 
-    _initUI: function () {
+    parseUrl: async function (data, params) {
+        const url = parseURL(window.location.href);
 
+        url.searchObject.view_mode = viewModes[url.searchObject.view_mode] ?? SCgViewMode.DefaultSCgView;
+
+        // backward compatibility [mode <- edit_mode]
+        url.searchObject.edit_mode = url.searchObject.edit_mode ? url.searchObject.edit_mode : url.searchObject.mode;
+        url.searchObject.edit_mode = editModes[url.searchObject.edit_mode] ?? SCgEditMode.SCgModeSelect;
+
+        this.menu_commands = data.menu_commands;
+        this.user = data.user;
+        data.menu_container_id = params.menu_container_id;
+
+        SCWeb.core.Translation.fireLanguageChanged(this.user.current_lang);
+
+        if (!url.searchObject || !SCWeb.core.Main.pageShowedForUrlParameters(url.searchObject)) {
+            SCWeb.core.Main.showDefaultPage(params).then(null);
+        }
+
+        await Promise.all([SCWeb.ui.Core.init(data),
+            SCWeb.core.ComponentManager.init(),
+            SCWeb.core.Translation.update()
+        ]);
     },
 
     pageShowedForUrlParameters(urlObject) {
@@ -103,55 +130,63 @@ SCWeb.core.Main = {
     },
 
     systemIdentifierParameterProcessed(urlObject) {
-        const sys_id = urlObject['sys_id'];
-        const scg_view = urlObject['scg_structure_view_only'];
         const lang = urlObject['lang'];
-        const modeUrl = Number(urlObject['mode']);
+        const window_lang = window.scKeynodes[lang];
+        if (window_lang) SCWeb.core.Translation.fireLanguageChanged(window_lang);
 
-        if (sys_id) {
-            const window_lang = window.scKeynodes[lang];
-            if (window_lang) {
-                SCWeb.core.Translation.fireLanguageChanged(window_lang);
-            }
+        const sysId = urlObject['sys_id'];
+        if (!sysId) return false;
+        SCWeb.core.Main.doDefaultCommandWithSystemIdentifier(sysId);
 
-            SCWeb.core.Main.doDefaultCommandWithSystemIdentifier(sys_id);
-            SCWeb.core.Main.mode = modeUrl ?? 0;
-            if (scg_view) {
-                const hide_tools = urlObject['hide_tools'];
-                const hide_borders = urlObject['hide_borders'];
+        const viewMode = Number(urlObject['view_mode']);
+        const editMode = Number(urlObject['edit_mode']);
 
-                $('#window-header-tools').hide();
-                $('#static-window-container').hide();
-                $('#header').hide();
-                $('#footer').hide();
-                $('#window-container').css({ 'padding-right': '', 'padding-left': '' });
+        SCWeb.core.Main.viewMode = viewMode ?? 0;
+        SCWeb.core.Main.editMode = editMode ?? 0;
 
-                this.waitForElm('.sc-contour').then(() => {
-                    $('#window-container').children().children().children().children().hide();
-                    $('.sc-contour').css({ 'height': '100%', 'width': '100%', 'position': 'absolute', "background-color": "none", "border": "0", "padding": "0px", "border-radius": "0px" });
-                    $('.scs-scn-view-toogle-button').hide().click();
-                    $('.sc-window').css({ "padding": "0px", "overflow": "hidden" });
-                    $('.panel-body').css({ "padding": "0px", "overflow": "hidden" });
-                    $('.scs-scn-element').css("cursor", "auto !important");
-                    $("[id*='tools-']").parent().css({ "height": "100%", "width": "100%" });
-                    $("[id*='tools-']").parent().parent().css("height", "100%");
+        // backward compatibility [scg_structure_view_only <- full_screen_scg]
+        const fullScreenView = urlObject['full_screen_scg']
+            ? urlObject['full_screen_scg']
+            : urlObject['scg_structure_view_only'];
+        const hideTools = urlObject['hide_tools'];
+        const hideBorders = urlObject['hide_borders'];
 
-                    if (hide_borders) {
-                        $('.sc-contour').css({ 'border': 'none' });
-                        $('.panel-default').css({ 'border-color': '#FFFFFF' });
-                        $('.main-container').css({ 'padding-left': '0', 'padding-right': '0' });
-                    }
-                });
-
-                this.waitForElm('.scg-tools-panel').then(() => {
-                    if (hide_tools) {
-                        modeUrl === SCgEditMode.SCgModeViewOnly ? $('.scg-tools-panel').css({ 'display': 'block' }) : $('.scg-tools-panel').css({ 'display': 'none' });
-                    }
-                });
-            }
-            return true;
+        if (fullScreenView) {
+            this.initFullScreenView(hideTools, hideBorders);
         }
-        return false;
+        return true;
+    },
+
+    initFullScreenView(hideTools, hideBorders) {
+        $('#window-header-tools').hide();
+        $('#static-window-container').hide();
+        $('#header').hide();
+        $('#footer').hide();
+        $('#window-container').css({ 'padding-right': '', 'padding-left': '' });
+
+        this.waitForElm('.sc-contour').then(() => {
+            $('#window-container').children().children().children().children().hide();
+            $('.sc-contour').css({ 'height': '100%', 'width': '100%', 'position': 'absolute',
+                "background-color": "none", "border": "0", "padding": "0px", "border-radius": "0px" });
+            $('.scs-scn-view-toogle-button').hide().click();
+            $('.sc-window').css({ "padding": "0px", "overflow": "hidden" });
+            $('.panel-body').css({ "padding": "0px", "overflow": "hidden" });
+            $('.scs-scn-element').css("cursor", "auto !important");
+            $("[id*='tools-']").parent().css({ "height": "100%", "width": "100%" });
+            $("[id*='tools-']").parent().parent().css("height", "100%");
+
+            if (hideBorders) {
+                $('.sc-contour').css({ 'border': 'none' });
+                $('.panel-default').css({ 'border-color': '#FFFFFF' });
+                $('.main-container').css({ 'padding-left': '0', 'padding-right': '0' });
+            }
+        });
+
+        this.waitForElm('.scg-tools-panel').then(() => {
+            if (hideTools) {
+                $('.scg-tools-panel').css({ 'display': 'block' });
+            }
+        });
     },
 
     waitForElm(selector) {
@@ -191,14 +226,13 @@ SCWeb.core.Main = {
     },
 
     showDefaultPage: async function (params) {
-
         function start(a) {
             SCWeb.core.Main.doDefaultCommand([a]);
             if (params.first_time)
                 $('#help-modal').modal({ "keyboard": true });
         }
 
-        argumentAddr = window.scKeynodes['ui_start_sc_element'];
+        let argumentAddr = window.scKeynodes['ui_start_sc_element'];
         const last_page_cmd_args = [getCookie('last_page_cmd_args')]
         if (last_page_cmd_args[0]) {
             argumentAddr = last_page_cmd_args[0];

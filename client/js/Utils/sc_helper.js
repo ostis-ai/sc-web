@@ -6,6 +6,17 @@ ScHelper.prototype.init = function () {
   return Promise.resolve();
 };
 
+ScHelper.prototype.getConnectorElements = async function (arc) {
+  let scTemplate = new sc.ScTemplate();
+  scTemplate.triple(
+      [sc.ScType.Unknown, "_source"],
+      arc,
+      [sc.ScType.Unknown, "_target"]
+  );
+  const result = await scClient.templateSearch(scTemplate);
+  return [result[0].get("_source"), result[0].get("_target")];
+};
+
 /*! Check if there are specified arc between two objects
  * @param {String} addr1 sc-addr of source sc-element
  * @param {int} type type of sc-edge, that need to be checked for existing
@@ -20,7 +31,7 @@ ScHelper.prototype.checkEdge = async function (addr1, type, addr2) {
   addr2 = new sc.ScAddr(addr2);
   template.triple(addr1, type, addr2);
   let result = await this.scClient.templateSearch(template);
-  return result.length !== 0
+  return result.length !== 0;
 };
 
 /*! Function to get elements of specified set
@@ -34,6 +45,30 @@ ScHelper.prototype.getSetElements = async function (addr) {
   template.triple(addr, sc.ScType.EdgeAccessVarPosPerm, sc.ScType.NodeVar);
   let result = await this.scClient.templateSearch(template);
   return result.map(x => x.get(2).value);
+};
+
+ScHelper.prototype.getStructureElementsByRelation = async function (structure, relation) {
+  let template = new sc.ScTemplate();
+  template.tripleWithRelation(
+    structure,
+    [sc.ScType.EdgeAccessVarPosPerm, "_edge_from_scene"],
+    [sc.ScType.Unknown, "_main_node"],
+    sc.ScType.EdgeAccessVarPosPerm,
+    relation,
+  );
+
+  const result = await window.scClient.templateSearch(template);
+  return result.map((triple) => {
+    return {connectorFromStructure: triple.get("_edge_from_scene"), structureElement: triple.get("_main_node")};
+  });
+};
+
+ScHelper.prototype.getStructureMainKeyElements = async function (structure) {
+  return await this.getStructureElementsByRelation(structure, new sc.ScAddr(window.scKeynodes['rrel_main_key_sc_element']));
+};
+
+ScHelper.prototype.getStructureKeyElements = async function (structure) {
+  return await this.getStructureElementsByRelation(structure, new sc.ScAddr(window.scKeynodes['rrel_key_sc_element']));
 };
 
 /*! Function resolve commands hierarchy for main menu.
