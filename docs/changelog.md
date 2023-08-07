@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add optional buttons to delete function
 
 ### Fixed
+- Node classes svg elements
 - Memory leaks if elements removed from scg-scene
 - Remove listeners for scg-elements html-objects if elements were removed
 - Double click by sc-elements that aren't synchronized
