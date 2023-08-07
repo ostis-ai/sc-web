@@ -21,7 +21,6 @@ SCWeb.core.ComponentSandbox = function (options) {
     this.appendContentTimeoutId = 0;
     this.appendContentTimeout = 2;
     this.maxSCgTriplesNumber = 300;
-    this.distanceBasedSCgObjectStyles = { node: 1.8, link: 1.5, opacity: 1, widthEdge: 7.5 };
     this.content = options.content;
     this.is_struct = options.is_struct;
     this.format_addr = options.format_addr;
@@ -77,7 +76,6 @@ SCWeb.core.ComponentSandbox = function (options) {
                             isAdded: true,
                             connectorFromScene: edge,
                             sceneElement: otherAddr,
-                            sceneElementStyles: this.distanceBasedSCgObjectStyles,
                             sceneElementState: SCgObjectState.NewInMemory
                         });
                     }
@@ -256,18 +254,6 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
     if (scene) self.scene = scene;
 
     const updateDistanceBasedSCgWindow = async (sceneAddr) => {
-        const level1Styles = { node: 2.3, link: 1.8, opacity: 1, widthEdge: 8 };
-        const level2Styles = { node: 1.8, link: 1.5, opacity: 1, widthEdge: 7.5 };
-        const level3Styles = { node: 1.4, link: 1, opacity: 1, widthEdge: 7 };
-        const level4Styles = { node: 1, link: 1, opacity: 1, widthEdge: 6.5 };
-        const level5Styles = { node: 1, link: 1, opacity: 0.8, widthEdge: 6.5 };
-        const level6Styles = { node: 1, link: 1, opacity: 0.6, widthEdge: 6.5 };
-        const level7Styles = { node: 1, link: 1, opacity: 0.4, widthEdge: 6.5 };
-
-        const allLevelStyles = [
-            level1Styles, level2Styles, level3Styles, level4Styles, level5Styles, level6Styles, level7Styles
-        ];
-
         self.layout = () => {
             self.scAddr ? self.scene.updateRender() : self.scene.layout();
         };
@@ -290,7 +276,7 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
             });
         };
 
-        const searchAllLevelEdges = async function (elementsArr, allLevelStyles, visitedElements, tracedElements) {
+        const searchAllLevelEdges = async function (elementsArr, visitedElements, tracedElements) {
             let newElementsArr = [];
             for (let i = 0; i < elementsArr.length; i++) {
 
@@ -302,52 +288,49 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
                     const element = new sc.ScAddr(parseInt(elementHash));
 
                     const [elementType, level, edgeFromScene] = Object.values(levelElements[elementHash]);
-                    const levelStyles = allLevelStyles[level];
-
-                    const nextLevel = level >= allLevelStyles.length - 1 ? allLevelStyles.length - 1 : level + 1;
-                    const nextLevelStyles = allLevelStyles[nextLevel];
+                    const nextLevel = level >= SCgObjectLevel.Count - 1 ? SCgObjectLevel.Seventh : level + 1;
 
                     const searchFunc = elementType.isEdge() ? searchLevelEdgeElements : searchLevelEdges;
                     const newElements = await searchFunc(
-                        edgeFromScene, element, elementType, level, levelStyles, nextLevel, nextLevelStyles, tracedElements);
+                        edgeFromScene, element, elementType, level, nextLevel, tracedElements);
                     if (Object.keys(newElements).length) newElementsArr.push(newElements);
                 }
             }
 
-            if (newElementsArr.length) await searchAllLevelEdges(newElementsArr, allLevelStyles, visitedElements, tracedElements);
+            if (newElementsArr.length) await searchAllLevelEdges(newElementsArr, visitedElements, tracedElements);
         };
 
         const searchLevelEdges = async function (
-            edgeFromScene, mainElement, mainElementType, level, levelStyles, nextLevel, nextLevelStyles, tracedElements) {
+            edgeFromScene, mainElement, mainElementType, level, nextLevel, tracedElements) {
             let nextLevelElements = {};
 
             await searchLevelEdgesByDirection(
                 edgeFromScene, mainElement, mainElementType,
-                level, levelStyles, nextLevel, nextLevelStyles, nextLevelElements, tracedElements, true
+                level, nextLevel, nextLevelElements, tracedElements, true
             );
             await searchLevelEdgesByDirection(
                 edgeFromScene, mainElement, mainElementType,
-                level, levelStyles, nextLevel, nextLevelStyles, nextLevelElements, tracedElements, false
+                level, nextLevel, nextLevelElements, tracedElements, false
             );
 
             return nextLevelElements;
         };
 
         const searchLevelEdgeElements = async function (
-            edgeFromScene, mainElement, mainElementType, level, levelStyles, nextLevel, nextLevelStyles, tracedElements) {
+            edgeFromScene, mainElement, mainElementType, level, nextLevel, tracedElements) {
             let nextLevelElements = {};
 
             await searchLevelConnectorElements(
                 edgeFromScene, mainElement, mainElementType,
-                level, levelStyles, nextLevel, nextLevelStyles, nextLevelElements, tracedElements
+                level, nextLevel, nextLevelElements, tracedElements
             );
             await searchLevelEdgesByDirection(
                 edgeFromScene, mainElement, mainElementType,
-                level, levelStyles, nextLevel, nextLevelStyles, nextLevelElements, tracedElements, true
+                level, nextLevel, nextLevelElements, tracedElements, true
             );
             await searchLevelEdgesByDirection(
                 edgeFromScene, mainElement, mainElementType,
-                level, levelStyles, nextLevel, nextLevelStyles, nextLevelElements, tracedElements, false
+                level, nextLevel, nextLevelElements, tracedElements, false
             );
 
             return nextLevelElements;
@@ -355,7 +338,7 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
 
         const searchLevelConnectorElements = async function (
             edgeFromScene, mainElement, mainElementType,
-            level, levelStyles, nextLevel, nextLevelStyles, nextLevelElements, tracedElements
+            level, nextLevel, nextLevelElements, tracedElements
         ) {
             const mainElementHash = mainElement.value;
             if (tracedElements.has(mainElementHash)) return;
@@ -387,19 +370,19 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
                 connectorFromScene: edgeFromScene,
                 sceneElement: mainElement,
                 sceneElementType: mainElementType,
-                sceneElementStyles: levelStyles,
+                sceneElementLevel: level,
                 sceneElementSource: sourceElement,
                 sceneElementSourceType: sourceElementType,
-                sceneElementSourceStyles: nextLevelStyles,
+                sceneElementSourceLevel: nextLevel,
                 sceneElementTarget: targetElement,
                 sceneElementTargetType: targetElementType,
-                sceneElementTargetStyles: nextLevelStyles,
+                sceneElementTargetLevel: nextLevel,
             });
         }
 
         const searchLevelEdgesByDirection = async function (
             edgeFromScene, mainElement, mainElementType,
-            level, levelStyles, nextLevel, nextLevelStyles, nextLevelElements, tracedElements, withIncomingEdge) {
+            level, nextLevel, nextLevelElements, tracedElements, withIncomingEdge) {
             let scTemplate = new sc.ScTemplate();
             scTemplate.triple(
                 sceneAddr,
@@ -456,13 +439,13 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
                     connectorFromScene: edgeFromScene,
                     sceneElement: sceneEdge,
                     sceneElementType: sceneEdgeType,
-                    sceneElementStyles: nextLevelStyles,
+                    sceneElementLevel: nextLevel,
                     sceneElementSource: withIncomingEdge ? sceneEdgeElement : mainElement,
                     sceneElementSourceType: withIncomingEdge ? sceneEdgeElementType : mainElementType,
-                    sceneElementSourceStyles: withIncomingEdge ? nextLevelStyles : levelStyles,
+                    sceneElementSourceLevel: withIncomingEdge ? nextLevel : level,
                     sceneElementTarget: withIncomingEdge ? mainElement : sceneEdgeElement,
                     sceneElementTargetType: withIncomingEdge ? mainElementType : sceneEdgeElementType,
-                    sceneElementTargetStyles: withIncomingEdge ? levelStyles : nextLevelStyles,
+                    sceneElementTargetLevel: withIncomingEdge ? level : nextLevel,
                 });
             }
         };
@@ -482,9 +465,10 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
             const edgeFromScene = triple.connectorFromStructure;
             const sceneElement = triple.structureElement;
             const sceneElementType = elementTypes[i];
+            const level = SCgObjectLevel.First;
 
             mainElements[sceneElement.value] = {
-                type: sceneElementType, level: 0, connectorFromScene: edgeFromScene};
+                type: sceneElementType, level: level, connectorFromScene: edgeFromScene};
             self.mainElement = sceneElement;
 
             self.eventStructUpdate({
@@ -492,11 +476,11 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
                 connectorFromScene: edgeFromScene,
                 sceneElement: sceneElement,
                 sceneElementType: sceneElementType,
-                sceneElementStyles: allLevelStyles[0],
+                sceneElementLevel: level,
             });
         }
 
-        await searchAllLevelEdges([mainElements], allLevelStyles, new Set(), new Set());
+        await searchAllLevelEdges([mainElements], new Set(), new Set());
         return true;
     }
 

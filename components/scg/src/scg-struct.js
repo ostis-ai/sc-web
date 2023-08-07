@@ -42,24 +42,13 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
     };
 
     const doAppendBatch = function (batch) {
-        const applyObjectStyles = function (object, styles) {
-            if (object instanceof SCg.ModelNode) {
-                object.setScaleElem(styles.node);
-            } else if (object instanceof SCg.ModelEdge) {
-                object.setWidthEdge(styles.widthEdge);
-            } else {
-                object.setScaleElem(styles.link);
-            }
-
-            object.setOpacityElem(styles.opacity);
-        };
 
         for (let i in batch) {
             const task = batch[i];
             const addr = task[0];
             const type = task[1];
             let state = task[2];
-            const styles = task[3];
+            const level = task[3];
 
             if (!state) state = SCgObjectState.FromMemory;
 
@@ -67,7 +56,7 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
 
             let object = editor.scene.getObjectByScAddr(addr);
             if (object) {
-                if (styles && sandbox.scAddr) applyObjectStyles(object, styles);
+                object.setLevel(level);
                 object.setObjectState(state);
                 continue;
             }
@@ -89,7 +78,7 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
                 resolveIdtf(addr, object);
             }
 
-            if (styles) applyObjectStyles(object, styles);
+            object.setLevel(level);
             editor.scene.appendObject(object);
             editor.scene.objects[addr] = object;
             object.setScAddr(addr);
@@ -147,27 +136,27 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
                 : (await getElementsTypes([sceneElement]))[0];
             const sceneElementTypeValue = sceneElementType.value;
 
-            const sceneElementStyles = data.sceneElementStyles;
             const sceneElementState = data.sceneElementState;
+            const sceneElementLevel = data.sceneElementLevel;
 
             if (data.sceneElementSource && data.sceneElementTarget) {
                 const sourceHash = data.sceneElementSource.value;
                 const sourceTypeValue = data.sceneElementSourceType.value;
-                const sourceStyles = data.sceneElementSourceStyles;
+                const sourceLevel = data.sceneElementSourceLevel;
                 if (!data.sceneElementSourceType.isEdge()) {
-                    addAppendTask(sourceHash, [sourceHash, sourceTypeValue, sceneElementState, sourceStyles]);
+                    addAppendTask(sourceHash, [sourceHash, sourceTypeValue, sceneElementState, sourceLevel]);
                 }
 
                 const targetHash = data.sceneElementTarget.value;
                 const targetTypeValue = data.sceneElementTargetType.value;
-                const targetStyles = data.sceneElementTargetStyles;
+                const targetLevel = data.sceneElementTargetLevel;
                 if (!data.sceneElementTargetType.isEdge()) {
-                    addAppendTask(targetHash, [targetHash, targetTypeValue, sceneElementState, targetStyles]);
+                    addAppendTask(targetHash, [targetHash, targetTypeValue, sceneElementState, targetLevel]);
                 }
 
                 addAppendTask(
                     sceneElementHash,
-                    [sceneElementHash, sceneElementTypeValue, sceneElementState, sceneElementStyles, sourceHash, targetHash]
+                    [sceneElementHash, sceneElementTypeValue, sceneElementState, sceneElementLevel, sourceHash, targetHash]
                 );
             }
             else if (sceneElementType && sceneElementType.isEdge()) {
@@ -184,11 +173,11 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
                     {isAdded: true, sceneElement: target, sceneElementType: targetType, sceneElementState: sceneElementState});
                 addAppendTask(
                     sceneElementHash,
-                    [sceneElementHash, sceneElementTypeValue, sceneElementState, sceneElementStyles, sourceHash, targetHash]
+                    [sceneElementHash, sceneElementTypeValue, sceneElementState, sceneElementLevel, sourceHash, targetHash]
                 );
             }
             else {
-                addAppendTask(sceneElementHash, [sceneElementHash, sceneElementTypeValue, sceneElementState, sceneElementStyles]);
+                addAppendTask(sceneElementHash, [sceneElementHash, sceneElementTypeValue, sceneElementState, sceneElementLevel]);
             }
         }
         else {

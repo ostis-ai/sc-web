@@ -157,9 +157,9 @@ SCg.Render.prototype = {
     },
 
     classState: function (obj, base) {
-        let res = 'sc-no-default-cmd ui-no-tooltip SCgElement';
+        let res = ' sc-no-default-cmd ui-no-tooltip SCgElement';
 
-        if (SCWeb.core.Main.viewMode === SCgViewMode.DistanceBasedSCgView) res += ' DBSCg ';
+        if (SCWeb.core.Main.viewMode === SCgViewMode.DistanceBasedSCgView) res += ' DBSCgView';
 
         if (base) res += ' ' + base;
 
@@ -260,11 +260,13 @@ SCg.Render.prototype = {
         });
 
         let g = this.d3_nodes.enter().append('svg:g')
-            .attr('class', function (d) {
-                return self.classState(d, (d.sc_type & sc_type_constancy_mask) ? 'SCgNode' : 'SCgNodeEmpty');
-            })
             .attr("transform", function (d) {
-                return 'translate(' + d.position.x + ', ' + d.position.y + ')';
+                return 'translate(' + d.position.x + ', ' + d.position.y + ')scale(' + SCgAlphabet.classScale(d) + ')';
+            })
+            .attr('class', function (d) {
+                let classStyle = (d.sc_type & sc_type_constancy_mask) ? 'SCgNode' : 'SCgNodeEmpty';
+                classStyle += ' ' + SCgAlphabet.classLevel(d);
+                return self.classState(d, classStyle);
             });
         eventsWrap(g);
         appendNodeVisual(g);
@@ -290,7 +292,7 @@ SCg.Render.prototype = {
 
         g = this.d3_links.enter().append('svg:g')
             .attr("transform", function (d) {
-                return 'translate(' + d.position.x + ', ' + d.position.y + ')';
+                return 'translate(' + d.position.x + ', ' + d.position.y + ')scale(' + SCgAlphabet.classScale(d) + ')';
             })
 
         g.append('svg:rect')
@@ -335,7 +337,8 @@ SCg.Render.prototype = {
         // add edges that haven't visual
         g = this.d3_edges.enter().append('svg:g')
             .attr('class', function (d) {
-                return self.classState(d, 'SCgEdge');
+                const classStyle = 'SCgEdge ' + SCgAlphabet.classLevel(d);
+                return self.classState(d, classStyle);
             })
             .attr('pointer-events', 'visibleStroke');
 
@@ -413,10 +416,13 @@ SCg.Render.prototype = {
             d.need_observer_sync = false;
 
             let g = d3.select(this)
-                .attr("transform", 'translate(' + d.position.x + ', ' + d.position.y + ')scale(' + d.scaleElem + ')')
-                .attr("style", 'opacity: ' + d.opacityElem)
+                .attr("transform", function (d) {
+                    return 'translate(' + d.position.x + ', ' + d.position.y + ')scale(' + SCgAlphabet.classScale(d) + ')';
+                })
                 .attr('class', function (d) {
-                    return self.classState(d, (d.sc_type & sc_type_constancy_mask) ? 'SCgNode' : 'SCgNodeEmpty');
+                    let classStyle = (d.sc_type & sc_type_constancy_mask) ? 'SCgNode' : 'SCgNodeEmpty';
+                    classStyle += ' ' + SCgAlphabet.classLevel(d);
+                    return self.classState(d, classStyle);
                 });
 
             g.select('use')
@@ -426,7 +432,6 @@ SCg.Render.prototype = {
                 .attr("sc_addr", function (d) {
                     return d.sc_addr;
                 });
-            g.select('text').style('fill', d.fillElem);
 
             g.selectAll('text').text(function (d) {
                 return d.text;
@@ -477,9 +482,9 @@ SCg.Render.prototype = {
                     }
                     return d.scale.y + self.linkBorderWidth * 2;
                 })
-                .attr("style", 'opacity: ' + d.opacityElem)
                 .attr('class', function (d) {
-                    return self.classState(d, 'SCgLink');
+                    const classStyle = 'SCgLink ' + SCgAlphabet.classLevel(d);
+                    return self.classState(d, classStyle);
                 })
                 .attr("sc_addr", function (d) {
                     return d.sc_addr;
@@ -496,7 +501,9 @@ SCg.Render.prototype = {
                 });
 
             g.attr("transform", function (d) {
-                return 'translate(' + (d.position.x - (d.scale.x + self.linkBorderWidth) * 0.5) + ', ' + (d.position.y - (d.scale.y + self.linkBorderWidth) * 0.5) + ')scale(' + d.scaleElem + ')';
+                return 'translate(' + (d.position.x - (d.scale.x + self.linkBorderWidth) * 0.5)
+                    + ', ' + (d.position.y - (d.scale.y + self.linkBorderWidth) * 0.5)
+                    + ')scale(' + SCgAlphabet.classScale(d) + ')';
             });
 
             // Update sc-link identifier (x, y) position according to the sc-link width
@@ -522,16 +529,12 @@ SCg.Render.prototype = {
 
             SCgAlphabet.updateEdge(d, d3_edge, self.containerId);
             d3_edge.attr('class', function (d) {
-                return self.classState(d, 'SCgEdge');
+                const classStyle = 'SCgEdge ' + SCgAlphabet.classLevel(d);
+                return self.classState(d, classStyle);
             })
                 .attr("sc_addr", function (d) {
                     return d.sc_addr;
                 });
-
-            if (SCWeb.core.Main.viewMode === SCgViewMode.DistanceBasedSCgView) {
-                d3_edge.select('.SCgEdgeEndArrowCommon').style('stroke-width', `${d.widthEdge}px`).style('opacity', d.opacityElem);
-                d3_edge.select('.SCgEdgeEndArrowAccess').style('stroke-width', `${d.widthEdge - 6}px`).style('opacity', d.opacityElem);
-            }
         });
 
         this.d3_contours.each(function (d) {
@@ -630,9 +633,9 @@ SCg.Render.prototype = {
                     }
                     return d.scale.y + self.linkBorderWidth * 2;
                 })
-                .attr("style", 'opacity: ' + d.opacityElem)
                 .attr('class', function (d) {
-                    return self.classState(d, 'SCgLink');
+                    const classStyle = 'SCgLink ' + SCgAlphabet.classLevel(d);
+                    return self.classState(d, classStyle);
                 })
                 .attr("sc_addr", function (d) {
                     return d.sc_addr;
@@ -649,7 +652,9 @@ SCg.Render.prototype = {
                 });
 
             g.attr("transform", function (d) {
-                return 'translate(' + (d.position.x - (d.scale.x + self.linkBorderWidth) * 0.5) + ', ' + (d.position.y - (d.scale.y + self.linkBorderWidth) * 0.5) +  ')scale(' + d.scaleElem + ')';
+                return 'translate(' + (d.position.x - (d.scale.x + self.linkBorderWidth) * 0.5)
+                    + ', ' + (d.position.y - (d.scale.y + self.linkBorderWidth) * 0.5)
+                    + ')scale(' + SCgAlphabet.classScale(d) + ')';
             });
 
             // Update sc-link identifier (x, y) position according to the sc-link width

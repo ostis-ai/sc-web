@@ -25,12 +25,48 @@
     fill: #eee;
     stroke: #000;
     stroke-width: 5px;
+    opacity: 1;
+}
+.SCgNode.DBSCgFirstLevelView {
+}
+.SCgNode.DBSCgSecondLevelView {
+}
+.SCgNode.DBSCgThirdLevelView {
+}
+.SCgNode.DBSCgFourthLevelView {
+}
+.SCgNode.DBSCgFifthLevelView {
+    opacity: 0.8;
+}
+.SCgNode.DBSCgSixthLevelView {
+    opacity: 0.6;
+}
+.SCgNode.DBSCgSeventhLevelView {
+    opacity: 0.4;
 }
 
 .SCgLink {
     fill: #eee;
     stroke: #000;
     stroke-width: 5px;
+    opacity: 1;
+}
+.SCgLink.DBSCgFirstLevelView {
+}
+.SCgLink.DBSCgSecondLevelView {
+}
+.SCgLink.DBSCgThirdLevelView {
+}
+.SCgLink.DBSCgFourthLevelView {
+}
+.SCgLink.DBSCgFifthLevelView {
+    opacity: 0.8;
+}
+.SCgLink.DBSCgSixthLevelView {
+    opacity: 0.6;
+}
+.SCgLink.DBSCgSeventhLevelView {
+    opacity: 0.4;
 }
 
 .SCgLinkContainer {
@@ -38,7 +74,6 @@
     padding: 5px 0px 5px 5px;
     min-width: 25px;
     min-height: 25px;
-    
 }
 
 /* --- Edges --- */
@@ -69,13 +104,37 @@
     stroke: #fff;
     fill: none;
 }
+.SCgEdgeCommonForeground.DBSCgFirstLevelView {
+    stroke-width: 5;
+}
+.SCgEdgeCommonForeground.DBSCgSecondLevelView {
+    stroke-width: 4.5;
+}
+.SCgEdgeCommonForeground.DBSCgThirdLevelView {
+    stroke-width: 4;
+}
+.SCgEdgeCommonForeground.DBSCgFourthLevelView {
+    stroke-width: 3.5;
+}
+.SCgEdgeCommonForeground.DBSCgFifthLevelView {
+    stroke-width: 3.5;
+    opacity: 0.8;
+}
+.SCgEdgeCommonForeground.DBSCgSixthLevelView {
+    stroke-width: 3.5;
+    opacity: 0.6;
+}
+.SCgEdgeCommonForeground.DBSCgSeventhLevelView {
+    stroke-width: 3;
+    opacity: 0.4;
+}
 
 .SCgEdgeCommonForegroundVar {
     stroke-width: 5px;
     fill: none;
 }
 
-.SCgEdgeAccessComonDash {
+.SCgEdgeAccessCommonDash {
     stroke-width: 4px;
     stroke-dasharray: 4, 4;
     fill: none;
@@ -84,12 +143,61 @@
 .SCgEdgeAccessPerm {
     stroke-width: 2px;
     fill: none;
+    opacity: 1;
+}
+.SCgEdgeAccessPerm.DBSCgFirstLevelView {
+    stroke-width: 2;
+}
+.SCgEdgeAccessPerm.DBSCgSecondLevelView {
+    stroke-width: 1.5;
+}
+.SCgEdgeAccessPerm.DBSCgThirdLevelView {
+    stroke-width: 1;
+}
+.SCgEdgeAccessPerm.DBSCgFourthLevelView {
+    stroke-width: 0.5;
+}
+.SCgEdgeAccessPerm.DBSCgFifthLevelView {
+    stroke-width: 0.5;
+    opacity: 0.8;
+}
+.SCgEdgeAccessPerm.DBSCgSixthLevelView {
+    stroke-width: 0.5;
+    opacity: 0.6;
+}
+.SCgEdgeAccessPerm.DBSCgSeventhLevelView {
+    stroke-width: 0.5;
+    opacity: 0.4;
 }
 
 .SCgEdgeAccessTemp {
     stroke-width: 2px;
     stroke-dasharray: 2, 2;
     fill: none;
+}
+.SCgEdgeAccessTemp.DBSCgFirstLevelView {
+    stroke-width: 2;
+}
+.SCgEdgeAccessTemp.DBSCgSecondLevelView {
+    stroke-width: 1.5;
+}
+.SCgEdgeAccessTemp.DBSCgThirdLevelView {
+    stroke-width: 1;
+}
+.SCgEdgeAccessTemp.DBSCgFourthLevelView {
+    stroke-width: 0.5;
+}
+.SCgEdgeAccessTemp.DBSCgFifthLevelView {
+    stroke-width: 0.5;
+    opacity: 0.8;
+}
+.SCgEdgeAccessTemp.DBSCgSixthLevelView {
+    stroke-width: 0.5;
+    opacity: 0.6;
+}
+.SCgEdgeAccessTemp.DBSCgSeventhLevelView {
+    stroke-width: 0.5;
+    opacity: 0.4;
 }
 
 .SCgEdgeAccessTempVar {
@@ -100,10 +208,36 @@
 
 .SCgEdgeEndArrowAccess {
     fill: none;
+    stroke-width: 2px;
 }
 
 .SCgEdgeEndArrowCommon {
     fill: none;
+    stroke-width: 8px;
+}
+.SCgEdgeEndArrowCommon.DBSCgFirstLevelView {
+    stroke-width: 8;
+}
+.SCgEdgeEndArrowCommon.DBSCgSecondLevelView {
+    stroke-width: 7.3;
+}
+.SCgEdgeEndArrowCommon.DBSCgThirdLevelView {
+    stroke-width: 6.1;
+}
+.SCgEdgeEndArrowCommon.DBSCgFourthLevelView {
+    stroke-width: 4.9;
+}
+.SCgEdgeEndArrowCommon.DBSCgFifthLevelView {
+    stroke-width: 4.9;
+    opacity: 0.8;
+}
+.SCgEdgeEndArrowCommon.DBSCgSixthLevelView {
+    stroke-width: 4.9;
+    opacity: 0.6;
+}
+.SCgEdgeEndArrowCommon.DBSCgSeventhLevelView {
+    stroke-width: 4;
+    opacity: 0.4;
 }
 
 .SCgEdgeVarDashAccessPerm {
@@ -113,10 +247,58 @@
 .SCgEdgeVarDashCommon {
     stroke-dasharray: 14, 14;
 }
+.SCgEdgeVarDashCommon.DBSCgFirstLevelView {
+    stroke-width: 2;
+}
+.SCgEdgeVarDashCommon.DBSCgSecondLevelView {
+    stroke-width: 1.5;
+}
+.SCgEdgeVarDashCommon.DBSCgThirdLevelView {
+    stroke-width: 1;
+}
+.SCgEdgeVarDashCommon.DBSCgFourthLevelView {
+    stroke-width: 0.5;
+}
+.SCgEdgeVarDashCommon.DBSCgFifthLevelView {
+    stroke-width: 0.5;
+    opacity: 0.8;
+}
+.SCgEdgeVarDashCommon.DBSCgSixthLevelView {
+    stroke-width: 0.5;
+    opacity: 0.6;
+}
+.SCgEdgeVarDashCommon.DBSCgSeventhLevelView {
+    stroke-width: 0.5;
+    opacity: 0.4;
+}
 
 .SCgEdgePermNegDash {
     stroke-dasharray: 0, 20, 2, 6;
     stroke-width: 10px;
+}
+.SCgEdgePermNegDash.DBSCgFirstLevelView {
+    stroke-width: 10px;
+}
+.SCgEdgePermNegDash.DBSCgSecondLevelView {
+    stroke-width: 9px;
+}
+.SCgEdgePermNegDash.DBSCgThirdLevelView {
+    stroke-width: 8px;
+}
+.SCgEdgePermNegDash.DBSCgFourthLevelView {
+    stroke-width: 7px;
+}
+.SCgEdgePermNegDash.DBSCgFifthLevelView {
+    stroke-width: 6px;
+    opacity: 0.8;
+}
+.SCgEdgePermNegDash.DBSCgSixthLevelView {
+    stroke-width: 5px;
+    opacity: 0.6;
+}
+.SCgEdgePermNegDash.DBSCgSeventhLevelView {
+    stroke-width: 4px;
+    opacity: 0.4;
 }
 
 /* TODO */
@@ -229,6 +411,10 @@ path.SCgBusPath {
     stroke: #5E7027;
 }
 
+.SCgStateNewInMemory.DBSCgView {
+    stroke: #1E90FF;
+}
+
 .SCgStateNewInMemory.SCgStateHighlighted {
     stroke: #AEB893;
 }
@@ -246,48 +432,6 @@ path.SCgBusPath {
 }
 
 .SCgStateSelected.SCgStateHighlighted {
-    stroke: #FD8E00;
-}
-
-
-/* ----- Distance based SCg states ----- */
-.DBSCg.SCgStateNormal {
-    stroke: #777;
-}
-
-.DBSCg.SCgStateNormal.SCgStateHighlighted {
-    stroke: #BBB;
-}
-
-.DBSCg.SCgStateMergedWithMemory {
-    stroke: #076EDD;
-}
-
-.DBSCg.SCgStateMergedWithMemory.SCgStateHighlighted {
-    stroke: #7189A3;
-}
-
-.DBSCg.SCgStateNewInMemory {
-    stroke: #1E90FF;
-}
-
-.DBSCg.SCgStateNewInMemory.SCgStateHighlighted {
-    stroke: #AEB893;
-}
-
-.DBSCg.SCgStateFromMemory {
-    stroke: #000;
-}
-
-.DBSCg.SCgStateFromMemory.SCgStateHighlighted {
-    stroke: #444;
-}
-
-.DBSCg.SCgStateSelected {
-    stroke: #C73E00;
-}
-
-.DBSCg.SCgStateSelected.SCgStateHighlighted {
     stroke: #FD8E00;
 }
 
