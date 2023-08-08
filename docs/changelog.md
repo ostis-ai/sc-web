@@ -51,6 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add the ability to drag nodes and resize them in scg
 - Zoom scg by cursor
 - After reloading, the page URL is not replaced
+- Display interface elements only after page load
 
 ### Changed
 - Refactor scg-update-from-sc-translator and scg-update-to-sc-translator
