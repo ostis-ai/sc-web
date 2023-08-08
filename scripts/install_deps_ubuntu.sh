@@ -15,5 +15,4 @@ sudo apt-get autoremove
 
 pip3 install -r "${SC_WEB_PATH}/requirements.txt"
 
-cd "${SC_WEB_PATH}"
-npm install
+cd "${SC_WEB_PATH}" && npm install
