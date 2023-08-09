@@ -568,7 +568,7 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
             updateDefaultSCgWindow(sceneAddr).then(null);
         }
     }
-    else if (sceneAddr) updateLinkWindow(sceneAddr).then(null);
+    else if (self.addr) updateLinkWindow(sceneAddr).then(null);
 };
 
 // ------ Translation ---------

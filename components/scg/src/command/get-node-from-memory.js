@@ -22,11 +22,13 @@ SCgCommandGetNodeFromMemory.prototype = {
             this.object.state = SCgObjectState.Normal;
             delete this.scene.objects[this.sc_addr];
         }
+        this.scene.updateRender();
     },
 
     execute: function () {
         this.object.setText(this.newIdtf);
         this.object.setScAddr(this.newScAddr, true);
         this.object.setScType(this.newType);
+        this.scene.updateRender();
     }
 };

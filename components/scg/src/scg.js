@@ -418,66 +418,30 @@ SCg.Editor.prototype = {
                 input.focus();
             }, 1);
 
-            const checkEnterValue = async (text) => {
-                let linkAddrs = await window.scClient.getLinksByContents([text]);
-                if (!linkAddrs.length) return;
-
-                let template = new sc.ScTemplate();
-                template.tripleWithRelation(
-                    [sc.ScType.NodeVar, '_node'],
-                    sc.ScType.EdgeDCommonVar,
-                    linkAddrs[0][0],
-                    sc.ScType.EdgeAccessVarPosPerm,
-                    new sc.ScAddr(window.scKeynodes['nrel_main_idtf']),
-                );
-
-                const result = await scClient.templateSearch(template);
-                if (!result.length) return;
-
-                return result[0].get("_node");
-            }
-
-            const wrapperChangeApply = async (obj, input, self) => {
-                const addrNodeEnterValue = await checkEnterValue(input[0].value);
-                if (obj.text !== input.val() && !self._selectedIdtf && !addrNodeEnterValue) {
-                    self.scene.commandManager.execute(new SCgCommandChangeIdtf(obj, input.val()));
-                }
-
-                if (!self._selectedIdtf && addrNodeEnterValue) {
-                    if (!addrNodeEnterValue) stop_modal();
-                    const [type] = await scClient.checkElements([addrNodeEnterValue]);
-                    self.scene.commandManager.execute(new SCgCommandGetNodeFromMemory(
-                        obj,
-                        type.value,
-                        input[0].value,
-                        addrNodeEnterValue.value,
-                        self.scene));
-                    stop_modal();
-                }
-
-                if (self._selectedIdtf) {
-                    searchNodeByAnyIdentifier(self._selectedIdtf).then(async (selectedAddr) => {
-                        if (!selectedAddr) stop_modal();
-
-                        const [type] = await scClient.checkElements([selectedAddr]);
-                        self.scene.commandManager.execute(new SCgCommandGetNodeFromMemory(
-                            obj,
-                            type.value,
-                            self._selectedIdtf,
-                            selectedAddr.value,
-                            self.scene));
-                        stop_modal();
+            const wrapperChangeApply = async (obj, selectedIdtf) => {
+                if (obj.text !== selectedIdtf) {
+                    searchNodeByAnyIdentifier(selectedIdtf).then(async (selectedAddr) => {
+                        if (selectedAddr) {
+                            const [type] = await scClient.checkElements([selectedAddr]);
+                            self.scene.commandManager.execute(new SCgCommandGetNodeFromMemory(
+                                obj,
+                                type.value,
+                                selectedIdtf,
+                                selectedAddr.value,
+                                self.scene)
+                            );
+                        } else {
+                            self.scene.commandManager.execute(new SCgCommandChangeIdtf(obj, selectedIdtf));
+                        }
                     });
                 }
-                else stop_modal();
             }
 
             input.keypress(function (e) {
-                if (e.keyCode == KeyCode.Enter || e.keyCode == KeyCode.Escape) {
-
-                    if (e.keyCode == KeyCode.Enter) {
+                if (e.keyCode === KeyCode.Enter || e.keyCode === KeyCode.Escape) {
+                    if (e.keyCode === KeyCode.Enter) {
                         const obj = self.scene.selected_objects[0];
-                        wrapperChangeApply(obj, input, self);
+                        wrapperChangeApply(obj, self._selectedIdtf).then(stop_modal);
                     }
                     stop_modal();
                     e.preventDefault();
@@ -485,15 +449,6 @@ SCg.Editor.prototype = {
             });
 
             if (self.autocompletionVariants) {
-                const types = {
-                    local: function (text) {
-                        return "[" + text + "]";
-                    },
-                    remote: function (text) {
-                        return "<" + text + ">";
-                    }
-                };
-
                 input.typeahead({
                     minLength: 1,
                     highlight: true
@@ -508,7 +463,7 @@ SCg.Editor.prototype = {
                             return string;
                         }
                     }
-                }).bind('typeahead:selected', (event, string, data) => {
+                }).bind('typeahead:selected', (event, string, _data) => {
                     if (string?.length) {
                         self._selectedIdtf = string;
                     }
@@ -521,7 +476,7 @@ SCg.Editor.prototype = {
             // process controls
             $(container + ' #scg-change-idtf-apply').click(async function () {
                 const obj = self.scene.selected_objects[0];
-                wrapperChangeApply(obj, input, self);
+                wrapperChangeApply(obj, self._selectedIdtf).then(stop_modal);
             });
             $(container + ' #scg-change-idtf-cancel').click(function () {
                 stop_modal();
