@@ -29,6 +29,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add optional buttons to delete function
 
 ### Fixed
+- Check OS type in `install_dependencies.sh`
+- Check apt command for Linux OS in `install_deps_ubuntu.sh`
 - Node classes svg elements
 - Memory leaks if elements removed from scg-scene
 - Remove listeners for scg-elements html-objects if elements were removed

@@ -24,7 +24,7 @@
 .SCgNode {
     fill: #eee;
     stroke: #000;
-    stroke-width: 5px;
+    stroke-width: 2.5;
     opacity: 1;
 }
 .SCgNode.DBSCgFirstLevelView {
@@ -48,7 +48,7 @@
 .SCgLink {
     fill: #eee;
     stroke: #000;
-    stroke-width: 5px;
+    stroke-width: 2.5;
     opacity: 1;
 }
 .SCgLink.DBSCgFirstLevelView {
@@ -141,15 +141,15 @@
 }
 
 .SCgEdgeAccessPerm {
-    stroke-width: 2px;
+    stroke-width: 1.5;
     fill: none;
     opacity: 1;
 }
 .SCgEdgeAccessPerm.DBSCgFirstLevelView {
-    stroke-width: 2;
+    stroke-width: 1.5;
 }
 .SCgEdgeAccessPerm.DBSCgSecondLevelView {
-    stroke-width: 1.5;
+    stroke-width: 1.2;
 }
 .SCgEdgeAccessPerm.DBSCgThirdLevelView {
     stroke-width: 1;
@@ -171,15 +171,15 @@
 }
 
 .SCgEdgeAccessTemp {
-    stroke-width: 2px;
+    stroke-width: 1.5;
     stroke-dasharray: 2, 2;
     fill: none;
 }
 .SCgEdgeAccessTemp.DBSCgFirstLevelView {
-    stroke-width: 2;
+    stroke-width: 1.5;
 }
 .SCgEdgeAccessTemp.DBSCgSecondLevelView {
-    stroke-width: 1.5;
+    stroke-width: 1.2;
 }
 .SCgEdgeAccessTemp.DBSCgThirdLevelView {
     stroke-width: 1;
@@ -201,22 +201,46 @@
 }
 
 .SCgEdgeAccessTempVar {
-    stroke-width: 2px;
+    stroke-width: 1.5;
     stroke-dasharray: 2, 2, 2, 2, 2, 2, 2, 14;
     fill: none;
+}
+.SCgEdgeAccessTempVar.DBSCgFirstLevelView {
+    stroke-width: 1.5;
+}
+.SCgEdgeAccessTempVar.DBSCgSecondLevelView {
+    stroke-width: 1.2;
+}
+.SCgEdgeAccessTempVar.DBSCgThirdLevelView {
+    stroke-width: 1;
+}
+.SCgEdgeAccessTempVar.DBSCgFourthLevelView {
+    stroke-width: 0.5;
+}
+.SCgEdgeAccessTempVar.DBSCgFifthLevelView {
+    stroke-width: 0.5;
+    opacity: 0.8;
+}
+.SCgEdgeAccessTempVar.DBSCgSixthLevelView {
+    stroke-width: 0.5;
+    opacity: 0.6;
+}
+.SCgEdgeAccessTempVar.DBSCgSeventhLevelView {
+    stroke-width: 0.5;
+    opacity: 0.4;
 }
 
 .SCgEdgeEndArrowAccess {
     fill: none;
-    stroke-width: 2px;
+    stroke-width: 1.5;
 }
 
 .SCgEdgeEndArrowCommon {
     fill: none;
-    stroke-width: 8px;
+    stroke-width: 7.5;
 }
 .SCgEdgeEndArrowCommon.DBSCgFirstLevelView {
-    stroke-width: 8;
+    stroke-width: 7.5;
 }
 .SCgEdgeEndArrowCommon.DBSCgSecondLevelView {
     stroke-width: 7.3;

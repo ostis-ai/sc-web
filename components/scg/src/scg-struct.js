@@ -56,8 +56,12 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
 
             let object = editor.scene.getObjectByScAddr(addr);
             if (object) {
-                object.setLevel(level);
-                object.setObjectState(state);
+                if (!(sandbox.uniqueObjects && sandbox.uniqueObjects[addr])) {
+                    object.setLevel(level);
+                    object.setObjectState(state);
+
+                    if (sandbox.uniqueObjects) sandbox.uniqueObjects[addr] = object;
+                }
                 continue;
             }
 

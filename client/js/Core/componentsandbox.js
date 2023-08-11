@@ -253,6 +253,8 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
     if (scAddr) self.scAddr = new sc.ScAddr(scAddr);
     if (scene) self.scene = scene;
 
+    self.uniqueObjects = {};
+
     const updateDistanceBasedSCgWindow = async (sceneAddr) => {
         self.layout = () => {
             self.scAddr ? self.scene.updateRender() : self.scene.layout();
@@ -568,7 +570,7 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
             updateDefaultSCgWindow(sceneAddr).then(null);
         }
     }
-    else if (sceneAddr) updateLinkWindow(sceneAddr).then(null);
+    else if (self.addr) updateLinkWindow(sceneAddr).then(null);
 };
 
 // ------ Translation ---------

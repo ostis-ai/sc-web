@@ -417,7 +417,9 @@ SCg.Render.prototype = {
 
             let g = d3.select(this)
                 .attr("transform", function (d) {
-                    return 'translate(' + d.position.x + ', ' + d.position.y + ')scale(' + SCgAlphabet.classScale(d) + ')';
+                    return d.position.x && d.position.y
+                        ? 'translate(' + d.position.x + ', ' + d.position.y + ')scale(' + SCgAlphabet.classScale(d) + ')'
+                        : null;
                 })
                 .attr('class', function (d) {
                     let classStyle = (d.sc_type & sc_type_constancy_mask) ? 'SCgNode' : 'SCgNodeEmpty';
