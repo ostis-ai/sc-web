@@ -31,3 +31,6 @@ sudo chmod a+r /usr/share/keyrings/nodesource.gpg
 sudo apt-get update
 sudo apt-get install --no-install-recommends -y "${packages[@]}"
 sudo apt-get autoremove
+
+"${SC_WEB_PATH}/scripts/install_deps_npm.sh"
+"${SC_WEB_PATH}/scripts/install_deps_python.sh"
