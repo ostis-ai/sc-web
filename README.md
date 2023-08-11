@@ -26,16 +26,14 @@ docker run --rm -it --network=host ostis/sc-web:latest
 Clone repo:
 
 ```sh
-git clone https://github.com/ostis-ai/sc-web
+git clone https://github.com/ostis-ai/sc-web --recursive
 cd sc-web
-git submodule update --init --recursive
 ```
 
 If you're using Ubuntu, you can install node and python runtimes using our script:
 
 ```sh
-cd sc-web/scripts
-./install_deps_ubuntu.sh
+./scripts/install_dependencies.sh
 ```
 
 Otherwise, the following dependencies should be installed:
@@ -57,7 +55,7 @@ npm install
 ### Build the frontend
 
 ```sh
-./build_sc_web.sh
+./scripts/build_sc_web.sh
 ```
 
 ### Run the server
@@ -67,8 +65,7 @@ Note: SC-Web backend requires `sc-server` to be up and running, check `./run_scw
 Use the included script to launch the backend server:
 
 ```sh
-cd sc-web/scripts
-./run_sc_web.sh`
+./scripts/run_sc_web.sh`
 ```
 
 The UI will listen at localhost:8000.
