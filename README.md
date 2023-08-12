@@ -12,7 +12,7 @@ The long term idea of this project is to create a universal rendering mechanism 
 
 ## Quick start
 
-We provide the `ostis/sc-web` Docker image to simplify the integration of this UI with existing OSTIS-systems.
+We provide the `ostis/sc-web` Docker image to simplify the integration of this UI with existing ostis-systems.
 
 ```sh
 # Connect to remote sc-server (or another Docker container)
@@ -65,7 +65,7 @@ Note: SC-Web backend requires `sc-server` to be up and running, check `./run_scw
 Use the included script to launch the backend server:
 
 ```sh
-./scripts/run_sc_web.sh`
+./scripts/run_sc_web.sh
 ```
 
 The UI will listen at localhost:8000.
