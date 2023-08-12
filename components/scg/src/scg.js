@@ -752,7 +752,7 @@ SCg.Editor.prototype = {
                         self.scene.addDeletedObjects(self.scene.selected_objects);
                     }
                 }
-                self.hideTool(self.toolDelete())
+                self.hideTool(self.toolDelete());
                 stop_modal();
                 select.button('toggle');
             })
