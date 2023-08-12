@@ -441,6 +441,7 @@ SCg.Editor.prototype = {
                 if (e.keyCode === KeyCode.Enter || e.keyCode === KeyCode.Escape) {
                     if (e.keyCode === KeyCode.Enter) {
                         const obj = self.scene.selected_objects[0];
+                        if (!self._selectedIdtf) self._selectedIdtf = input.val();
                         wrapperChangeApply(obj, self._selectedIdtf).then(stop_modal);
                     }
                     stop_modal();
@@ -476,6 +477,7 @@ SCg.Editor.prototype = {
             // process controls
             $(container + ' #scg-change-idtf-apply').click(async function () {
                 const obj = self.scene.selected_objects[0];
+                if (!self._selectedIdtf) self._selectedIdtf = input.val();
                 wrapperChangeApply(obj, self._selectedIdtf).then(stop_modal);
             });
             $(container + ' #scg-change-idtf-cancel').click(function () {
@@ -950,6 +952,7 @@ SCg.Editor.prototype = {
                 } else if (this.scene.selected_objects[0] instanceof SCg.ModelContour) {
                     this.showTool(this.toolChangeIdtf());
                 } else if (this.scene.selected_objects[0] instanceof SCg.ModelLink) {
+                    this.showTool(this.toolChangeIdtf());
                     this.showTool(this.toolSetContent());
                 }
             } else if (this.scene.selected_objects.length === 1 && await checkCanEdit(this.scene.selected_objects[0].sc_addr)) {
