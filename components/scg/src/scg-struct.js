@@ -111,7 +111,6 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
 
             const obj = editor.scene.getObjectByScAddr(addr);
             if (!obj) continue;
-            editor.render.updateRemovedObjects([obj]);
             editor.scene.deleteObjects([obj]);
         }
         editor.render.update();
@@ -171,10 +170,20 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
 
                 const [sourceHash, targetHash] = [source.value, target.value];
 
-                await update(
-                    {isAdded: true, sceneElement: source, sceneElementType: sourceType, sceneElementState: sceneElementState});
-                await update(
-                    {isAdded: true, sceneElement: target, sceneElementType: targetType, sceneElementState: sceneElementState});
+                await update({
+                    isAdded: true,
+                    sceneElementConnector: source,
+                    sceneElement: source,
+                    sceneElementType: sourceType,
+                    sceneElementState: sceneElementState
+                });
+                await update({
+                    isAdded: true,
+                    sceneElementConnector: target,
+                    sceneElement: target,
+                    sceneElementType: targetType,
+                    sceneElementState: sceneElementState
+                });
                 addAppendTask(
                     sceneElementHash,
                     [sceneElementHash, sceneElementTypeValue, sceneElementState, sceneElementLevel, sourceHash, targetHash]
