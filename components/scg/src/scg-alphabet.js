@@ -205,6 +205,8 @@ var SCgAlphabet = {
         this.scType2Str[sc_type_node | sc_type_var | sc_type_node_tuple] = 'scg.node.var.tuple';
 
         this.scType2Str[sc_type_link] = 'scg.link';
+        this.scType2Str[sc_type_link | sc_type_const] = 'scg.link.const';
+        this.scType2Str[sc_type_link | sc_type_var] = 'scg.link.var';
     },
 
     classLevel: function (obj) {

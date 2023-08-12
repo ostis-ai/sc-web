@@ -60,7 +60,10 @@ SCg.Editor.prototype = {
             'scg-type-arc-var-temp-neg-access': sc_type_arc_access | sc_type_var | sc_type_arc_neg |
                 sc_type_arc_temp,
             'scg-type-arc-var-temp-fuz-access': sc_type_arc_access | sc_type_var | sc_type_arc_fuz |
-                sc_type_arc_temp
+                sc_type_arc_temp,
+            'scg-type-link': sc_type_link,
+            'scg-type-link-const': sc_type_link | sc_type_const,
+            'scg-type-link-var': sc_type_link | sc_type_var,
         };
 
         this.render = new SCg.Render();
@@ -112,28 +115,41 @@ SCg.Editor.prototype = {
                 },
                 complete: function () {
                     $.ajax({
-                        url: "static/components/html/scg-types-panel-edges.html",
+                        url: "static/components/html/scg-types-panel-links.html",
                         dataType: 'html',
                         success: function (response) {
-                            self.edge_types_panel_content = response;
+                            self.link_types_panel_content = response;
                         },
                         error: function () {
                             SCgDebug.error(
-                                "Error to get edges type change panel");
+                                "Error to get links type change panel");
                         },
                         complete: function () {
                             $.ajax({
-                                url: 'static/components/html/scg-delete-panel.html',
+                                url: "static/components/html/scg-types-panel-edges.html",
                                 dataType: 'html',
                                 success: function (response) {
-                                    self.delete_panel_content = response;
+                                    self.edge_types_panel_content = response;
                                 },
                                 error: function () {
                                     SCgDebug.error(
-                                        "Error to get delete panel");
+                                        "Error to get edges type change panel");
                                 },
                                 complete: function () {
-                                    self.bindToolEvents();
+                                    $.ajax({
+                                        url: 'static/components/html/scg-delete-panel.html',
+                                        dataType: 'html',
+                                        success: function (response) {
+                                            self.delete_panel_content = response;
+                                        },
+                                        error: function () {
+                                            SCgDebug.error(
+                                                "Error to get delete panel");
+                                        },
+                                        complete: function () {
+                                            self.bindToolEvents();
+                                        }
+                                    });
                                 }
                             })
                         }
@@ -502,9 +518,19 @@ SCg.Editor.prototype = {
 
             var obj = self.scene.selected_objects[0];
 
+            let types;
+            if (obj instanceof SCg.ModelEdge) {
+                types = self.edge_types_panel_content;
+            } else if (obj instanceof SCg.ModelNode) {
+                types = self.node_types_panel_content;
+            }
+            else if (obj instanceof SCg.ModelLink) {
+                types = self.link_types_panel_content;
+            }
+
             el = $(this);
             el.popover({
-                content: (obj instanceof SCg.ModelEdge) ? self.edge_types_panel_content : self.node_types_panel_content,
+                content: types,
                 container: container,
                 title: 'Change type',
                 html: true,
@@ -954,6 +980,7 @@ SCg.Editor.prototype = {
                 } else if (this.scene.selected_objects[0] instanceof SCg.ModelLink) {
                     this.showTool(this.toolChangeIdtf());
                     this.showTool(this.toolSetContent());
+                    this.showTool(this.toolChangeType());
                 }
             } else if (this.scene.selected_objects.length === 1 && await checkCanEdit(this.scene.selected_objects[0].sc_addr)) {
                 if (this.scene.selected_objects[0] instanceof SCg.ModelLink) {

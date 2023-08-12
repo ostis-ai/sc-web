@@ -51,6 +51,9 @@
     stroke-width: 2.5;
     opacity: 1;
 }
+.SCgLink.Var {
+    stroke-dasharray: 14, 14;
+}
 .SCgLink.DBSCgFirstLevelView {
 }
 .SCgLink.DBSCgSecondLevelView {

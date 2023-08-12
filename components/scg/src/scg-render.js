@@ -194,6 +194,14 @@ SCg.Render.prototype = {
         item.attr("class", res);
     },
 
+    appendNodeVisual: function (g) {
+        g.append('svg:use')
+            .attr('xlink:href', function (d) {
+                return '#' + SCgAlphabet.getDefId(d.sc_type);
+            })
+            .attr('class', 'sc-no-default-cmd ui-no-tooltip');
+    },
+
     // -------------- draw -----------------------
     update: function () {
         let self = this;
@@ -246,14 +254,6 @@ SCg.Render.prototype = {
                 });
         }
 
-        function appendNodeVisual(g) {
-            g.append('svg:use')
-                .attr('xlink:href', function (d) {
-                    return '#' + SCgAlphabet.getDefId(d.sc_type);
-                })
-                .attr('class', 'sc-no-default-cmd ui-no-tooltip');
-        }
-
         // add nodes that haven't visual
         this.d3_nodes = this.d3_nodes.data(this.scene.nodes, function (d) {
             return d.id;
@@ -269,7 +269,7 @@ SCg.Render.prototype = {
                 return self.classState(d, classStyle);
             });
         eventsWrap(g);
-        appendNodeVisual(g);
+        self.appendNodeVisual(g);
 
         g.append('svg:text')
             .attr('class', 'SCgText')
@@ -297,7 +297,9 @@ SCg.Render.prototype = {
 
         g.append('svg:rect')
             .attr('class', function (d) {
-                return self.classState(d, 'SCgLink');
+                let linkType = 'SCgLink';
+                if (d.sc_type & sc_type_var) linkType += ' Var';
+                return self.classState(d, linkType);
             })
             .attr('class', 'sc-no-default-cmd ui-no-tooltip');
 
@@ -485,7 +487,8 @@ SCg.Render.prototype = {
                     return d.scale.y + self.linkBorderWidth * 2;
                 })
                 .attr('class', function (d) {
-                    const classStyle = 'SCgLink ' + SCgAlphabet.classLevel(d);
+                    let classStyle = 'SCgLink ' + SCgAlphabet.classLevel(d);
+                    if (d.sc_type & sc_type_var) classStyle += ' Var';
                     return self.classState(d, classStyle);
                 })
                 .attr("sc_addr", function (d) {
@@ -636,7 +639,8 @@ SCg.Render.prototype = {
                     return d.scale.y + self.linkBorderWidth * 2;
                 })
                 .attr('class', function (d) {
-                    const classStyle = 'SCgLink ' + SCgAlphabet.classLevel(d);
+                    let classStyle = 'SCgLink ' + SCgAlphabet.classLevel(d);
+                    if (d.sc_type & sc_type_var) classStyle += ' Var';
                     return self.classState(d, classStyle);
                 })
                 .attr("sc_addr", function (d) {

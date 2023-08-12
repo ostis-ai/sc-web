@@ -450,7 +450,7 @@ const SCgStructToScTranslatorImpl = function (_editor, _sandbox) {
             else if (!link.sc_addr) {
                 let construction = new sc.ScConstruction();
                 const linkContent = new sc.ScLinkContent(data, type);
-                construction.createLink(sc.ScType.Link, linkContent, 'link');
+                construction.createLink(new sc.ScType(link.sc_type), linkContent, 'link');
                 const result = await scClient.createElements(construction);
                 const linkAddr = result[construction.getIndex('link')].value;
                 link.setScAddr(linkAddr);

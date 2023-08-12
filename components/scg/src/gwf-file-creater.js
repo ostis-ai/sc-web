@@ -125,7 +125,7 @@ GwfFileCreate = {
 
     createLink: function (node) {
         this.fileString +=
-            '       <node type="node/const/general_node" idtf="" shapeColor="0" id="' + this.getIdObject(node) + '" parent="' + this.haveParent(node) + '" left="0" top="0" right="16.125" bottom="25" textColor="164" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" x="' + node.position.x + '" y="' + node.position.y + '" haveBus="' + this.haveBus(node) + '" idtf_pos="0">\n' +
+            '       <node type="' + this.getTypeObject(node) + '" idtf="' + this.getIdtf(node) + '" shapeColor="0" id="' + this.getIdObject(node) + '" parent="' + this.haveParent(node) + '" left="0" top="0" right="16.125" bottom="25" textColor="164" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" x="' + node.position.x + '" y="' + node.position.y + '" haveBus="' + this.haveBus(node) + '" idtf_pos="0">\n' +
             '           <content type="' + this.getLinkType(node) + '" mime_type="' + this.getLinkMimeType(node) + '" content_visibility="true" file_name=""><![CDATA[' + node.content + ']]></content>\n' +
             '       </node>\n';
     },
@@ -169,8 +169,8 @@ GwfFileCreate = {
     },
 
     getTypeObject: function (object) {
-        for (var key in GwfObjectInfoReader.gwf_type_to_scg_type) {
-            if (GwfObjectInfoReader.gwf_type_to_scg_type[key] == object.sc_type) {
+        for (let key in GwfObjectInfoReader.gwf_type_to_scg_type) {
+            if (GwfObjectInfoReader.gwf_type_to_scg_type[key] === object.sc_type) {
                 return key
             }
         }
@@ -198,10 +198,10 @@ GwfFileCreate = {
 
     getLinkType: function (object) {
         // TODO add work with file(example type="4" mime_type="image/png")
-        if (object.contentType == 'string') {
+        if (object.contentType === 'string') {
             return "1";
         }
-        if (object.contentType == 'html') {    // KBE not support HTML, save as string
+        if (object.contentType === 'html') {    // KBE not support HTML, save as string
             return "1";
         } else {
             return "3";
