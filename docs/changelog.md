@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Change sc.g-links types
+- Change sc.g-links identifiers
 - Edit mode DistanceBasedSCgView with url argument `view_mode`
 - Debounced buffered append and remove tasks in scg-update-from-sc-translator
 - Links autoscaling with images and pdf size
@@ -56,6 +58,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Display interface elements only after page load
 
 ### Changed
+- SC.g-elements icons in change type tools
 - Refactor scg-update-from-sc-translator and scg-update-to-sc-translator
 - View identifiers with scn-component from sc-json
 

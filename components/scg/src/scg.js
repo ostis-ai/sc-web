@@ -523,8 +523,7 @@ SCg.Editor.prototype = {
                 types = self.edge_types_panel_content;
             } else if (obj instanceof SCg.ModelNode) {
                 types = self.node_types_panel_content;
-            }
-            else if (obj instanceof SCg.ModelLink) {
+            } else if (obj instanceof SCg.ModelLink) {
                 types = self.link_types_panel_content;
             }
 
