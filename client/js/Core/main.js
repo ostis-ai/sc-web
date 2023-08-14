@@ -1,7 +1,6 @@
 const scHelper = null;
 const scKeynodes = null;
 const currentYear = new Date().getFullYear();
-const last_page_cmd_args = 'last_page_cmd_args';
 
 const SCgEditMode = {
     SCgModeSelect: 0,
@@ -234,8 +233,12 @@ SCWeb.core.Main = {
 
         let argumentAddr = window.scKeynodes['ui_start_sc_element'];
         const last_page_cmd_args = [getCookie('last_page_cmd_args')]
-        if (last_page_cmd_args[0]) {
-            argumentAddr = last_page_cmd_args[0];
+        let first_last_page_cmd_arg = last_page_cmd_args[0];
+        if (first_last_page_cmd_arg) {
+            first_last_page_cmd_arg = parseInt(first_last_page_cmd_arg);
+            if ((await window.scClient.checkElements([new sc.ScAddr(first_last_page_cmd_arg)]))[0]) {
+                argumentAddr = first_last_page_cmd_arg;
+            }
         }
 
         let startScElements = await window.scHelper.getSetElements(argumentAddr);
@@ -266,7 +269,7 @@ SCWeb.core.Main = {
             if (result.question !== undefined) {
                 const commandState = new SCWeb.core.CommandState(cmd_addr, cmd_args);
                 SCWeb.ui.WindowManager.appendHistoryItem(result.question, commandState);
-                setCookie(last_page_cmd_args, cmd_args);
+                setCookie('last_page_cmd_args', cmd_args);
             } else if (result.command !== undefined) {
             } else {
                 alert("There are no any answer. Try another request");

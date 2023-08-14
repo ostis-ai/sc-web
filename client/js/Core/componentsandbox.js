@@ -76,7 +76,7 @@ SCWeb.core.ComponentSandbox = function (options) {
                             isAdded: true,
                             connectorFromScene: edge,
                             sceneElement: otherAddr,
-                            sceneElementState: SCgObjectState.NewInMemory
+                            sceneElementState: SCgObjectState.MergedWithMemory
                         });
                     }
                 }

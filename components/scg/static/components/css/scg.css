@@ -51,6 +51,9 @@
     stroke-width: 2.5;
     opacity: 1;
 }
+.SCgLink.Var {
+    stroke-dasharray: 14, 14;
+}
 .SCgLink.DBSCgFirstLevelView {
 }
 .SCgLink.DBSCgSecondLevelView {
@@ -424,7 +427,11 @@ path.SCgBusPath {
 }
 
 .SCgStateMergedWithMemory {
-    stroke: #076EDD;
+    stroke: #000;
+}
+
+.SCgStateMergedWithMemory.DBSCgView {
+    stroke: #1E90FF;
 }
 
 .SCgStateMergedWithMemory.SCgStateHighlighted {
@@ -433,10 +440,6 @@ path.SCgBusPath {
 
 .SCgStateNewInMemory {
     stroke: #5E7027;
-}
-
-.SCgStateNewInMemory.DBSCgView {
-    stroke: #1E90FF;
 }
 
 .SCgStateNewInMemory.SCgStateHighlighted {

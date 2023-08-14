@@ -22,6 +22,9 @@ GwfObjectInfoReader = {
         "node/var/perm/terminal": sc_type_node | sc_type_var | sc_type_node_material,
         "node/var/perm/group": sc_type_node | sc_type_var | sc_type_node_class,
 
+        "node/const/general": sc_type_link | sc_type_const,
+        "node/var/general": sc_type_link | sc_type_var,
+
         "pair/const/fuz/temp/orient/membership": sc_type_arc_access | sc_type_const | sc_type_arc_fuz | sc_type_arc_temp,
         "pair/const/fuz/perm/orient/membership": sc_type_arc_access | sc_type_const | sc_type_arc_fuz | sc_type_arc_perm,
         "pair/const/pos/temp/orient/membership": sc_type_arc_access | sc_type_const | sc_type_arc_pos | sc_type_arc_temp,
