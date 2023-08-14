@@ -774,8 +774,9 @@ class ScSession:
                     self.handler.set_secure_cookie(
                         "session_key", self.session_key)
                 self.sc_addr = self._session_get_sc_addr()
-                if not self.sc_addr.is_valid():
-                    self.sc_addr = self._session_new_sc_addr()
+
+            if not self.sc_addr.is_valid():
+                self.sc_addr = self._session_new_sc_addr()
 
         # todo check user addr
         return self.sc_addr
