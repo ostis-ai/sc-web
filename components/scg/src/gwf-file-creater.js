@@ -171,7 +171,7 @@ GwfFileCreate = {
     getTypeObject: function (object) {
         for (let key in GwfObjectInfoReader.gwf_type_to_scg_type) {
             if (GwfObjectInfoReader.gwf_type_to_scg_type[key] === object.sc_type) {
-                return key
+                return key;
             }
         }
     },
