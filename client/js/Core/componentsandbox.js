@@ -62,6 +62,30 @@ SCWeb.core.ComponentSandbox = function (options) {
         }
     }));
 
+
+    if (SCWeb.core.Main.viewMode === SCgViewMode.DistanceBasedSCgView) {
+        const debouncedFunc = (func, wait) => {
+            let timerId;
+
+            const clear = () => {
+                clearTimeout(timerId);
+            };
+
+            const debouncedCall = () => {
+                clearTimeout(timerId);
+                timerId = setTimeout(func, wait);
+            };
+
+            return [debouncedCall, clear];
+        };
+
+        this.updateContentDelayTime = 200;
+        [this.debouncedUpdateContent] = debouncedFunc(
+            () => self.updateContent().then(null),
+            this.updateContentDelayTime
+        );
+    }
+
     // listen struct changes
     /// @todo possible need to wait event creation
     if (this.is_struct) {
@@ -72,12 +96,17 @@ SCWeb.core.ComponentSandbox = function (options) {
                 if (self.eventStructUpdate) {
                     const type = (await scClient.checkElements([edge]))[0];
                     if (type.equal(sc.ScType.EdgeAccessConstPosPerm)) {
-                        self.eventStructUpdate({
-                            isAdded: true,
-                            connectorFromScene: edge,
-                            sceneElement: otherAddr,
-                            sceneElementState: SCgObjectState.MergedWithMemory
-                        });
+                        if (SCWeb.core.Main.viewMode === SCgViewMode.DistanceBasedSCgView) {
+                            self.updatableObjectStates[otherAddr.value] = SCgObjectState.MergedWithMemory;
+                            self.debouncedUpdateContent();
+                        } else {
+                            self.eventStructUpdate({
+                                isAdded: true,
+                                connectorFromScene: edge,
+                                sceneElement: otherAddr,
+                                sceneElementState: SCgObjectState.MergedWithMemory
+                            });
+                        }
                     }
                 }
             });
@@ -253,8 +282,6 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
     if (scAddr) self.scAddr = new sc.ScAddr(scAddr);
     if (scene) self.scene = scene;
 
-    self.uniqueObjects = {};
-
     const updateDistanceBasedSCgWindow = async (sceneAddr) => {
         self.layout = () => {
             self.scAddr ? self.scene.updateRender() : self.scene.layout();
@@ -346,20 +373,24 @@ SCWeb.core.ComponentSandbox.prototype.updateContent = async function (scAddr, sc
             if (tracedElements.has(mainElementHash)) return;
             tracedElements.add(mainElementHash);
 
-            const connectorElements = await window.scHelper.getConnectorElements(mainElement);
-            const [sourceElement, targetElement] = connectorElements;
-            const [sourceElementType, targetElementType] = await scClient.checkElements(connectorElements);
-
-            if (!edgeFromScene) {
+            let sourceElement, targetElement;
+            if (edgeFromScene) {
+                [sourceElement, targetElement] = await window.scHelper.getConnectorElements(mainElement);
+            } else {
                 let scTemplateSearchEdgeElements = new sc.ScTemplate();
-                scTemplateSearchEdgeElements.triple(
-                    sceneAddr,
-                    [sc.ScType.EdgeAccessVarPosPerm, "_edge_from_scene"],
+                scTemplateSearchEdgeElements.tripleWithRelation(
+                    [sc.ScType.Unknown, "_source"],
                     mainElement,
+                    [sc.ScType.Unknown, "_target"],
+                    [sc.ScType.EdgeAccessVarPosPerm, "_edge_from_scene"],
+                    sceneAddr,
                 );
                 const result = await scClient.templateSearch(scTemplateSearchEdgeElements);
-                edgeFromScene = result.length ? result[0].get("_edge_from_scene") : mainElement;
+                if (!result.length) return;
+                [sourceElement, targetElement] = [result[0].get("_source"), result[0].get("_target")];
+                edgeFromScene = result[0].get("_edge_from_scene");
             }
+            [sourceElementType, targetElementType] = await scClient.checkElements([sourceElement, targetElement]);
 
             const sourceElementHash = sourceElement.value;
             nextLevelElements[sourceElementHash] = {type: sourceElementType, level: nextLevel};

@@ -237,6 +237,7 @@ SCg.Render.prototype = {
                             return;
 
                         if (self.sandbox.isSceneWithKey) {
+                            self.sandbox.clearUpdate();
                             self.sandbox.updateContent(d.sc_addr, self.scene);
                         }
                         return;

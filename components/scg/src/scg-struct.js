@@ -42,7 +42,6 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
     };
 
     const doAppendBatch = function (batch) {
-
         for (let i in batch) {
             const task = batch[i];
             const addr = task[0];
@@ -50,18 +49,25 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
             let state = task[2];
             const level = task[3];
 
-            if (!state) state = SCgObjectState.FromMemory;
-
             delete addrsToAppendTasks[addr];
+
+            if (!state) {
+                if (sandbox.updatableObjectStates && sandbox.updatableObjectStates[addr]) {
+                    state = sandbox.updatableObjectStates[addr];
+                } else {
+                    state = SCgObjectState.FromMemory;
+                }
+            }
 
             let object = editor.scene.getObjectByScAddr(addr);
             if (object) {
-                if (!(sandbox.uniqueObjects && sandbox.uniqueObjects[addr])) {
+                if (!(sandbox.onceUpdatableObjects && sandbox.onceUpdatableObjects[addr])) {
                     object.setLevel(level);
                     object.setObjectState(state);
 
-                    if (sandbox.uniqueObjects) sandbox.uniqueObjects[addr] = object;
+                    if (sandbox.onceUpdatableObjects) sandbox.onceUpdatableObjects[addr] = object;
                 }
+
                 continue;
             }
 
