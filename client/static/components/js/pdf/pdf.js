@@ -177,8 +177,8 @@ const PdfViewer = function(sandbox) {
         return bytes.buffer;
     }
     
-    if (this.sandbox.addr && !this.sandbox.content) {
-        window.scClient.getLinkContents([new sc.ScAddr(this.sandbox.addr)]).then((contents) => {
+    if (this.sandbox.addr.isValid() && !this.sandbox.content) {
+        window.scClient.getLinkContents([this.sandbox.addr]).then((contents) => {
             if (contents.length) {
                const base64Pdf = contents[0].data;
                const buffer = base64ToArrayBuffer(base64Pdf);

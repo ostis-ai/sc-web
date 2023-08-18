@@ -29,7 +29,7 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
             clearTimeout(timerId);
             timerId = setTimeout(() => {
                 func(tasks.splice(0, tasks.length));
-                sandbox.postLayout();
+                sandbox.postLayout(editor.scene);
             }, wait);
 
             if (tasks.length === maxBatchLength) {
@@ -51,13 +51,7 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
 
             delete addrsToAppendTasks[addr];
 
-            if (!state) {
-                if (sandbox.updatableObjectStates && sandbox.updatableObjectStates[addr]) {
-                    state = sandbox.updatableObjectStates[addr];
-                } else {
-                    state = SCgObjectState.FromMemory;
-                }
-            }
+            if (!state) state = SCgObjectState.FromMemory;
 
             let object = editor.scene.getObjectByScAddr(addr);
             if (object) {
@@ -83,7 +77,7 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
                 }
                 object = SCg.Creator.createEdge(bObj, eObj, type);
             } else if (type & sc_type_link) {
-                const containerId = 'scg-window-' + sandbox.addr + '-' + addr + '-' + new Date().getUTCMilliseconds();
+                const containerId = 'scg-window-' + sandbox.addr.value + '-' + addr + '-' + new Date().getUTCMilliseconds();
                 object = SCg.Creator.createLink(type, randomPos(), containerId);
                 resolveIdtf(addr, object);
             }
@@ -95,7 +89,7 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
             object.setObjectState(state);
         }
 
-        sandbox.layout();
+        sandbox.layout(editor.scene);
     };
 
     const [debounceBufferedDoAppendBatch] = debounceBuffered(doAppendBatch, batchDelayTime);
@@ -220,7 +214,7 @@ const SCgStructToScTranslatorImpl = function (_editor, _sandbox) {
     const appendToConstruction = async function (obj) {
         let scTemplate = new sc.ScTemplate();
         scTemplate.triple(
-            new sc.ScAddr(sandbox.addr),
+            sandbox.addr,
             [sc.ScType.EdgeAccessVarPosPerm, 'arc'],
             new sc.ScAddr(obj.sc_addr)
         );

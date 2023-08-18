@@ -17,7 +17,7 @@ GoogleMapLinkViewer.prototype = {
         this._container = '#' + sandbox.container;
         this.sandbox = sandbox;
 
-        if (this.sandbox.addr) {
+        if (this.sandbox.addr.isValid()) {
             window.scClient.getLinkContents([this.sandbox.addr]).then($.proxy(this.receiveData, this));
         }
     },

@@ -141,7 +141,6 @@ const SCgViewerWindow = function (sandbox) {
     this.sandbox.eventApplyTranslation = $.proxy(this.applyTranslation, this);
     this.sandbox.eventStructUpdate = $.proxy(this.eventStructUpdate, this);
 
-    if (SCWeb.core.Main.viewMode === SCgViewMode.DistanceBasedSCgView) this.sandbox.clearUpdate();
     this.sandbox.updateContent();
 };
 

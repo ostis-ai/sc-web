@@ -34,6 +34,7 @@ module.exports = function(grunt) {
                       webCoreCompPath + 'Core/componentsandbox.js',
                       webCoreCompPath + 'Core/translation.js',
                       webCoreCompPath + 'Core/componentmanger.js',
+                      webCoreCompPath + 'Core/scg-content-searcher.js',
                       webCoreCompPath + 'Core/eventmanager.js',
                       webCoreCompPath + 'Ui/namespace.js',
                       webCoreCompPath + 'Ui/menu.js',
