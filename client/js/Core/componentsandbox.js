@@ -203,7 +203,7 @@ SCWeb.core.ComponentSandbox.prototype.createViewersForScStructs = function (cont
 SCWeb.core.ComponentSandbox.prototype.updateContent = async function (keyElement) {
     const keyElements = keyElement ? [keyElement] : null;
     if (!await this.searcher.searchContent(keyElements)) {
-        this.searchers[SCgViewMode.DefaultSCgView].searchContent();
+        await this.searchers[SCgViewMode.DefaultSCgView].searchContent();
     }
 };
 
