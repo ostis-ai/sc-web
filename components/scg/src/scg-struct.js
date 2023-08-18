@@ -69,8 +69,14 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
                 object = SCg.Creator.createNode(type, randomPos(), '');
                 resolveIdtf(addr, object);
             } else if (type & sc_type_arc_mask) {
-                const bObj = editor.scene.getObjectByScAddr(task[4]);
-                const eObj = editor.scene.getObjectByScAddr(task[5]);
+                const sourceHash = task[4];
+                const targetHash = task[5];
+
+                // @TODO: implement reflexive sc.g-connectors viewing
+                if (sourceHash === targetHash) continue;
+
+                const bObj = editor.scene.getObjectByScAddr(sourceHash);
+                const eObj = editor.scene.getObjectByScAddr(targetHash);
                 if (!bObj || !eObj) {
                     addAppendTask(addr, task);
                     continue;
