@@ -29,16 +29,15 @@ SCWeb.core.ComponentSandbox = function (options) {
 
     if (this.is_struct) {
         this.eventStructUpdate = null;
-        this.searcher = SCWeb.core.Main.viewMode === SCgViewMode.DistanceBasedSCgView
-            ? new SCWeb.core.DistanceBasedSCgSearcher(this, this.addr)
-            : new SCWeb.core.DefaultSCgSearcher(this, this.addr)
+        this.searchers = {};
+        this.searchers[SCgViewMode.DefaultSCgView] = new SCWeb.core.DefaultSCgSearcher(this, this.addr);
+        this.searchers[SCgViewMode.DistanceBasedSCgView] = new SCWeb.core.DistanceBasedSCgSearcher(this, this.addr);
+        this.searcher = this.searchers[SCWeb.core.Main.viewMode];
+        this.searcher.initAppendRemoveElementsUpdate().then(null);
     } else {
         this.eventDataAppend = null;
         this.searcher = new SCWeb.core.SCgLinkContentSearcher(this, this.addr);
     }
-
-    this.event_add_element = null;
-    this.event_remove_element = null;
 
     this.listeners = [];
     this.keynodes = options.keynodes;
@@ -56,49 +55,11 @@ SCWeb.core.ComponentSandbox = function (options) {
     // listen translation
     this.listeners.push(SCWeb.core.EventManager.subscribe("translation/update", this, this.updateTranslation));
     this.listeners.push(SCWeb.core.EventManager.subscribe("translation/get", this, function (objects) {
-        var items = self.getObjectsToTranslate();
-        for (var i in items) {
+        let items = self.getObjectsToTranslate();
+        for (let i in items) {
             objects.push(items[i]);
         }
     }));
-
-    // listen struct changes
-    /// @todo possible need to wait event creation
-    if (this.is_struct) {
-        let addArcEventRequest = new sc.ScEventParams(
-            this.addr,
-            sc.ScEventType.AddOutgoingEdge,
-            async (elAddr, edge, otherAddr) => {
-                if (!self.eventStructUpdate) return;
-                const type = (await scClient.checkElements([edge]))[0];
-                if (!type.equal(sc.ScType.EdgeAccessConstPosPerm)) return;
-
-                self.eventStructUpdate({
-                    isAdded: true,
-                    connectorFromScene: edge,
-                    sceneElement: otherAddr,
-                    sceneElementState: SCgObjectState.MergedWithMemory
-                });
-            });
-        let removeArcEventRequest = new sc.ScEventParams(
-            this.addr,
-            sc.ScEventType.RemoveOutgoingEdge,
-            async (elAddr, edge, otherAddr) => {
-                if (self.eventStructUpdate) return;
-                if (!(await window.scHelper.checkEdge(elAddr.value, sc.ScType.EdgeAccessConstPosPerm, otherAddr.value))) return;
-
-                self.eventStructUpdate({
-                    isAdded: false,
-                    connectorFromScene: edge,
-                    sceneElement: otherAddr
-                });
-            });
-        window.scClient.eventsCreate([addArcEventRequest, removeArcEventRequest])
-            .then((addArcEvent, removeArcEvent) => {
-                self.event_add_element = addArcEvent;
-                self.event_remove_element = removeArcEvent;
-            });
-    }
 };
 
 SCWeb.core.ComponentSandbox.prototype = {
@@ -114,13 +75,7 @@ SCWeb.core.ComponentSandbox.prototype.destroy = function () {
         SCWeb.core.EventManager.unsubscribe(this.listeners[l]);
     }
 
-    /// @todo possible need to wait event destroy
-    let events = [];
-    if (this.event_add_element)
-        events.push(this.event_add_element);
-    if (this.event_remove_element)
-        events.push(this.event_remove_element);
-    window.scClient.eventsDestroy(events);
+    if (this.is_struct) this.searcher.destroyAppendRemoveElementsUpdate().then(null);
 };
 
 /**
@@ -154,7 +109,7 @@ SCWeb.core.ComponentSandbox.prototype.getLanguages = function () {
 };
 
 /*!
- * @param {Array} args Array of sc-addrs of commnad arguments.
+ * @param {Array} args Array of sc-addrs of command arguments.
  */
 SCWeb.core.ComponentSandbox.prototype.doDefaultCommand = function (args) {
     SCWeb.core.Main.doDefaultCommand(args);
@@ -167,13 +122,12 @@ SCWeb.core.ComponentSandbox.prototype.resolveElementsAddr = function (parentSele
 };
 
 /*!
- * Genarate html for new window container
+ * Generate html for new window container
  * @param {String} containerId ID that will be set to container
  * @param {String} classes Classes that will be added to container
  * @param {String} addr sc-addr of window
  */
 SCWeb.core.ComponentSandbox.prototype.generateWindowContainer = function (containerId, containerClasses, controlClasses, addr) {
-
     return SCWeb.ui.WindowManager.generateWindowContainer(containerId, containerClasses, controlClasses, addr);
 };
 
@@ -248,7 +202,9 @@ SCWeb.core.ComponentSandbox.prototype.createViewersForScStructs = function (cont
  */
 SCWeb.core.ComponentSandbox.prototype.updateContent = async function (keyElement) {
     const keyElements = keyElement ? [keyElement] : null;
-    await this.searcher.searchContent(keyElements);
+    if (!await this.searcher.searchContent(keyElements)) {
+        this.searchers[SCgViewMode.DefaultSCgView].searchContent();
+    }
 };
 
 // ------ Translation ---------

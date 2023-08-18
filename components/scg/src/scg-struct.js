@@ -145,16 +145,18 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
             if (data.sceneElementSource && data.sceneElementTarget) {
                 const sourceHash = data.sceneElementSource.value;
                 const sourceTypeValue = data.sceneElementSourceType.value;
+                const sourceState = data.sceneElementSourceState;
                 const sourceLevel = data.sceneElementSourceLevel;
                 if (!data.sceneElementSourceType.isEdge()) {
-                    addAppendTask(sourceHash, [sourceHash, sourceTypeValue, sceneElementState, sourceLevel]);
+                    addAppendTask(sourceHash, [sourceHash, sourceTypeValue, sourceState, sourceLevel]);
                 }
 
                 const targetHash = data.sceneElementTarget.value;
                 const targetTypeValue = data.sceneElementTargetType.value;
+                const targetState = data.sceneElementTargetState;
                 const targetLevel = data.sceneElementTargetLevel;
                 if (!data.sceneElementTargetType.isEdge()) {
-                    addAppendTask(targetHash, [targetHash, targetTypeValue, sceneElementState, targetLevel]);
+                    addAppendTask(targetHash, [targetHash, targetTypeValue, targetState, targetLevel]);
                 }
 
                 addAppendTask(

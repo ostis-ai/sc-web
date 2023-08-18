@@ -234,7 +234,6 @@ SCg.Render.prototype = {
                     if (SCWeb.core.Main.viewMode === SCgViewMode.DistanceBasedSCgView) {
                         if (self.scene.getObjectByScAddr(d.sc_addr) instanceof SCg.ModelEdge) return;
 
-                        self.sandbox.clearUpdate();
                         self.sandbox.updateContent(new sc.ScAddr(d.sc_addr));
                         return;
                     }

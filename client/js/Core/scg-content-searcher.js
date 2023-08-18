@@ -1,4 +1,4 @@
-SCWeb.core.DefaultSCgSearcher = function (sandbox, structAddr) {
+SCWeb.core.DefaultSCgSearcher = function (sandbox) {
     let self = this;
     this.maxSCgTriplesNumber = 300;
 
@@ -21,7 +21,7 @@ SCWeb.core.DefaultSCgSearcher = function (sandbox, structAddr) {
     const searchStructureElements = async function () {
         let scTemplate = new sc.ScTemplate();
         scTemplate.triple(
-            structAddr,
+            sandbox.addr,
             [sc.ScType.EdgeAccessVarPosPerm, "_edge_from_scene"],
             [sc.ScType.Unknown, "_scene_edge"],
         );
@@ -41,20 +41,112 @@ SCWeb.core.DefaultSCgSearcher = function (sandbox, structAddr) {
 
             sandbox.eventStructUpdate(triple);
         }
-    }
+
+        return true;
+    };
+
+    const initAppendRemoveElementsUpdate = async function () {
+        const addArcEventRequest = new sc.ScEventParams(
+            sandbox.addr,
+            sc.ScEventType.AddOutgoingEdge,
+            async (elAddr, edge, otherAddr) => {
+                if (!sandbox.eventStructUpdate) return;
+                const type = (await scClient.checkElements([edge]))[0];
+                if (!type.equal(sc.ScType.EdgeAccessConstPosPerm)) return;
+
+                sandbox.eventStructUpdate({
+                    isAdded: true,
+                    connectorFromScene: edge,
+                    sceneElement: otherAddr,
+                    sceneElementState: SCgObjectState.MergedWithMemory
+                });
+            });
+        const removeArcEventRequest = new sc.ScEventParams(
+            sandbox.addr,
+            sc.ScEventType.RemoveOutgoingEdge,
+            async (elAddr, edge, otherAddr) => {
+                if (sandbox.eventStructUpdate) return;
+                if (!(await window.scHelper.checkEdge(elAddr.value, sc.ScType.EdgeAccessConstPosPerm, otherAddr.value))) return;
+
+                sandbox.eventStructUpdate({
+                    isAdded: false,
+                    connectorFromScene: edge,
+                    sceneElement: otherAddr
+                });
+            });
+        [self.addArcEvent, self.removeArcEvent] = await window.scClient.eventsCreate([addArcEventRequest, removeArcEventRequest]);
+    };
+
+    const destroyAppendRemoveElementsUpdate = async function () {
+        let events = [];
+        if (self.addArcEvent) events.push(self.addArcEvent);
+        if (self.addArcEvent) events.push(self.addArcEvent);
+        await window.scClient.eventsDestroy(events);
+    };
 
     return {
         searchContent: async function () {
             return await searchStructureElements();
         },
+
+        initAppendRemoveElementsUpdate: async function () {
+            await initAppendRemoveElementsUpdate();
+        },
+
+        destroyAppendRemoveElementsUpdate: async function () {
+            await destroyAppendRemoveElementsUpdate();
+        },
     };
 };
 
-SCWeb.core.DistanceBasedSCgSearcher = function (sandbox, structAddr) {
+SCWeb.core.DistanceBasedSCgSearcher = function (sandbox) {
+    let self = this;
+    this.addArcEvent = null;
+    this.removeArcEvent = null;
+    this.newElements = [];
+    this.appendUpdateDelayTime = 200;
+
+    const searchFromKeyElements = async function (keyElements) {
+        keyElements = keyElements
+            ? await verifyStructureElements(sandbox.addr, keyElements)
+            : await window.scHelper.getStructureMainKeyElements(sandbox.addr);
+        if (!keyElements.length) keyElements = await window.scHelper.getStructureKeyElements(sandbox.addr);
+        if (!keyElements.length) return false;
+
+        const elementTypes = await scClient.checkElements(keyElements.map(triple => triple.structureElement));
+
+        let mainElements = {};
+        for (let i = 0; i < keyElements.length; ++i) {
+            const triple = keyElements[i];
+            const edgeFromScene = triple.connectorFromStructure;
+            const sceneElement = triple.structureElement;
+            const sceneElementType = elementTypes[i];
+            const level = SCgObjectLevel.First;
+
+            mainElements[sceneElement.value] = {
+                connectorFromScene: edgeFromScene,
+                type: sceneElementType,
+                state: SCgObjectState.FromMemory,
+                level: level,
+            };
+
+            sandbox.eventStructUpdate({
+                isAdded: true,
+                connectorFromScene: edgeFromScene,
+                sceneElement: sceneElement,
+                sceneElementType: sceneElementType,
+                sceneElementState: SCgObjectState.FromMemory,
+                sceneElementLevel: level,
+            });
+        }
+
+        await searchAllLevelEdges([mainElements], new Set(), new Set());
+        return true;
+    };
+
     const searchAllLevelEdges = async function (elementsArr, visitedElements, tracedElements) {
         let newElementsArr = [];
         for (let i = 0; i < elementsArr.length; i++) {
-
             let levelElements = elementsArr[i];
             for (let elementHash in levelElements) {
                 if (visitedElements.has(elementHash)) continue;
@@ -62,12 +154,12 @@ SCWeb.core.DistanceBasedSCgSearcher = function (sandbox, structAddr) {
 
                 const element = new sc.ScAddr(parseInt(elementHash));
 
-                const [elementType, level, edgeFromScene] = Object.values(levelElements[elementHash]);
+                const [edgeFromScene, elementType, state, level] = Object.values(levelElements[elementHash]);
                 const nextLevel = level >= SCgObjectLevel.Count - 1 ? SCgObjectLevel.Seventh : level + 1;
 
                 const searchFunc = elementType.isEdge() ? searchLevelEdgeElements : searchLevelEdges;
                 const newElements = await searchFunc(
-                    edgeFromScene, element, elementType, level, nextLevel, tracedElements);
+                    edgeFromScene, element, elementType, state, level, nextLevel, tracedElements);
                 if (Object.keys(newElements).length) newElementsArr.push(newElements);
             }
         }
@@ -76,36 +168,36 @@ SCWeb.core.DistanceBasedSCgSearcher = function (sandbox, structAddr) {
     };
 
     const searchLevelEdges = async function (
-        edgeFromScene, mainElement, mainElementType, level, nextLevel, tracedElements) {
+        edgeFromScene, mainElement, mainElementType, state, level, nextLevel, tracedElements) {
         let nextLevelElements = {};
 
         await searchLevelEdgesByDirection(
             edgeFromScene, mainElement, mainElementType,
-            level, nextLevel, nextLevelElements, tracedElements, true
+            state, level, nextLevel, nextLevelElements, tracedElements, true
         );
         await searchLevelEdgesByDirection(
             edgeFromScene, mainElement, mainElementType,
-            level, nextLevel, nextLevelElements, tracedElements, false
+            state, level, nextLevel, nextLevelElements, tracedElements, false
         );
 
         return nextLevelElements;
     };
 
     const searchLevelEdgeElements = async function (
-        edgeFromScene, mainElement, mainElementType, level, nextLevel, tracedElements) {
+        edgeFromScene, mainElement, mainElementType, state, level, nextLevel, tracedElements) {
         let nextLevelElements = {};
 
         await searchLevelConnectorElements(
             edgeFromScene, mainElement, mainElementType,
-            level, nextLevel, nextLevelElements, tracedElements
+            state, level, nextLevel, nextLevelElements, tracedElements
         );
         await searchLevelEdgesByDirection(
             edgeFromScene, mainElement, mainElementType,
-            level, nextLevel, nextLevelElements, tracedElements, true
+            state, level, nextLevel, nextLevelElements, tracedElements, true
         );
         await searchLevelEdgesByDirection(
             edgeFromScene, mainElement, mainElementType,
-            level, nextLevel, nextLevelElements, tracedElements, false
+            state, level, nextLevel, nextLevelElements, tracedElements, false
         );
 
         return nextLevelElements;
@@ -113,7 +205,7 @@ SCWeb.core.DistanceBasedSCgSearcher = function (sandbox, structAddr) {
 
     const searchLevelConnectorElements = async function (
         edgeFromScene, mainElement, mainElementType,
-        level, nextLevel, nextLevelElements, tracedElements
+        state, level, nextLevel, nextLevelElements, tracedElements
     ) {
         const mainElementHash = mainElement.value;
         if (tracedElements.has(mainElementHash)) return;
@@ -129,7 +221,7 @@ SCWeb.core.DistanceBasedSCgSearcher = function (sandbox, structAddr) {
                 mainElement,
                 [sc.ScType.Unknown, "_target"],
                 [sc.ScType.EdgeAccessVarPosPerm, "_edge_from_scene"],
-                structAddr,
+                sandbox.addr,
             );
             const result = await scClient.templateSearch(scTemplateSearchEdgeElements);
             if (!result.length) return;
@@ -139,32 +231,37 @@ SCWeb.core.DistanceBasedSCgSearcher = function (sandbox, structAddr) {
         [sourceElementType, targetElementType] = await scClient.checkElements([sourceElement, targetElement]);
 
         const sourceElementHash = sourceElement.value;
-        nextLevelElements[sourceElementHash] = {type: sourceElementType, level: nextLevel};
+        nextLevelElements[sourceElementHash] = {
+            connectorFromScene: null, type: sourceElementType, state: state, level: nextLevel};
 
         const targetElementHash = targetElement.value;
-        nextLevelElements[targetElementHash] = {type: targetElementType, level: nextLevel};
+        nextLevelElements[targetElementHash] = {
+            connectorFromScene: null, type: targetElementType, state: state, level: nextLevel};
 
         sandbox.eventStructUpdate({
             isAdded: true,
             connectorFromScene: edgeFromScene,
             sceneElement: mainElement,
+            sceneElementState: state,
             sceneElementType: mainElementType,
             sceneElementLevel: level,
             sceneElementSource: sourceElement,
             sceneElementSourceType: sourceElementType,
+            sceneElementSourceState: state,
             sceneElementSourceLevel: nextLevel,
             sceneElementTarget: targetElement,
             sceneElementTargetType: targetElementType,
+            sceneElementTargetState: state,
             sceneElementTargetLevel: nextLevel,
         });
-    }
+    };
 
     const searchLevelEdgesByDirection = async function (
         edgeFromScene, mainElement, mainElementType,
-        level, nextLevel, nextLevelElements, tracedElements, withIncomingEdge) {
+        state, level, nextLevel, nextLevelElements, tracedElements, withIncomingEdge) {
         let scTemplate = new sc.ScTemplate();
         scTemplate.triple(
-            structAddr,
+            sandbox.addr,
             [sc.ScType.EdgeAccessVarPosPerm, "_edge_from_scene"],
             [sc.ScType.Unknown, "_scene_edge"],
         );
@@ -202,28 +299,32 @@ SCWeb.core.DistanceBasedSCgSearcher = function (sandbox, structAddr) {
                 ? construction.get("_scene_edge_source")
                 : construction.get("_scene_edge_target");
             // if we searched scene structure we'll skip it
-            if (sceneEdgeElement.equal(structAddr)) continue;
+            if (sceneEdgeElement.equal(sandbox.addr)) continue;
 
             if (tracedElements.has(sceneEdgeHash)) continue;
             tracedElements.add(sceneEdgeHash);
             nextLevelElements[sceneEdgeHash] = {
-                type: sceneEdgeType, level: nextLevel, connectorFromScene: edgeFromScene};
+                connectorFromScene: edgeFromScene, type: sceneEdgeType, state: state, level: nextLevel};
 
             const sceneEdgeElementHash = sceneEdgeElement.value;
             const sceneEdgeElementType = sceneEdgeElementTypes[i];
-            nextLevelElements[sceneEdgeElementHash] = {type: sceneEdgeElementType, level: nextLevel};
+            nextLevelElements[sceneEdgeElementHash] = {
+                connectorFromScene: null, type: sceneEdgeElementType, state: state, level: nextLevel};
 
             sandbox.eventStructUpdate({
                 isAdded: true,
                 connectorFromScene: edgeFromScene,
                 sceneElement: sceneEdge,
                 sceneElementType: sceneEdgeType,
+                sceneElementState: state,
                 sceneElementLevel: nextLevel,
                 sceneElementSource: withIncomingEdge ? sceneEdgeElement : mainElement,
                 sceneElementSourceType: withIncomingEdge ? sceneEdgeElementType : mainElementType,
+                sceneElementSourceState: state,
                 sceneElementSourceLevel: withIncomingEdge ? nextLevel : level,
                 sceneElementTarget: withIncomingEdge ? mainElement : sceneEdgeElement,
                 sceneElementTargetType: withIncomingEdge ? mainElementType : sceneEdgeElementType,
+                sceneElementTargetState: state,
                 sceneElementTargetLevel: withIncomingEdge ? level : nextLevel,
             });
         }
@@ -239,9 +340,9 @@ SCWeb.core.DistanceBasedSCgSearcher = function (sandbox, structAddr) {
                 [element, "_main_node"]
             );
 
-            const result = await scClient.templateSearch(template);
+            let result = await scClient.templateSearch(template);
             if (!result.length) continue;
-            result.map((triple) => {
+            result = result.map((triple) => {
                 return {connectorFromStructure: triple.get("_edge_from_scene"), structureElement: triple.get("_main_node")};
             });
             structureElements.push(result[0]);
@@ -250,73 +351,116 @@ SCWeb.core.DistanceBasedSCgSearcher = function (sandbox, structAddr) {
         return structureElements;
     };
 
-    const searchFromKeyElements = async function (keyElements) {
-        keyElements = keyElements
-            ? await verifyStructureElements(structAddr, keyElements)
-            : await window.scHelper.getStructureMainKeyElements(structAddr);
-        if (!keyElements.length) keyElements = await window.scHelper.getStructureKeyElements(structAddr);
-        if (!keyElements.length) return false;
+    const debounceBufferedFunc = (func, wait) => {
+        let timerId;
 
-        const elementTypes = await scClient.checkElements(keyElements.map(triple => triple.structureElement));
-
-        let mainElements = {};
-        for (let i = 0; i < keyElements.length; ++i) {
-            const triple = keyElements[i];
-            const edgeFromScene = triple.connectorFromStructure;
-            const sceneElement = triple.structureElement;
-            const sceneElementType = elementTypes[i];
-            const level = SCgObjectLevel.First;
-
-            mainElements[sceneElement.value] = {
-                type: sceneElementType, level: level, connectorFromScene: edgeFromScene};
-
-            sandbox.eventStructUpdate({
-                isAdded: true,
-                connectorFromScene: edgeFromScene,
-                sceneElement: sceneElement,
-                sceneElementType: sceneElementType,
-                sceneElementLevel: level,
-            });
-        }
-
-        await searchAllLevelEdges([mainElements], new Set(), new Set());
-        return true;
-    }
-
-    if (SCWeb.core.Main.viewMode === SCgViewMode.DistanceBasedSCgView) {
-        const debouncedFunc = (func, wait) => {
-            let timerId;
-
-            const clear = () => {
-                clearTimeout(timerId);
-            };
-
-            const debouncedCall = () => {
-                clearTimeout(timerId);
-                timerId = setTimeout(func, wait);
-            };
-
-            return [debouncedCall, clear];
+        const clear = () => {
+            clearTimeout(timerId);
         };
 
-        this.updateContentDelayTime = 200;
-        [this.debouncedUpdateContent] = debouncedFunc(
-            async () => await self.updateContent(),
-            this.updateContentDelayTime
-        );
+        const debouncedBufferedCall = (elements) => {
+            clear();
+            timerId = setTimeout(() => {
+                func(elements.splice(0, elements.length));
+            }, wait);
+        };
+
+        return [debouncedBufferedCall, clear];
+    };
+
+    const searchElementsFromElements = async function (elements) {
+        let elementTypes = await scClient.checkElements(elements);
+        elements = elements.filter((triple, index) => elementTypes[index].isEdge());
+
+        let connectorElements = new Set();
+        for (let element of elements) {
+            const [source, target] = await window.scHelper.getConnectorElements(element);
+            const [sourceHash, targetHash] = [source.value, target.value];
+            if (!connectorElements.has(sourceHash) && sandbox.scene.getObjectByScAddr(sourceHash)) {
+                connectorElements.add(sourceHash);
+            }
+            if (!connectorElements.has(targetHash) && sandbox.scene.getObjectByScAddr(targetHash)) {
+                connectorElements.add(targetHash);
+            }
+        }
+
+        const sceneElements = sandbox.scene.getScAddrs().map(hash => parseInt(hash));
+        const unvisitableElements = new Set(sceneElements.filter(hash => !connectorElements.has(hash)));
+
+        let mainElements = {};
+        for (let elementHash of connectorElements) {
+            const object = sandbox.scene.getObjectByScAddr(elementHash);
+            mainElements[elementHash] = {
+                connectorFromScene: new sc.ScAddr(elementHash),
+                type: new sc.ScType(object.sc_type),
+                state: SCgObjectState.MergedWithMemory,
+                level: object.level,
+            };
+        }
+
+        await searchAllLevelEdges(
+            [mainElements], unvisitableElements, unvisitableElements);
+    };
+
+    const [debouncedAppendElementsUpdate] = debounceBufferedFunc(searchElementsFromElements, this.appendUpdateDelayTime);
+
+    const appendElementsUpdate = async function (elAddr, edge, otherAddr) {
+        if (!sandbox.eventStructUpdate) return;
+        const type = (await scClient.checkElements([edge]))[0];
+        if (!type.equal(sc.ScType.EdgeAccessConstPosPerm)) return;
+
+        self.newElements.push(otherAddr);
+        debouncedAppendElementsUpdate(self.newElements);
+    };
+
+    const removeElementsUpdate = async function (elAddr, edge, otherAddr) {
+        if (sandbox.eventStructUpdate) return;
+        if (!(await window.scHelper.checkEdge(elAddr.value, sc.ScType.EdgeAccessConstPosPerm, otherAddr.value))) return;
+
+        sandbox.eventStructUpdate({
+            isAdded: false,
+            connectorFromScene: edge,
+            sceneElement: otherAddr
+        });
     }
+
+    const initAppendRemoveElementsUpdate = async function () {
+        [self.addArcEvent, self.removeArcEvent] = await window.scClient.eventsCreate(
+            [new sc.ScEventParams(
+                sandbox.addr,
+                sc.ScEventType.AddOutgoingEdge,
+                appendElementsUpdate
+            ), new sc.ScEventParams(
+                sandbox.addr,
+                sc.ScEventType.RemoveOutgoingEdge,
+                removeElementsUpdate
+            )]
+        );
+    };
+
+    const destroyAppendRemoveElementsUpdate = async function () {
+        let events = [];
+        if (self.addArcEvent) events.push(self.addArcEvent);
+        if (self.addArcEvent) events.push(self.addArcEvent);
+        await window.scClient.eventsDestroy(events);
+    };
 
     return {
         searchContent: async function (keyElements) {
             sandbox.layout = (scene) => keyElements ? scene.updateRender() : scene.layout();
             sandbox.postLayout = (scene) => keyElements ? scene.layout() : scene.updateRender();
+            sandbox.onceUpdatableObjects = {};
 
             return await searchFromKeyElements(keyElements);
         },
 
-        searchStructureElementsFromElements: async function (elements, unvisitableElements) {
-            await searchAllLevelEdges([elements], unvisitableElements, new Set());
-        }
+        initAppendRemoveElementsUpdate: async function () {
+            await initAppendRemoveElementsUpdate();
+        },
+
+        destroyAppendRemoveElementsUpdate: async function () {
+            await destroyAppendRemoveElementsUpdate();
+        },
     };
 };
 

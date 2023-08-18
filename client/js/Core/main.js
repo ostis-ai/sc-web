@@ -19,8 +19,8 @@ const SCgEditMode = {
 };
 
 const SCgViewMode = {
-    DefaultSCgView: 1,
-    DistanceBasedSCgView: 2,
+    DefaultSCgView: 0,
+    DistanceBasedSCgView: 1,
 
     /**
      * Check if specified mode is valid
@@ -241,12 +241,7 @@ SCWeb.core.Main = {
             }
         }
 
-        let startScElements = await window.scHelper.getSetElements(argumentAddr);
-        if (startScElements.length) {
-            start(startScElements[0]);
-        } else {
-            start(argumentAddr);
-        }
+        start(argumentAddr);
 
         $('.copyright').text(`Copyright © 2012 - ${currentYear} OSTIS`);
     },

@@ -130,11 +130,6 @@ const SCgViewerWindow = function (sandbox) {
         self.scStructTranslator.updateFromSc.apply(self.scStructTranslator, arguments).then(null);
     };
 
-    this.sandbox.clearUpdate = function () {
-        self.sandbox.onceUpdatableObjects = {};
-        self.sandbox.updatableObjectStates = {};
-    }
-
     // delegate event handlers
     this.sandbox.eventDataAppend = $.proxy(this.receiveData, this);
     this.sandbox.eventGetObjectsToTranslate = $.proxy(this.getObjectsToTranslate, this);
