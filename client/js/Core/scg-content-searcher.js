@@ -9,13 +9,12 @@ SCWeb.core.DefaultSCgSearcher = function (sandbox) {
         if (result.length < maxNumberOfTriplets) return result;
         return result.splice(0, maxNumberOfTriplets);
     };
-    const filterTriples = function (triples, sceneElementTypes, filterList) {
-        triples = triples.filter((triple, index) => sceneElementTypes[index].isEdge());
-        sceneElementTypes = sceneElementTypes.filter(type => type.isEdge());
-        if (filterList) triples = triples.filter(triple => !filterList.some(element => element === triple.get("_scene_edge").value));
+    const filterTriples = function (triples, filterList) {
+        triples = triples.filter(triple => triple.sceneElementType.isEdge());
+        if (filterList) triples = triples.filter(
+            triple => !filterList.some(element => element.equal(triple.sceneElement)));
         triples = splitArray(triples, self.maxSCgTriplesNumber);
-        sceneElementTypes = splitArray(sceneElementTypes, self.maxSCgTriplesNumber);
-        return [triples, sceneElementTypes];
+        return triples;
     };
 
     const searchStructureElements = async function () {
@@ -29,16 +28,17 @@ SCWeb.core.DefaultSCgSearcher = function (sandbox) {
             return {
                 connectorFromScene: triple.get("_edge_from_scene"),
                 sceneElement: triple.get("_scene_element"),
+                sceneElementState: SCgObjectState.FromMemory,
             };
         });
         let sceneElementTypes = await scClient.checkElements(triples.map(triple => triple.sceneElement));
-        [triples, sceneElementTypes] = filterTriples(triples, sceneElementTypes, null);
+        triples = triples.map((triple, index) => {
+            return {sceneElementType: sceneElementTypes[index], ...triple};
+        });
+        triples = filterTriples(triples, null);
 
         for (let i = 0; i < triples.length; ++i) {
             const triple = triples[i];
-            triple.isAdded = true;
-            triple.sceneElementType = sceneElementTypes[i];
-
             sandbox.eventStructUpdate(triple);
         }
 
@@ -55,7 +55,6 @@ SCWeb.core.DefaultSCgSearcher = function (sandbox) {
                 if (!type.equal(sc.ScType.EdgeAccessConstPosPerm)) return;
 
                 sandbox.eventStructUpdate({
-                    isAdded: true,
                     connectorFromScene: edge,
                     sceneElement: otherAddr,
                     sceneElementState: SCgObjectState.MergedWithMemory
@@ -69,9 +68,9 @@ SCWeb.core.DefaultSCgSearcher = function (sandbox) {
                 if (await window.scHelper.checkEdge(elAddr.value, sc.ScType.EdgeAccessConstPosPerm, otherAddr.value)) return;
 
                 sandbox.eventStructUpdate({
-                    isAdded: false,
                     connectorFromScene: edge,
-                    sceneElement: otherAddr
+                    sceneElement: otherAddr,
+                    sceneElementState: SCgObjectState.RemovedFromMemory
                 });
             });
         [self.addArcEvent, self.removeArcEvent] = await window.scClient.eventsCreate([addArcEventRequest, removeArcEventRequest]);
@@ -131,7 +130,6 @@ SCWeb.core.DistanceBasedSCgSearcher = function (sandbox) {
             };
 
             sandbox.eventStructUpdate({
-                isAdded: true,
                 connectorFromScene: edgeFromScene,
                 sceneElement: sceneElement,
                 sceneElementType: sceneElementType,
@@ -239,7 +237,6 @@ SCWeb.core.DistanceBasedSCgSearcher = function (sandbox) {
             connectorFromScene: null, type: targetElementType, state: state, level: nextLevel};
 
         sandbox.eventStructUpdate({
-            isAdded: true,
             connectorFromScene: edgeFromScene,
             sceneElement: mainElement,
             sceneElementState: state,
@@ -247,11 +244,9 @@ SCWeb.core.DistanceBasedSCgSearcher = function (sandbox) {
             sceneElementLevel: level,
             sceneElementSource: sourceElement,
             sceneElementSourceType: sourceElementType,
-            sceneElementSourceState: state,
             sceneElementSourceLevel: nextLevel,
             sceneElementTarget: targetElement,
             sceneElementTargetType: targetElementType,
-            sceneElementTargetState: state,
             sceneElementTargetLevel: nextLevel,
         });
     };
@@ -312,7 +307,6 @@ SCWeb.core.DistanceBasedSCgSearcher = function (sandbox) {
                 connectorFromScene: null, type: sceneEdgeElementType, state: state, level: nextLevel};
 
             sandbox.eventStructUpdate({
-                isAdded: true,
                 connectorFromScene: edgeFromScene,
                 sceneElement: sceneEdge,
                 sceneElementType: sceneEdgeType,
@@ -320,11 +314,9 @@ SCWeb.core.DistanceBasedSCgSearcher = function (sandbox) {
                 sceneElementLevel: nextLevel,
                 sceneElementSource: withIncomingEdge ? sceneEdgeElement : mainElement,
                 sceneElementSourceType: withIncomingEdge ? sceneEdgeElementType : mainElementType,
-                sceneElementSourceState: state,
                 sceneElementSourceLevel: withIncomingEdge ? nextLevel : level,
                 sceneElementTarget: withIncomingEdge ? mainElement : sceneEdgeElement,
                 sceneElementTargetType: withIncomingEdge ? mainElementType : sceneEdgeElementType,
-                sceneElementTargetState: state,
                 sceneElementTargetLevel: withIncomingEdge ? level : nextLevel,
             });
         }
@@ -419,9 +411,9 @@ SCWeb.core.DistanceBasedSCgSearcher = function (sandbox) {
         if (await window.scHelper.checkEdge(elAddr.value, sc.ScType.EdgeAccessConstPosPerm, otherAddr.value)) return;
 
         sandbox.eventStructUpdate({
-            isAdded: false,
             connectorFromScene: edge,
-            sceneElement: otherAddr
+            sceneElement: otherAddr,
+            sceneElementState: SCgObjectState.RemovedFromMemory,
         });
     }
 
@@ -495,11 +487,13 @@ SCWeb.core.SCgLinkContentSearcher = function (sandbox, linkAddr) {
         else {
             self.appendContentTimeoutId = setTimeout(sliceAndForceAppendData, self.appendContentTimeout);
         }
+
+        return true;
     };
 
     return {
         searchContent: async function () {
-            await searchData(linkAddr);
+            return await searchData(linkAddr);
         }
     };
 }
