@@ -58,11 +58,11 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
         return SCg.Creator.createEdge(sourceObject, targetObject, type);
     };
 
-    const appendObjectToScene = function (object, addr, level, state) {
+    const appendObjectToScene = function (object, addr, level, state, copied = false) {
         object.setLevel(level);
         object.setObjectState(state);
         editor.scene.appendObject(object);
-        object.setScAddr(addr);
+        copied ? object.sc_addr = addr : object.setScAddr(addr);
     }
 
     const createAppendCopyObject = function (object) {
@@ -77,7 +77,7 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
         } else if (type & sc_type_arc_mask) {
             copiedObject = createEdge(object.source, object.target, type);
         }
-        appendObjectToScene(copiedObject, addr, object.level, object.state);
+        appendObjectToScene(copiedObject, addr, object.level, object.state, true);
         return copiedObject;
     };
 
@@ -120,7 +120,9 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
                     continue;
                 }
 
-                if (sourceHash === targetHash) targetObject = createAppendCopyObject(targetObject);
+                const multipleArcs = editor.scene.edges.filter(
+                    edge => edge.source.sc_addr === sourceHash && edge.target.sc_addr === targetHash);
+                if (sourceHash === targetHash || multipleArcs.length > 0) targetObject = createAppendCopyObject(targetObject);
                 object = createEdge(sourceObject, targetObject, type);
             }
             appendObjectToScene(object, addr, level, state);
