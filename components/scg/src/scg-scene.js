@@ -203,10 +203,9 @@ SCg.Scene.prototype = {
     removeObject: function (obj) {
         let self = this;
 
-        if (obj.copies) {
-            for (let copy of obj.copies) {
-                self.removeObject(copy);
-            }
+        for (let id in obj.copies) {
+            const copy = obj.copies[id];
+            self.removeObject(copy);
         }
 
         function remove_from_list(obj, list) {

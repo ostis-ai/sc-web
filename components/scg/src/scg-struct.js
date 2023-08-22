@@ -57,15 +57,11 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
         return SCg.Creator.createEdge(sourceObject, targetObject, type);
     };
 
-    const appendObjectToScene = function (object, addr, level, state, copied = false) {
+    const appendObjectToScene = function (object, addr, level, state, isCopy) {
         object.setLevel(level);
         object.setObjectState(state);
         editor.scene.appendObject(object);
-        if (copied) {
-            object.sc_addr = addr;
-        } else {
-            object.setScAddr(addr);
-        }
+        object.setScAddr(addr, isCopy);
     }
 
     const createAppendCopyObject = function (object) {
@@ -80,11 +76,6 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
         } else if (type & sc_type_arc_mask) {
             copiedObject = createEdge(object.source, object.target, type);
         }
-
-        if (!object.copies) {
-            object.copies = [];
-        }
-        object.copies.push(copiedObject);
 
         appendObjectToScene(copiedObject, addr, object.level, object.state, true);
         return copiedObject;
