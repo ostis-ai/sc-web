@@ -1,6 +1,5 @@
 const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
     let appendTasks = [],
-        addrsToAppendTasks = {},
         removeTasks = [],
         maxAppendBatchLength = 150,
         maxRemoveBatchLength = 2,
@@ -62,7 +61,11 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
         object.setLevel(level);
         object.setObjectState(state);
         editor.scene.appendObject(object);
-        copied ? object.sc_addr = addr : object.setScAddr(addr);
+        if (copied) {
+            object.sc_addr = addr;
+        } else {
+            object.setScAddr(addr);
+        }
     }
 
     const createAppendCopyObject = function (object) {
@@ -77,6 +80,12 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
         } else if (type & sc_type_arc_mask) {
             copiedObject = createEdge(object.source, object.target, type);
         }
+
+        if (!object.copies) {
+            object.copies = [];
+        }
+        object.copies.push(copiedObject);
+
         appendObjectToScene(copiedObject, addr, object.level, object.state, true);
         return copiedObject;
     };
@@ -88,8 +97,6 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
             const type = task[1];
             let state = task[2];
             const level = task[3];
-
-            delete addrsToAppendTasks[addr];
 
             if (!state) state = SCgObjectState.FromMemory;
 
@@ -134,7 +141,6 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
     const [debounceBufferedDoAppendBatch] = debounceBuffered(doAppendBatch, batchDelayTime);
 
     const addAppendTask = function (addr, args) {
-        addrsToAppendTasks[addr] = appendTasks.length;
         appendTasks.push(args);
 
         debounceBufferedDoAppendBatch(appendTasks, maxAppendBatchLength);
@@ -145,11 +151,14 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
             const task = batch[i];
             const addr = task[0];
 
-            delete appendTasks[addrsToAppendTasks[addr]];
-            delete addrsToAppendTasks[addr];
-
             const obj = editor.scene.getObjectByScAddr(addr);
             if (!obj) continue;
+
+            if (obj.copies) {
+                for (let copy of obj.copies) {
+                    editor.scene.deleteObjects([obj]);
+                }
+            }
             editor.scene.deleteObjects([obj]);
         }
         editor.render.update();
