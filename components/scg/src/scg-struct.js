@@ -1,6 +1,5 @@
 const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
     let appendTasks = [],
-        addrsToAppendTasks = {},
         removeTasks = [],
         maxAppendBatchLength = 150,
         maxRemoveBatchLength = 2,
@@ -58,11 +57,11 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
         return SCg.Creator.createEdge(sourceObject, targetObject, type);
     };
 
-    const appendObjectToScene = function (object, addr, level, state, copied = false) {
+    const appendObjectToScene = function (object, addr, level, state, isCopy) {
         object.setLevel(level);
         object.setObjectState(state);
         editor.scene.appendObject(object);
-        copied ? object.sc_addr = addr : object.setScAddr(addr);
+        object.setScAddr(addr, isCopy);
     }
 
     const createAppendCopyObject = function (object) {
@@ -77,6 +76,7 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
         } else if (type & sc_type_arc_mask) {
             copiedObject = createEdge(object.source, object.target, type);
         }
+
         appendObjectToScene(copiedObject, addr, object.level, object.state, true);
         return copiedObject;
     };
@@ -89,18 +89,23 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
             let state = task[2];
             const level = task[3];
 
-            delete addrsToAppendTasks[addr];
-
             if (!state) state = SCgObjectState.FromMemory;
 
             let object = editor.scene.getObjectByScAddr(addr);
             if (object) {
-                if (!(sandbox.onceUpdatableObjects && sandbox.onceUpdatableObjects[addr])) {
+                const updateObject = function (object) {
+                    if (sandbox.onceUpdatableObjects && sandbox.onceUpdatableObjects[object.id]) return;
+                    if (sandbox.onceUpdatableObjects) sandbox.onceUpdatableObjects[object.id] = true;
+
                     object.setLevel(level);
                     object.setObjectState(state);
+                };
 
-                    if (sandbox.onceUpdatableObjects) sandbox.onceUpdatableObjects[addr] = object;
+                for (let key in object.copies) {
+                    const copy = object.copies[key];
+                    updateObject(copy);
                 }
+                updateObject(object);
 
                 continue;
             }
@@ -134,7 +139,6 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
     const [debounceBufferedDoAppendBatch] = debounceBuffered(doAppendBatch, batchDelayTime);
 
     const addAppendTask = function (addr, args) {
-        addrsToAppendTasks[addr] = appendTasks.length;
         appendTasks.push(args);
 
         debounceBufferedDoAppendBatch(appendTasks, maxAppendBatchLength);
@@ -145,12 +149,17 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
             const task = batch[i];
             const addr = task[0];
 
-            delete appendTasks[addrsToAppendTasks[addr]];
-            delete addrsToAppendTasks[addr];
+            const object = editor.scene.getObjectByScAddr(addr);
+            if (!object) continue;
 
-            const obj = editor.scene.getObjectByScAddr(addr);
-            if (!obj) continue;
-            editor.scene.deleteObjects([obj]);
+            let objects = [object];
+            if (object.copies) {
+                for (let [, copy] of Object.entries(object.copies)) {
+                    objects.push(copy);
+                }
+            }
+
+            editor.scene.deleteObjects(objects);
         }
         editor.render.update();
     }
