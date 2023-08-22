@@ -154,11 +154,6 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
             const obj = editor.scene.getObjectByScAddr(addr);
             if (!obj) continue;
 
-            if (obj.copies) {
-                for (let copy of obj.copies) {
-                    editor.scene.deleteObjects([obj]);
-                }
-            }
             editor.scene.deleteObjects([obj]);
         }
         editor.render.update();

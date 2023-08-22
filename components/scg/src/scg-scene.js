@@ -198,18 +198,23 @@ SCg.Scene.prototype = {
 
     /**
      * Remove object from scene.
-     * @param {SCg.ModelObject} obj Object to remove
+     * @param obj Object to remove
      */
     removeObject: function (obj) {
-        var self = this;
+        let self = this;
+
+        if (obj.copies) {
+            for (let copy of obj.copies) {
+                self.removeObject(copy);
+            }
+        }
 
         function remove_from_list(obj, list) {
-            var idx = list.indexOf(obj);
+            const idx = list.indexOf(obj);
             if (idx < 0) {
-                SCgDebug.error("Can't find object for remove");
                 return;
             }
-            if (self.pointed_object == obj) {
+            if (self.pointed_object === obj) {
                 self.pointed_object = null;
             }
             list.splice(idx, 1);
