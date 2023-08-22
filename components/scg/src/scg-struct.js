@@ -168,7 +168,8 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
     };
 
     const update = async (data) => {
-        const isAdded = data.isAdded;
+        const sceneElementState = data.sceneElementState;
+        const isAdded = sceneElementState !== SCgObjectState.RemovedFromMemory;
         const sceneElement = data.sceneElement;
         const sceneElementHash = sceneElement.value;
 
@@ -177,25 +178,21 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
                 ? data.sceneElementType
                 : (await getElementsTypes([sceneElement]))[0];
             const sceneElementTypeValue = sceneElementType.value;
-
-            const sceneElementState = data.sceneElementState;
             const sceneElementLevel = data.sceneElementLevel;
 
             if (data.sceneElementSource && data.sceneElementTarget) {
                 const sourceHash = data.sceneElementSource.value;
                 const sourceTypeValue = data.sceneElementSourceType.value;
-                const sourceState = data.sceneElementSourceState;
                 const sourceLevel = data.sceneElementSourceLevel;
                 if (!data.sceneElementSourceType.isEdge()) {
-                    addAppendTask(sourceHash, [sourceHash, sourceTypeValue, sourceState, sourceLevel]);
+                    addAppendTask(sourceHash, [sourceHash, sourceTypeValue, sceneElementState, sourceLevel]);
                 }
 
                 const targetHash = data.sceneElementTarget.value;
                 const targetTypeValue = data.sceneElementTargetType.value;
-                const targetState = data.sceneElementTargetState;
                 const targetLevel = data.sceneElementTargetLevel;
                 if (!data.sceneElementTargetType.isEdge()) {
-                    addAppendTask(targetHash, [targetHash, targetTypeValue, targetState, targetLevel]);
+                    addAppendTask(targetHash, [targetHash, targetTypeValue, sceneElementState, targetLevel]);
                 }
 
                 addAppendTask(
@@ -212,14 +209,12 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
                 const [sourceHash, targetHash] = [source.value, target.value];
 
                 await update({
-                    isAdded: true,
                     sceneElementConnector: source,
                     sceneElement: source,
                     sceneElementType: sourceType,
                     sceneElementState: sceneElementState
                 });
                 await update({
-                    isAdded: true,
                     sceneElementConnector: target,
                     sceneElement: target,
                     sceneElementType: targetType,

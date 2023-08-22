@@ -3,6 +3,7 @@ const SCgObjectState = {
     MergedWithMemory: 1,
     NewInMemory: 2,
     FromMemory: 3,
+    RemovedFromMemory: 4,
 };
 
 const SCgObjectLevel = {
@@ -75,9 +76,7 @@ SCg.ModelObject = function (options) {
 };
 
 SCg.ModelObject.prototype = {
-
     constructor: SCg.ModelObject
-
 };
 
 /**
