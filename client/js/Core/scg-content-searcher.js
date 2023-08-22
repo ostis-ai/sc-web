@@ -119,7 +119,7 @@ SCWeb.core.DistanceBasedSCgSearcher = function (sandbox) {
         return new Set((await scClient.templateSearch(scTemplate)).map((triple) => triple.get("_scene_element").value));
     }
 
-    const searchFromKeyElements = async function (keyElements) {
+    const searchFromKeyElements = async function (keyElements, state = SCgObjectState.FromMemory) {
         let visitedElements = new Set();
 
         keyElements = keyElements
@@ -141,7 +141,7 @@ SCWeb.core.DistanceBasedSCgSearcher = function (sandbox) {
             mainElements[sceneElement.value] = {
                 connectorFromScene: edgeFromScene,
                 type: sceneElementType,
-                state: SCgObjectState.FromMemory,
+                state: state,
                 level: level,
             };
 
@@ -149,7 +149,7 @@ SCWeb.core.DistanceBasedSCgSearcher = function (sandbox) {
                 connectorFromScene: edgeFromScene,
                 sceneElement: sceneElement,
                 sceneElementType: sceneElementType,
-                sceneElementState: SCgObjectState.FromMemory,
+                sceneElementState: state,
                 sceneElementLevel: level,
             });
         }
@@ -378,31 +378,35 @@ SCWeb.core.DistanceBasedSCgSearcher = function (sandbox) {
     };
 
     const searchElementsFromElements = async function (elements) {
+        const state = SCgObjectState.MergedWithMemory;
+
         let elementTypes = await scClient.checkElements(elements);
         elements = elements.filter((triple, index) => elementTypes[index].isEdge());
 
         let structureElements = new Set();
+        let connectorElements = new Set();
         for (let element of elements) {
             const [source, target] = await window.scHelper.getConnectorElements(element);
             const [sourceHash, targetHash] = [source.value, target.value];
-            if (!structureElements.has(sourceHash) && sandbox.scene.getObjectByScAddr(sourceHash)) {
-                structureElements.add(sourceHash);
+            if (!connectorElements.has(sourceHash) && sandbox.scene.getObjectByScAddr(sourceHash)) {
+                connectorElements.add(sourceHash);
             }
-            if (!structureElements.has(targetHash) && sandbox.scene.getObjectByScAddr(targetHash)) {
-                structureElements.add(targetHash);
+            if (!connectorElements.has(targetHash) && sandbox.scene.getObjectByScAddr(targetHash)) {
+                connectorElements.add(targetHash);
             }
+            structureElements.add(targetHash);
         }
 
         const sceneElements = sandbox.scene.getScAddrs().map(hash => parseInt(hash));
-        let unvisitableElements = new Set(sceneElements.filter(hash => !structureElements.has(hash)));
+        let unvisitableElements = new Set(sceneElements.filter(hash => !connectorElements.has(hash)));
 
         let mainElements = {};
-        for (let elementHash of structureElements) {
+        for (let elementHash of connectorElements) {
             const object = sandbox.scene.getObjectByScAddr(elementHash);
             mainElements[elementHash] = {
                 connectorFromScene: new sc.ScAddr(elementHash),
                 type: new sc.ScType(object.sc_type),
-                state: SCgObjectState.MergedWithMemory,
+                state: state,
                 level: object.level,
             };
         }
@@ -413,7 +417,7 @@ SCWeb.core.DistanceBasedSCgSearcher = function (sandbox) {
         while (structureElements.size) {
             const [anyElement] = structureElements;
             const keyElements = [new sc.ScAddr(anyElement)];
-            const visitedElements = await searchFromKeyElements(keyElements);
+            const visitedElements = await searchFromKeyElements(keyElements, state);
             if (!visitedElements.size) return;
             structureElements = new Set(
                 Array.from(structureElements).filter(hash => !visitedElements.has(hash.toString())));
