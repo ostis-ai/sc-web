@@ -23,12 +23,12 @@ SCWeb.core.DefaultSCgSearcher = function (sandbox) {
         scTemplate.triple(
             sandbox.addr,
             [sc.ScType.EdgeAccessVarPosPerm, "_edge_from_scene"],
-            [sc.ScType.Unknown, "_scene_edge"],
+            [sc.ScType.Unknown, "_scene_element"],
         );
         let triples = (await scClient.templateSearch(scTemplate)).map((triple) => {
             return {
                 connectorFromScene: triple.get("_edge_from_scene"),
-                sceneElement: triple.get("_scene_edge"),
+                sceneElement: triple.get("_scene_element"),
             };
         });
         let sceneElementTypes = await scClient.checkElements(triples.map(triple => triple.sceneElement));
@@ -65,8 +65,8 @@ SCWeb.core.DefaultSCgSearcher = function (sandbox) {
             sandbox.addr,
             sc.ScEventType.RemoveOutgoingEdge,
             async (elAddr, edge, otherAddr) => {
-                if (sandbox.eventStructUpdate) return;
-                if (!(await window.scHelper.checkEdge(elAddr.value, sc.ScType.EdgeAccessConstPosPerm, otherAddr.value))) return;
+                if (!sandbox.eventStructUpdate) return;
+                if (await window.scHelper.checkEdge(elAddr.value, sc.ScType.EdgeAccessConstPosPerm, otherAddr.value)) return;
 
                 sandbox.eventStructUpdate({
                     isAdded: false,
@@ -80,7 +80,7 @@ SCWeb.core.DefaultSCgSearcher = function (sandbox) {
     const destroyAppendRemoveElementsUpdate = async function () {
         let events = [];
         if (self.addArcEvent) events.push(self.addArcEvent);
-        if (self.addArcEvent) events.push(self.addArcEvent);
+        if (self.removeArcEvent) events.push(self.removeArcEvent);
         await window.scClient.eventsDestroy(events);
     };
 
@@ -155,7 +155,7 @@ SCWeb.core.DistanceBasedSCgSearcher = function (sandbox) {
                 const element = new sc.ScAddr(parseInt(elementHash));
 
                 const [edgeFromScene, elementType, state, level] = Object.values(levelElements[elementHash]);
-                const nextLevel = level >= SCgObjectLevel.Count - 1 ? SCgObjectLevel.Seventh : level + 1;
+                const nextLevel = level >= SCgObjectLevel.Count - 1 ? SCgObjectLevel.Count - 1 : level + 1;
 
                 const searchFunc = elementType.isEdge() ? searchLevelEdgeElements : searchLevelEdges;
                 const newElements = await searchFunc(
@@ -342,10 +342,11 @@ SCWeb.core.DistanceBasedSCgSearcher = function (sandbox) {
 
             let result = await scClient.templateSearch(template);
             if (!result.length) continue;
-            result = result.map((triple) => {
-                return {connectorFromStructure: triple.get("_edge_from_scene"), structureElement: triple.get("_main_node")};
+            const triple = result[0];
+            structureElements.push({
+                connectorFromStructure: triple.get("_edge_from_scene"),
+                structureElement: triple.get("_main_node")
             });
-            structureElements.push(result[0]);
         }
 
         return structureElements;
@@ -414,8 +415,8 @@ SCWeb.core.DistanceBasedSCgSearcher = function (sandbox) {
     };
 
     const removeElementsUpdate = async function (elAddr, edge, otherAddr) {
-        if (sandbox.eventStructUpdate) return;
-        if (!(await window.scHelper.checkEdge(elAddr.value, sc.ScType.EdgeAccessConstPosPerm, otherAddr.value))) return;
+        if (!sandbox.eventStructUpdate) return;
+        if (await window.scHelper.checkEdge(elAddr.value, sc.ScType.EdgeAccessConstPosPerm, otherAddr.value)) return;
 
         sandbox.eventStructUpdate({
             isAdded: false,
@@ -441,7 +442,7 @@ SCWeb.core.DistanceBasedSCgSearcher = function (sandbox) {
     const destroyAppendRemoveElementsUpdate = async function () {
         let events = [];
         if (self.addArcEvent) events.push(self.addArcEvent);
-        if (self.addArcEvent) events.push(self.addArcEvent);
+        if (self.removeArcEvent) events.push(self.removeArcEvent);
         await window.scClient.eventsDestroy(events);
     };
 
