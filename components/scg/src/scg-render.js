@@ -67,7 +67,7 @@ SCg.Render.prototype = {
 
         this.scale = 1;
         var self = this;
-        self.sandbox.updateContent(null, self.scene);
+        self.sandbox.updateContent();
         this.d3_container = this.d3_drawer.append('svg:g')
             .attr("class", "SCgSvg");
 
@@ -230,15 +230,11 @@ SCg.Render.prototype = {
                 .on("dblclick", d => {
                     if (d3.event.stopPropagation())
                         d3.event.stopPropagation();
-                    if (SCWeb.core.Main.viewMode === SCgViewMode.DistanceBasedSCgView) {
-                        if (self.sandbox.mainElement === d.sc_addr)
-                            return;
-                        if (self.scene.getObjectByScAddr(d.sc_addr) instanceof SCg.ModelEdge)
-                            return;
 
-                        if (self.sandbox.isSceneWithKey) {
-                            self.sandbox.updateContent(d.sc_addr, self.scene);
-                        }
+                    if (SCWeb.core.Main.viewMode === SCgViewMode.DistanceBasedSCgView) {
+                        if (self.scene.getObjectByScAddr(d.sc_addr) instanceof SCg.ModelEdge) return;
+
+                        self.sandbox.updateContent(new sc.ScAddr(d.sc_addr));
                         return;
                     }
 

@@ -49,8 +49,8 @@ const ImageViewer = function (sandbox) {
         return "";
     }
 
-    if (this.sandbox.addr && !this.sandbox.content) {
-        window.scClient.getLinkContents([new sc.ScAddr(this.sandbox.addr)]).then((contents) => {
+    if (this.sandbox.addr.isValid() && !this.sandbox.content) {
+        window.scClient.getLinkContents([this.sandbox.addr]).then((contents) => {
             if (contents.length) {
                 let base64 = contents[0].data;
                 getMimeType(this.sandbox.format_addr).then((mimeType) => {

@@ -198,18 +198,17 @@ SCg.Scene.prototype = {
 
     /**
      * Remove object from scene.
-     * @param {SCg.ModelObject} obj Object to remove
+     * @param obj Object to remove
      */
     removeObject: function (obj) {
-        var self = this;
+        let self = this;
 
         function remove_from_list(obj, list) {
-            var idx = list.indexOf(obj);
+            const idx = list.indexOf(obj);
             if (idx < 0) {
-                SCgDebug.error("Can't find object for remove");
                 return;
             }
-            if (self.pointed_object == obj) {
+            if (self.pointed_object === obj) {
                 self.pointed_object = null;
             }
             list.splice(idx, 1);
@@ -244,14 +243,14 @@ SCg.Scene.prototype = {
      * @param {Array} objects Array of sc.g-objects to delete
      */
     deleteObjects: function (objects) {
-        var self = this;
+        let self = this;
 
         function collect_objects(container, root) {
             if (container.indexOf(root) >= 0)
                 return;
 
             container.push(root);
-            for (idx in root.edges) {
+            for (let idx in root.edges) {
                 if (self.edges.indexOf(root.edges[idx]) > -1) collect_objects(container, root.edges[idx]);
             }
 
@@ -259,7 +258,7 @@ SCg.Scene.prototype = {
                 if (self.buses.indexOf(root.bus) > -1) collect_objects(container, root.bus);
 
             if (root instanceof SCg.ModelContour) {
-                for (var numberChildren = 0; numberChildren < root.childs.length; numberChildren++) {
+                for (let numberChildren = 0; numberChildren < root.childs.length; numberChildren++) {
                     if (self.nodes.indexOf(root.childs[numberChildren]) > -1) {
                         collect_objects(container, root.childs[numberChildren]);
                     }
@@ -268,10 +267,10 @@ SCg.Scene.prototype = {
         }
 
         // collect objects for remove
-        var objs = [];
+        let objs = [];
 
         // collect objects for deletion
-        for (var idx in objects)
+        for (let idx in objects)
             collect_objects(objs, objects[idx]);
 
         this.commandManager.execute(new SCgCommandDeleteObjects(objs, this));
@@ -318,8 +317,8 @@ SCg.Scene.prototype = {
      * Return array that contains sc-addrs of all objects in scene
      */
     getScAddrs: function () {
-        var keys = new Array();
-        for (key in this.objects) {
+        let keys = [];
+        for (let key in this.objects) {
             keys.push(key);
         }
         return keys;

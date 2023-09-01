@@ -1,6 +1,5 @@
 const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
     let appendTasks = [],
-        addrsToAppendTasks = {},
         removeTasks = [],
         maxAppendBatchLength = 150,
         maxRemoveBatchLength = 2,
@@ -29,7 +28,7 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
             clearTimeout(timerId);
             timerId = setTimeout(() => {
                 func(tasks.splice(0, tasks.length));
-                sandbox.postLayout();
+                sandbox.postLayout(editor.scene);
             }, wait);
 
             if (tasks.length === maxBatchLength) {
@@ -41,8 +40,48 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
         return [debounceBuffered, clear];
     };
 
-    const doAppendBatch = function (batch) {
+    const createNode = function (addr, type) {
+        const object = SCg.Creator.createNode(type, randomPos(), '');
+        resolveIdtf(addr, object);
+        return object;
+    };
 
+    const createLink = function (addr, type) {
+        const containerId = 'scg-window-' + sandbox.addr.value + '-' + addr + '-' + new Date().getUTCMilliseconds();
+        const object = SCg.Creator.createLink(type, randomPos(), containerId);
+        resolveIdtf(addr, object);
+        return object;
+    };
+
+    const createEdge = function (sourceObject, targetObject, type) {
+        return SCg.Creator.createEdge(sourceObject, targetObject, type);
+    };
+
+    const appendObjectToScene = function (object, addr, level, state, isCopy) {
+        object.setLevel(level);
+        object.setObjectState(state);
+        editor.scene.appendObject(object);
+        object.setScAddr(addr, isCopy);
+    }
+
+    const createAppendCopyObject = function (object) {
+        const addr = object.sc_addr;
+        const type = object.sc_type;
+
+        let copiedObject;
+        if (type & sc_type_node) {
+            copiedObject = createNode(addr, type);
+        } else if (type & sc_type_link) {
+            copiedObject = createLink(addr, type);
+        } else if (type & sc_type_arc_mask) {
+            copiedObject = createEdge(object.source, object.target, type);
+        }
+
+        appendObjectToScene(copiedObject, addr, object.level, object.state, true);
+        return copiedObject;
+    };
+
+    const doAppendBatch = function (batch) {
         for (let i in batch) {
             const task = batch[i];
             const addr = task[0];
@@ -52,50 +91,54 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
 
             if (!state) state = SCgObjectState.FromMemory;
 
-            delete addrsToAppendTasks[addr];
-
             let object = editor.scene.getObjectByScAddr(addr);
             if (object) {
-                if (!(sandbox.uniqueObjects && sandbox.uniqueObjects[addr])) {
+                const updateObject = function (object) {
+                    if (sandbox.onceUpdatableObjects && sandbox.onceUpdatableObjects[object.id]) return;
+                    if (sandbox.onceUpdatableObjects) sandbox.onceUpdatableObjects[object.id] = true;
+
                     object.setLevel(level);
                     object.setObjectState(state);
+                };
 
-                    if (sandbox.uniqueObjects) sandbox.uniqueObjects[addr] = object;
+                for (let key in object.copies) {
+                    const copy = object.copies[key];
+                    updateObject(copy);
                 }
+                updateObject(object);
+
                 continue;
             }
 
             if (type & sc_type_node) {
-                object = SCg.Creator.createNode(type, randomPos(), '');
-                resolveIdtf(addr, object);
+                object = createNode(addr, type);
+            } else if (type & sc_type_link) {
+                object = createLink(addr, type);
             } else if (type & sc_type_arc_mask) {
-                const bObj = editor.scene.getObjectByScAddr(task[4]);
-                const eObj = editor.scene.getObjectByScAddr(task[5]);
-                if (!bObj || !eObj) {
+                const sourceHash = task[4];
+                const targetHash = task[5];
+
+                const sourceObject = editor.scene.getObjectByScAddr(sourceHash);
+                let targetObject = editor.scene.getObjectByScAddr(targetHash);
+                if (!sourceObject || !targetObject) {
                     addAppendTask(addr, task);
                     continue;
                 }
-                object = SCg.Creator.createEdge(bObj, eObj, type);
-            } else if (type & sc_type_link) {
-                const containerId = 'scg-window-' + sandbox.addr + '-' + addr + '-' + new Date().getUTCMilliseconds();
-                object = SCg.Creator.createLink(type, randomPos(), containerId);
-                resolveIdtf(addr, object);
-            }
 
-            object.setLevel(level);
-            editor.scene.appendObject(object);
-            editor.scene.objects[addr] = object;
-            object.setScAddr(addr);
-            object.setObjectState(state);
+                const multipleArcs = editor.scene.edges.filter(
+                    edge => edge.source.sc_addr === sourceHash && edge.target.sc_addr === targetHash);
+                if (sourceHash === targetHash || multipleArcs.length > 0) targetObject = createAppendCopyObject(targetObject);
+                object = createEdge(sourceObject, targetObject, type);
+            }
+            appendObjectToScene(object, addr, level, state);
         }
 
-        sandbox.layout();
+        sandbox.layout(editor.scene);
     };
 
     const [debounceBufferedDoAppendBatch] = debounceBuffered(doAppendBatch, batchDelayTime);
 
     const addAppendTask = function (addr, args) {
-        addrsToAppendTasks[addr] = appendTasks.length;
         appendTasks.push(args);
 
         debounceBufferedDoAppendBatch(appendTasks, maxAppendBatchLength);
@@ -106,12 +149,17 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
             const task = batch[i];
             const addr = task[0];
 
-            delete appendTasks[addrsToAppendTasks[addr]];
-            delete addrsToAppendTasks[addr];
+            const object = editor.scene.getObjectByScAddr(addr);
+            if (!object) continue;
 
-            const obj = editor.scene.getObjectByScAddr(addr);
-            if (!obj) continue;
-            editor.scene.deleteObjects([obj]);
+            let objects = [object];
+            if (object.copies) {
+                for (let [, copy] of Object.entries(object.copies)) {
+                    objects.push(copy);
+                }
+            }
+
+            editor.scene.deleteObjects(objects);
         }
         editor.render.update();
     }
@@ -129,7 +177,8 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
     };
 
     const update = async (data) => {
-        const isAdded = data.isAdded;
+        const sceneElementState = data.sceneElementState;
+        const isAdded = sceneElementState !== SCgObjectState.RemovedFromMemory;
         const sceneElement = data.sceneElement;
         const sceneElementHash = sceneElement.value;
 
@@ -138,8 +187,6 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
                 ? data.sceneElementType
                 : (await getElementsTypes([sceneElement]))[0];
             const sceneElementTypeValue = sceneElementType.value;
-
-            const sceneElementState = data.sceneElementState;
             const sceneElementLevel = data.sceneElementLevel;
 
             if (data.sceneElementSource && data.sceneElementTarget) {
@@ -171,14 +218,12 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
                 const [sourceHash, targetHash] = [source.value, target.value];
 
                 await update({
-                    isAdded: true,
                     sceneElementConnector: source,
                     sceneElement: source,
                     sceneElementType: sourceType,
                     sceneElementState: sceneElementState
                 });
                 await update({
-                    isAdded: true,
                     sceneElementConnector: target,
                     sceneElement: target,
                     sceneElementType: targetType,
@@ -214,7 +259,7 @@ const SCgStructToScTranslatorImpl = function (_editor, _sandbox) {
     const appendToConstruction = async function (obj) {
         let scTemplate = new sc.ScTemplate();
         scTemplate.triple(
-            new sc.ScAddr(sandbox.addr),
+            sandbox.addr,
             [sc.ScType.EdgeAccessVarPosPerm, 'arc'],
             new sc.ScAddr(obj.sc_addr)
         );

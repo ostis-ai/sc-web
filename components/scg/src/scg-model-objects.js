@@ -3,6 +3,7 @@ const SCgObjectState = {
     MergedWithMemory: 1,
     NewInMemory: 2,
     FromMemory: 3,
+    RemovedFromMemory: 4,
 };
 
 const SCgObjectLevel = {
@@ -64,8 +65,9 @@ SCg.ModelObject = function (options) {
 
     this.id = ObjectId++;
     this.edges = [];    // list of connected edges
+    this.copies = {};
     this.need_update = true;    // update flag
-    this.state = SCgObjectState.Normal;
+    this.state = SCgObjectState.FromMemory;
     this.is_selected = false;
     this.is_highlighted = false;
     this.scene = null;
@@ -75,9 +77,7 @@ SCg.ModelObject = function (options) {
 };
 
 SCg.ModelObject.prototype = {
-
     constructor: SCg.ModelObject
-
 };
 
 /**
@@ -219,12 +219,9 @@ SCg.ModelObject.prototype._setSelected = function (value) {
  * Remove edge from edges list
  */
 SCg.ModelObject.prototype.removeEdge = function (edge) {
-    var idx = this.edges.indexOf(edge);
+    const idx = this.edges.indexOf(edge);
 
-    if (idx < 0) {
-        SCg.error("Something wrong in edges deletion");
-        return;
-    }
+    if (idx < 0) return;
 
     this.edges.splice(idx, 1);
 };
@@ -238,25 +235,22 @@ SCg.ModelObject.prototype.removeBus = function () {
 
 /**
  * Setup new sc-addr of object
- * @param merged Flag that need to be true, when object merged with element in memory.
- * Automaticaly sets state MergedWithMemory
  */
-SCg.ModelObject.prototype.setScAddr = function (addr, merged) {
+SCg.ModelObject.prototype.setScAddr = function (addr, isCopy = false) {
+    if (isCopy) {
+        this.sc_addr = addr;
+        this.scene.objects[this.sc_addr].copies[this.id] = this;
+    } else {
+        // remove old sc-addr from map
+        if (this.sc_addr && Object.prototype.hasOwnProperty.call(this.scene.objects, this.sc_addr)) {
+            delete this.scene.objects[this.sc_addr];
+        }
+        this.sc_addr = addr;
 
-    // remove old sc-addr from map
-    if (this.sc_addr && Object.prototype.hasOwnProperty.call(this.scene.objects, this.sc_addr)) {
-        delete this.scene.objects[this.sc_addr];
+        if (this.sc_addr) this.scene.objects[this.sc_addr] = this;
     }
-    this.sc_addr = addr;
-
-    //! @todo update state
-    if (this.sc_addr)
-        this.scene.objects[this.sc_addr] = this;
 
     this.need_observer_sync = true;
-
-    if (merged == true)
-        this.setObjectState(SCgObjectState.MergedWithMemory);
 }
 
 // -------------- node ---------

@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Duplicate target sc.g-elements on sc.g-scene for reflexive and multiple connectors
 - Change sc.g-links types
 - Change sc.g-links identifiers
 - Edit mode DistanceBasedSCgView with url argument `view_mode`
