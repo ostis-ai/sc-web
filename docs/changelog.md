@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.8.0-Fusion] - 24.09.2023
 ### Added
+- Add CLI argument to add hosts to CORS Allowed Origin header  
 - Duplicate target sc.g-elements on sc.g-scene for reflexive and multiple connectors
 - Change sc.g-links types
 - Change sc.g-links identifiers
