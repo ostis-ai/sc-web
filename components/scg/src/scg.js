@@ -849,7 +849,8 @@ SCg.Editor.prototype = {
             const currentScale = self.scene.render.scale;
             const heightRatio = containerHeight / scgHeight;
             const widthRatio = containerWidth / scgWidth;
-            const scale = currentScale * Math.min(heightRatio, widthRatio) - scaleDelta;
+            let scale = currentScale * Math.min(heightRatio, widthRatio) - scaleDelta;
+            if (scale < 0) scale = 0.01;
             const translateX = self.scene.render.d3_container[0][0].getBoundingClientRect().width * scale;
             const translateY = self.scene.render.d3_container[0][0].getBoundingClientRect().height * scale;
             
