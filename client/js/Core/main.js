@@ -231,17 +231,13 @@ SCWeb.core.Main = {
                 $('#help-modal').modal({ "keyboard": true });
         }
 
-        let argumentAddr = window.scKeynodes['ui_start_sc_element'];
-        const last_page_cmd_args = [getCookie('last_page_cmd_args')]
-        let first_last_page_cmd_arg = last_page_cmd_args[0];
-        if (first_last_page_cmd_arg) {
-            first_last_page_cmd_arg = parseInt(first_last_page_cmd_arg);
-            if ((await window.scClient.checkElements([new sc.ScAddr(first_last_page_cmd_arg)]))[0]) {
-                argumentAddr = first_last_page_cmd_arg;
-            }
+        const argumentAddr = window.scKeynodes['ui_start_sc_element'];
+        let startScElements = await window.scHelper.getSetElements(argumentAddr);
+        if (startScElements.length) {
+            start(startScElements[0]);
+        } else {
+            start(argumentAddr);
         }
-
-        start(argumentAddr);
 
         $('.copyright').text(`Copyright © 2012 - ${currentYear} OSTIS`);
     },
@@ -264,7 +260,6 @@ SCWeb.core.Main = {
             if (result.question !== undefined) {
                 const commandState = new SCWeb.core.CommandState(cmd_addr, cmd_args);
                 SCWeb.ui.WindowManager.appendHistoryItem(result.question, commandState);
-                setCookie('last_page_cmd_args', cmd_args);
             } else if (result.command !== undefined) {
             } else {
                 alert("There are no any answer. Try another request");
