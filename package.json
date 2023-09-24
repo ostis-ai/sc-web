@@ -1,6 +1,6 @@
 {
   "name": "sc-web",
-  "version": "0.7.0-Rebirth",
+  "version": "0.8.0-Fusion",
   "module": "commonjs",
   "dependencies": {
     "grunt": "^1.0.1",

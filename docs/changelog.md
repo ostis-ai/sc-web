@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.8.0-Fusion] - 24.09.2023
 ### Added
 - Add CLI argument to add hosts to CORS Allowed Origin header  
 - Duplicate target sc.g-elements on sc.g-scene for reflexive and multiple connectors
