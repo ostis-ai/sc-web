@@ -132,6 +132,7 @@ SCWeb.core.Main = {
                             'type': 'onContextMenu', 'payload': e.target.closest('[sc_addr]').getAttribute('sc_addr')
                         }, '*');
                     })
+                    
 
                     // renderScg(720909, 135)
                     // window.onInitializationFinished?.();
