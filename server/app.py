@@ -20,6 +20,7 @@ import handlers.auth as auth
 import logger_sc
 import secret
 from handlers.main import MainHandler
+from handlers.scg import ScgHandler
 from handlers.nl import NaturalLanguageSearch
 from keynodes import KeynodeSysIdentifiers
 from scs_loader import load_scs_fragments
@@ -77,6 +78,7 @@ def parse_options():
 def init_app_rules():
     return [
         (r"/", MainHandler),
+        (r"/scg", ScgHandler),
 
         (r"/static/(.*)", NoCacheStaticHandler, {"path": tornado.options.options.static_path}),
 
