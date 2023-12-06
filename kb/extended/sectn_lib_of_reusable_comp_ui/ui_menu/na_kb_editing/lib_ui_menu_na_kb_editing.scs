@@ -1,0 +1,19 @@
+lib_ui_menu_na_kb_editing
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команды редактирования БЗ]
+	(* <- lang_ru;; *);
+	[Library component. Commands of KB editing]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_non_atomic_reusable_components;
+
+<= nrel_library_component_decomposition:
+	{		
+		lib_component_ui_menu_file_for_changing_main_identifier;
+		lib_component_ui_menu_file_for_changing_system_identifier;
+		lib_component_ui_menu_file_for_removing_sc_element;
+		lib_component_ui_menu_file_for_removing_elements_of_the_struct;
+		lib_component_ui_menu_file_for_change_arc_direction
+	};;
+

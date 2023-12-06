@@ -1,0 +1,94 @@
+ui_user_command
+=> nrel_main_idtf:
+	[пользовательская команда] (* <- lang_ru;; *);
+	[user command] (* <- lang_en;; *);
+=> nrel_inclusion:
+	ui_user_command_sc_machine;;
+
+ui_user_command_sc_machine
+=> nrel_main_idtf:
+	[пользовательская команда sc-машины] (* <- lang_ru;; *);
+	[user command of sc-machine] (* <- lang_en;; *);;
+
+// ------------ command classes ------------
+ui_user_command_class
+=> nrel_main_idtf:
+	[класс пользовательских команд] (* <- lang_ru;; *);
+
+<= nrel_subdividing:
+	{
+		ui_user_command_class_atom;
+		ui_user_command_class_noatom
+	};
+	{
+		ui_user_command_class_existing_arguments;
+		ui_user_command_class_nonexisting_arguments
+	};
+	{
+		ui_user_command_class_view_kb;
+		ui_user_command_class_edit_kb;
+		ui_user_command_class_question;
+		ui_user_command_class_edit_file;
+		ui_user_command_class_view_file;
+		ui_user_command_class_control_dialog
+	};;
+
+ui_user_command_class_atom
+=> nrel_main_idtf:
+	[атомарный класс пользовательских команд] (* <- lang_ru;; *);;
+
+ui_user_command_class_noatom
+=> nrel_main_idtf:
+	[неатомарный класс пользовательских команд] (* <- lang_ru;; *);
+=> ui_nrel_command_init_sequence:
+	...
+	(*
+	<= nrel_sc_text_translation:
+		... (* -> [^"file://contents/ui_user_command_class_noatom_init_seq_ru.html"]
+				(* 
+				<- lang_ru;;
+				=> nrel_format: format_html;;
+				*);; 
+			*);;
+	*);;
+
+
+ui_user_command_class_existing_arguments
+=> nrel_main_idtf:
+	[класс пользовательских команд с заранее определенными аргументами] (* <- lang_ru;; *);;
+
+ui_user_command_class_nonexisting_arguments
+=> nrel_main_idtf:
+	[класс пользовательских команд с дополнительно указываемыми аргументами] (* <- lang_ru;; *);;
+
+ui_user_command_class_view_kb
+=> nrel_main_idtf:
+	[класс пользовательских команд  просмотра базы знаний] (* <- lang_ru;; *);;
+
+ui_user_command_class_edit_kb
+=> nrel_main_idtf:
+	[класс пользовательских команд редактирования базы знаний] (* <- lang_ru;; *);;
+
+ui_user_command_class_question
+=> nrel_main_idtf:
+	[класс пользовательских команд инициирующих вопрос системе] (* <- lang_ru;; *);;
+
+ui_user_command_class_edit_file
+=> nrel_main_idtf:
+	[класс пользовательских команд редактирования файлов sc-машины] (* <- lang_ru;; *);;
+
+ui_user_command_class_view_file
+=> nrel_main_idtf:
+	[класс пользовательских команд просмотра файлов sc-машины] (* <- lang_ru;; *);;
+
+ui_user_command_class_control_dialog
+=> nrel_main_idtf:
+	[класс пользовательских команд управления диалогом] (* <- lang_ru;; *);;
+
+// -------------- Relations -----------------
+ui_nrel_command_init_sequence
+<- sc_node_norole_relation;
+<- quasybinary_relation;
+=> nrel_main_idtf:
+	[последовательность элементарных действий инициирующих команду*] (* <- lang_ru;; *);;
+

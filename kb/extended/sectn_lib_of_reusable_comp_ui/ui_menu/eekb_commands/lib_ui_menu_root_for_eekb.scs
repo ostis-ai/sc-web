@@ -1,0 +1,22 @@
+lib_ui_menu_root_for_eekb
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команды СПБЗ]
+	(* <- lang_ru;; *);
+	[Library component. Commands of EEKB]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_non_atomic_reusable_components;
+
+<= nrel_library_component_decomposition:
+	{		
+		lib_ui_menu_kb_editing_for_eekb;
+		lib_ui_menu_kb_verification_for_eekb;
+		lib_ui_menu_kb_evaluation_for_eekb;
+		lib_ui_menu_activity_automatisation_for_eekb;
+		lib_ui_menu_my_changes_for_eekb;
+		lib_ui_menu_navigation_for_eekb;
+		lib_ui_menu_specification_for_eekb;
+		lib_ui_menu_ontology_forming_for_eekb
+	};;
+

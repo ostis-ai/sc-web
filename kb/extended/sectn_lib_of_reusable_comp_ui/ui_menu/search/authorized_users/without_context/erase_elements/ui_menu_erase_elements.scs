@@ -1,0 +1,25 @@
+lib_component_ui_menu_erase_elements = [*
+ui_menu_erase_elements <- ui_user_command_class_atom; ui_user_command_class_view_kb; ui_one_argument_command_class;;
+
+ui_menu_erase_elements
+=> nrel_main_idtf: 
+	[Удалить sc-элементы]
+	(* <- lang_ru;; *);;
+
+ui_menu_erase_elements
+=> nrel_main_idtf:
+	[Erase sc-elements]
+	(* <- lang_en;; *);;
+
+ui_menu_erase_elements => ui_nrel_command_template:
+	[*
+		question_erase_elements _-> ._question_erase_elements
+			(*
+				_-> rrel_1:: ui_arg_1;;
+			*);;
+		._question_erase_elements _<- question;;
+	*];;
+
+ui_menu_erase_elements => ui_nrel_command_lang_template: [Удалить sc-элементы] (* <- lang_ru;; *);;
+ui_menu_erase_elements => ui_nrel_command_lang_template: [Erase sc-elements] (* <- lang_en;; *);;
+*];;

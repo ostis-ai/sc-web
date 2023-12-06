@@ -1,0 +1,10 @@
+При щелчке левой клавиши <sc_element sys_idtf="ui_input_device_mouse">мыши</sc_element> по одному из предложенных вариантов, происходит следующее:
+<ol>
+    <li>при выборе идентификатора, который изображается в виде sc.g-рамки:
+        <div class="sc-content">sc.g-рамка</div>, то переход осуществляется к семантической окрестности <sc_element sys_idtf="sc_element">sc-элемента</sc_element>, знаком которого является эта sc.g-рамка. Как правило, это sc.g-рамки, которые содержат идентификаторы, связянные с <sc_element sys_idtf="sc_element">sc-элементами</sc_element> с помощью отношения <sc_element sys_idtf="nrel_idtf"></sc_element>. К примеру, такие отношения используются для описания <sc_element sys_idtf="sc_set"></sc_element>
+    </li>
+    <li> при выборе идентификатора, рядом с которым присутствует значок <span class="glyphicon glyphicon-user"></span>, то переход осуществляется к <sc_element sys_idtf="sc_element">sc-элементу</sc_element>, для которого указанный идентификатор является одним из основных (в одном из режимов идентификации). Другими словами к элеменету, с которым данный идентификатор связан отношением <sc_element sys_idtf="nrel_main_idtf"></sc_element>
+    </li>
+    <li> при выборе идентификатора, рядом с которым присутствует значок <span class="glyphicon glyphicon-globe"></span>, то переход осуществляется к <sc_element sys_idtf="sc_element">sc-элементу</sc_element>, для которого указанный идентификатор является системным (уникальным в рамках системы). Другими словами к элеменету, с которым данный идентификатор связан отношением <sc_element sys_idtf="nrel_system_identifier"></sc_element>
+    </li>
+</ol>

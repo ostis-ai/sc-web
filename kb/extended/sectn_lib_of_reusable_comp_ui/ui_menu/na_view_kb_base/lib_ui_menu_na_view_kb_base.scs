@@ -1,0 +1,18 @@
+lib_ui_menu_na_view_kb_base
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команды базовых запросов]
+	(* <- lang_ru;; *);
+	[Library component. Commands for base requests]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_non_atomic_reusable_components;
+
+<= nrel_library_component_decomposition:
+	{		
+		lib_component_ui_menu_view_all_output_const_pos_arc;
+		lib_component_ui_menu_view_all_input_const_pos_arc;
+		lib_component_ui_menu_view_all_output_const_pos_arc_with_rel;
+		lib_component_ui_menu_view_all_input_const_pos_arc_with_rel
+	};;
+

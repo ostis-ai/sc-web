@@ -1,0 +1,16 @@
+ui_input_device
+=> nrel_main_idtf:
+	[устройство ввода] (* <- lang_ru;; *);
+<= nrel_subdividing:
+	{
+		ui_input_device_mouse;
+		ui_input_device_keyboard
+	};;
+
+ui_input_device_mouse
+=> nrel_main_idtf:
+	[утсройство ввода мышь] (* <- lang_ru;; *);;
+
+ui_input_device_keyboard
+=> nrel_main_idtf:
+	[устройство ввода клавиатура] (* <- lang_en;; *);;

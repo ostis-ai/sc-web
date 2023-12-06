@@ -1,0 +1,11 @@
+ui_control
+=> nrel_main_idtf:
+	[элемент управления пользователького интерфейса] (* <- lang_ru;; *);
+	[user interface control] (* <- lang_en;; *);
+=> nrel_inclusion:
+	ui_control_sc_machine;;
+
+ui_control_sc_machine
+=> nrel_main_idtf:	
+	[элемент управления пользовательского интерфейса sc-машины] (* <- lang_ru;; *);
+	[user interface control of sc-machine] (* <- lang_en;; *);;

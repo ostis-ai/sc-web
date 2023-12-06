@@ -1,0 +1,9 @@
+lib_ui_na_tasks =  [*
+ui_na_tasks <- ui_user_command_class_noatom; ui_one_argument_command_class;
+=> nrel_main_idtf: [Команды для задач] (* <- lang_ru;; *);
+=> nrel_main_idtf: [Commands for tasks] (* <- lang_en;; *);
+<= nrel_ui_commands_decomposition:
+{
+	ui_menu_file_for_finding_solution
+};;
+*];;

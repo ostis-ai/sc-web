@@ -1,0 +1,14 @@
+lib_ui_menu_na_diff_vertex_connections_metrics =  [*
+ui_menu_na_diff_vertex_connections_metrics <- ui_user_command_class_noatom;
+=> nrel_main_idtf: [Метрики различных типов связей] (* <- lang_ru;; *);
+=> nrel_main_idtf: [Metrics of different types connections] (* <- lang_en;; *);
+<= nrel_ui_commands_decomposition:
+{
+	ui_menu_file_for_calculation_number_of_diff_input_connections_for_vertex_to_all_ontology_vertexes;
+	ui_menu_file_for_calculation_average_value_of_outbound_connections_vertex_of_ontology;
+	ui_menu_file_for_calculation_number_of_all_types_of_input_connections_of_vertex;
+	ui_menu_file_for_calculation_of_the_number_of_vertexes_with_diff_types_of_outgoing_connections_to_all_vertexes
+};;
+
+
+*];;

@@ -1,0 +1,10 @@
+ui_menu_na_keynodes_for_beginners
+<- ui_user_command_class_noatom;
+=> nrel_main_idtf:
+	[Ключевые узлы базы знаний для начинающих] (* <- lang_ru;; *);
+	[Keynodes of knowledge base for beginners] (* <- lang_en;; *);
+
+<= nrel_ui_commands_decomposition:
+	{
+        section_faq
+	};;

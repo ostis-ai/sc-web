@@ -1,0 +1,38 @@
+lib_component_ui_menu_file_for_finding_illustrations =  [*
+ui_menu_file_for_finding_illustrations <- ui_user_command_class_atom; ui_user_command_class_view_kb; ui_one_argument_command_class;;
+
+ui_menu_file_for_finding_illustrations 
+=> nrel_main_idtf: 
+	[Какие иллюстрации соответствуют указываемой сущности?] 
+	(* <- lang_ru;; *);
+=> nrel_idtf: 
+	[Запрос иллюстраций для заданной сущности] 
+	(* <- lang_ru;; *);;
+
+ui_menu_file_for_finding_illustrations
+=> nrel_main_idtf: 
+	[Which illustrations corresponds to given entity] 
+	(* <- lang_en;; *);
+=> nrel_idtf: 
+	[Request of illustrations for given entity] 
+	(* <- lang_en;; *);;
+
+ui_menu_file_for_finding_illustrations => ui_nrel_command_template:
+	[*
+		question_of_finding_illustrations _-> ._question_of_finding_illustrations_instance
+			(*
+			_-> ui_arg_1;;				
+			*);;
+		._question_of_finding_illustrations_instance _<- question;;
+	*];;
+
+ui_menu_file_for_finding_illustrations => ui_nrel_command_lang_template: 
+	[Какие иллюстрации соответствуют сущности $ui_arg_1] 
+		(* <- lang_ru;; *);;
+
+ui_menu_file_for_finding_illustrations => ui_nrel_command_lang_template: 
+	[Which illustrations corresponds to the entity of $ui_arg_1] 
+		(* <- lang_en;; *);;
+
+
+*];;

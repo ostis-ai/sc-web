@@ -1,0 +1,38 @@
+lib_component_ui_menu_file_for_finding_axioms =  [*
+ui_menu_file_for_finding_axioms <- ui_user_command_class_atom; ui_user_command_class_view_kb; ui_one_argument_command_class;;
+
+ui_menu_file_for_finding_axioms 
+=> nrel_main_idtf: 
+	[Какие аксиомы присутствуют в указываемой логической онтологии?] 
+	(* <- lang_ru;; *);
+=> nrel_idtf: 
+	[Запрос аксиом для заданной логической онтологии]
+	(* <- lang_ru;; *);;
+
+ui_menu_file_for_finding_axioms
+=> nrel_main_idtf: 
+	[Which axioms are there in given logical ontology?]
+	(* <- lang_en;; *);
+=> nrel_idtf: 
+	[Request of axioms for given sc-ontology?]
+	(* <- lang_en;; *);;
+
+ui_menu_file_for_finding_axioms => ui_nrel_command_template:
+	[*
+		question_finding_axioms _-> ._question_finding_axioms_instance
+			(*
+			_-> ui_arg_1;;
+			*);;
+		._question_finding_axioms_instance _<- question;;
+	*];;
+
+ui_menu_file_for_finding_axioms => ui_nrel_command_lang_template: 
+	[Какие аксиомы присутствуют в $ui_arg_1] 
+	(* <- lang_ru;; *);;
+
+ui_menu_file_for_finding_axioms => ui_nrel_command_lang_template: 
+	[Which axioms are there in $ui_arg_1] 
+	(* <- lang_en;; *);;
+
+
+*];;

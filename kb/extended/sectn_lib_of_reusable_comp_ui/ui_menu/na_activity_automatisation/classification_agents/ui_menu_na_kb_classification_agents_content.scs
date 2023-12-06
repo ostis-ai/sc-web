@@ -1,0 +1,20 @@
+lib_ui_menu_na_kb_classification_agents =  [*
+ui_menu_na_kb_classification_agents <- ui_user_command_class_noatom;
+=> nrel_main_idtf: [Команды навигации] (* <- lang_ru;; *);
+=> nrel_main_idtf: [Commands of navigation] (* <- lang_en;; *);
+<= nrel_ui_commands_decomposition:
+{
+	ui_menu_file_for_finding_all_initiated_signs;
+	ui_menu_file_for_finding_all_drafts_of_author;
+	ui_menu_file_for_finding_all_drafts_of_question_author;
+	ui_menu_file_for_finding_all_proposals_of_author;
+	ui_menu_file_for_finding_all_proposals_of_question_author;
+	ui_menu_file_for_finding_all_unreviewed_proposals_of_author;
+	ui_menu_file_for_finding_approved_proposals_by_user;
+	ui_menu_file_for_finding_approved_proposals_of_author;
+	ui_menu_file_for_finding_rejected_proposals_by_user;
+	ui_menu_file_for_finding_rejected_proposals_of_author;
+	ui_menu_for_agent_of_finding_initiated_signs_of_actions_for_specific_class_of_actions;
+	ui_menu_for_finding_initiated_action_for_a_specific_performer
+};;
+*];;

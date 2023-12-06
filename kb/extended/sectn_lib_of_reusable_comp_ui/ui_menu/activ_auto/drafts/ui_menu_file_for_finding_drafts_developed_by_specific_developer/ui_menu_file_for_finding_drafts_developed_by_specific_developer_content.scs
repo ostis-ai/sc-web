@@ -1,0 +1,25 @@
+lib_component_ui_menu_file_for_finding_drafts_developed_by_specific_developer =  [*
+ui_menu_file_for_finding_drafts_developed_by_specific_developer <- ui_user_command_class_atom; ui_user_command_class_view_kb;;
+
+ui_menu_file_for_finding_drafts_developed_by_specific_developer => nrel_main_idtf: 
+	[Найти черновики, разработанные конкретным разработчиком] 
+	(* <- lang_ru;; *);
+	[Find drafts developed by specific developer] 
+	(* <- lang_en;; *);;
+
+ui_menu_file_for_finding_drafts_developed_by_specific_developer => ui_nrel_command_template:
+	[*
+		action_to_find_drafts_developed_by_specific_developer _-> ._action_to_find_drafts_developed_by_specific_developer_instance
+			(*
+			_-> ui_arg_1;;				
+			*);;
+		._action_to_find_drafts_developed_by_specific_developer_instance _<- question;;
+	*];;
+
+ui_menu_file_for_finding_drafts_developed_by_specific_developer => ui_nrel_command_lang_template: 
+	[Найти черновики, разработанные конкретным разработчиком : $ui_arg_1] 
+	(* <- lang_ru;; *);
+	[Find drafts developed by specific developer: $ui_arg_1] 
+	(* <- lang_en;; *);;
+
+*];;

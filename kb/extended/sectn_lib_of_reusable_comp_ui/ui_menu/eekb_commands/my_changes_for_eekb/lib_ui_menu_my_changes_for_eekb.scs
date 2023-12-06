@@ -1,0 +1,16 @@
+lib_ui_menu_my_changes_for_eekb
+=> nrel_main_idtf:
+	[Компонент библиотеки. Мои правки]
+	(* <- lang_ru;; *);
+	[Library component. My changes]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_non_atomic_reusable_components;
+
+<= nrel_library_component_decomposition:
+	{	
+		lib_ui_menu_file_for_finding_all_drafts_of_question_author;
+		lib_ui_menu_file_for_finding_all_proposals_of_question_author
+	};;
+

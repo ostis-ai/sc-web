@@ -1,0 +1,20 @@
+lib_ui_menu_developer_for_eekb
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команды разработчика]
+	(* <- lang_ru;; *);
+	[Library component. Developer commands]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_non_atomic_reusable_components;
+
+<= nrel_library_component_decomposition:
+	{		
+		lib_component_ui_menu_file_for_formation_suggestion_edit_kb;
+		lib_component_ui_menu_file_for_formation_suggestion_edit_kb_to_concrete_section;
+		lib_component_ui_menu_file_for_formation_proposal_executor_of_project_task;
+		lib_component_ui_menu_file_for_formation_proposed_project_tasks;
+		lib_component_ui_menu_file_for_adding_new_draft;
+		lib_component_ui_menu_file_for_finding_drafts_developed_by_specific_developer
+	};;
+

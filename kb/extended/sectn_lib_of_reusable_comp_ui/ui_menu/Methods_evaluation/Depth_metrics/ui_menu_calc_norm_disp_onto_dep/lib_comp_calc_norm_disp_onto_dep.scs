@@ -1,0 +1,27 @@
+lib_component_ui_menu_file_for_calculation_normalized_dispersion_of_ontology_depths
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команда пользовательского интерфейса вычисления дисперсии глубины онтологии по отношению к средней глубине]
+	(* <- lang_ru;; *);
+	[Library component. User interface command of calculation dispersion of ontology depths divided by average depth]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_atomic_reusable_components;
+<- library_of_reusable_components_of_knowledge_bases;
+
+<- rrel_key_sc_element:
+	... 
+	(*
+	<- explanation;;
+	<= nrel_sc_text_translation:
+		...
+		(*
+		-> rrel_example:
+			"file://htmls/calc_norm_disp_onto_dep.html"
+			(*
+			<- lang_ru;;
+			=> nrel_format: format_html;;
+			*);;
+		*);;
+	*);;
+	

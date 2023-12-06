@@ -1,0 +1,27 @@
+lib_component_ui_menu_file_for_changing_main_identifier
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команда пользовательского интерфейса для замены основного идентификатора sc-элемента на указанный файл]
+	(* <- lang_ru;; *);
+	[Library component. User interface command for changing main identifier sc-element on specified file]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_atomic_reusable_components;
+<- library_of_reusable_components_of_knowledge_bases;
+
+<- rrel_key_sc_element:
+	... 
+	(*
+	<- explanation;;
+	<= nrel_sc_text_translation:
+		...
+		(*
+		-> rrel_example:
+			"file://htmls/UI_changing_main_identifier.html"
+			(*
+			<- lang_ru;;
+			=> nrel_format: format_html;;
+			*);;
+		*);;
+	*);;
+

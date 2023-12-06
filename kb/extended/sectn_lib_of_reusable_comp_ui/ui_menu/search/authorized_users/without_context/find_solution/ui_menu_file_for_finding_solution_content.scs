@@ -1,0 +1,38 @@
+lib_component_ui_menu_file_for_finding_solution =  [*
+ui_menu_file_for_finding_solution <- ui_user_command_class_atom; ui_user_command_class_view_kb; ui_one_argument_command_class;;
+
+ui_menu_file_for_finding_solution 
+=> nrel_main_idtf: 
+	[Как выглядит sc-текст решения указываемой задачи?] 
+	(* <- lang_ru;; *);
+=> nrel_idtf: 
+	[Запрос sc-текста решения задачи] 
+	(* <- lang_ru;; *);;
+
+ui_menu_file_for_finding_solution 
+=> nrel_main_idtf: 
+	[What is the sc-text of solution for the given task?] 
+	(* <- lang_en;; *);
+=> nrel_idtf: 
+	[Request of solution sc-text for the task] 
+	(* <- lang_en;; *);;
+
+ui_menu_file_for_finding_solution => ui_nrel_command_template:
+	[*
+		question_of_finding_solution _-> ._question_of_finding_solution_instance
+			(*
+			_-> ui_arg_1;;				
+			*);;
+		._question_of_finding_solution_instance _<- question;;
+	*];;
+
+ui_menu_file_for_finding_solution => ui_nrel_command_lang_template: 
+	[Как выглядит sc-текст решения задачи $ui_arg_1] 
+	(* <- lang_ru;; *);;
+
+ui_menu_file_for_finding_solution => ui_nrel_command_lang_template: 
+	[What is the sc-text of solution for the task $ui_arg_1] 
+	(* <- lang_en;; *);;
+
+
+*];;

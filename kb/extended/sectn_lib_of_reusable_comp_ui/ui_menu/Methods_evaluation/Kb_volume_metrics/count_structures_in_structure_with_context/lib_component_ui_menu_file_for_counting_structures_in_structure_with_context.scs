@@ -1,0 +1,28 @@
+lib_component_ui_menu_file_for_counting_structures_in_structure_with_context
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команда пользовательского интерфейса подсчета количества знаков структур в структуре с заданным контекстом]
+	(* <- lang_ru;; *);
+=> nrel_main_idtf:
+	[Library component. User interface command of counting number of sings of structure in structure within the context]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_atomic_reusable_components;
+<- library_of_reusable_components_of_knowledge_bases;
+
+<- rrel_key_sc_element:
+	... 
+	(*
+	<- explanation;;
+	<= nrel_sc_text_translation:
+		...
+		(*
+		-> rrel_example:
+			"file://htmls/UI_count_structures_in_structure_with_context.html"
+			(*
+			<- lang_ru;;
+			=> nrel_format: format_html;;
+			*);;
+		*);;
+	*);;
+	

@@ -1,0 +1,29 @@
+lib_component_ui_menu_check_translation =  [*
+ui_menu_check_translation <- ui_user_command_class_atom; ui_user_command_class_view_kb; ui_no_argument_command_class;;
+
+ui_menu_check_translation 
+=> nrel_main_idtf: 
+	[Какие sc-тексты имеют трансляцию только на некоторые внешние языки?] 
+	(* <- lang_ru;; *);
+=> nrel_idtf: 
+	[Запрос всех sc-текстов, имеющих трансляцию только на некоторые внешние языки] 
+	(* <- lang_ru;; *);;
+
+ui_menu_check_translation 
+=> nrel_main_idtf: 
+	[Which sc-texts are trabslated to only several languages but not all] 
+	(* <- lang_en;; *);
+=> nrel_idtf: 
+	[Request of all sc-text, translated to only several languages but not all] 
+	(* <- lang_en;; *);;
+
+ui_menu_check_translation => ui_nrel_command_template:
+	[*
+		question_check_translation _-> ._question_search_all_identifiers_instance;;
+		._question_search_all_identifiers_instance _<- question;;
+	*];;
+
+ui_menu_check_translation => ui_nrel_command_lang_template: [Какие sc-тексты имеют трансляцию только на некоторые внешние языки?] (* <- lang_ru;; *);;
+ui_menu_check_translation => ui_nrel_command_lang_template: [Which sc-texts are trabslated to only several languages but not all?] (* <- lang_en;; *);;
+
+*];;

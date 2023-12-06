@@ -1,0 +1,25 @@
+lib_component_ui_menu_agent_of_assign_user_as_expert =  [*
+ui_menu_agent_of_assign_user_as_expert <- ui_user_command_class_atom; ui_user_command_class_view_kb;;
+
+ui_menu_agent_of_assign_user_as_expert => nrel_main_idtf: 
+	[Назначить пользователя экспертом]
+	(* <- lang_ru;; *);
+	[Assign user as expert] 
+	(* <- lang_en;; *);;
+
+ui_menu_agent_of_assign_user_as_expert => ui_nrel_command_template:
+	[*
+		action_assign_user_as_expert _-> ._action_assign_user_as_expert_instance
+			(*
+			_-> ui_arg_1;;				
+			*);;
+		._action_assign_user_as_expert_instance _<- question;;
+	*];;
+
+ui_menu_agent_of_assign_user_as_expert => ui_nrel_command_lang_template: 
+	[Назначить экспертом: $ui_arg_1] 
+	(* <- lang_ru;; *);
+	[Assign user as expert: $ui_arg_1] 
+	(* <- lang_en;; *);;
+
+*];;

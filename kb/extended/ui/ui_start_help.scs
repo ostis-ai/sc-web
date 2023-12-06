@@ -1,0 +1,9 @@
+"file://ui_start_help/text.html"
+  <- lang_ru;
+  => nrel_system_identifier: [ui_start_help];
+  => nrel_format: format_html;;
+
+"file://ui_start_help/help-question-movie.gif"
+  <- image;
+  => nrel_system_identifier: [ui_help_question_movie];
+  => nrel_format: format_png;;

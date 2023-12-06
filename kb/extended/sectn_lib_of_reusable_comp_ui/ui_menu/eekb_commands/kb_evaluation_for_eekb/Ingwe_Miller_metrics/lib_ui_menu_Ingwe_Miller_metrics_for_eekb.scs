@@ -1,0 +1,19 @@
+lib_ui_menu_Ingwe_Miller_metrics_for_eekb
+=> nrel_main_idtf:
+	[Компонент библиотеки. Метрики Ингве-Миллера]
+	(* <- lang_ru;; *);
+	[Library component. Ingwe-Miller metrics]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_non_atomic_reusable_components;
+
+<= nrel_library_component_decomposition:
+	{		
+		lib_component_ui_menu_file_for_calculation_ninetieth_percentile_vertex_degrees;
+		lib_component_ui_menu_file_for_calculation_average_value_of_vertex_degrees;
+		lib_component_ui_menu_file_for_calculation_dispersion_of_vertex_degrees;
+		lib_component_ui_menu_file_for_calculation_median_of_vertex_degrees;
+		lib_component_ui_menu_file_for_calculation_normalized_number_of_vertexes_with_normal_degree
+	};;
+

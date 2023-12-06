@@ -1,0 +1,8 @@
+section_core_and_extensions_ui_model_core =  [*
+core_and_extensions_ui_model_core
+=> nrel_main_idtf:
+	[Ядро и расширения ядра sc-моделей пользовательских интерфейсов]
+	(* <- lang_ru;; *);
+	[Core and extensions of sc-models user interfaces core]
+	(* <- lang_en;; *);;
+*];;

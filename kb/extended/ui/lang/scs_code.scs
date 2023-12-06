@@ -1,0 +1,7 @@
+scs_code 
+=> nrel_main_idtf: 
+	[SCs-код] (* <-lang_ru;; *) ;
+	[SCs-code] (* <-lang_en;; *) ;
+=> nrel_idtf: 
+	[SCs-язык] (* <-lang_ru;; *) ;
+	[Semantic code string] (* <-lang_en;; *);;

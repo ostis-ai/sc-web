@@ -1,0 +1,8 @@
+ui_two_argument_command_class
+<- sc_node_not_relation;
+=> nrel_main_idtf: 
+    [класс команд с двумя аргументами] 
+    (* <- lang_ru;; *);
+=> nrel_main_idtf: 
+    [command class with two arguments] 
+    (* <- lang_en;; *);;

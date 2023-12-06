@@ -1,0 +1,28 @@
+lib_component_ui_menu_file_for_calculation_number_of_all_types_of_input_connections_of_vertex
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команда пользовательского интерфейса подсчета среднего числа различных типов входящих связей вершины онтологии]
+	(* <- lang_ru;; *);
+	[Library component. User interface command of calculation number of all types of input connections of vertex]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_atomic_reusable_components;
+<- library_of_reusable_components_of_knowledge_bases;
+
+<- rrel_key_sc_element:
+	... 
+	(*
+	<- explanation;;
+	<= nrel_sc_text_translation:
+		...
+		(*
+		-> rrel_example:
+			"file://htmls/UI_calculation_number_of_all_types_of_input_connections_of_vertex.html"
+			(*
+			<- lang_ru;;
+			=> nrel_format: format_html;;
+			*);;
+		*);;
+	*);;
+	
+ 

@@ -1,0 +1,18 @@
+lib_ui_menu_kb_evaluation_for_eekb
+=> nrel_main_idtf:
+	[Компонент библиотеки. Расчет характеристик]
+	(* <- lang_ru;; *);
+	[Library component. Evaluation metrics]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_non_atomic_reusable_components;
+
+<= nrel_library_component_decomposition:
+	{		
+		lib_ui_menu_depth_metrics_for_eekb;
+		lib_ui_menu_diff_vertex_connections_metrics_for_eekb;
+		lib_ui_menu_Ingwe_Miller_metrics_for_eekb;
+		lib_ui_menu_kb_volume_metrics_for_eekb
+	};;
+

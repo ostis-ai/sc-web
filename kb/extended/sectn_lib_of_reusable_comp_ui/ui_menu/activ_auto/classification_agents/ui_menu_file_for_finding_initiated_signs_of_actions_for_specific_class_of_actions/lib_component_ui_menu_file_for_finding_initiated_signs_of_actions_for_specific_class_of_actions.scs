@@ -1,0 +1,27 @@
+lib_component_ui_menu_for_agent_of_finding_initiated_signs_of_actions_for_specific_class_of_actions
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команда поиска инициированных действий, относящихся к определённому классу действий]
+	(* <- lang_ru;; *);
+	[Library component. User interface command for finding initiated signs of actions related to specific class of actions]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_atomic_reusable_components;
+<- library_of_reusable_components_of_knowledge_bases;
+
+<- rrel_key_sc_element:
+	... 
+	(*
+	<- explanation;;
+	<= nrel_sc_text_translation:
+		...
+		(*
+		-> rrel_example:
+			"file://htmls/Ui_finding_initiated_signs_of_actions_for_specific_class_of_actions.html"
+			(*
+			<- lang_ru;;
+			=> nrel_format: format_html;;
+			*);;
+		*);;
+	*);;
+

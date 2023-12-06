@@ -1,0 +1,10 @@
+lib_component_ui_menu_view_all_identifiers_in_the_agreed_part_of_kb
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команда пользовательского интерфейса поиска всех идентификаторов заданного sc-элемента]
+	(* <- lang_ru;; *);
+	[Library component. User interface command of search of all identifiers of given sc-element]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_atomic_reusable_components;;
+

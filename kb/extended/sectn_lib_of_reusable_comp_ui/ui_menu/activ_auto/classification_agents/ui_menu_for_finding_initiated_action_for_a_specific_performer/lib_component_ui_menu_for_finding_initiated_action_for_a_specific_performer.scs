@@ -1,0 +1,27 @@
+lib_component_ui_menu_for_finding_initiated_action_for_a_specific_performer
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команда пользовательского интерфейса для поиска всех утвержденных предложений конкретным пользователем]
+	(* <- lang_ru;; *);
+	[Library component. User interface command for finding actions assigned for a specific performer]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_atomic_reusable_components;
+<- library_of_reusable_components_of_knowledge_bases;
+
+<- rrel_key_sc_element:
+	... 
+	(*
+	<- explanation;;
+	<= nrel_sc_text_translation:
+		...
+		(*
+		-> rrel_example:
+			"file://htmls/UI_search_initiated_action_for_a_specific_performer.html"
+			(*
+			<- lang_ru;;
+			=> nrel_format: format_html;;
+			*);;
+		*);;
+	*);;
+	

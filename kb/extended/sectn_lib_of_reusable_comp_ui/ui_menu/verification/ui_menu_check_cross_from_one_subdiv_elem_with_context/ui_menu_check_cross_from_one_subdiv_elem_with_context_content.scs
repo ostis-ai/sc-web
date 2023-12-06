@@ -1,0 +1,20 @@
+lib_ui_menu_file_for_check_for_crossing_from_one_subdividing_elements_with_context =  [*
+ui_menu_file_for_check_for_crossing_from_one_subdividing_elements_with_context <- ui_user_command_class_atom; ui_user_command_class_view_kb; ui_user_command_with_context; ui_two_argument_command_class;;
+
+ui_menu_file_for_check_for_crossing_from_one_subdividing_elements_with_context => nrel_main_idtf: [Проверить наличие непустого пересечения у элементов одного разбиения в рамках заданного контекста] (* <- lang_ru;; *);;
+ui_menu_file_for_check_for_crossing_from_one_subdividing_elements_with_context => nrel_main_idtf: [Check for crossing from one partition elements within the given context] (* <- lang_en;; *);;
+	
+ui_menu_file_for_check_for_crossing_from_one_subdividing_elements_with_context => ui_nrel_command_template:
+	[*
+action_of_check_for_crossing_from_one_subdividing_elements _-> ._action_of_check_for_crossing_from_one_subdividing_elements_instance
+			(*
+			_-> ui_arg_1;;	
+			_=> nrel_context_of_action:: ui_arg_2;;
+			*);;
+		._action_of_check_for_crossing_from_one_subdividing_elements_instance _<- question;;
+	*];;
+
+ui_menu_file_for_check_for_crossing_from_one_subdividing_elements_with_context => ui_nrel_command_lang_template: [Проверить наличие непустого пересечения у элементов одного разбиения в рамках структуры: $ui_arg_1 с заданным контекстом $ui_arg_2] (* <- lang_ru;; *);;
+ui_menu_file_for_check_for_crossing_from_one_subdividing_elements_with_context => ui_nrel_command_lang_template: [Check for crossing from one partition elements within the sturct: $ui_arg_1 with the given context $ui_arg_2] (* <- lang_en;; *);;
+
+*];;

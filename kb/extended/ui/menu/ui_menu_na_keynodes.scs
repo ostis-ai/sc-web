@@ -1,0 +1,10 @@
+ui_menu_na_keynodes
+<- ui_user_command_class_noatom;
+=> nrel_main_idtf:
+	[Ключевые узлы навигации] (* <- lang_ru;; *);
+	[Keynodes for navigation] (* <- lang_en;; *);
+
+<= nrel_ui_commands_decomposition:
+	{
+		ui_menu_na_keynodes_for_beginners
+	};;

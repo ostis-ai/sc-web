@@ -1,0 +1,25 @@
+lib_component_ui_menu_file_for_counting_logical_formulas_quantity =  [*
+ui_menu_file_for_counting_logical_formulas_quantity <- ui_user_command_class_atom; ui_user_command_class_view_kb;;
+
+ui_menu_file_for_counting_logical_formulas_quantity => nrel_main_idtf: 
+	[Посчитать количество логических формул] 
+	(* <- lang_ru;; *);
+	[Count quantity of logical formulas] 
+	(* <- lang_en;; *);;
+
+ui_menu_file_for_counting_logical_formulas_quantity => ui_nrel_command_template:
+	[*
+		action_to_count_logical_formulas_quantity _-> ._action_to_count_logical_formulas_quantity_instance
+			(*
+			_-> statement;;				
+			*);;
+		._action_to_count_logical_formulas_quantity_instance _<- question;;
+	*];;
+
+ui_menu_file_for_counting_logical_formulas_quantity => ui_nrel_command_lang_template: 
+	[Посчитать количество логических формул] 
+	(* <- lang_ru;; *);
+	[Count quantity of logical formulas] 
+	(* <- lang_en;; *);;
+
+*];;

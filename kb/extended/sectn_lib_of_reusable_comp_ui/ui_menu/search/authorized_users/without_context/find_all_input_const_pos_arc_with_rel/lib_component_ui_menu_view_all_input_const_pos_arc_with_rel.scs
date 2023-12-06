@@ -1,0 +1,10 @@
+lib_component_ui_menu_view_all_input_const_pos_arc_with_rel
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команда пользовательского интерфейса поиска всех входящих константных позитивных стационарных sc-дуг принадлежности с их ролевыми отношениями]
+	(* <- lang_ru;; *);
+	[Library component. User interface command of search of all input constant positive permanent accessory sc-arcs with its role relations]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_atomic_reusable_components;;
+

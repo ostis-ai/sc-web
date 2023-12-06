@@ -1,0 +1,10 @@
+lib_ui_menu_na_manager =  [*
+ui_menu_na_manager <- ui_user_command_class_noatom;
+=> nrel_main_idtf: [Команды менеджера БЗ] (* <- lang_ru;; *);
+=> nrel_main_idtf: [Commands of KB manager] (* <- lang_en;; *);
+<= nrel_ui_commands_decomposition:
+{
+	ui_menu_file_for_manager_approval_proposals_for_editing_kb;
+	ui_menu_file_for_manager_rejection_proposals_for_editing_kb
+};;
+*];;

@@ -1,0 +1,32 @@
+lib_ui_menu_kb_evaluation_for_eekb =  [*
+ui_menu_kb_evaluation_for_eekb <- ui_user_command_class_noatom;
+=> nrel_main_idtf: [Расчет характеристик] (* <- lang_ru;; *);
+=> nrel_main_idtf: [Evaluation metrics] (* <- lang_en;; *);
+<= nrel_ui_commands_decomposition:
+{
+	ui_menu_Ingwe_Miller_metrics_for_eekb
+		(*
+		=> nrel_command_order: 
+			ui_menu_depth_metrics_for_eekb;;
+		*);
+
+	ui_menu_depth_metrics_for_eekb
+		(*
+		=> nrel_command_order: 
+			ui_menu_diff_vertex_connections_metrics_for_eekb;;
+		*);
+
+	ui_menu_diff_vertex_connections_metrics_for_eekb
+		(*
+		=> nrel_command_order: 
+			ui_menu_kb_volume_metrics_for_eekb;;
+		*);
+
+	ui_menu_kb_volume_metrics_for_eekb
+};;
+
+ui_menu_kb_evaluation_for_eekb <= nrel_command_access: ...
+		(*
+			-> nrel_authorised_user;;
+		*);;
+*];;

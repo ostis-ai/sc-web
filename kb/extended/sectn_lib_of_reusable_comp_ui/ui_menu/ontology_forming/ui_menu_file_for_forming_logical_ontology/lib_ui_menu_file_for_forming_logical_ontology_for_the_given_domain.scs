@@ -1,0 +1,27 @@
+lib_ui_menu_file_for_forming_logical_ontology_for_the_given_domain
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команда пользовательского интерфейса для формирования логической онтологии заданной предметной области]
+	(* <- lang_ru;; *);
+	[Library component. User interface command for forming logical ontology for the given domain]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_atomic_reusable_components;
+<- library_of_reusable_components_of_knowledge_bases;
+
+<- rrel_key_sc_element:
+	... 
+	(*
+	<- explanation;;
+	<= nrel_sc_text_translation:
+		...
+		(*
+		-> rrel_example:
+			"file://htmls/Ui_Forming_Logical_Ontology.html"
+			(*
+			<- lang_ru;;
+			=> nrel_format: format_html;;
+			*);;
+		*);;
+	*);;
+

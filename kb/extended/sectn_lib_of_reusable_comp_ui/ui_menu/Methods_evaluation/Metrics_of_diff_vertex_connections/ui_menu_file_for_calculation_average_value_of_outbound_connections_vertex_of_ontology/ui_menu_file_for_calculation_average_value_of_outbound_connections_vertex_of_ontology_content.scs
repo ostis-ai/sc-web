@@ -1,0 +1,25 @@
+lib_component_ui_menu_file_for_calculation_average_value_of_outbound_connections_vertex_of_ontology =  [*
+ui_menu_file_for_calculation_average_value_of_outbound_connections_vertex_of_ontology <- ui_user_command_class_atom; ui_user_command_class_view_kb;;
+
+ui_menu_file_for_calculation_average_value_of_outbound_connections_vertex_of_ontology => nrel_main_idtf: 
+	[Вычислить среднее число различных типов исходящих связей вершины онтологии ] 
+	(* <- lang_ru;; *);
+	[Calculate the average value of different types of outbound connections of ontology vertexes] 
+	(* <- lang_en;; *);;
+
+ui_menu_file_for_calculation_average_value_of_outbound_connections_vertex_of_ontology => ui_nrel_command_template:
+	[*
+		action_to_calculate_average_value_of_outbound_connections_vertex_of_ontology _-> ._action_to_calculate_average_value_of_outbound_connections_vertex_of_ontology_instance
+			(*
+			_-> ui_arg_1;;				
+			*);;
+		._action_to_calculate_average_value_of_outbound_connections_vertex_of_ontology_instance _<- question;;
+	*];;
+
+ui_menu_file_for_calculation_average_value_of_outbound_connections_vertex_of_ontology => ui_nrel_command_lang_template: 
+	[Вычислить среднее число различных типов исходящих связей вершины онтологии: $ui_arg_1] 
+	(* <- lang_ru;; *);
+	[Calculate the average value of different types of outbound connections of ontology vertexes: $ui_arg_1] 
+	(* <- lang_en;; *);;
+
+*];;

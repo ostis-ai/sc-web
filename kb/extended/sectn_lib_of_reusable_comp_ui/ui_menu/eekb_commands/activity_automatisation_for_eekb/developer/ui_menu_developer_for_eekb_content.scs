@@ -1,0 +1,19 @@
+lib_ui_menu_developer_for_eekb =  [*
+ui_menu_developer_for_eekb <- ui_user_command_class_noatom;
+=> nrel_main_idtf: [Команды разработчика] (* <- lang_ru;; *);
+=> nrel_main_idtf: [Developer commands] (* <- lang_en;; *);
+<= nrel_ui_commands_decomposition:
+{
+	ui_menu_file_for_formation_suggestion_edit_kb;
+	ui_menu_file_for_formation_suggestion_edit_kb_to_concrete_section;
+	ui_menu_file_for_formation_proposal_executor_of_project_task;
+	ui_menu_file_for_formation_proposed_project_tasks;
+	ui_menu_file_for_adding_new_draft;
+	ui_menu_file_for_finding_drafts_developed_by_specific_developer
+};;
+
+ui_menu_developer_for_eekb <= nrel_command_access: ...
+		(*
+			-> nrel_authorised_user;;
+		*);;
+*];;

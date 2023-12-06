@@ -1,0 +1,9 @@
+section_library_of_translators_from_sc =  [*
+library_of_translators_from_sc
+
+=> nrel_main_idtf:
+	[Библиотека трансляторов из sc-памяти во внешнее представление]
+	(* <- lang_ru;; *);
+	[Library of translators from sc-memory to external representation]
+	(* <- lang_en;; *);;
+*];;

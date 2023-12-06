@@ -1,0 +1,7 @@
+ui_descr_oper_semantic_control
+<- sc_node_not_relation;
+<= nrel_inclusion: 
+	semantic_neighborhood;
+
+ => nrel_main_idtf:
+	[sc-описание операционной семантики элемента управления] (* <- lang_ru;; *);;

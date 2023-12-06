@@ -1,0 +1,25 @@
+lib_component_ui_menu_file_for_calculation_of_the_number_of_vertexes_with_diff_types_of_outgoing_connections_to_all_vertexes =  [*
+ui_menu_file_for_calculation_of_the_number_of_vertexes_with_diff_types_of_outgoing_connections_to_all_vertexes <- ui_user_command_class_atom; ui_user_command_class_view_kb;;
+
+ui_menu_file_for_calculation_of_the_number_of_vertexes_with_diff_types_of_outgoing_connections_to_all_vertexes => nrel_main_idtf: 
+	[Вычислить количество вершин с разными типами исходящих связей по отношению ко всем вершинам онтологии] 
+	(* <- lang_ru;; *);
+	[Calculate the number of vertexes with different types of outgoing connections to all the vertexes of the ontology] 
+	(* <- lang_en;; *);;
+
+ui_menu_file_for_calculation_of_the_number_of_vertexes_with_diff_types_of_outgoing_connections_to_all_vertexes => ui_nrel_command_template:
+	[*
+		action_to_calculate_the_number_of_vertexes_with_diff_types_of_outgoing_connections_to_all_the_vertexes_of_the_ontology _-> ._action_to_calculate_the_number_of_vertexes_with_diff_types_of_outgoing_connections_to_all_the_vertexes_of_the_ontology_instance
+			(*
+			_-> ui_arg_1;;				
+			*);;
+		._action_to_calculate_the_number_of_vertexes_with_diff_types_of_outgoing_connections_to_all_the_vertexes_of_the_ontology_instance _<- question;;
+	*];;
+
+ui_menu_file_for_calculation_of_the_number_of_vertexes_with_diff_types_of_outgoing_connections_to_all_vertexes => ui_nrel_command_lang_template: 
+	[Вычислить количество вершин с разными типами исходящих связей по отношению ко всем вершинам онтологии: $ui_arg_1] 
+	(* <- lang_ru;; *);
+	[Calculate the number of vertexes with different types of outgoing connections to all the vertexes of the ontology: $ui_arg_1] 
+	(* <- lang_en;; *);;
+
+*];;

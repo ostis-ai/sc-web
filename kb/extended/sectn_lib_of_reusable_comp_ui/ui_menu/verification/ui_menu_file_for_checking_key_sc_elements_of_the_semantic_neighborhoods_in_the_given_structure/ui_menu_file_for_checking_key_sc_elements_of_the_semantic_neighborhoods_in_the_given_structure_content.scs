@@ -1,0 +1,23 @@
+lib_component_ui_menu_file_for_checking_key_sc_elements_of_the_semantic_neighborhoods_in_the_given_structure =  [*
+ui_menu_file_for_checking_key_sc_elements_of_the_semantic_neighborhoods_in_the_given_structure <- ui_user_command_class_atom; ui_user_command_class_view_kb; ui_two_argument_command_class;;
+
+ui_menu_file_for_checking_key_sc_elements_of_the_semantic_neighborhoods_in_the_given_structure=> nrel_main_idtf: [Проверить указания ключевых sc-элементов семантических окрестностей] (* <- lang_ru;; *);;
+ui_menu_file_for_checking_key_sc_elements_of_the_semantic_neighborhoods_in_the_given_structure => nrel_main_idtf: [Сheck key sc-elements of the semantic neighborhoods] (* <- lang_en;; *);;
+	
+ui_menu_file_for_checking_key_sc_elements_of_the_semantic_neighborhoods_in_the_given_structure => ui_nrel_command_template:
+	[*
+		action_of_checking_key_sc_elements_of_the_semantic_neighborhoods_in_the_given_structure _-> ._action_of_checking_key_sc_elements_of_the_semantic_neighborhoods_in_the_given_structure_instance
+			(*
+			_-> ui_arg_1;;				
+			*);;
+		._action_of_checking_key_sc_elements_of_the_semantic_neighborhoods_in_the_given_structure_instance _<- question;;
+	*];;
+
+ui_menu_file_for_checking_key_sc_elements_of_the_semantic_neighborhoods_in_the_given_structure => ui_nrel_command_lang_template: 
+	[Проверить указания ключевых sc-элементов семантических окрестностей: $ui_arg_1] 
+	(* <- lang_ru;; *);
+	[Сheck key sc-elements of the semantic neighborhoods: $ui_arg_1] 
+	(* <- lang_en;; *);;
+
+
+*];;

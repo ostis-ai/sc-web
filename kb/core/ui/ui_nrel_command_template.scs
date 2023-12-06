@@ -1,0 +1,10 @@
+ui_nrel_command_template
+
+=> nrel_main_idtf:
+    [обобщенная формулировка команды пользовательского интерфейса*]
+    (* <- lang_ru;; *);
+    [template for user interface command*]
+    (* <- lang_en;; *);
+
+<- quasybinary_relation;
+<- sc_node_norole_relation;;

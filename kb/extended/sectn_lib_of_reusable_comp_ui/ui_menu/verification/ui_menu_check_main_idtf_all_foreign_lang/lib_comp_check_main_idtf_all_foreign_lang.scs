@@ -1,0 +1,27 @@
+lib_component_ui_menu_file_for_check_the_main_idtf_for_all_foreign_lang
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команда пользовательского интерфейса для проверки наличия основных идентификаторов sc-элементов в рамках заданной структуры для всех внешних языков]
+	(* <- lang_ru;; *);
+	[Library component. User interface command of сhecking existence of main identifiers for sc-elements within the given structure for all external languages]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_atomic_reusable_components;
+<- library_of_reusable_components_of_knowledge_bases;
+
+<- rrel_key_sc_element:
+	... 
+	(*
+	<- explanation;;
+	<= nrel_sc_text_translation:
+		...
+		(*
+		-> rrel_example:
+			"file://htmls/Ui_Check_All_Ext_Lang.html"
+			(*
+			<- lang_ru;;
+			=> nrel_format: format_html;;
+			*);;
+		*);;
+	*);;
+

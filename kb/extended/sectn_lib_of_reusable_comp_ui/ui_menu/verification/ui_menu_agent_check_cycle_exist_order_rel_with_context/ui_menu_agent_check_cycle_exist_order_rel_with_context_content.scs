@@ -1,0 +1,29 @@
+lib_ui_menu_file_for_checking_cycle_existence_of_ordering_relation_with_context =  [*
+ui_menu_file_for_checking_cycle_existence_of_ordering_relation_with_context <- ui_user_command_class_atom; ui_user_command_class_view_kb; ui_two_argument_command_class; ui_user_command_with_context;;
+
+ui_menu_file_for_checking_cycle_existence_of_ordering_relation_with_context => nrel_main_idtf: 
+	[Проверить наличие циклов для заданного отношения порядка с заданным контекстом] 
+	(* <- lang_ru;; *);;
+
+ui_menu_file_for_checking_cycle_existence_of_ordering_relation_with_context => nrel_main_idtf: 
+	[Check of cycles existence for given order relation with context] 
+	(* <- lang_en;; *);;
+
+ui_menu_file_for_checking_cycle_existence_of_ordering_relation_with_context => ui_nrel_command_template:
+	[*
+		action_of_checking_cycle_existence_of_ordering_relation _-> ._action_of_checking_cycle_existence_of_ordering_relation_instance
+			(*
+			_-> ui_arg_1;;
+			_=> nrel_context_of_action:: ui_arg_2;; 				
+			*);;
+		._action_of_checking_cycle_existence_of_ordering_relation_instance _<- question;;
+	*];;
+
+ui_menu_file_for_checking_cycle_existence_of_ordering_relation_with_context => ui_nrel_command_lang_template: 
+	[Проверить наличие циклов для заданного отношения порядка ($ui_arg_1) с заданным контекстом ($ui_arg_2)] 
+	(* <- lang_ru;; *);;
+
+ui_menu_file_for_checking_cycle_existence_of_ordering_relation_with_context => ui_nrel_command_lang_template: 
+	[Check of cycles existence for given order relation ($ui_arg_1) with the given context ($ui_arg_2)] 
+	(* <- lang_en;; *);;
+*];;

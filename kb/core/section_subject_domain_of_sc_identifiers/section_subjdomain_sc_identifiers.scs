@@ -1,0 +1,86 @@
+section_subjdomain_sc_identifiers
+=> nrel_main_idtf:
+	[Раздел. Предметная область знаков, не являющихся элементами текстов SC-кода]
+	(* <- lang_ru;; *);
+	[Section. Subject domain of signs that do not belong to SC-code texts]
+	(* <- lang_en;; *);
+<- not_enough_formed_structure;
+=> nrel_epigraph:
+	...
+ 	(*
+ 		<= nrel_sc_text_translation:
+ 		...
+ 		(*
+ 			-> rrel_example:
+   				"file://content_html/epigraph_#1_for_section.html"
+   				(*
+				<- lang_ru;;
+				=> nrel_format: format_html;;
+   				*);;
+   		*);;
+ 	*);
+ 	...
+ 	(*
+ 		<= nrel_sc_text_translation:
+ 		...
+ 		(*
+ 			-> rrel_example:
+   				"file://content_html/epigraph_#2_for_section.html"
+   				(*
+				<- lang_ru;;
+				=> nrel_format: format_html;;
+   				*);;
+   		*);;
+ 	*);;
+
+
+rrel_key_sc_element -> (section_subjdomain_sc_identifiers -> subject_domain_of_sc_identifiers)
+(*
+	=> nrel_key_sc_element_order: (section_subjdomain_sc_identifiers -> sc_identifier)
+(*
+	<- rrel_key_sc_element;;
+	=> nrel_key_sc_element_order: (section_subjdomain_sc_identifiers -> string_sc_identifier)
+(*
+	<- rrel_key_sc_element;;
+	=> nrel_key_sc_element_order: (section_subjdomain_sc_identifiers -> non_string_sc_identifier)
+(*
+	<- rrel_key_sc_element;;
+	=> nrel_key_sc_element_order: (section_subjdomain_sc_identifiers -> atomic_sc_identifier)
+(*
+	<- rrel_key_sc_element;;
+	=> nrel_key_sc_element_order: (section_subjdomain_sc_identifiers -> non_atomic_sc_identifier)
+(*
+	<- rrel_key_sc_element;;
+	=> nrel_key_sc_element_order: (section_subjdomain_sc_identifiers -> sc_identifier_contour)
+(*
+	<- rrel_key_sc_element;;
+	=> nrel_key_sc_element_order: (section_subjdomain_sc_identifiers -> sc_identifier_file)
+(*
+	<- rrel_key_sc_element;;
+	=> nrel_key_sc_element_order: (section_subjdomain_sc_identifiers -> sc_identifier_set)
+(*
+	<- rrel_key_sc_element;;
+	=> nrel_key_sc_element_order: (section_subjdomain_sc_identifiers -> sc_identifier_tuple_set)
+(*
+	<- rrel_key_sc_element;;
+	=> nrel_key_sc_element_order: (section_subjdomain_sc_identifiers -> sc_identifier_operation)
+(*
+	<- rrel_key_sc_element;;
+	=> nrel_key_sc_element_order: (section_subjdomain_sc_identifiers -> nrel_idtf)
+(*
+	<- rrel_key_sc_element;;
+	=> nrel_key_sc_element_order: (section_subjdomain_sc_identifiers -> nrel_main_idtf)
+(*
+	<- rrel_key_sc_element;;
+	=> nrel_key_sc_element_order: (section_subjdomain_sc_identifiers -> nrel_system_identifier)
+(*
+	<- rrel_key_sc_element;;
+	=> nrel_key_sc_element_order: (section_subjdomain_sc_identifiers -> system_sc_identifier)
+(*
+	<- rrel_key_sc_element;;
+	=> nrel_key_sc_element_order: (section_subjdomain_sc_identifiers -> identification_relation)
+(*
+	<- rrel_key_sc_element;;
+	=> nrel_key_sc_element_order: (section_subjdomain_sc_identifiers -> nrel_external_sc_identifiers_sequence)
+	(* <- rrel_key_sc_element;; *);;
+*);;*);;*);;*);;*);;*);;*);;*);;*);;*);;*);;*);;*);;*);;*);;*);;

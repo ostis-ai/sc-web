@@ -1,0 +1,27 @@
+lib_component_ui_menu_file_for_checking_existence_of_measure_or_scale_of_parameter =  [*
+ui_menu_file_for_checking_existence_of_measure_or_scale_of_parameter <- ui_user_command_class_atom; ui_user_command_class_view_kb; ui_one_argument_command_class;;
+
+ui_menu_file_for_checking_existence_of_measure_or_scale_of_parameter => nrel_main_idtf: 
+	[Проверить указания шкалы или единицы измерения для значений параметров] 
+	(* <- lang_ru;; *);
+	[Check indication of scale or measure for values of parameters]
+	(* <- lang_en;; *);;
+	
+ui_menu_file_for_checking_existence_of_measure_or_scale_of_parameter => ui_nrel_command_template:
+	[*
+		action_to_check_indication_of_scale_or_measure_for_values_of_parameters_within_given_structure _-> ._action_to_check_indication_of_scale_or_measure_for_values_of_parameters_within_given_structure_instance
+			(*
+			_-> ui_arg_1;;	
+			*);;
+		._action_to_check_indication_of_scale_or_measure_for_values_of_parameters_within_given_structure_instance _<- question;;
+	*];;
+
+ui_menu_file_for_checking_existence_of_measure_or_scale_of_parameter => ui_nrel_command_lang_template: 
+	[Проверить указания шкалы или единицы измерения для значений параметров: $ui_arg_1] 
+	(* <- lang_ru;; *);
+	[Check indication of scale or measure for values of parameters: $ui_arg_1] 
+	(* <- lang_en;; *);;
+
+
+
+*];;

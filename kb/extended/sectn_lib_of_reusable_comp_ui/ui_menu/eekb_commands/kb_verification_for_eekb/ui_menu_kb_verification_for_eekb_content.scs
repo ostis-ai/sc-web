@@ -1,0 +1,38 @@
+lib_ui_menu_kb_verification_for_eekb =  [*
+ui_menu_kb_verification_for_eekb <- ui_user_command_class_noatom;
+=> nrel_main_idtf: [Верификация] (* <- lang_ru;; *);
+=> nrel_main_idtf: [Verification] (* <- lang_en;; *);
+<= nrel_ui_commands_decomposition:
+{
+	//commands without context
+	ui_menu_file_for_checking_cycle_existence_of_ordering_relation;
+	ui_menu_file_for_check_for_crossing_from_one_subdividing_elements;
+	ui_menu_file_for_checking_existence_of_max_studied_object_class;
+	ui_menu_file_for_check_the_main_idtf_for_all_foreign_lang;
+	ui_menu_file_for_checking_concept_def_existence;
+	ui_menu_file_for_checking_existence_of_using_const_for_def;
+	ui_menu_file_for_checking_domains_of_relation;
+	ui_menu_file_for_checking_existence_of_measure_or_scale_of_parameter;
+	ui_menu_file_for_verification_compliance_of_sheaf_pow_with_relation_arity;
+	ui_menu_file_for_checking_existence_of_any_main_identifier;
+	ui_menu_file_for_checking_key_sc_elements_of_the_semantic_neighborhoods_in_the_given_structure;
+	ui_menu_file_for_agent_of_checking_subject_domain_accessory_for_classes_in_given_structure;
+
+	//commands with context
+	ui_menu_file_for_checking_concept_def_existence_with_context;
+	ui_menu_file_for_checking_existence_of_max_studied_object_class_with_context;
+	ui_menu_file_for_check_for_crossing_from_one_subdividing_elements_with_context;
+	ui_menu_file_for_agent_of_checking_subject_domain_accessory_for_classes_in_given_structure_with_context;
+	ui_menu_file_for_check_the_main_idtf_for_all_foreign_lang_with_context;
+	ui_menu_file_for_checking_existence_of_any_main_identifier_with_context;
+	ui_menu_file_for_checking_existence_of_using_const_for_def_with_context;
+	ui_menu_file_for_checking_cycle_existence_of_ordering_relation_with_context
+};;
+
+
+ui_menu_kb_verification_for_eekb <= nrel_command_access: ...
+		(*
+			-> nrel_authorised_user;;
+		*);;
+
+*];;

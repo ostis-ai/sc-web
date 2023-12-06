@@ -1,0 +1,22 @@
+lib_ui_menu_na_admin
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команды администраторов БЗ]
+	(* <- lang_ru;; *);
+	[Library component. Commands of KB administrator]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_non_atomic_reusable_components;
+
+<= nrel_library_component_decomposition:
+	{		
+		lib_component_ui_menu_file_for_administrator_rejection_proposals_for_editing_kb;
+		lib_component_ui_menu_file_for_administrator_approval_proposals_for_editing_kb;
+		lib_component_ui_menu_file_for_approval_verification_result_of_offer;
+		lib_component_ui_menu_agent_of_assign_user_as_administrator;
+		lib_component_ui_menu_agent_of_assign_user_as_expert;
+		lib_component_ui_menu_agent_of_assign_user_as_manager;
+		lib_component_ui_menu_file_for_verify_the_desired_structure;
+		lib_component_ui_menu_file_for_rejection_verification_result_of_offer
+	};;
+

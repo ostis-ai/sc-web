@@ -1,0 +1,30 @@
+lib_ui_menu_file_for_checking_cycle_existence_of_ordering_relation =  [*
+ui_menu_file_for_checking_cycle_existence_of_ordering_relation <- ui_user_command_class_atom; ui_user_command_class_view_kb; ui_one_argument_command_class;;
+
+ui_menu_file_for_checking_cycle_existence_of_ordering_relation => nrel_main_idtf: 
+	[Проверить наличие циклов для заданного отношения порядка] 
+	(* <- lang_ru;; *);;
+
+ui_menu_file_for_checking_cycle_existence_of_ordering_relation => nrel_main_idtf: 
+	[Check of cycles existence for given order relation] 
+	(* <- lang_en;; *);;
+
+ui_menu_file_for_checking_cycle_existence_of_ordering_relation => ui_nrel_command_template:
+	[*
+		action_of_checking_cycle_existence_of_ordering_relation _-> ._action_of_checking_cycle_existence_of_ordering_relation_instance
+			(*
+			_-> ui_arg_1;;				
+			*);;
+		._action_of_checking_cycle_existence_of_ordering_relation_instance _<- question;;
+	*];;
+
+ui_menu_file_for_checking_cycle_existence_of_ordering_relation => ui_nrel_command_lang_template: 
+	[Проверить наличие циклов для заданного отношения порядка: $ui_arg_1] 
+	(* <- lang_ru;; *);;
+
+ui_menu_file_for_checking_cycle_existence_of_ordering_relation => ui_nrel_command_lang_template: 
+	[Check of cycles existence for given order relation: $ui_arg_1] 
+	(* <- lang_en;; *);;
+
+
+*];;

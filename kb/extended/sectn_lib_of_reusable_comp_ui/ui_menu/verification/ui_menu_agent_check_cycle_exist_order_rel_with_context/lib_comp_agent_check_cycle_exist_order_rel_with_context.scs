@@ -1,0 +1,28 @@
+lib_ui_menu_file_for_checking_cycle_existence_of_ordering_relation_with_context
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команда пользовательского интерфейса для проверки наличия цикла заданного отношения порядка в рамках заданной структуры с заданным контекстом]
+	(* <- lang_ru;; *);
+	[Library component. User interface command for checking of cycle for given relation within a given structure with the given context]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_atomic_reusable_components;
+<- library_of_reusable_components_of_knowledge_bases;
+
+<- rrel_key_sc_element:
+	... 
+	(*
+	<- explanation;;
+	<= nrel_sc_text_translation:
+		...
+		(*
+		-> rrel_example:
+			"file://htmls/Ui_Checking_Cycle.html"
+			(*
+			<- lang_ru;;
+			=> nrel_format: format_html;;
+			*);;
+		*);;
+	*);;
+
+

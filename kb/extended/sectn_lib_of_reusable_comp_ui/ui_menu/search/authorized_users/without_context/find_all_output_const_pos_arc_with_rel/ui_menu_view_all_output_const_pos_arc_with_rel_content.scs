@@ -1,0 +1,32 @@
+lib_component_ui_menu_view_all_output_const_pos_arc_with_rel =  [*
+ui_menu_view_all_output_const_pos_arc_with_rel <- ui_user_command_class_atom; ui_user_command_class_view_kb; ui_one_argument_command_class;;
+
+ui_menu_view_all_output_const_pos_arc_with_rel 
+=> nrel_main_idtf: 
+	[Какие элементы принадлежат указываемому множеству и какие роли они выполняют?] 
+	(* <- lang_ru;; *);
+=> nrel_idtf: 
+	[Запрос всех выходящих константных позитивных стационарных sc-дуг принадлежности с их ролевыми отношениями] 
+	(* <- lang_ru;; *);;
+
+ui_menu_view_all_output_const_pos_arc_with_rel 
+=> nrel_main_idtf: 
+	[Which elements are members of given set and what does they act as?] 
+	(* <- lang_en;; *);
+=> nrel_idtf: 
+	[Request of all positive, constant and output arcs with role relations] 
+	(* <- lang_en;; *);;
+
+ui_menu_view_all_output_const_pos_arc_with_rel => ui_nrel_command_template:
+	[*
+		question_search_all_output_const_pos_arcs_with_rel _-> ._question_search_all_output_const_pos_arcs_with_rel_instance
+			(*
+				_-> ui_arg_1;;				
+			*);;
+		._question_search_all_output_const_pos_arcs_with_rel_instance _<- question;;
+	*];;
+
+ui_menu_view_all_output_const_pos_arc_with_rel => ui_nrel_command_lang_template: [Какие элементы принадлежат множеству $ui_arg_1 и какие роли они выполняют] (* <- lang_ru;; *);;
+ui_menu_view_all_output_const_pos_arc_with_rel => ui_nrel_command_lang_template: [Which elements are members of set $ui_arg_1 and what does they act as] (* <- lang_en;; *);;
+
+*];;

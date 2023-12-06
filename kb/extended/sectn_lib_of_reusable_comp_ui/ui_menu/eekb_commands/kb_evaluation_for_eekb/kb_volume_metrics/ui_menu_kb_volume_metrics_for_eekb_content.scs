@@ -1,0 +1,30 @@
+lib_ui_menu_kb_volume_metrics_for_eekb =  [*
+ui_menu_kb_volume_metrics_for_eekb <- ui_user_command_class_noatom;
+=> nrel_main_idtf: [Подсчет характеристик объема] (* <- lang_ru;; *);
+=> nrel_main_idtf: [Volume metrics] (* <- lang_en;; *);
+<= nrel_ui_commands_decomposition:
+{
+	//commands without context
+	ui_menu_file_for_calculation_number_of_sections;
+	ui_menu_file_for_calculation_number_of_subject_domains;
+	ui_menu_file_for_calculation_average_depth_of_subject_domain;
+	ui_menu_file_for_calculation_number_of_class_instances;
+	ui_menu_file_for_calculation_number_of_concepts_and_relations;
+	ui_menu_file_for_counting_logical_formulas_quantity;
+	ui_menu_file_for_counting_variables_in_structure;
+	ui_menu_file_for_counting_structures_in_structure;
+	ui_menu_file_for_counting_nodes_in_structure;
+	ui_menu_file_for_counting_arcs_in_structure;
+
+	//commands with context
+	ui_menu_file_for_counting_nodes_in_structure_with_context;
+	ui_menu_file_for_counting_structures_in_structure_with_context;
+	ui_menu_file_for_counting_variables_in_structure_with_context;
+	ui_menu_file_for_counting_arcs_in_structure_with_context
+};;
+
+ui_menu_kb_volume_metrics_for_eekb <= nrel_command_access: ...
+		(*
+			-> nrel_authorised_user;;
+		*);;
+*];;

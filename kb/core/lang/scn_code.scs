@@ -1,0 +1,5 @@
+scn_code => nrel_main_idtf:
+	[SCn-код] (* <- lang_ru;; *);
+	[SCn-code] (* <- lang_en;; *);
+=> nrel_idtf: 
+	[Semantic Computer natural Сode] (* <- lang_en;; *);;

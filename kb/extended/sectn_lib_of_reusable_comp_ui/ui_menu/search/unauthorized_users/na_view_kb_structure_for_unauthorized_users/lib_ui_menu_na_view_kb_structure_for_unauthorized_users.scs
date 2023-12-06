@@ -1,0 +1,17 @@
+lib_ui_menu_na_view_kb_structure_for_unauthorized_users
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команды запроса структуры]
+	(* <- lang_ru;; *);
+	[Library component. Command for structure requests]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_non_atomic_reusable_components;
+
+<= nrel_library_component_decomposition:
+	{		
+		lib_component_ui_menu_view_decomposition_in_the_agreed_part_of_kb;
+		lib_component_ui_menu_view_all_superclasses_in_quasybinary_relation_in_the_agreed_part_of_kb;
+		lib_component_ui_menu_view_all_subclasses_in_quasybinary_relation_in_the_agreed_part_of_kb
+	};;
+

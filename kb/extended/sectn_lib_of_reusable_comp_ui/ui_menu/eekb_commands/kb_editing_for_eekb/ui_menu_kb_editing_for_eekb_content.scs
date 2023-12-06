@@ -1,0 +1,18 @@
+lib_ui_menu_kb_editing_for_eekb =  [*
+ui_menu_kb_editing_for_eekb <- ui_user_command_class_noatom;
+=> nrel_main_idtf: [Редактирование] (* <- lang_ru;; *);
+=> nrel_main_idtf: [Editing] (* <- lang_en;; *);
+<= nrel_ui_commands_decomposition:
+{
+	ui_menu_file_for_changing_main_identifier;
+	ui_menu_file_for_changing_system_identifier;
+	ui_menu_file_for_removing_sc_element;
+	ui_menu_file_for_removing_elements_of_the_struct;
+	ui_menu_file_for_change_arc_direction
+};;
+
+ui_menu_kb_editing_for_eekb <= nrel_command_access: ... 
+		(*
+			-> nrel_administrator;;
+		*);;
+*];;

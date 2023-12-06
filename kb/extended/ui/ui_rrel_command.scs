@@ -1,0 +1,3 @@
+ui_rrel_command <- sc_node_role_relation;;
+
+ui_rrel_command => nrel_main_idtf: [команда'] (* <- lang_ru;; *);;

@@ -1,0 +1,11 @@
+section_library_of_communication_environments
+
+=> nrel_main_idtf:
+	[Раздел. Библиотека сред общения]
+	(* <- lang_ru;; *);
+	[Section. Library of communication environments]
+	(* <- lang_en;; *);
+<- not_enough_formed_structure;;
+
+
+rrel_key_sc_element -> (section_library_of_communication_environments -> library_of_communication_environments);;

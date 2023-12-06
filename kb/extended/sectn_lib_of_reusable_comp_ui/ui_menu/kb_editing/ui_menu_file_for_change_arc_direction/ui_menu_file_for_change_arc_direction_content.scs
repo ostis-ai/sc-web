@@ -1,0 +1,25 @@
+lib_component_ui_menu_file_for_change_arc_direction =  [*
+ui_menu_file_for_change_arc_direction <- ui_user_command_class_atom; ui_user_command_class_view_kb;;
+
+ui_menu_file_for_change_arc_direction => nrel_main_idtf: 
+	[Изменить направление дуги] 
+	(* <- lang_ru;; *);
+	[Change arc direction] 
+	(* <- lang_en;; *);;
+
+ui_menu_file_for_change_arc_direction => ui_nrel_command_template:
+	[*
+		action_to_change_arc_direction _-> ._action_to_change_arc_direction_instance
+			(*
+			_-> ui_arg_1;;	
+			*);;
+		._action_to_change_arc_direction_instance _<- question;;
+	*];;
+
+ui_menu_file_for_change_arc_direction => ui_nrel_command_lang_template: 
+	[Изменить направление дуги: $ui_arg_1] 
+	(* <- lang_ru;; *);
+	[Change arc direction: $ui_arg_1] 
+	(* <- lang_en;; *);;
+
+*];;

@@ -1,0 +1,15 @@
+lib_ui_menu_na_view_kb_identifiers_for_unauthorized_users
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команды запроса идентификаторов]
+	(* <- lang_ru;; *);
+	[Library component. Command to request identifiers]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_non_atomic_reusable_components;
+
+<= nrel_library_component_decomposition:
+	{		
+		lib_component_ui_menu_view_all_identifiers_in_the_agreed_part_of_kb
+	};;
+

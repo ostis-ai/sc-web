@@ -1,0 +1,10 @@
+lib_ui_na_ontologies =  [*
+ui_na_ontologies <- ui_user_command_class_noatom; ui_one_argument_command_class;
+=> nrel_main_idtf: [Команды для логических онтологий] (* <- lang_ru;; *);
+=> nrel_main_idtf: [Commands for logic ontologies] (* <- lang_en;; *);
+<= nrel_ui_commands_decomposition:
+{
+	ui_menu_file_for_finding_axioms;
+	ui_menu_file_for_finding_theorems 
+};;
+*];;

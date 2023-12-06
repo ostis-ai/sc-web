@@ -1,0 +1,38 @@
+lib_component_ui_menu_file_for_finding_proof_steps =  [*
+ui_menu_file_for_finding_proof_steps <- ui_user_command_class_atom; ui_user_command_class_view_kb; ui_one_argument_command_class;;
+
+ui_menu_file_for_finding_proof_steps 
+=> nrel_main_idtf: 
+	[Какие действия были выполнены для выполнения указанного действия?]
+	(* <- lang_ru;; *);
+=> nrel_idtf: 
+	[Команда поиска действий, выполненных для выполнения указываемого действия]
+	(* <- lang_ru;; *);;
+
+ui_menu_file_for_finding_proof_steps 
+=> nrel_main_idtf: 
+	[Which actions were performed to perform given action?]
+	(* <- lang_en;; *);
+=> nrel_idtf: 
+	[Command of finding actions, which were performed to perform given action]
+	(* <- lang_en;; *);;
+
+ui_menu_file_for_finding_proof_steps => ui_nrel_command_template:
+	[*
+		question_finding_proof_steps _-> ._question_finding_proof_steps_instance
+			(*
+			_-> ui_arg_1;;
+			*);;
+		._question_finding_proof_steps_instance _<- question;;
+	*];;
+
+ui_menu_file_for_finding_proof_steps => ui_nrel_command_lang_template: 
+	[Какие действия были выполнены для выполнения действия $ui_arg_1] 
+	(* <- lang_ru;; *);;
+
+ui_menu_file_for_finding_proof_steps => ui_nrel_command_lang_template: 
+	[Which actions were performed to perform action $ui_arg_1] 
+	(* <- lang_en;; *);;
+
+
+*];;

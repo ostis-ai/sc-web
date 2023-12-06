@@ -1,0 +1,10 @@
+lib_component_ui_menu_check_translation
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команда пользовательского интерфейса поиска всех sc-текстов, имеющих трансляцию только на некоторые внешние языки]
+	(* <- lang_ru;; *);
+	[Library component. User interface command of search all sc-text, translated to only several languages but not all]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_atomic_reusable_components;;
+

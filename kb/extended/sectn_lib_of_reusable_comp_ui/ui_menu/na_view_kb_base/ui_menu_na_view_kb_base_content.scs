@@ -1,0 +1,15 @@
+lib_ui_menu_na_view_kb_base =  [*
+ui_menu_na_view_kb_base	<- ui_user_command_class_noatom;;
+
+ui_menu_na_view_kb_base	=> nrel_main_idtf: [Команды базовых запросов] (* <- lang_ru;; *);;
+ui_menu_na_view_kb_base => nrel_main_idtf: [Commands for base requests] (* <- lang_en;; *);;
+
+ui_menu_na_view_kb_base <= nrel_ui_commands_decomposition:
+{
+	ui_menu_view_all_output_const_pos_arc;
+	ui_menu_view_all_input_const_pos_arc;
+	ui_menu_view_all_output_const_pos_arc_with_rel;
+	ui_menu_view_all_input_const_pos_arc_with_rel
+};;
+
+*];;

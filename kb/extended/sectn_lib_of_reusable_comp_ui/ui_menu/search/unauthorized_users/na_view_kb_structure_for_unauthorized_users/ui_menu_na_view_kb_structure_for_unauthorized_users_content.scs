@@ -1,0 +1,12 @@
+lib_ui_menu_na_view_kb_structure_for_unauthorized_users =  [*
+ui_menu_na_view_kb_structure_for_unauthorized_users <- ui_user_command_class_noatom; ui_one_argument_command_class;;
+ui_menu_na_view_kb_structure_for_unauthorized_users => nrel_main_idtf: [Команды запроса структуры] (* <- lang_ru;; *);;
+ui_menu_na_view_kb_structure_for_unauthorized_users => nrel_main_idtf: [Command for structure requests] (* <- lang_en;; *);;
+ui_menu_na_view_kb_structure_for_unauthorized_users <= nrel_ui_commands_decomposition:
+{
+	ui_menu_view_decomposition_in_the_agreed_part_of_kb;
+	ui_menu_view_all_superclasses_in_quasybinary_relation_in_the_agreed_part_of_kb;
+	ui_menu_view_all_subclasses_in_quasybinary_relation_in_the_agreed_part_of_kb
+};;
+
+*];;

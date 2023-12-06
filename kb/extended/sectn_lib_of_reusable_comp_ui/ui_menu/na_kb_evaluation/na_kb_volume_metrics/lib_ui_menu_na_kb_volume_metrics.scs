@@ -1,0 +1,20 @@
+lib_ui_menu_na_kb_volume_metrics
+=> nrel_main_idtf:
+	[Компонент библиотеки. Метрики полноты БЗ]
+	(* <- lang_ru;; *);
+	[Library component. KB volume metrics]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_non_atomic_reusable_components;
+
+<= nrel_library_component_decomposition:
+	{		
+		lib_component_ui_menu_file_for_calculation_number_of_sections;
+		lib_component_ui_menu_file_for_calculation_number_of_subject_domains;
+		lib_component_ui_menu_file_for_calculation_average_depth_of_subject_domain;
+		lib_component_ui_menu_file_for_calculation_number_of_class_instances;
+		lib_component_ui_menu_file_for_calculation_number_of_concepts_and_relations;
+		lib_component_ui_menu_file_for_counting_logical_formulas_quantity
+	};;
+

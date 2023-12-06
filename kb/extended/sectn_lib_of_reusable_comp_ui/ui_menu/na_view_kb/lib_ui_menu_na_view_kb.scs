@@ -1,0 +1,18 @@
+lib_ui_menu_na_view_kb
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команды просмотра БЗ]
+	(* <- lang_ru;; *);
+	[Library component. Commands to view KB]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_non_atomic_reusable_components;
+
+<= nrel_library_component_decomposition:
+	{		
+	lib_ui_menu_na_view_kb_base;
+	lib_ui_menu_na_view_kb_structure;
+	lib_ui_menu_na_view_kb_semantic_square;
+	lib_ui_menu_na_view_kb_identifiers
+	};;
+

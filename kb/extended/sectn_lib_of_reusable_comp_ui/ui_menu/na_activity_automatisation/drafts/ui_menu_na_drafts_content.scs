@@ -1,0 +1,10 @@
+lib_ui_menu_na_drafts =  [*
+ui_menu_na_drafts <- ui_user_command_class_noatom;
+=> nrel_main_idtf: [Команды работы с черновиками] (* <- lang_ru;; *);
+=> nrel_main_idtf: [Commands of working with drafts] (* <- lang_en;; *);
+<= nrel_ui_commands_decomposition:
+{
+	ui_menu_file_for_adding_new_draft;
+	ui_menu_file_for_finding_drafts_developed_by_specific_developer
+};;
+*];;

@@ -1,0 +1,245 @@
+section_subjdomain_informational_structures_not_sc_code =  [*
+subjdomain_informational_structures_not_sc_code
+
+=> nrel_main_idtf:
+	[Предметная область информационных конструкций, не принадлежащих SC-коду]
+	(* <- lang_ru;; *);
+	[Subjdomain informational structures not sc-code]
+	(* <- lang_en;; *);
+<- subject_domain;
+<- sc_node_struct;
+<- structure;
+-> rrel_maximum_studied_object_class: 
+	file;
+-> rrel_not_maximum_studied_object_class:
+	lang_external;
+	languages;
+	lang_ru;
+	lang_en;
+	image;
+	class_of_syntactically_equivalent_information_structures;
+	maximum_class_of_syntactically_equivalent_information_structures;
+-> rrel_explored_relation:
+	nrel_sc_text_translation;;
+
+file <- sc_node_not_relation;
+
+=> nrel_main_idtf:
+	[файл]
+	(* <- lang_ru;; *);
+	[file]
+	(* <- lang_en;; *);
+
+=> nrel_idtf:
+	[знак файла]
+	(* <- lang_ru;; *);
+	[sc-знак файла]
+	(* <- lang_ru;; *);
+	[знак информационной конструкции, внешней по отношению к sc-памяти]
+	(* <- lang_ru;; *);
+	[sc-ссылка]
+	(* <- lang_ru;; *);
+
+<- rrel_key_sc_element:
+	...
+	(*
+		<- explanation;;
+		<= nrel_sc_text_translation:	
+			...
+			(*
+			-> rrel_example:
+				"file://nl_files/explanation_for_file.html"
+				(*
+				<- lang_ru;;
+				=> nrel_format: format_html;;
+   				*);;
+			*);;
+	*);;
+
+lang_external <- sc_node_not_relation;
+
+=> nrel_main_idtf:
+	[внешний язык]
+	(* <- lang_ru;; *);
+	[external language]
+	(* <- lang_en;; *);
+
+=> nrel_idtf:
+	[язык, внешний по отношению к sc-памяти]
+	(* <- lang_ru;; *);
+
+<=nrel_set_of_subsets: file;
+
+<- rrel_key_sc_element:
+	...
+	(*
+		<- explanation;;
+		<= nrel_sc_text_translation:	
+			...
+			(*
+			-> rrel_example:
+				"file://nl_files/explanation_for_lang_external.html"
+				(*
+				<- lang_ru;;
+				=> nrel_format: format_html;;
+   				*);;
+			*);;
+	*);;
+
+
+languages <- sc_node_not_relation;
+=> nrel_main_idtf:
+	[естественный язык]
+	(* <- lang_ru;; *);
+	[natural language]
+	(* <- lang_en;; *);
+
+	=> nrel_idtf:
+	[язык диалога с пользователем]
+	(* <- lang_ru;; *);
+
+	-> lang_ru;
+	-> lang_en;
+
+<= nrel_inclusion: lang_external;
+<- rrel_key_sc_element:
+	...
+	(*
+		<- explanation;;
+		<= nrel_sc_text_translation:	
+			...
+			(*
+			-> rrel_example:
+				"file://nl_files/explanation_for_languages.html"
+				(*
+				<- lang_ru;;
+				=> nrel_format: format_html;;
+   				*);;
+			*);;
+	*);;
+
+lang_ru
+<- sc_node_not_relation;
+=> nrel_main_idtf:
+	[Русский язык]
+	(* <- lang_ru;; *);
+	[Russian language]
+	(* <- lang_en;; *);;
+
+lang_en
+<- sc_node_not_relation;
+=> nrel_main_idtf:
+	[Английский язык]
+	(* <- lang_ru;; *);
+	[English language]
+	(* <- lang_en;; *);;
+
+nrel_sc_text_translation
+<- sc_node_norole_relation;
+<- quasybinary_relation;
+=> nrel_main_idtf:
+	[трансляция sc-текста*]
+	(* <- lang_ru;; *);
+	[sc-text translation*]
+	(* <- lang_en;; *);
+
+=> nrel_first_domain:
+	set;
+
+=> nrel_second_domain:
+	file;
+
+=> nrel_definitional_domain:
+	...
+	(*
+		<= nrel_combination:
+		{
+			set;
+			file
+		};;
+
+	*);
+<- rrel_key_sc_element:
+	...
+	(*
+		<- explanation;;
+		<= nrel_sc_text_translation:	
+			...
+			(*
+			-> rrel_example:
+				"file://nl_files/explanation_for_nrel_sc_text_translation.html"
+				(*
+				<- lang_ru;;
+				=> nrel_format: format_html;;
+   				*);;
+			*);;
+	*);;
+
+image <- sc_node_not_relation;
+
+=> nrel_main_idtf:
+	[изображение]
+	(* <- lang_ru;; *);
+	[image]
+	(* <- lang_en;; *);
+
+=> nrel_idtf:
+	[графический файл]
+	(* <- lang_ru;; *);
+	[графическая несимвольная информационная конструкция]
+	(* <- lang_ru;; *);
+
+<= nrel_inclusion: file;;
+
+class_of_syntactically_equivalent_information_structures <- sc_node_not_relation;
+
+=> nrel_main_idtf:
+	[класс синтаксически эквивалентных информационных конструкций]
+	(* <- lang_ru;; *);
+	[class of syntactically equivalent information structures]
+	(* <- lang_en;; *);
+
+=> nrel_inclusion: maximum_class_of_syntactically_equivalent_information_structures;
+
+<- rrel_key_sc_element:
+	...
+	(*
+		<- explanation;;
+		<= nrel_sc_text_translation:	
+			...
+			(*
+			-> rrel_example:
+				"file://nl_files/explanation_for_class_of_syntactically_equivalent_information_structures.html"
+				(*
+				<- lang_ru;;
+				=> nrel_format: format_html;;
+   				*);;
+			*);;
+	*);;
+
+
+maximum_class_of_syntactically_equivalent_information_structures <- sc_node_not_relation;
+
+=> nrel_main_idtf:
+	[максимальный класс синтаксически эквивалентных информационных конструкций]
+	(* <- lang_ru;; *);
+	[class of syntactically equivalent information structures]
+	(* <- lang_en;; *);
+
+<- rrel_key_sc_element:
+	...
+	(*
+		<- explanation;;
+		<= nrel_sc_text_translation:	
+			...
+			(*
+			-> rrel_example:
+				"file://nl_files/explanation_for_maximum_class_of_syntactically_equivalent_information_structures.html"
+				(*
+				<- lang_ru;;
+				=> nrel_format: format_html;;
+   				*);;
+			*);;
+	*);;
+
+*];;

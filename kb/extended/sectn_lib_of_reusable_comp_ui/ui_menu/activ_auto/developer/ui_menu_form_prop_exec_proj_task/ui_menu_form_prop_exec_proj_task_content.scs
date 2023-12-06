@@ -1,0 +1,21 @@
+lib_component_ui_menu_file_for_formation_proposal_executor_of_project_task =  [*
+ui_menu_file_for_formation_proposal_executor_of_project_task <- ui_user_command_class_atom; ui_user_command_class_view_kb; ui_two_argument_command_class;;
+
+ui_menu_file_for_formation_proposal_executor_of_project_task => nrel_main_idtf: [Cформировать предложение исполнителя проектного задания] (* <- lang_ru;; *);
+=> nrel_main_idtf: [Form proposal of executor of project task] (* <- lang_en;; *);;
+
+ui_menu_file_for_formation_proposal_executor_of_project_task => ui_nrel_command_template:
+	[*
+		action_to_consider_offered_artist_of_project_task _-> ._action_to_consider_offered_artist_of_project_task_instance
+			(*
+			_-> rrel_1:: ui_arg_1;;
+			_-> rrel_2:: ui_arg_2;;
+			*);;
+		._action_to_consider_offered_artist_of_project_task_instance _<- question;;
+	*];;
+
+ui_menu_file_for_formation_proposal_executor_of_project_task => ui_nrel_command_lang_template: [Cформировать предложение исполнителя проектного задания: $ui_arg_1] (* <- lang_ru;; *);;
+ui_menu_file_for_formation_proposal_executor_of_project_task => ui_nrel_command_lang_template: [Form proposal of executor of project task: $ui_arg_1] (* <- lang_en;; *);;
+
+
+*];;

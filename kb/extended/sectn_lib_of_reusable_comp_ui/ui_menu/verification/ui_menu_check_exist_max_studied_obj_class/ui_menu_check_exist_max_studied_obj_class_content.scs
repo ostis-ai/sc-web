@@ -1,0 +1,19 @@
+lib_component_ui_menu_file_for_checking_existence_of_max_studied_object_class  =  [*
+ui_menu_file_for_checking_existence_of_max_studied_object_class <- ui_user_command_class_atom; ui_user_command_class_view_kb;
+
+=> nrel_main_idtf: [Проверить указание максимального класса объектов исследования у предметных областей] (* <- lang_ru;;*);
+=> nrel_main_idtf: [Check existence of maximum studied object class of subject domains] (* <- lang_en;;*);;
+ui_menu_file_for_checking_existence_of_max_studied_object_class => ui_nrel_command_template:
+	[*
+		action_of_checking_existence_of_max_studied_class_of_subject_domain _-> ._action_of_checking_existence_of_max_studied_class_of_subject_domain_instance
+			(*
+			_-> ui_arg_1;;
+			*);;
+		._action_of_checking_existence_of_max_studied_class_of_subject_domain_instance _<- question;;
+	*];;
+
+ui_menu_file_for_checking_existence_of_max_studied_object_class => ui_nrel_command_lang_template: [Проверить указание максимального класса объектов исследования у предметных областей: $ui_arg_1] (* <- lang_ru;;*);;
+ui_menu_file_for_checking_existence_of_max_studied_object_class => ui_nrel_command_lang_template: [Check existence of maximum studied object class of subject domains: $ui_arg_1] (* <- lang_en;;*);;
+
+
+*];;

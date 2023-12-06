@@ -1,0 +1,7 @@
+ui_descr_oper_semantic_commands
+<- sc_node_not_relation;
+<= nrel_inclusion: 
+	semantic_neighborhood;
+
+ => nrel_main_idtf:
+	[sc-описание операционной семантики команд заданного класса] (* <- lang_ru;; *);;

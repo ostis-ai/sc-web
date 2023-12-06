@@ -1,0 +1,17 @@
+lib_ui_menu_navigation_by_initiated_signs_for_eekb
+=> nrel_main_idtf:
+	[Компонент библиотеки. Поиск инициированных действий]
+	(* <- lang_ru;; *);
+	[Library component. Initiated signs search]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_non_atomic_reusable_components;
+
+<= nrel_library_component_decomposition:
+	{		
+		lib_component_ui_menu_file_for_finding_all_initiated_signs;
+		lib_component_ui_menu_for_agent_of_finding_initiated_signs_of_actions_for_specific_class_of_actions;
+		lib_component_ui_menu_for_finding_initiated_action_for_a_specific_performer
+	};;
+

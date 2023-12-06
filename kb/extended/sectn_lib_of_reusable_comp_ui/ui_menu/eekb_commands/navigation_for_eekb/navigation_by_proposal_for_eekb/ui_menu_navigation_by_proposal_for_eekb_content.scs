@@ -1,0 +1,25 @@
+lib_ui_menu_navigation_by_proposal_for_eekb =  [*
+ui_menu_navigation_by_proposal_for_eekb <- ui_user_command_class_noatom;
+=> nrel_main_idtf: [Поиск предложений] (* <- lang_ru;; *);
+=> nrel_main_idtf: [Proposals search] (* <- lang_en;; *);
+<= nrel_ui_commands_decomposition:
+{
+	//commands without context
+	ui_menu_file_for_finding_all_proposals_of_author;
+	ui_menu_file_for_finding_all_unreviewed_proposals_of_author;
+	ui_menu_file_for_finding_approved_proposals_by_user;
+	ui_menu_file_for_finding_approved_proposals_of_author;
+	ui_menu_file_for_finding_rejected_proposals_by_user;
+	ui_menu_file_for_finding_rejected_proposals_of_author;
+
+	//commands with context
+	ui_menu_file_for_finding_rejected_proposals_by_user_with_context;
+	ui_menu_file_for_finding_approved_proposals_by_user_with_context
+};;
+
+ui_menu_navigation_by_proposal_for_eekb <= nrel_command_access: ...
+		(*
+			-> nrel_authorised_user;;
+		*);;
+
+*];;

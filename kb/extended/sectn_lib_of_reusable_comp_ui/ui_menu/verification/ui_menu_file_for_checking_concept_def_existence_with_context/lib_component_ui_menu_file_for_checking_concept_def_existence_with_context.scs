@@ -1,0 +1,27 @@
+lib_component_ui_menu_file_for_checking_concept_def_existence_with_context
+=> nrel_main_idtf:
+	[Компонент библиотеки. Проверка наличия определений или пояснений у понятий, имеющихся в рамках заданной структуры и заданным контекстом]
+	(* <- lang_ru;; *);
+	[Library component. Checking definitions or explanations existence for concepts within the given structure and the given context]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_atomic_reusable_components;
+<- library_of_reusable_components_of_knowledge_bases;
+
+<- rrel_key_sc_element:
+	... 
+	(*
+	<- explanation;;
+	<= nrel_sc_text_translation:
+		...
+		(*
+		-> rrel_example:
+			"file://htmls/Ui_concept_def_contains_checker1.html"
+			(*
+			<- lang_ru;;
+			=> nrel_format: format_html;;
+			*);;
+		*);;
+	*);;
+	

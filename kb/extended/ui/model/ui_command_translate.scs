@@ -1,0 +1,9 @@
+/*-- ui_command_translate --*/
+
+ui_command_translate <- sc_node_not_relation;;
+
+/* identifiers */
+ui_command_translate => nrel_main_idtf: [команда трансляции] (* <- lang_ru;; *);;
+ui_command_translate => nrel_main_idtf: [translation command] (* <- lang_en;; *);;
+
+

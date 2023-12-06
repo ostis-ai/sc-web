@@ -1,0 +1,30 @@
+lib_ui_menu_kb_verification_for_eekb
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команды верификации баз знаний]
+	(* <- lang_ru;; *);
+	[Library component. Commands for knowledge base verification]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_non_atomic_reusable_components;
+
+<= nrel_library_component_decomposition:
+	{		
+		lib_ui_menu_file_for_checking_cycle_existence_of_ordering_relation;
+		lib_ui_menu_file_for_checking_cycle_existence_of_ordering_relation_in_given_domain;
+		lib_ui_menu_file_for_check_for_crossing_from_one_subdividing_elements;
+		lib_component_ui_menu_file_for_checking_existence_of_max_studied_object_class;
+		lib_component_ui_menu_file_for_check_the_main_idtf_for_all_foreign_lang;
+		lib_component_ui_menu_file_for_checking_concept_def_existence;
+		lib_component_ui_menu_file_for_checking_existence_of_using_const_for_def;
+		lib_component_ui_menu_file_for_checking_domains_of_relation;
+		lib_component_ui_menu_file_for_checking_existence_of_measure_or_scale_of_parameter;
+		lib_component_ui_menu_file_for_verification_compliance_of_sheaf_pow_with_relation_arity;
+		lib_component_ui_menu_file_for_checking_existence_of_any_main_identifier;
+		lib_component_ui_menu_file_for_checking_key_sc_elements_of_the_semantic_neighborhoods_in_the_given_structure;
+		lib_component_ui_menu_file_for_agent_of_checking_subject_domain_accessory_for_classes_in_given_structure;
+		lib_component_ui_menu_file_for_agent_of_checking_subject_domain_accessory_for_classes_in_given_structure_with_context;
+		lib_component_ui_menu_file_for_checking_existence_of_using_const_for_def_with_context;
+		lib_ui_menu_file_for_checking_cycle_existence_of_ordering_relation_with_context
+	};;
+

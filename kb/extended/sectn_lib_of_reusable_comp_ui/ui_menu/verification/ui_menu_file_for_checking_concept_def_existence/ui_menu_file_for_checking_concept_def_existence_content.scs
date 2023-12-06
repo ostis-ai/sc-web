@@ -1,0 +1,18 @@
+lib_component_ui_menu_file_for_checking_concept_def_existence =  [*
+ui_menu_file_for_checking_concept_def_existence <- ui_user_command_class_atom; ui_user_command_class_view_kb;;
+
+ui_menu_file_for_checking_concept_def_existence => nrel_main_idtf: [Проверить наличие определений или пояснений у понятий] (* <- lang_ru;; *);;
+ui_menu_file_for_checking_concept_def_existence => nrel_main_idtf: [Check definitions or explanations existence for concepts] (* <- lang_en;; *);;
+ui_menu_file_for_checking_concept_def_existence => ui_nrel_command_template:
+	[*
+		action_to_check_concept_def_existence _-> ._action_to_check_concept_def_existence_instance
+			(*
+				_-> ui_arg_1;;			
+			*);;
+		._action_to_check_concept_def_existence_instance _<- question;;
+	*];;
+
+ui_menu_file_for_checking_concept_def_existence => ui_nrel_command_lang_template: [Проверить наличие определений или пояснений у понятий: $ui_arg_1] (* <- lang_ru;; *);;
+ui_menu_file_for_checking_concept_def_existence => ui_nrel_command_lang_template: [Check definitions or explanations existence for concepts: $ui_arg_1] (* <- lang_en;; *);;
+
+*];;

@@ -1,0 +1,16 @@
+lib_ui_na_statements
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команды для утверждений]
+	(* <- lang_ru;; *);
+	[Library component. Commands for statements]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_non_atomic_reusable_components;
+
+<= nrel_library_component_decomposition:
+	{		
+		lib_component_ui_menu_file_for_finding_proof
+	//	lib_ui_menu_file_for_finding_formal_statement
+	};;
+

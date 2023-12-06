@@ -1,0 +1,30 @@
+section_subjdomain_informational_structures_not_sc_code
+
+=> nrel_main_idtf:
+	[Раздел. Предметная область информационных конструкций, не принадлежащих SC-коду]
+	(* <- lang_ru;; *);
+	[Section. Subject domain of informational structures that do not belong to SC-code]
+	(* <- lang_en;; *);
+
+
+
+	=> nrel_idtf:
+	[Раздел. Предметная область файлов]
+	(* <- lang_ru;; *);
+<- not_enough_formed_structure;
+<- atomic_section;;
+
+
+section_subjdomain_informational_structures_not_sc_code 
+-> rrel_key_sc_element:
+	subjdomain_informational_structures_not_sc_code;
+	file;
+	lang_external;
+	languages;
+	lang_ru;
+	lang_en;
+	nrel_sc_text_translation;
+	image;
+	class_of_syntactically_equivalent_information_structures;
+	maximum_class_of_syntactically_equivalent_information_structures;;
+

@@ -1,0 +1,21 @@
+lib_component_ui_menu_file_for_formation_proposed_project_tasks =  [*
+ui_menu_file_for_formation_proposed_project_tasks <- ui_user_command_class_atom; ui_user_command_class_view_kb;;
+
+ui_menu_file_for_formation_proposed_project_tasks 
+=> nrel_main_idtf: [Cформировать предложение проектного задания] (* <- lang_ru;; *);
+=> nrel_main_idtf: [Form a proposed project task] (* <- lang_en;; *);;
+
+ui_menu_file_for_formation_proposed_project_tasks => ui_nrel_command_template:
+	[*
+		action_to_form_a_proposal_of_project_task _-> ._action_to_form_a_proposal_of_project_task_instance
+			(*
+			_-> ui_arg_1;;
+			*);;
+		._action_to_form_a_proposal_of_project_task_instance _<- question;;
+	*];;
+
+ui_menu_file_for_formation_proposed_project_tasks => ui_nrel_command_lang_template: [Сформировать предложение проектного задания: $ui_arg_1] (* <- lang_ru;; *);;
+ui_menu_file_for_formation_proposed_project_tasks => ui_nrel_command_lang_template: [Form a proposed project task: $ui_arg_1] (* <- lang_en;; *);;
+
+
+*];;

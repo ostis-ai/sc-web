@@ -1,0 +1,27 @@
+lib_component_ui_menu_file_for_calculation_ninetieth_percentile_vertex_degrees
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команда пользовательского интерфейса подсчета 90-ой процентили степени вершины онтологии]
+	(* <- lang_ru;; *);
+	[Library component. User interface command of calculation ninetieth percentile of vertex degrees]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_atomic_reusable_components;
+<- library_of_reusable_components_of_knowledge_bases;
+
+<- rrel_key_sc_element:
+	... 
+	(*
+	<- explanation;;
+	<= nrel_sc_text_translation:
+		...
+		(*
+		-> rrel_example:
+			"file://htmls/UI_calc_90th_perc_v_degr.html"
+			(*
+			<- lang_ru;;
+			=> nrel_format: format_html;;
+			*);;
+		*);;
+	*);;
+	

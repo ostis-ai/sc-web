@@ -1,0 +1,26 @@
+lib_component_ui_menu_agent_of_expert_approval_of_verified_proposal =  [*
+ui_menu_agent_of_expert_approval_of_verified_proposal <- ui_user_command_class_atom; ui_user_command_class_view_kb; ui_one_argument_command_class;;
+
+ui_menu_agent_of_expert_approval_of_verified_proposal => nrel_main_idtf: 
+	[Утвердить верифицируемое предложение] 
+	(* <- lang_ru;; *);
+	[Approve verified proposal] 
+	(* <- lang_en;; *);;
+
+ui_menu_agent_of_expert_approval_of_verified_proposal => ui_nrel_command_template:
+	[*
+		action_of_expert_approval_of_verified_proposal _-> ._action_of_expert_approval_of_verified_proposal_instance
+			(*
+			_-> ui_arg_1;;				
+			*);;
+		._action_of_expert_approval_of_verified_proposal_instance _<- question;;
+	*];;
+
+ui_menu_agent_of_expert_approval_of_verified_proposal => ui_nrel_command_lang_template: 
+	[Утвердить верифицируемое предложение: $ui_arg_1] 
+	(* <- lang_ru;; *);
+	[Approve verified proposal: $ui_arg_1] 
+	(* <- lang_en;; *);;
+
+
+*];;

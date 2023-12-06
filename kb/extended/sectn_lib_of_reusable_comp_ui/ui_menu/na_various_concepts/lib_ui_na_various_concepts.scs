@@ -1,0 +1,19 @@
+lib_ui_na_various_concepts
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команды для произвольных понятий]
+	(* <- lang_ru;; *);
+	[Library component. Commands for various concepts]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_non_atomic_reusable_components;
+
+<= nrel_library_component_decomposition:
+	{		
+		lib_component_ui_menu_file_for_finding_main_concept;
+		lib_component_ui_menu_file_for_finding_constants;
+		lib_component_ui_menu_file_for_finding_examples;
+		lib_component_ui_menu_file_for_finding_statements;
+		lib_component_ui_menu_file_for_finding_relation
+	};;
+

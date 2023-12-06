@@ -1,0 +1,308 @@
+ui_control_task_panel
+=> nrel_main_idtf:
+	[Панель задач] (* <- lang_ru;; *);
+	[Task panel] (* <- lang_en;; *);
+
+<- rrel_key_sc_element:
+	...
+	(*
+	<- sc_explanation;;
+	<= nrel_sc_text_translation:
+		... (* -> [элемент управления, который отображает количество задач выполняемых пользовательским интерфейсом] (* <- lang_ru;; *);; *);;
+	*);
+
+<- rrel_key_sc_element:
+	...
+	(*
+	<- sc_explanation;;
+	<= nrel_sc_text_translation:
+		... (* -> [control that shows number of processing user interface tasks] (* <- lang_en;; *);; *);;
+	*);;
+
+
+// ------------------------------------------------
+ui_control_select_idtf_mode
+=> nrel_main_idtf:
+	[Элемент смены режима идентификации] (* <- lang_ru;; *);
+	[Element of identification mode selection] (* <- lang_en;; *);
+
+<- rrel_key_sc_element:
+	...
+	(*
+	<- sc_explanation;;
+	<= nrel_sc_text_translation:
+		... (* -> [элемент управления, который позволяет сменить режим идентификации] (* <- lang_ru;; *);; *);;
+	*);
+
+<- rrel_key_sc_element:
+	...
+	(*
+	<- sc_explanation;;
+	<= nrel_sc_text_translation:
+		... (* -> [control that allow to change identifiers language mode] (* <- lang_en;; *);; *);;
+	*);;
+
+
+// ------------------------------------------------
+ui_control_search_idtf_edit
+=> nrel_main_idtf:
+	[Элемент управления поиска sc-элементов по идентификатору] (* <- lang_ru;; *);
+	[Element of searching for sc-elements by identifiers control] (* <- lang_en;; *);
+
+<- rrel_key_sc_element:
+	...
+	(*
+	<- ui_descr_initiate_order;;
+	<= nrel_sc_text_translation:
+		...
+		(*
+		-> "file://contents/ui_control_search_idtf_edit_descr_initiate.html"
+			(* 
+			<- lang_ru;;
+			=> nrel_format: format_html;;
+			*);;
+		*);;	
+	*);
+
+<- rrel_key_sc_element:
+	...
+	(*
+	<- ui_descr_oper_semantic_control;;
+	<= nrel_sc_text_translation:
+		...	
+		(*
+		-> "file://contents/ui_control_search_idtf_edit_descr_oper_sem_ru.html"
+			(* 
+			<- lang_ru;;
+			=> nrel_format: format_html;;
+			*);;
+		*);;
+	*);
+
+<- rrel_key_sc_element:
+	...
+	(*
+	<- sc_explanation;;
+	<= nrel_sc_text_translation:
+		... (* -> [элемент управления, который позволяет осуществлять поиск объектов по идентификаторам] (* <- lang_ru;; *);; *);;
+	*);
+
+<- rrel_key_sc_element:
+	...
+	(*
+	<- sc_explanation;;
+	<= nrel_sc_text_translation:
+		... (* -> [control that allows to search sc-elements by their identifiers] (* <- lang_en;; *);; *);;
+	*);;
+
+"file://contents/ui_control_search_idtf_edit_example.gif"
+  <- image;
+  <= nrel_system_identifier: [ui_control_search_idtf_edit_example];
+  => nrel_format: format_png;;
+
+// ------------------------------------------------
+ui_control_select_window_type
+=> nrel_main_idtf:
+	[Элемент управления смены внешнего языка для активного окна] (* <- lang_ru;; *);
+	[Controlling element of external language selection for active window] (* <- lang_en;; *);
+
+<- rrel_key_sc_element:
+	...
+	(*
+	<- ui_descr_initiate_order;;
+	<= nrel_sc_text_translation:
+		...
+		(*
+		-> "file://contents/ui_control_select_window_type_descr_initiate.html"
+			(*
+			<- lang_ru;;
+			=> nrel_format: format_html;;
+			*);;
+		*);;	
+	*);
+
+<- rrel_key_sc_element:
+	...
+	(*
+	<- sc_explanation;;
+	<= nrel_sc_text_translation:
+		... (* -> [элемент управления, который позволяет выбрать внешний язык используемый для отображения] (* <- lang_ru;; *);; *);;
+	*);
+
+<- rrel_key_sc_element:
+	...
+	(*
+	<- sc_explanation;;
+	<= nrel_sc_text_translation:
+		... (* -> [control that allows to change view language] (* <- lang_en;; *);; *);;
+	*);;
+
+// ------------------------------------------------
+ui_control_change_window_size
+=> nrel_main_idtf:
+	[Элемент управления размером активного окна] (* <- lang_ru;; *);
+	[Controlling element of active window resize] (* <- lang_en;; *);
+
+<- rrel_key_sc_element:
+	...
+	(*
+	<- sc_explanation;;
+	<= nrel_sc_text_translation:
+		... (* -> [элемент управления, который позволяет расширить или сузить область содержимого активного окна] (* <- lang_ru;; *);; *);;
+	*);
+
+<- rrel_key_sc_element:
+	...
+	(*
+	<- sc_explanation;;
+	<= nrel_sc_text_translation:
+		... (* -> [control that allows to expand or narrow active window content area] (* <- lang_en;; *);; *);;
+	*);;
+
+// ------------------------------------------------
+ui_control_collapse_sidebar
+=> nrel_main_idtf:
+	[Элемент управления состоянием боковой панели навигации] (* <- lang_ru;; *);
+	[Controlling element of sidebar state] (* <- lang_en;; *);
+
+<- rrel_key_sc_element:
+	...
+	(*
+	<- sc_explanation;;
+	<= nrel_sc_text_translation:
+		... (* -> [Элемент управления, который позволяет скрыть или раскрыть боковую панель навигации] (* <- lang_ru;; *);; *);;
+	*);
+
+<- rrel_key_sc_element:
+	...
+	(*
+	<- sc_explanation;;
+	<= nrel_sc_text_translation:
+		... (* -> [Control that allows to collapse or expand the sidebar] (* <- lang_en;; *);; *);;
+	*);;
+// ------------------------------------------------
+ui_control_print_window_content
+=> nrel_main_idtf:
+	[Элемент управления вывода содержимого активного окна на печать] (* <- lang_ru;; *);
+	[Controlling element of active window content printing] (* <- lang_en;; *);
+
+<- rrel_key_sc_element:
+	...
+	(*
+	<- sc_explanation;;
+	<= nrel_sc_text_translation:
+		... (* -> [элемент управления, который позволяет подготовить к пеачти содержимое активного окна] (* <- lang_ru;; *);; *);;
+	*);
+
+<- rrel_key_sc_element:
+	...
+	(*
+	<- sc_explanation;;
+	<= nrel_sc_text_translation:
+		... (* -> [control that allows to prepare active window content for print] (* <- lang_en;; *);; *);;
+	*);;
+
+// ------------------------------------------------
+ui_control_display_link
+=> nrel_main_idtf:
+	[Элемент управления отображения ссылки для текущей страницы] (* <- lang_ru;; *);
+	[Controlling element of current page link display] (* <- lang_en;; *);
+
+<- rrel_key_sc_element:
+	...
+	(*
+	<- sc_explanation;;
+	<= nrel_sc_text_translation:
+		... (* -> [элемент управления, который по нажатию отображает ссылку для текущей страницы. По следующему нажатию скрывает ссылку для текущей страницы] (* <- lang_ru;; *);; *);;
+	*);
+
+<- rrel_key_sc_element:
+	...
+	(*
+	<- sc_explanation;;
+	<= nrel_sc_text_translation:
+		... (* -> [control that displays link to current page on click. Will hide the link on next click] (* <- lang_en;; *);; *);;
+	*);;
+
+// ------------------------------------------------
+ui_control_display_eekb_menu
+=> nrel_main_idtf:
+	[Элемент управления отображения меню СПБЗ] (* <- lang_ru;; *);
+	[Controlling element of EEKB menu display] (* <- lang_en;; *);
+
+<- rrel_key_sc_element:
+	...
+	(*
+	<- sc_explanation;;
+	<= nrel_sc_text_translation:
+		... (* -> [элемент управления, который по нажатию отображает меню СПБЗ. По следующему нажатию скрывает меню] (* <- lang_ru;; *);; *);;
+	*);
+
+<- rrel_key_sc_element:
+	...
+	(*
+	<- sc_explanation;;
+	<= nrel_sc_text_translation:
+		... (* -> [control that displays EEKB menu on click. Will hide the menu on next click] (* <- lang_en;; *);; *);;
+	*);;
+
+// ------------------------------------------------
+ui_control_argument_button_clear
+=> nrel_main_idtf:
+	[Элемент управления очистки списка аргументов команды] (* <- lang_ru;; *);
+	[Controlling element of command arguments list clearing] (* <- lang_en;; *);
+
+<- rrel_key_sc_element:
+	...
+	(*
+	<- ui_descr_initiate_order;;
+	<= nrel_sc_text_translation:
+		...
+		(*
+		-> "file://contents/ui_control_argument_button_clear_descr_initiate.html"
+			(*
+			<- lang_ru;;
+			=> nrel_format: format_html;;
+			*);;
+		*);;	
+	*);
+
+<- rrel_key_sc_element:
+	...
+	(*
+	<- sc_explanation;;
+	<= nrel_sc_text_translation:
+		... (* -> [элемент управления, который позволяет очистить список аргументов команды] (* <- lang_ru;; *);; *);;
+	*);
+
+<- rrel_key_sc_element:
+	...
+	(*
+	<- sc_explanation;;
+	<= nrel_sc_text_translation:
+		... (* -> [control that allows to clear request arguments list] (* <- lang_en;; *);; *);;
+	*);;
+
+
+// ------------------------------------------------
+ui_control_argument_button_add
+=> nrel_main_idtf:
+	[Элемент управления добавления нового аргумента команды] (* <- lang_ru;; *);
+	[Controlling element of new command argument additing] (* <- lang_en;; *);	
+
+<- rrel_key_sc_element:
+	...
+	(*
+	<- sc_explanation;;
+	<= nrel_sc_text_translation:
+		... (* -> [элемент управления, который позволяет добавить новый аргумент команды] (* <- lang_ru;; *);; *);;
+	*);
+
+<- rrel_key_sc_element:
+	...
+	(*
+	<- sc_explanation;;
+	<= nrel_sc_text_translation:
+		... (* -> [control that allows to add new argument to request] (* <- lang_en;; *);; *);;
+	*);;
+

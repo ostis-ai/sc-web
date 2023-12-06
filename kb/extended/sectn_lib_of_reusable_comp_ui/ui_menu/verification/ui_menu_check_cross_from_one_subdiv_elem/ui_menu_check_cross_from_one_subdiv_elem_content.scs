@@ -1,0 +1,19 @@
+lib_ui_menu_file_for_check_for_crossing_from_one_subdividing_elements =  [*
+ui_menu_file_for_check_for_crossing_from_one_subdividing_elements <- ui_user_command_class_atom; ui_user_command_class_view_kb; ui_one_argument_command_class;;
+
+ui_menu_file_for_check_for_crossing_from_one_subdividing_elements => nrel_main_idtf: [Проверить наличие непустого пересечения у элементов одного разбиения] (* <- lang_ru;; *);;
+ui_menu_file_for_check_for_crossing_from_one_subdividing_elements => nrel_main_idtf: [Check for crossing from one partition elements] (* <- lang_en;; *);;
+	
+ui_menu_file_for_check_for_crossing_from_one_subdividing_elements => ui_nrel_command_template:
+	[*
+action_of_check_for_crossing_from_one_subdividing_elements _-> ._action_of_check_for_crossing_from_one_subdividing_elements_instance
+			(*
+			_-> ui_arg_1;;	
+			*);;
+		._action_of_check_for_crossing_from_one_subdividing_elements_instance _<- question;;
+	*];;
+
+ui_menu_file_for_check_for_crossing_from_one_subdividing_elements => ui_nrel_command_lang_template: [Проверить наличие непустого пересечения у элементов одного разбиения в рамках структуры: $ui_arg_1] (* <- lang_ru;; *);;
+ui_menu_file_for_check_for_crossing_from_one_subdividing_elements => ui_nrel_command_lang_template: [Check for crossing from one partition elements within the sturct: $ui_arg_1] (* <- lang_en;; *);;
+
+*];;

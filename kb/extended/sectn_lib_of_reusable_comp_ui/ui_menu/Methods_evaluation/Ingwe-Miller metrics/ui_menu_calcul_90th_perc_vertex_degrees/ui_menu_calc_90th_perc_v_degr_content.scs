@@ -1,0 +1,25 @@
+lib_component_ui_menu_file_for_calculation_ninetieth_percentile_vertex_degrees =  [*
+ui_menu_file_for_calculation_ninetieth_percentile_vertex_degrees <- ui_user_command_class_atom; ui_user_command_class_view_kb;;
+
+ui_menu_file_for_calculation_ninetieth_percentile_vertex_degrees => nrel_main_idtf: 
+	[Посчитать 90-ую процентиль степени вершины онтологии] 
+	(* <- lang_ru;; *);
+	[Calculate ninetieth percentile of vertex degrees] 
+	(* <- lang_en;; *);;
+
+ui_menu_file_for_calculation_ninetieth_percentile_vertex_degrees => ui_nrel_command_template:
+	[*
+		action_to_calculate_ninetieth_percentile_vertex_degrees _-> ._action_to_calculate_ninetieth_percentile_vertex_degrees_instance
+			(*
+			_-> ui_arg_1;;				
+			*);;
+		._action_to_calculate_ninetieth_percentile_vertex_degrees_instance _<- question;;
+	*];;
+
+ui_menu_file_for_calculation_ninetieth_percentile_vertex_degrees => ui_nrel_command_lang_template: 
+	[Посчитать 90-ую процентиль степени вершины онтологии: $ui_arg_1] 
+	(* <- lang_ru;; *);
+	[Calculate ninetieth percentile of vertex degrees: $ui_arg_1] 
+	(* <- lang_en;; *);;
+
+*];;

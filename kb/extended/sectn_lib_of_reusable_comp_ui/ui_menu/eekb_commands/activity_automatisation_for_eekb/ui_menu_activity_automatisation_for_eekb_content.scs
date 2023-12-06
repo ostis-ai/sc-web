@@ -1,0 +1,32 @@
+lib_ui_menu_activity_automatisation_for_eekb =  [*
+ui_menu_activity_automatisation_for_eekb <- ui_user_command_class_noatom;
+=> nrel_main_idtf: [Автоматизация деятельности] (* <- lang_ru;; *);
+=> nrel_main_idtf: [Activity automatisation] (* <- lang_en;; *);
+<= nrel_ui_commands_decomposition:
+{
+	ui_menu_developer_for_eekb
+		(*
+		=> nrel_command_order: 
+			ui_menu_admin_for_eekb;;
+		*);
+
+	ui_menu_admin_for_eekb
+		(*
+		=> nrel_command_order: 
+			ui_menu_manager_for_eekb;;
+		*);
+
+	ui_menu_manager_for_eekb
+		(*
+		=> nrel_command_order: 
+			ui_menu_expert_for_eekb;;
+		*);
+
+	ui_menu_expert_for_eekb
+};;
+
+ui_menu_activity_automatisation_for_eekb <= nrel_command_access: ...
+		(*
+			-> nrel_authorised_user;;
+		*);;
+*];;

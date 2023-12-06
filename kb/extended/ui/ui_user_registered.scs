@@ -1,0 +1,6 @@
+ui_user_registered <- sc_node_not_relation; ui_user;;
+
+ui_user_registered => nrel_main_idtf: [зарегистрированный пользователь] (* <- lang_ru;; *);;
+ui_user_registered => nrel_main_idtf: [registered user] (* <- lang_en;; *);;
+
+

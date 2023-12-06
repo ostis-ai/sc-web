@@ -1,0 +1,29 @@
+lib_component_ui_menu_file_for_verify_the_desired_structure
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команда пользовательского интерфейса формирования задания на верификацию предложения]
+	(* <- lang_ru;; *);
+	[Library component. User interface command of verify the desired structure]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_atomic_reusable_components;
+<- library_of_reusable_components_of_knowledge_bases;
+
+<- rrel_key_sc_element:
+	... 
+	(*
+	<- explanation;;
+	<= nrel_sc_text_translation:
+		...
+		(*
+		-> rrel_example:
+			"file://htmls/Ui_of_verification_the_desired_structure.html"
+			(*
+			<- lang_ru;;
+			=> nrel_format: format_html;;
+			*);;
+		*);;
+	*);;
+	
+
+

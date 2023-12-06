@@ -1,0 +1,17 @@
+lib_ui_menu_navigation_for_eekb
+=> nrel_main_idtf:
+	[Компонент библиотеки. Навигация]
+	(* <- lang_ru;; *);
+	[Library component. Navigation]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_non_atomic_reusable_components;
+
+<= nrel_library_component_decomposition:
+	{		
+		lib_ui_menu_file_for_finding_all_drafts_of_author;	
+		lib_ui_menu_navigation_by_proposal_for_eekb;
+		lib_ui_menu_navigation_by_initiated_signs_for_eekb
+	};;
+

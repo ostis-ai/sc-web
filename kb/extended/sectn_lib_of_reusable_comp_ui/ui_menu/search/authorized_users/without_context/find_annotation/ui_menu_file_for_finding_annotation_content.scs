@@ -1,0 +1,35 @@
+lib_component_ui_menu_file_for_finding_annotation =  [*
+ui_menu_file_for_finding_annotation <- ui_user_command_class_atom; ui_user_command_class_view_kb;;
+
+ui_menu_file_for_finding_annotation
+=> nrel_main_idtf: 
+	[Какая аннотация описывает указываемый раздел?] 
+	(* <- lang_ru;; *);
+=> nrel_idtf: 
+	[Команда поиска аннотации для заданного раздела]
+	(* <- lang_ru;; *);;
+
+ui_menu_file_for_finding_annotation
+=> nrel_main_idtf: 
+	[What annotation describes given section?]
+	(* <- lang_en;; *);
+=> nrel_idtf: 
+	[Command of finding annotation for given section]
+	(* <- lang_en;; *);;
+
+ui_menu_file_for_finding_annotation => ui_nrel_command_template:
+	[*
+		question_finding_annotation _-> ._question_finding_annotation_instance
+			(*
+			_-> ui_arg_1;;				
+			*);;
+		._question_finding_annotation_instance _<- question;;
+	*];;
+
+ui_menu_file_for_finding_annotation => ui_nrel_command_lang_template: 
+	[Какая аннотация описывает: $ui_arg_1] 
+	(* <- lang_ru;; *);
+	[What annotation describes: $ui_arg_1] 
+	(* <- lang_en;; *);;
+
+*];;

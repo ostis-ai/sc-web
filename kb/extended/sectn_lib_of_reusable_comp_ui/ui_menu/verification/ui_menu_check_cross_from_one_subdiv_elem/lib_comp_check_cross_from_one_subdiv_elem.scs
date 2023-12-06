@@ -1,0 +1,30 @@
+lib_ui_menu_file_for_check_for_crossing_from_one_subdividing_elements
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команда пользовательского интерфейса для проверки наличия непустого пересечения у элементов одного разбиения в рамках заданной структуры]
+	(* <- lang_ru;; *);
+	[Library component. User interface command for check for crossing from one subdividing elements within a given structure]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_atomic_reusable_components;
+<- library_of_reusable_components_of_knowledge_bases;
+
+
+<- rrel_key_sc_element:
+	... 
+	(*
+	<- explanation;;
+	<= nrel_sc_text_translation:
+		...
+		(*
+		-> rrel_example:
+			"file://htmls/check_cross_from_one_subdiv_elem.html"
+			(*
+			<- lang_ru;;
+			=> nrel_format: format_html;;
+			*);;
+		*);;
+	*);;
+
+
+

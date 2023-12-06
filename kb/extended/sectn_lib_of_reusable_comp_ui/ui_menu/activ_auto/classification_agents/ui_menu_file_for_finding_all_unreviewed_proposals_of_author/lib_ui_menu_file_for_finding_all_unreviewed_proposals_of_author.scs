@@ -1,0 +1,27 @@
+lib_ui_menu_file_for_finding_all_unreviewed_proposals_of_author
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команда пользовательского интерфейса для поиска всех нерассмотренных предложений разработчика]
+	(* <- lang_ru;; *);
+	[Library component. User interface command for search all unreviewed proposals of author]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_atomic_reusable_components;
+<- library_of_reusable_components_of_knowledge_bases;
+
+<- rrel_key_sc_element:
+	... 
+	(*
+	<- explanation;;
+	<= nrel_sc_text_translation:
+		...
+		(*
+		-> rrel_example:
+			"file://htmls/Ui_Of_finding_all_unreviewed_proposals_of_author.html"
+			(*
+			<- lang_ru;;
+			=> nrel_format: format_html;;
+			*);;
+		*);;
+	*);;
+

@@ -1,0 +1,21 @@
+lib_ui_menu_file_for_finding_connection_between_entity_and_alternative_of_specification =  [*
+ui_menu_file_for_finding_connection_between_entity_and_alternative_of_specification <- ui_user_command_class_atom; ui_user_command_class_view_kb; ui_one_argument_command_class;;
+
+ui_menu_file_for_finding_connection_between_entity_and_alternative_of_specification => nrel_main_idtf: [Найти связь между сущностью и альтернативой спецификации] (* <- lang_ru;; *);;
+ui_menu_file_for_finding_connection_between_entity_and_alternative_of_specification => nrel_main_idtf: [Find connection between entity and alternative of specification] 
+(* <- lang_en;; *);;
+	
+ui_menu_file_for_finding_connection_between_entity_and_alternative_of_specification => ui_nrel_command_template:
+	[*
+		action_of_finding_connection_between_entity_and_alternative_of_specification _-> ._action_of_finding_connection_between_entity_and_alternative_of_specification_instance
+			(*
+			_-> rrel_1:: ui_arg_1;;
+			_-> rrel_2:: ui_arg_2;;
+			*);;
+		._action_of_finding_connection_between_entity_and_alternative_of_specification_instance _<- question;;
+	*];;
+
+ui_menu_file_for_finding_connection_between_entity_and_alternative_of_specification => ui_nrel_command_lang_template: [Найти связь между сущностью и альтернативой спецификации: $ui_arg_1] (* <- lang_ru;; *);;
+ui_menu_file_for_finding_connection_between_entity_and_alternative_of_specification => ui_nrel_command_lang_template: [Find connection between entity and alternative of specification: $ui_arg_1] (* <- lang_en;; *);;
+
+*];;

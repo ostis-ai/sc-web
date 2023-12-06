@@ -1,0 +1,11 @@
+section_library_of_user_interface_control_elements
+
+=> nrel_main_idtf:
+	[Раздел. Библиотека элементов управления пользовательским интерфейсом]
+	(* <- lang_ru;; *);
+	[Section. Library of user interface control elements]
+	(* <- lang_en;; *);
+<- not_enough_formed_structure;;
+
+
+rrel_key_sc_element -> (section_library_of_user_interface_control_elements -> library_of_user_interface_control_elements);;

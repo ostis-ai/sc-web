@@ -1,0 +1,2 @@
+ui_nrel_command_lang_template <- sc_node_norole_relation;;
+ui_nrel_command_lang_template => nrel_main_idtf: [шаблон идентификатора на естественном языке*] (* <- lang_ru;; *);;

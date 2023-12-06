@@ -1,0 +1,27 @@
+lib_component_ui_menu_file_for_agent_of_checking_subject_domain_accessory_for_classes_in_given_structure_with_context
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команда пользовательского интерфейса для проверки указания соответствующей предметной области для классов в рамках заданной структуры с заданным контекстом]
+	(* <- lang_ru;; *);
+	[Library component. User interface command for checking subject domain accessory for classes in given structure with the given context within context]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_atomic_reusable_components;
+<- library_of_reusable_components_of_knowledge_bases;
+
+<- rrel_key_sc_element:
+	... 
+	(*
+	<- explanation;;
+	<= nrel_sc_text_translation:
+		...
+		(*
+		-> rrel_example:
+			"file://htmls/Ui_Menu_File_For_agent_of_checking_subject_domain_accessory_for_classes_in_given_structure.html"
+			(*
+			<- lang_ru;;
+			=> nrel_format: format_html;;
+			*);;
+		*);;
+	*);;
+

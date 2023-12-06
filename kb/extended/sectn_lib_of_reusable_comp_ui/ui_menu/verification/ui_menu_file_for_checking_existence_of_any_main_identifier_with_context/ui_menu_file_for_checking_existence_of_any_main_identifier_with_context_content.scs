@@ -1,0 +1,26 @@
+lib_component_ui_menu_file_for_checking_existence_of_any_main_identifier_with_context =  [*
+ui_menu_file_for_checking_existence_of_any_main_identifier_with_context <- ui_user_command_class_atom; ui_user_command_class_view_kb; ui_user_command_with_context; ui_two_argument_command_class;;
+
+ui_menu_file_for_checking_existence_of_any_main_identifier_with_context => nrel_main_idtf: 
+	[Проверить наличие sc-элементов, имеющих системный идентификатор, но не имеющих ни одного основного с заданным контекстом] 
+	(* <- lang_ru;; *);
+	[Check existence of any main identifiers for sc-elements within the context] 
+	(* <- lang_en;; *);;
+	
+ui_menu_file_for_checking_existence_of_any_main_identifier_with_context => ui_nrel_command_template:
+	[*
+		action_to_find_sc_elements_without_any_main_identifier _-> ._action_to_find_sc_elements_without_any_main_identifier_instance
+			(*
+			_-> ui_arg_1;;
+			_=> nrel_context_of_action:: ui_arg_2;; 
+			*);;
+		._action_to_find_sc_elements_without_any_main_identifier_instance _<- question;;
+	*];;
+
+ui_menu_file_for_checking_existence_of_any_main_identifier_with_context => ui_nrel_command_lang_template: 
+	[Проверить наличие sc-элементов с заданным контекстом ($ui_arg_2), имеющих системный идентификатор, но не имеющих ни одного основного: ($ui_arg_1)] 
+	(* <- lang_ru;; *);
+	[Check existence of any main identifiers for sc-elements ($ui_arg_1) within the context: ($ui_arg_2)] 
+	(* <- lang_en;; *);;
+
+*];;

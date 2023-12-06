@@ -1,0 +1,10 @@
+lib_ui_menu_na_view_kb_identifiers_for_unauthorized_users =  [*
+ui_menu_na_view_kb_identifiers_for_unauthorized_users <- ui_user_command_class_noatom;;
+ui_menu_na_view_kb_identifiers_for_unauthorized_users => nrel_main_idtf: [Команды запроса идентификаторов] (* <- lang_ru;; *);;
+ui_menu_na_view_kb_identifiers_for_unauthorized_users => nrel_main_idtf: [Command to request identifiers] (* <- lang_en;; *);;
+ui_menu_na_view_kb_identifiers_for_unauthorized_users <= nrel_ui_commands_decomposition:
+{
+	ui_menu_view_all_identifiers_in_the_agreed_part_of_kb
+};;
+
+*];;

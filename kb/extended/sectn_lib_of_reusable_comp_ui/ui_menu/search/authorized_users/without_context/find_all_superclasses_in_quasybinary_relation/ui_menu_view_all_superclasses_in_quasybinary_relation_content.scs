@@ -1,0 +1,34 @@
+lib_component_ui_menu_view_all_superclasses_in_quasybinary_relation =  [*
+ui_menu_view_all_superclasses_in_quasybinary_relation <- ui_user_command_class_atom; ui_user_command_class_view_kb; ui_one_argument_command_class;;
+
+ui_menu_view_all_superclasses_in_quasybinary_relation 
+=> nrel_main_idtf: 
+	[Какие сущности являются общими по отношению к указываемой сущности?] 
+	(* <- lang_ru;; *);
+=> nrel_idtf: 
+	[Запрос всех известных сущностей, являющихся общими по отношению к заданной] 
+	(* <- lang_ru;; *);;
+
+ui_menu_view_all_superclasses_in_quasybinary_relation 
+=> nrel_main_idtf: 
+	[Which entities are general to given entity?] 
+	(* <- lang_en;; *);
+=> nrel_idtf: 
+	[Request of all entitities, general to given entity] 
+	(* <- lang_en;; *);;
+
+ui_menu_view_all_superclasses_in_quasybinary_relation => ui_nrel_command_template:
+	[*
+		question_search_all_superclasses_in_quasybinary_relation _-> ._question_search_all_superclasses_in_quasybinary_relation_instance
+			(*
+				_-> ui_arg_1;;				
+			*);;
+		._question_search_all_superclasses_in_quasybinary_relation_instance _<- question;;
+	*];;
+
+
+
+ui_menu_view_all_superclasses_in_quasybinary_relation => ui_nrel_command_lang_template: [Какие сущности являются общими по отношению к $ui_arg_1] (* <- lang_ru;; *);;
+ui_menu_view_all_superclasses_in_quasybinary_relation => ui_nrel_command_lang_template: [Which entities are general to $ui_arg_1] (* <- lang_en;; *);;
+
+*];;

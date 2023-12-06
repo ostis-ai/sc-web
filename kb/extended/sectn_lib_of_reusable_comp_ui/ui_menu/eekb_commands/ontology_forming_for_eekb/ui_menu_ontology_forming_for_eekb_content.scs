@@ -1,0 +1,16 @@
+lib_ui_menu_ontology_forming_for_eekb =  [*
+ui_menu_ontology_forming_for_eekb <- ui_user_command_class_noatom;
+=> nrel_main_idtf: [Формирование онтологий] (* <- lang_ru;; *);
+=> nrel_main_idtf: [Ontology forming] (* <- lang_en;; *);
+<= nrel_ui_commands_decomposition:
+{
+	ui_menu_file_for_forming_logical_ontology_for_the_given_domain;
+	ui_menu_file_of_forming_set_theoretic_ontology;
+	ui_menu_file_for_forming_terminological_ontology
+};;
+
+ui_menu_ontology_forming_for_eekb <= nrel_command_access: ...
+		(*
+			-> nrel_authorised_user;;
+		*);;
+*];;

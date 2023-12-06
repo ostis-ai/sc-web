@@ -1,0 +1,37 @@
+lib_ui_menu_na_view_kb_extended =  [*
+ui_menu_na_view_kb_extended <- ui_user_command_class_noatom;
+=> nrel_main_idtf: [Команды расширенного просмотра БЗ] (* <- lang_ru;; *);
+=> nrel_main_idtf: [Commands to view KB extended] (* <- lang_en;; *);
+<= nrel_ui_commands_decomposition:
+{
+	ui_menu_na_view_kb_base;
+	ui_menu_na_view_kb_structure;
+	ui_na_ontologies;
+	ui_na_relations;
+	ui_na_statements;
+	ui_na_various_concepts;
+	ui_na_various_objects;
+	ui_na_subject_domains;
+	ui_menu_na_view_kb_semantic_square;
+	ui_menu_na_view_kb_pattern;
+	ui_menu_na_view_kb_identifiers;
+	ui_na_tasks
+};
+
+<- rrel_key_sc_element:
+	...
+	(*
+	<- explanation;;
+	<= nrel_sc_text_translation:	
+		...
+		(*
+		-> [Команда Просмотр БЗ - это неатомарная команда пользовательского интерфейса, которая декомпозируется на команды позволяющие осуществлять навигацию по базе знаний] 			(* <- lang_ru;; *);;
+		*);
+		...
+		(*
+		-> [Command View KB - is a non atomic user interface command. It splitting to user interface commands, that allows to navigate by knowledge base] (* <- lang_en;; *);;
+		*);;
+	*);;
+
+
+*];;

@@ -1,0 +1,23 @@
+lib_component_ui_menu_file_for_agent_of_checking_subject_domain_accessory_for_classes_in_given_structure=  [*
+ui_menu_file_for_agent_of_checking_subject_domain_accessory_for_classes_in_given_structure <- ui_user_command_class_atom; ui_user_command_class_view_kb; ui_two_argument_command_class;;
+
+ui_menu_file_for_agent_of_checking_subject_domain_accessory_for_classes_in_given_structure=> nrel_main_idtf: [Проверить указание соответствующей предметной области для классов] (* <- lang_ru;; *);;
+ui_menu_file_for_agent_of_checking_subject_domain_accessory_for_classes_in_given_structure=> nrel_main_idtf: [Check subject domain accessory for classes] (* <- lang_en;; *);;
+	
+ui_menu_file_for_agent_of_checking_subject_domain_accessory_for_classes_in_given_structure=> ui_nrel_command_template:
+	[*
+		action_of_checking_subject_domain_accessory_for_classes_in_given_structure _-> ._action_of_checking_subject_domain_accessory_for_classes_in_given_structure_instance
+			(*
+			_-> ui_arg_1;;				
+			*);;
+		._action_of_checking_subject_domain_accessory_for_classes_in_given_structure_instance _<- question;;
+	*];;
+
+ui_menu_file_for_agent_of_checking_subject_domain_accessory_for_classes_in_given_structure=> ui_nrel_command_lang_template: 
+	[Проверить указание соответствующей предметной области для классов: $ui_arg_1] 
+	(* <- lang_ru;; *);
+	[Сheck subject domain accessory for classes: $ui_arg_1] 
+	(* <- lang_en;; *);;
+
+
+*];;

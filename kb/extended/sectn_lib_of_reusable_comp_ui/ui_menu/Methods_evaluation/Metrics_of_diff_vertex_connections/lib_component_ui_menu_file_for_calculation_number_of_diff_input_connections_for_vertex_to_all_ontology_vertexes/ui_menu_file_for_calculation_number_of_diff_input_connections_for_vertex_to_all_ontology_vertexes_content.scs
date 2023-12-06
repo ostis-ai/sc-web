@@ -1,0 +1,25 @@
+lib_component_ui_menu_file_for_calculation_number_of_diff_input_connections_for_vertex_to_all_ontology_vertexes =  [*
+ui_menu_file_for_calculation_number_of_diff_input_connections_for_vertex_to_all_ontology_vertexes <- ui_user_command_class_atom; ui_user_command_class_view_kb;;
+
+ui_menu_file_for_calculation_number_of_diff_input_connections_for_vertex_to_all_ontology_vertexes => nrel_main_idtf: 
+	[Вычислить количество вершин с разными типами входящих связей по отношению ко всем вершинам онтологии] 
+	(* <- lang_ru;; *);
+	[Calculate number of different input connections for vertex to all ontology vertexes] 
+	(* <- lang_en;; *);;
+
+ui_menu_file_for_calculation_number_of_diff_input_connections_for_vertex_to_all_ontology_vertexes => ui_nrel_command_template:
+	[*
+		action_to_calculate_number_of_diff_input_connections_for_vertex_to_all_ontology_vertexes _-> ._action_to_calculate_number_of_diff_input_connections_for_vertex_to_all_ontology_vertexes_instance
+			(*
+			_-> ui_arg_1;;				
+			*);;
+		._action_to_calculate_number_of_diff_input_connections_for_vertex_to_all_ontology_vertexes_instance _<- question;;
+	*];;
+
+ui_menu_file_for_calculation_number_of_diff_input_connections_for_vertex_to_all_ontology_vertexes => ui_nrel_command_lang_template: 
+	[Вычислить количество вершин с разными типами входящих связей по отношению ко всем вершинам онтологии: $ui_arg_1] 
+	(* <- lang_ru;; *);
+	[Calculate number of different input connections for vertex to all ontology vertexes: $ui_arg_1] 
+	(* <- lang_en;; *);;
+
+*];;

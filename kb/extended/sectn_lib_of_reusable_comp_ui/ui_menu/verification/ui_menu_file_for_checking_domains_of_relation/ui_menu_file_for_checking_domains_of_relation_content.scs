@@ -1,0 +1,19 @@
+lib_component_ui_menu_file_for_checking_domains_of_relation  =  [*
+ui_menu_file_for_checking_domains_of_relation <- ui_user_command_class_atom; ui_user_command_class_view_kb;
+
+=> nrel_main_idtf: [Проверить наличиe доменов у отношения] (* <- lang_ru;;*);
+=> nrel_main_idtf: [Check domains of relation] (* <- lang_en;;*);;
+ui_menu_file_for_checking_domains_of_relation => ui_nrel_command_template:
+	[*
+		action_of_checking_domains_of_relation _-> ._action_of_checking_domains_of_relation_instance
+			(*
+			_-> ui_arg_1;;
+			*);;
+		._action_of_checking_domains_of_relation_instance _<- question;;
+	*];;
+
+ui_menu_file_for_checking_domains_of_relation => ui_nrel_command_lang_template: [Проверить наличиe доменов у отношения: $ui_arg_1] (* <- lang_ru;;*);;
+ui_menu_file_for_checking_domains_of_relation => ui_nrel_command_lang_template: [Check domains of relation: $ui_arg_1] (* <- lang_en;;*);;
+
+
+*];;

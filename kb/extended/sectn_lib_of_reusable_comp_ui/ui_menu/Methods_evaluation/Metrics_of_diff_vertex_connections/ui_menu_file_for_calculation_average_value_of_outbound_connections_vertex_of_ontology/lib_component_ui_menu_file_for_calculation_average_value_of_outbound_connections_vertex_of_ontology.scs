@@ -1,0 +1,27 @@
+lib_component_ui_menu_file_for_calculation_average_value_of_outbound_connections_vertex_of_ontology
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команда пользовательского интерфейса вычисления среднего числа различных типов исходящих связей вершины онтологии]
+	(* <- lang_ru;; *);
+	[Library component. User interface command of calculation the average value of different types of outbound connections of ontology vertexes]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_atomic_reusable_components;
+<- library_of_reusable_components_of_knowledge_bases;
+
+<- rrel_key_sc_element:
+	... 
+	(*
+	<- explanation;;
+	<= nrel_sc_text_translation:
+		...
+		(*
+		-> rrel_example:
+			"file://htmls/UI_calculation_average_value_of_outbound_connections_vertex_of_ontology.html"
+			(*
+			<- lang_ru;;
+			=> nrel_format: format_html;;
+			*);;
+		*);;
+	*);;
+	

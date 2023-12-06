@@ -1,0 +1,25 @@
+lib_component_ui_menu_file_for_calculation_number_of_concepts_and_relations =  [*
+ui_menu_file_for_calculation_number_of_concepts_and_relations <- ui_user_command_class_atom; ui_user_command_class_view_kb;;
+
+ui_menu_file_for_calculation_number_of_concepts_and_relations => nrel_main_idtf: 
+	[Посчитать количество относительных и абсолютных понятий базы знаний] 
+	(* <- lang_ru;; *);
+	[Calculate number of knowledge base concepts and relations] 
+	(* <- lang_en;; *);;
+
+ui_menu_file_for_calculation_number_of_concepts_and_relations => ui_nrel_command_template:
+	[*
+		action_to_calculate_number_of_concepts_and_relations _-> ._action_to_calculate_number_of_concepts_and_relations_instance
+			(*
+			_-> concept;;				
+			*);;
+		._action_to_calculate_number_of_concepts_and_relations_instance _<- question;;
+	*];;
+
+ui_menu_file_for_calculation_number_of_concepts_and_relations => ui_nrel_command_lang_template: 
+	[Посчитать количество относительных и абсолютных понятий базы знаний] 
+	(* <- lang_ru;; *);
+	[Calculate number of knowledge base concepts and relations] 
+	(* <- lang_en;; *);;
+
+*];;

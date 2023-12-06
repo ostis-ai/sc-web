@@ -1,0 +1,18 @@
+lib_ui_menu_na_depth_metrics =  [*
+ui_menu_na_depth_metrics <- ui_user_command_class_noatom;
+=> nrel_main_idtf: [Метрики глубины] (* <- lang_ru;; *);
+=> nrel_main_idtf: [Depth metrics] (* <- lang_en;; *);
+<= nrel_ui_commands_decomposition:
+{
+	ui_menu_file_for_calculation_ninetieth_percentile_of_ontology_depths;
+	ui_menu_file_for_calculation_average_value_of_ontology_depths;
+	ui_menu_file_for_calculation_absolute_ontology_depths;
+	ui_menu_file_for_calculation_dispersion_of_ontology_depths;
+	ui_menu_file_for_calculation_max_value_of_ontology_depths;
+	ui_menu_file_for_calculation_median_of_ontology_depths;
+	ui_menu_file_for_calculation_min_value_of_ontology_depths;
+	ui_menu_file_for_calculation_normalized_dispersion_of_ontology_depths
+};;
+
+
+*];;

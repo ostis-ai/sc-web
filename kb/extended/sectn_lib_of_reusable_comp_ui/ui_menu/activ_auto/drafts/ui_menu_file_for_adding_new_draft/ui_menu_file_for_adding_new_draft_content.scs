@@ -1,0 +1,25 @@
+lib_component_ui_menu_file_for_adding_new_draft =  [*
+ui_menu_file_for_adding_new_draft <- ui_user_command_class_atom; ui_user_command_class_view_kb;;
+
+ui_menu_file_for_adding_new_draft => nrel_main_idtf: 
+	[Добавить новый черновик] 
+	(* <- lang_ru;; *);
+	[Add new draft] 
+	(* <- lang_en;; *);;
+
+ui_menu_file_for_adding_new_draft => ui_nrel_command_template:
+	[*
+		action_to_add_new_draft _-> ._action_to_add_new_draft_instance
+			(*
+			_-> ui_arg_1;;				
+			*);;
+		._action_to_add_new_draft_instance _<- question;;
+	*];;
+
+ui_menu_file_for_adding_new_draft => ui_nrel_command_lang_template: 
+	[Добавить новый черновик: $ui_arg_1] 
+	(* <- lang_ru;; *);
+	[Add new draft: $ui_arg_1] 
+	(* <- lang_en;; *);;
+
+*];;

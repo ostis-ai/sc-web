@@ -1,0 +1,7 @@
+ui_descr_initiate_order 
+<- sc_node_not_relation;
+<= nrel_inclusion: 
+	semantic_neighborhood;
+
+ => nrel_main_idtf:
+	[sc-описание способа инициирования с помощью элементарных пользовательских действий] (* <- lang_ru;; *);;

@@ -1,0 +1,20 @@
+lib_component_ui_menu_file_for_check_the_main_idtf_for_all_foreign_lang_with_context  =  [*
+ui_menu_file_for_check_the_main_idtf_for_all_foreign_lang_with_context <- ui_user_command_class_atom; ui_user_command_with_context; ui_user_command_class_view_kb; ui_two_argument_command_class;
+
+=> nrel_main_idtf: [Проверить наличие основных идентификаторов sc-элементов для всех внешних языков с заданным контекстом] (* <- lang_ru;;*);
+=> nrel_main_idtf: [Сheck existence of main identifiers for sc-elements for all external languages within the context] (* <- lang_en;;*);;
+ ui_menu_file_for_check_the_main_idtf_for_all_foreign_lang_with_context => ui_nrel_command_template:
+	[*
+		action_check_the_main_idtf_for_all_foreign_lang _-> ._action_check_the_main_idtf_for_all_foreign_lang_instance
+			(*
+			_-> ui_arg_1;;
+			_=> nrel_context_of_action:: ui_arg_2;;
+			*);;
+		._action_check_the_main_idtf_for_all_foreign_lang_instance _<- question;;
+	*];;
+
+ui_menu_file_for_check_the_main_idtf_for_all_foreign_lang_with_context => ui_nrel_command_lang_template: [Проверить наличие основных идентификаторов sc-элементов для всех внешних языков: $ui_arg_1 с заданным контекстом: $ui_arg_2] (* <- lang_ru;;*);;
+ui_menu_file_for_check_the_main_idtf_for_all_foreign_lang_with_context => ui_nrel_command_lang_template: [Сheck existence of main identifiers for sc-elements for all external languages: $ui_arg_1 within the context: $ui_arg_2] (* <- lang_en;;*);;
+
+
+*];;

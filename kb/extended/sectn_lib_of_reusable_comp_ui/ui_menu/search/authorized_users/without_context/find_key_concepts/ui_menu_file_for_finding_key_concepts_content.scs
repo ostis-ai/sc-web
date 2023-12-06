@@ -1,0 +1,39 @@
+lib_component_ui_menu_file_for_finding_key_concepts =  [*
+ui_menu_file_for_finding_key_concepts <- ui_user_command_class_atom; ui_user_command_class_view_kb; ui_one_argument_command_class;;
+
+ui_menu_file_for_finding_key_concepts 
+=> nrel_main_idtf: 
+	[Какие элементы являются ключевыми для указываемой предметной области?] 
+	(* <- lang_ru;; *);
+=> nrel_idtf: 
+	[Запрос ключевых sc-элементов для заданной предметной области] 
+	(* <- lang_ru;; *);;
+
+ui_menu_file_for_finding_key_concepts 
+=> nrel_main_idtf: 
+	[Which elements are key elements for given subject domain?] 
+	(* <- lang_en;; *);
+=> nrel_idtf: 
+	[Request of key sc-elements for given subject domain] 
+	(* <- lang_en;; *);;
+
+ui_menu_file_for_finding_key_concepts => ui_nrel_command_template:
+	[*
+		question_finding_key_concepts _-> ._question_finding_key_concepts_instance
+			(*
+				_-> ui_arg_1;;
+			*);;
+		._question_finding_key_concepts_instance _<- question;;
+	*];;
+
+ui_menu_file_for_finding_key_concepts => ui_nrel_command_lang_template: 
+	[Какие элементы являются ключевыми в $ui_arg_1] 
+		(* <- lang_ru;; *);;
+
+ui_menu_file_for_finding_key_concepts => ui_nrel_command_lang_template: 
+	[Which elements are key elements for $ui_arg_1] 
+		(* <- lang_en;; *);;
+
+
+
+*];;

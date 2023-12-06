@@ -1,0 +1,3 @@
+ui_rrel_source_sc_construction <- sc_node_role_relation;;
+
+ui_rrel_source_sc_construction => nrel_main_idtf: [исходная sc-конструкция'] (* <- lang_ru;; *);;

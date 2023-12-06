@@ -1,0 +1,12 @@
+lib_ui_na_various_concepts_for_unauthorized_users =  [*
+ui_na_various_concepts_for_unauthorized_users <- ui_user_command_class_noatom;
+=> nrel_main_idtf: [Команды для произвольных понятий] (* <- lang_ru;; *);
+=> nrel_main_idtf: [Commands for various concepts] (* <- lang_en;; *);
+<= nrel_ui_commands_decomposition:
+{
+	ui_menu_file_for_finding_examples_in_the_agreed_part_of_kb
+};;
+
+
+
+*];;

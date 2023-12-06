@@ -1,0 +1,8 @@
+ui_expert_mode
+<- sc_node_not_relation;
+=> nrel_main_idtf: 
+    [Экспертный режим] 
+    (* <- lang_ru;; *);
+=> nrel_main_idtf: 
+    [Expert mode] 
+    (* <- lang_en;; *);;

@@ -1,0 +1,30 @@
+lib_ui_menu_file_for_finding_approved_proposals_by_user =  [*
+ui_menu_file_for_finding_approved_proposals_by_user <- ui_user_command_class_atom; ui_user_command_class_view_kb; ui_one_argument_command_class;;
+
+ui_menu_file_for_finding_approved_proposals_by_user => nrel_main_idtf: 
+	[Найти все утвержденные предложения конкретным пользователем] 
+	(* <- lang_ru;; *);;
+
+ui_menu_file_for_finding_approved_proposals_by_user => nrel_main_idtf: 
+	[Find approved proposals by user] 
+	(* <- lang_en;; *);;
+
+ui_menu_file_for_finding_approved_proposals_by_user => ui_nrel_command_template:
+	[*
+		action_of_finding_approved_proposals_by_user _-> ._action_of_finding_approved_proposals_by_user_instance
+			(*
+			_-> ui_arg_1;;				
+			*);;
+		._action_of_finding_approved_proposals_by_user_instance _<- question;;
+	*];;
+
+ui_menu_file_for_finding_approved_proposals_by_user => ui_nrel_command_lang_template: 
+	[Найти все утвержденные предложения конкретным пользователем: $ui_arg_1] 
+	(* <- lang_ru;; *);;
+ui_menu_file_for_finding_approved_proposals_by_user => ui_nrel_command_lang_template: 
+	[Find approved proposals by user: $ui_arg_1] 
+	(* <- lang_eng;; *);;
+
+
+
+*];;

@@ -1,0 +1,10 @@
+lib_component_ui_menu_view_decomposition
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команда пользовательского интерфейса поиска связок декомпозиции для заданного sc-элемента]
+	(* <- lang_ru;; *);
+	[Library component. User interface command of search ligaments decomposition for a given sc-element]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_atomic_reusable_components;;
+

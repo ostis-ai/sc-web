@@ -1,0 +1,24 @@
+lib_component_ui_menu_file_for_agent_of_checking_subject_domain_accessory_for_classes_in_given_structure_with_context=  [*
+ui_menu_file_for_agent_of_checking_subject_domain_accessory_for_classes_in_given_structure_with_context <- ui_user_command_class_atom; ui_user_command_class_view_kb; ui_user_command_with_context; ui_two_argument_command_class;;
+
+ui_menu_file_for_agent_of_checking_subject_domain_accessory_for_classes_in_given_structure_with_context => nrel_main_idtf: [Проверить указание соответствующей предметной области для классов с заданным контекстом] (* <- lang_ru;; *);;
+ui_menu_file_for_agent_of_checking_subject_domain_accessory_for_classes_in_given_structure_with_context => nrel_main_idtf: [Check subject domain accessory for classes with the given context] (* <- lang_en;; *);;
+	
+ui_menu_file_for_agent_of_checking_subject_domain_accessory_for_classes_in_given_structure_with_context => ui_nrel_command_template:
+	[*
+		action_of_checking_subject_domain_accessory_for_classes_in_given_structure _-> ._action_of_checking_subject_domain_accessory_for_classes_in_given_structure_instance
+			(*
+			_-> ui_arg_1;;		
+			_=> nrel_context_of_action:: ui_arg_2;; 		
+			*);;
+		._action_of_checking_subject_domain_accessory_for_classes_in_given_structure_instance _<- question;;
+	*];;
+
+ui_menu_file_for_agent_of_checking_subject_domain_accessory_for_classes_in_given_structure_with_context => ui_nrel_command_lang_template: 
+	[Проверить указание соответствующей предметной области для классов ($ui_arg_1) с заданным контекстом ($ui_arg_2)] 
+	(* <- lang_ru;; *);
+	[Сheck subject domain accessory for classes ($ui_arg_1) with the given context ($ui_arg_2)] 
+	(* <- lang_en;; *);;
+
+
+*];;

@@ -1,0 +1,38 @@
+lib_component_ui_menu_file_for_finding_statements =  [*
+ui_menu_file_for_finding_statements <- ui_user_command_class_atom; ui_user_command_class_view_kb; ui_one_argument_command_class;;
+
+ui_menu_file_for_finding_statements 
+=> nrel_main_idtf: 
+	[Какие утверждения описывают свойства указываемой сущности?] 
+	(* <- lang_ru;; *);
+=> nrel_idtf: 
+	[Запрос утверждений для заданного объекта] 
+	(* <- lang_ru;; *);;
+
+ui_menu_file_for_finding_statements 
+=> nrel_main_idtf: 
+	[Which statements describe properties of given entity?] 
+	(* <- lang_en;; *);
+=> nrel_idtf: 
+	[Request of statements for given object] 
+	(* <- lang_en;; *);;
+
+ui_menu_file_for_finding_statements => ui_nrel_command_template:
+	[*
+		question_of_finding_statements _-> ._question_of_finding_statements_instance
+			(*
+			_-> ui_arg_1;;
+			*);;
+		._question_of_finding_statements_instance _<- question;;
+	*];;
+
+ui_menu_file_for_finding_statements => ui_nrel_command_lang_template: 
+	[Какие утверждения описывают свойства сущности $ui_arg_1] 
+	(* <- lang_ru;; *);;
+
+ui_menu_file_for_finding_statements => ui_nrel_command_lang_template: 
+	[Which statements describe properties of entity $ui_arg_1] 
+	(* <- lang_en;; *);;
+
+
+*];;

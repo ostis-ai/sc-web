@@ -1,0 +1,28 @@
+lib_component_ui_menu_file_for_removing_elements_of_the_struct =  [*
+ui_menu_file_for_removing_elements_of_the_struct <- ui_user_command_class_atom; ui_user_command_class_view_kb; ui_one_argument_command_class;;
+
+ui_menu_file_for_removing_elements_of_the_struct => nrel_main_idtf: 
+	[Удалить элементы структуры] 
+	(* <- lang_ru;; *);
+	[Remove elements of the struct] 
+	(* <- lang_en;; *);;
+
+ui_menu_file_for_removing_elements_of_the_struct => ui_nrel_command_template:
+	[*
+		action_to_removing_elements_of_the_struct _-> ._action_to_removing_elements_of_the_struct_instance
+			(*
+			_-> ui_arg_1;;					
+			*);;
+		._action_to_removing_elements_of_the_struct_instance _<- question;;
+	*];;
+
+ui_menu_file_for_removing_elements_of_the_struct => ui_nrel_command_lang_template: 
+	[Удалить элементы структуры: $ui_arg_1] 
+	(* <- lang_ru;; *);
+	[Remove elements of the struct: $ui_arg_1] 
+	(* <- lang_en;; *);;
+
+
+
+
+*];;

@@ -1,0 +1,15 @@
+lib_ui_na_subject_domains
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команды для предметных областей]
+	(* <- lang_ru;; *);
+	[Library component. Commands for subject domains]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_non_atomic_reusable_components;
+
+<= nrel_library_component_decomposition:
+	{		
+		lib_component_ui_menu_file_for_finding_key_concepts
+	};;
+

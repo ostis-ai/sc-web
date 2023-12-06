@@ -1,0 +1,25 @@
+lib_component_ui_menu_agent_of_assign_user_as_manager =  [*
+ui_menu_agent_of_assign_user_as_manager <- ui_user_command_class_atom; ui_user_command_class_view_kb;;
+
+ui_menu_agent_of_assign_user_as_manager => nrel_main_idtf: 
+	[Назначить пользователя менеджером]
+	(* <- lang_ru;; *);
+	[Assign user as user] 
+	(* <- lang_en;; *);;
+
+ui_menu_agent_of_assign_user_as_manager => ui_nrel_command_template:
+	[*
+		action_assign_user_as_manager _-> ._action_assign_user_as_manager_instance
+			(*
+			_-> ui_arg_1;;				
+			*);;
+		._action_assign_user_as_manager_instance _<- question;;
+	*];;
+
+ui_menu_agent_of_assign_user_as_manager => ui_nrel_command_lang_template: 
+	[назначить менеджером: $ui_arg_1] 
+	(* <- lang_ru;; *);
+	[Assign user as manager: $ui_arg_1] 
+	(* <- lang_en;; *);;
+
+*];;

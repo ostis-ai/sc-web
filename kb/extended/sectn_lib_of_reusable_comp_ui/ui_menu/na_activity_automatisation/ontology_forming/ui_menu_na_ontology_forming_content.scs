@@ -1,0 +1,11 @@
+lib_ui_menu_na_ontology_forming =  [*
+ui_menu_na_ontology_forming <- ui_user_command_class_noatom;
+=> nrel_main_idtf: [Команды формирования онтологии] (* <- lang_ru;; *);
+=> nrel_main_idtf: [Commands of forming ontology] (* <- lang_en;; *);
+<= nrel_ui_commands_decomposition:
+{
+	ui_menu_file_for_forming_logical_ontology_for_the_given_domain;
+	ui_menu_file_of_forming_set_theoretic_ontology;
+	ui_menu_file_for_forming_terminological_ontology
+};;
+*];;

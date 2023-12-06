@@ -1,0 +1,21 @@
+lib_ui_menu_admin_for_eekb =  [*
+ui_menu_admin_for_eekb <- ui_user_command_class_noatom;
+=> nrel_main_idtf: [Команды администратора] (* <- lang_ru;; *);
+=> nrel_main_idtf: [Administrator commands] (* <- lang_en;; *);
+<= nrel_ui_commands_decomposition:
+{
+	ui_menu_file_for_administrator_rejection_proposals_for_editing_kb;
+	ui_menu_file_for_administrator_approval_proposals_for_editing_kb;
+	ui_approval_verification_result_of_offer;
+	ui_menu_agent_of_assign_user_as_administrator;
+	ui_menu_agent_of_assign_user_as_expert;
+	ui_menu_agent_of_assign_user_as_manager;
+	ui_rejection_verification_result_of_offer;
+	ui_menu_file_for_verify_the_desired_structure
+};;
+
+ui_menu_admin_for_eekb <= nrel_command_access: ...
+		(*
+			-> nrel_administrator;;
+		*);;
+*];;

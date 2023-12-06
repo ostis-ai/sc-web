@@ -1,0 +1,15 @@
+lib_ui_menu_na_activity_automatisation =  [*
+ui_menu_na_activity_automatisation <- ui_user_command_class_noatom;
+=> nrel_main_idtf: [Команды СПБЗ] (* <- lang_ru;; *);
+=> nrel_main_idtf: [Commands of EEKB] (* <- lang_en;; *);
+<= nrel_ui_commands_decomposition:
+{
+	ui_menu_na_admin;
+	ui_menu_na_kb_classification_agents;
+	ui_menu_na_developer;
+	ui_menu_na_drafts;
+	ui_menu_na_expert;
+	ui_menu_na_manager;
+	ui_menu_na_ontology_forming
+};;
+*];;

@@ -1,0 +1,28 @@
+nrel_command_order
+=> nrel_main_idtf:
+	[порядок команд*]
+	(* <- lang_ru;; *);
+	[command order*]
+	(* <- lang_en;; *);;
+
+strict_order_relation -> nrel_command_order;;
+binary_relation -> nrel_command_order;;
+
+nrel_command_access
+=> nrel_main_idtf:
+	[доступ к команде*]
+	(* <- lang_ru;; *);
+	[access*]
+	(* <- lang_en;; *);;
+
+quasybinary_relation -> nrel_command_access;;
+
+sc_node_norole_relation -> nrel_command_access; nrel_command_order;;
+
+ui_user_command_with_context <- sc_node_not_relation;;
+ui_user_command_with_context
+=> nrel_main_idtf:
+	[команда с контекстом]
+	(* <- lang_ru;; *);
+	[command with context]
+	(* <- lang_en;; *);;

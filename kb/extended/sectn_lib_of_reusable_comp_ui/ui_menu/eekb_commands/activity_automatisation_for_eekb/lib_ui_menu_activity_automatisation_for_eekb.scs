@@ -1,0 +1,18 @@
+lib_ui_menu_activity_automatisation_for_eekb
+=> nrel_main_idtf:
+	[Компонент библиотеки. Автоматизация деятельности]
+	(* <- lang_ru;; *);
+	[Library component. Activity automatisation]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_non_atomic_reusable_components;
+
+<= nrel_library_component_decomposition:
+	{		
+		lib_ui_menu_developer_for_eekb;
+		lib_ui_menu_admin_for_eekb;
+		lib_ui_menu_manager_for_eekb;
+		lib_ui_menu_expert_for_eekb
+	};;
+

@@ -1,0 +1,18 @@
+lib_component_ui_menu_file_for_checking_existence_of_using_const_for_def =  [*
+ui_menu_file_for_checking_existence_of_using_const_for_def <- ui_user_command_class_atom; ui_user_command_class_view_kb;;
+
+ui_menu_file_for_checking_existence_of_using_const_for_def => nrel_main_idtf: [Проверить указание используемых констант для определений понятий] (* <- lang_ru;; *);;
+ui_menu_file_for_checking_existence_of_using_const_for_def => nrel_main_idtf: [Check existence using constants constants for concept definitions] (* <- lang_en;; *);;
+ui_menu_file_for_checking_existence_of_using_const_for_def => ui_nrel_command_template:
+	[*
+		action_to_check_existence_of_using_const_for_def _-> ._action_to_check_existence_of_using_const_for_def_instance
+			(*
+				_-> rrel_1:: ui_arg_1;;			
+			*);;
+		._action_to_check_existence_of_using_const_for_def_instance _<- question;;
+	*];;
+
+ui_menu_file_for_checking_existence_of_using_const_for_def => ui_nrel_command_lang_template: [Проверить указание используемых констант для определений понятий: $ui_arg_1] (* <- lang_ru;; *);;
+ui_menu_file_for_checking_existence_of_using_const_for_def => ui_nrel_command_lang_template: [Checking existence using constants constants for concept definitions: $ui_arg_1] (* <- lang_en;; *);;
+
+*];;

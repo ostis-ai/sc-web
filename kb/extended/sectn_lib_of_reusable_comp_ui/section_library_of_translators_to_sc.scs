@@ -1,0 +1,11 @@
+section_library_of_translators_to_sc
+
+=> nrel_main_idtf:
+	[Раздел. Библиотека трансляторов в sc-память]
+	(* <- lang_ru;; *);
+	[Section. Library of translators to sc-memory]
+	(* <- lang_en;; *);
+<- not_enough_formed_structure;;
+
+
+rrel_key_sc_element -> (section_library_of_translators_to_sc -> library_of_translators_to_sc);;

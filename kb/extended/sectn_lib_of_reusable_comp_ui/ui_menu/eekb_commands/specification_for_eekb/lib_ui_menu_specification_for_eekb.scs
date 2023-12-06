@@ -1,0 +1,16 @@
+lib_ui_menu_specification_for_eekb
+=> nrel_main_idtf:
+	[Компонент библиотеки. Помощь в спецификации]
+	(* <- lang_ru;; *);
+	[Library component. Help in the specification]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_non_atomic_reusable_components;
+
+<= nrel_library_component_decomposition:
+	{			
+		lib_ui_menu_file_for_finding_connection_between_entity_and_alternative_of_specification;
+		lib_ui_menu_file_for_specifying_of_indicated_entity
+	};;
+

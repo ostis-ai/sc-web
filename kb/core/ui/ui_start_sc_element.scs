@@ -1,0 +1,8 @@
+ui_start_sc_element 
+<- sc_node_not_relation;
+=> nrel_main_idtf: 
+    [стартовый sc-элемент] 
+    (* <- lang_ru;; *);
+=> nrel_main_idtf: 
+    [start sc-element] 
+    (* <- lang_en;; *);;

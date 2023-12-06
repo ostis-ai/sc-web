@@ -1,0 +1,25 @@
+lib_component_ui_menu_file_for_calculation_min_value_of_ontology_depths =  [*
+ui_menu_file_for_calculation_min_value_of_ontology_depths <- ui_user_command_class_atom; ui_user_command_class_view_kb;;
+
+ui_menu_file_for_calculation_min_value_of_ontology_depths => nrel_main_idtf: 
+	[Вычислить минимальную глубину онтологии] 
+	(* <- lang_ru;; *);
+	[Calculate min value of ontology depths] 
+	(* <- lang_en;; *);;
+
+ui_menu_file_for_calculation_min_value_of_ontology_depths => ui_nrel_command_template:
+	[*
+		action_to_calculate_min_value_of_ontology_depths _-> ._action_to_calculate_min_value_of_ontology_depths_instance
+			(*
+			_-> ui_arg_1;;				
+			*);;
+		._action_to_calculate_min_value_of_ontology_depths_instance _<- question;;
+	*];;
+
+ui_menu_file_for_calculation_min_value_of_ontology_depths => ui_nrel_command_lang_template: 
+	[Вычислить минимальную глубину онтологии: $ui_arg_1] 
+	(* <- lang_ru;; *);
+	[Calculate min value of ontology depths: $ui_arg_1] 
+	(* <- lang_en;; *);;
+
+*];;

@@ -1,0 +1,10 @@
+lib_component_ui_menu_view_full_semantic_square
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команда пользовательского интерфейса поиска полной семантической окрестности заданного элемента]
+	(* <- lang_ru;; *);
+	[Library component. User interface command of search the full semantic neighborhood of a given element]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_atomic_reusable_components;;
+

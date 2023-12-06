@@ -1,0 +1,9 @@
+ui_external_languages <- sc_node_not_relation;;
+
+ui_external_languages -> scg_code; scn_code;;
+
+nrel_answer
+<- sc_node_norole_relation;;
+
+nrel_authors
+<- sc_node_norole_relation;;

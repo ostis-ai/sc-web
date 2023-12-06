@@ -1,0 +1,98 @@
+ui_window
+=> nrel_main_idtf:
+	[интерфейсное окно] (* <- lang_ru;; *);
+	[interface window] (* <- lang_en;; *);
+=> nrel_inclusion:
+	ui_sc_machine_window;;
+
+
+ui_main_window
+=> nrel_main_idtf:
+	[главное окно] (* <- lang_ru;; *);
+<- ui_sc_machine_window_scg;;
+
+
+// -----------------------------------------------------------------------------------
+ui_sc_machine_window
+=> nrel_main_idtf:
+	[интерфейсное окно sc-машины] (* <- lang_ru;; *);
+	[interface window of sc-machine] (* <- lang_en;; *);
+
+<= nrel_subdividing:
+	{
+		ui_sc_machine_window_contour;
+		ui_sc_machine_window_frame
+	};
+	{
+		ui_sc_machine_window_scg;
+		ui_sc_machine_window_scs;
+		ui_sc_machine_window_scn
+	};;
+
+// --------------------
+ui_sc_machine_window_contour
+=> nrel_main_idtf:
+	[контурное окно sc-машины] (* <- lang_ru;; *);
+	[contour window of sc-machine] (* <- lang_en;; *);
+
+<- rrel_key_sc_element:
+	...
+	(*
+	<- sc_explanation;;
+	<= nrel_sc_text_translation:
+		... (* ->	[окно sc-машины, обозначающее sc-структуру] (* <- lang_ru;; *);; *);;
+	*);;
+
+
+// ------------------------
+ui_sc_machine_window_frame
+=> nrel_main_idtf:
+	[рамочное окно sc-машины] (* <- lang_ru;; *);
+	[frame window of sc-machine] (* <- lang_en;; *);
+
+<- rrel_key_sc_element:
+	...
+	(*
+	<- sc_explanation;;
+	<= nrel_sc_text_translation:
+		... (* -> [окно sc-машины, обозначающее файл] (* <- lang_ru;; *);; *);;
+	*);;
+
+// ----------------------------
+ui_sc_machine_window_scg
+=> nrel_main_idtf:
+	[окно sc-машины с sc.g-содержимым] (* <- lang_ru;; *);
+
+<- rrel_key_sc_element:
+	...
+	(*
+	<- sc_explanation;;
+	<= nrel_sc_text_translation:
+		... (* -> [Множество окон sc-машины, которые отображают информацию в виде sc.g-текстов ] (* <- lang_ru;; *);; *);;
+	*);;
+
+// ---------------------------
+ui_sc_machine_window_scs
+=> nrel_main_idtf:
+	[окно sc-машины с sc.s-содержимым] (* <- lang_ru;; *);
+
+<- rrel_key_sc_element:
+	...
+	(*
+	<- sc_explanation;;
+	<= nrel_sc_text_translation:
+		... (* -> [Множество окон sc-машины, которые отображают информацию в виде sc.s-текстов ] (* <- lang_ru;; *);; *);;
+	*);;
+
+// ---------------------------
+ui_sc_machine_window_scn
+=> nrel_main_idtf:
+	[окно sc-машины с sc.n-содержимым] (* <- lang_ru;; *);
+
+<- rrel_key_sc_element:
+	...
+	(*
+	<- sc_explanation;;
+	<= nrel_sc_text_translation:
+		... (* -> [Множество окон sc-машины, которые отображают информацию в виде sc.n-текстов ] (* <- lang_ru;; *);; *);;
+	*);;

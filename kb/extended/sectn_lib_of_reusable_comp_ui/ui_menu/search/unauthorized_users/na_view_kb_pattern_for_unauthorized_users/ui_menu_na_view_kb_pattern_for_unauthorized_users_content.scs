@@ -1,0 +1,11 @@
+lib_ui_menu_na_view_kb_pattern_for_unauthorized_users =  [*
+
+ui_menu_na_view_kb_pattern_for_unauthorized_users <- ui_user_command_class_noatom;;
+ui_menu_na_view_kb_pattern_for_unauthorized_users => nrel_main_idtf: [Команды запросов по образцу] (* <- lang_ru;; *);;
+ui_menu_na_view_kb_pattern_for_unauthorized_users => nrel_main_idtf: [Commands to request by patterns] (* <- lang_en;; *);;
+ui_menu_na_view_kb_pattern_for_unauthorized_users <= nrel_ui_commands_decomposition:
+{
+	ui_menu_file_for_finding_pattern_in_the_agreed_part_of_kb
+};;
+
+*];;

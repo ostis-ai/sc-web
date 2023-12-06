@@ -1,0 +1,24 @@
+ui_intro_modal_header
+=> nrel_main_idtf:
+  [Добро пожаловать в Метасистему OSTIS!] (* <- lang_ru;; *);
+  [Welcome to the OSTIS Metasystem!] (* <- lang_en;; *);;
+  
+ui_intro_modal_content_pre_img
+=> nrel_main_idtf:
+  [Используйте кнопку помощи] (* <- lang_ru;; *);
+  [Use the help button] (* <- lang_en;; *);;
+  
+ui_intro_modal_content_post_img
+=> nrel_main_idtf:
+  [в левом верхнем углу страницы, чтобы начать знакомиться с возможностями системы.] (* <- lang_ru;; *);
+  [in the upper left corner to get started with exploring the possibilities of the system.] (* <- lang_en;; *);;
+  
+ui_intro_modal_ok_button
+=> nrel_main_idtf:
+  [ОК] (* <- lang_ru;; *);
+  [OK] (* <- lang_en;; *);;
+  
+ui_intro_modal_dont_show_again_button
+=> nrel_main_idtf:
+  [Не показывать снова] (* <- lang_ru;; *);
+  [Don't show again] (* <- lang_en;; *);;

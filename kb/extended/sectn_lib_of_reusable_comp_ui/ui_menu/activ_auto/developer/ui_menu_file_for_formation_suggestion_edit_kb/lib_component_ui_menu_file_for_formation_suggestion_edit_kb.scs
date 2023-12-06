@@ -1,0 +1,27 @@
+lib_component_ui_menu_file_for_formation_suggestion_edit_kb
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команда пользовательского интерфейса для формирования предложения редактирования базы знаний]
+	(* <- lang_ru;; *);
+	[Library component. User interface command for formation the proposal of editing knowlage base]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_atomic_reusable_components;
+<- library_of_reusable_components_of_knowledge_bases;
+
+<- rrel_key_sc_element:
+	... 
+	(*
+	<- explanation;;
+	<= nrel_sc_text_translation:
+		...
+		(*
+		-> rrel_example:
+			"file://htmls/Ui_for_formation_suggestion_edit_kb.html"
+			(*
+			<- lang_ru;;
+			=> nrel_format: format_html;;
+			*);;
+		*);;
+	*);;
+

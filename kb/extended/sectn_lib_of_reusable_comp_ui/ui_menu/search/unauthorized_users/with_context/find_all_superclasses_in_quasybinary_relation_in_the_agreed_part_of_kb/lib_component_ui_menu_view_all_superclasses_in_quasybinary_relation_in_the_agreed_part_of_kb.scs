@@ -1,0 +1,10 @@
+lib_component_ui_menu_view_all_superclasses_in_quasybinary_relation_in_the_agreed_part_of_kb
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команда пользовательского интерфейса поиска всех известных сущностей, являющихся общими по отношению к заданной]
+	(* <- lang_ru;; *);
+	[Library component. User interface command of search all known entities which are common to the predetermined]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_atomic_reusable_components;;
+

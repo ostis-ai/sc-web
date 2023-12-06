@@ -1,0 +1,30 @@
+lib_component_ui_menu_file_for_counting_nodes_in_structure =  [*
+ui_menu_file_for_counting_nodes_in_structure <- ui_user_command_class_atom; ui_user_command_class_view_kb;;
+
+ui_menu_file_for_counting_nodes_in_structure
+=> nrel_main_idtf: 
+	[Посчитать количество sc-узлов в структуре] 
+	(* <- lang_ru;; *);
+=> nrel_main_idtf:
+	[Count number of sc-nodes in structure] 
+	(* <- lang_en;; *);;
+
+ui_menu_file_for_counting_nodes_in_structure
+=> ui_nrel_command_template:
+	[*
+		action_to_count_nodes_in_structure _-> ._action_to_count_nodes_in_structure_instance
+			(*
+			_-> ui_arg_1;;			
+			*);;
+		._action_to_count_nodes_in_structure_instance _<- question;;
+	*];;
+
+ui_menu_file_for_counting_nodes_in_structure
+=> ui_nrel_command_lang_template: 
+	[Посчитать количество sc-узлов в структуре: $ui_arg_1] 
+	(* <- lang_ru;; *);
+=> ui_nrel_command_lang_template:
+	[Count number of sc-nodes in structure: $ui_arg_1] 
+	(* <- lang_en;; *);;
+
+*];;

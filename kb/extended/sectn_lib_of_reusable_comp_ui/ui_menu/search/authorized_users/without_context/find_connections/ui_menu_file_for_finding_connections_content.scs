@@ -1,0 +1,39 @@
+lib_component_ui_menu_file_for_finding_connections =  [*
+ui_menu_file_for_finding_connections <- ui_user_command_class_atom; ui_user_command_class_view_kb; ui_two_argument_command_class;;
+
+ui_menu_file_for_finding_connections 
+=> nrel_main_idtf: 
+	[Как связаны непосредственно между собой две указываемых сушности?]  
+	(* <- lang_ru;; *);
+=> nrel_idtf: 
+	[Запрос поиска непосредственных связей между объектами]
+	(* <- lang_ru;; *);;
+
+ui_menu_file_for_finding_connections
+ => nrel_main_idtf: 
+	[How do two given entities linked directly to each other?] 
+	(* <- lang_en;; *);
+ => nrel_idtf: 
+	[Request of finding immediate connections between two objects] 
+	(* <- lang_en;; *);;
+
+ui_menu_file_for_finding_connections => ui_nrel_command_template:
+	[*
+		question_finding_connections _-> ._question_finding_connections_instance
+			(*
+			_->  rrel_1:: ui_arg_1;;
+			_->  rrel_2:: ui_arg_2;;
+			*);;
+		._question_finding_connections_instance _<- question;;
+	*];;
+
+ui_menu_file_for_finding_connections => ui_nrel_command_lang_template: 
+	[Как связаны непосредственно между собой $ui_arg_1 и $ui_arg_2] 
+	(* <- lang_ru;; *);;
+
+ui_menu_file_for_finding_connections => ui_nrel_command_lang_template: 
+	[How do $ui_arg_1 and $ui_arg_2 linked directly to each other] 
+	(* <- lang_en;; *);;
+
+
+*];;

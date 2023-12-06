@@ -1,0 +1,11 @@
+section_core_and_extensions_ui_model_core
+
+=> nrel_main_idtf:
+	[Раздел. Ядро и расширения ядра sc-моделей пользовательских интерфейсов]
+	(* <- lang_ru;; *);
+	[Section. Core and extensions of sc-models user interfaces core]
+	(* <- lang_en;; *);
+<- not_enough_formed_structure;;
+	
+
+rrel_key_sc_element -> (section_core_and_extensions_ui_model_core -> core_and_extensions_ui_model_core);;

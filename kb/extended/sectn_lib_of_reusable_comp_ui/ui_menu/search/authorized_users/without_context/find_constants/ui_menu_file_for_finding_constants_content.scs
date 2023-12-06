@@ -1,0 +1,38 @@
+lib_component_ui_menu_file_for_finding_constants =  [*
+ui_menu_file_for_finding_constants <- ui_user_command_class_atom; ui_user_command_class_view_kb; ui_one_argument_command_class;;
+
+ui_menu_file_for_finding_constants 
+=> nrel_main_idtf: 
+	[На основе каких понятий определено указываемое понятие?] 
+	(* <- lang_ru;; *);
+=> nrel_idtf: 
+	[Запрос понятий, через которые определяется заданное понятие] 
+	(* <- lang_ru;; *);;
+
+ui_menu_file_for_finding_constants 
+=> nrel_main_idtf: 
+	[On base of which concepts is given concept defined?] 
+	(* <- lang_en;; *);
+=> nrel_idtf: 
+	[Request of concepts, on base of which given concept is defined] 
+	(* <- lang_en;; *);;
+
+ui_menu_file_for_finding_constants => ui_nrel_command_template:
+	[*
+		question_of_finding_constants _-> ._question_of_finding_constants_instance
+			(*
+			_-> ui_arg_1;;				
+			*);;
+		._question_of_finding_constants_instance _<- question;;
+	*];;
+
+ui_menu_file_for_finding_constants => ui_nrel_command_lang_template: 
+	[На основе каких понятий определено понятие $ui_arg_1] 
+	(* <- lang_ru;; *);;
+
+ui_menu_file_for_finding_constants => ui_nrel_command_lang_template: 
+	[On base of which concepts is concept of $ui_arg_1 defined] 
+	(* <- lang_en;; *);;
+
+
+*];;

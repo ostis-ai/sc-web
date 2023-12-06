@@ -1,0 +1,18 @@
+lib_component_ui_menu_na_kb_evaluation
+=> nrel_main_idtf:
+	[Компонент библиотеки. Метрики оценки]
+	(* <- lang_ru;; *);
+	[Library component. Evaluation metrics]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_non_atomic_reusable_components;
+
+<= nrel_library_component_decomposition:
+	{		
+		lib_ui_menu_na_depth_metrics;
+		lib_ui_menu_na_diff_vertex_connections_metrics;
+		lib_ui_menu_na_Ingwe_Miller_metrics;
+		lib_ui_menu_na_kb_volume_metrics
+	};;
+

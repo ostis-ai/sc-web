@@ -1,0 +1,25 @@
+lib_component_ui_menu_file_for_manager_rejection_proposals_for_editing_kb =  [*
+ui_menu_file_for_manager_rejection_proposals_for_editing_kb <- ui_user_command_class_atom; ui_user_command_class_view_kb;;
+
+ui_menu_file_for_manager_rejection_proposals_for_editing_kb => nrel_main_idtf: 
+	[Отклонить предложение по редактированию базы знаний. Менеджер] 
+	(* <- lang_ru;; *);
+	[Reject proposal for editing the kb. Manager] 
+	(* <- lang_en;; *);;
+
+ui_menu_file_for_manager_rejection_proposals_for_editing_kb => ui_nrel_command_template:
+	[*
+		action_to_reject_the_proposal_for_editing_the_knowledge_base_manager _-> ._action_to_reject_the_proposal_for_editing_the_knowledge_base_manager_instance
+			(*
+				_-> ui_arg_1;;			
+			*);;
+		._action_to_reject_the_proposal_for_editing_the_knowledge_base_manager_instance _<- question;;
+	*];;
+
+ui_menu_file_for_manager_rejection_proposals_for_editing_kb => ui_nrel_command_lang_template: 
+	[Отклонить предложение: $ui_arg_1 по редактированию базы знаний. Менеджер] 
+	(* <- lang_ru;; *);
+	[Reject proposal: $ui_arg_1 for editing the kb. Manager] 
+	(* <- lang_en;; *);;
+
+*];;

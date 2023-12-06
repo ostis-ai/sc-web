@@ -1,0 +1,9 @@
+section_library_of_external_info_constructions_editors =  [*
+library_of_external_info_constructions_editors
+
+=> nrel_main_idtf:
+	[Библиотека редакторов внешних информационных конструкций]
+	(* <- lang_ru;; *);
+	[Library of external informational constructions editors]
+	(* <- lang_en;; *);;
+*];;

@@ -1,0 +1,32 @@
+lib_component_ui_menu_view_all_input_const_pos_arc =  [*
+ui_menu_view_all_input_const_pos_arc <- ui_user_command_class_atom; ui_user_command_class_view_kb; ui_one_argument_command_class;;
+
+ui_menu_view_all_input_const_pos_arc 
+=> nrel_main_idtf: 
+	[Элементом каких множеств является указываемая сущность?] 
+	(* <- lang_ru;; *);
+=> nrel_idtf: 
+	[Запрос входящих константных позитивных стационарных sc-дуг принадлежности] 
+	(* <- lang_ru;; *);;
+
+ui_menu_view_all_input_const_pos_arc 
+=> nrel_main_idtf: 
+	[Which sets contain given entity?] 
+	(* <- lang_en;; *);
+=> nrel_idtf: 
+	[Request of positive and constant input accessory arcs] 
+	(* <- lang_en;; *);;
+
+ui_menu_view_all_input_const_pos_arc => ui_nrel_command_template:
+	[*
+		question_search_all_input_const_pos_arcs _-> ._question_search_all_input_const_pos_arcs_instance
+			(*
+				_-> ui_arg_1;;				
+			*);;
+		._question_search_all_input_const_pos_arcs_instance _<- question;;
+	*];;
+
+ui_menu_view_all_input_const_pos_arc => ui_nrel_command_lang_template: [Элементом каких множеств является $ui_arg_1] (* <- lang_ru;; *);;
+ui_menu_view_all_input_const_pos_arc => ui_nrel_command_lang_template: [Which sets contain $ui_arg_1] (* <- lang_en;; *);;
+
+*];;

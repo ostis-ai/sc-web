@@ -1,0 +1,15 @@
+lib_ui_menu_specification_for_eekb =  [*
+ui_menu_specification_for_eekb <- ui_user_command_class_noatom;
+=> nrel_main_idtf: [Помощь в спецификации] (* <- lang_ru;; *);
+=> nrel_main_idtf: [Help in the specification] (* <- lang_en;; *);
+<= nrel_ui_commands_decomposition:
+{
+	ui_menu_file_for_finding_connection_between_entity_and_alternative_of_specification;
+	ui_menu_file_for_specifying_of_indicated_entity
+};;
+
+ui_menu_specification_for_eekb <= nrel_command_access: ...
+		(*
+			-> nrel_authorised_user;;
+		*);;
+*];;

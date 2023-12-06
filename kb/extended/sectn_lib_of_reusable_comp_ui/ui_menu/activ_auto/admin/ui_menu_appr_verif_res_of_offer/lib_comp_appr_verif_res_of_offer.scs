@@ -1,0 +1,27 @@
+lib_component_ui_menu_file_for_approval_verification_result_of_offer
+=> nrel_main_idtf:
+	[Компонент библиотеки. Действие. Утверждение результатов верификации предложения]
+	(* <- lang_ru;; *);
+	[Library component. Action. Approval the verification result of offer]
+	(* <- lang_en;; *);
+
+<- platform_independent_reusable_component_OSTIS;
+<- atomic_reusable_component_OSTIS;
+<- reusable_knowledge_base_sc_model_component;
+
+<- rrel_key_sc_element:
+	... 
+	(*
+	<- explanation;;
+	<= nrel_sc_text_translation:
+		...
+		(*
+		-> rrel_example:
+			"file://htmls/Ui_approval_verification_result_of_offer.html"
+			(*
+			<- lang_ru;;
+			=> nrel_format: format_html;;
+			*);;
+		*);;
+	*);;
+	

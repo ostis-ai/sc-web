@@ -1,0 +1,39 @@
+lib_component_ui_menu_file_for_finding_relation =  [*
+ui_menu_file_for_finding_relation <- ui_user_command_class_atom; ui_user_command_class_view_kb; ui_one_argument_command_class;;
+
+ui_menu_file_for_finding_relation 
+=> nrel_main_idtf: 
+	[Какие отношения заданы на указываемом понятии?]
+	(* <- lang_ru;; *);
+=> nrel_idtf: 
+	[Запрос отношений, заданных на понятии] 
+	(* <- lang_ru;; *);;
+
+ui_menu_file_for_finding_relation 
+=> nrel_main_idtf: 
+	[Which relations are defined for given concept?] 
+	(* <- lang_en;; *);
+=> nrel_idtf: 
+	[Request of relations, defined for given concept] 
+	(* <- lang_en;; *);;
+
+ui_menu_file_for_finding_relation => ui_nrel_command_template:
+	[*
+		question_finding_relation _-> ._question_finding_relation_instance
+			(*
+			_-> ui_arg_1;;
+			*);;
+		._question_finding_relation_instance _<- question;;
+	*];;
+
+ui_menu_file_for_finding_relation => ui_nrel_command_lang_template: 
+	[Какие отношения заданы на понятии $ui_arg_1] 
+	(* <- lang_ru;; *);;
+
+ui_menu_file_for_finding_relation => ui_nrel_command_lang_template: 
+	[Which relations are defined for concept of $ui_arg_1] 
+	(* <- lang_en;; *);;
+
+
+
+*];;

@@ -1,0 +1,25 @@
+lib_component_ui_menu_agent_of_assign_user_as_administrator =  [*
+ui_menu_agent_of_assign_user_as_administrator <- ui_user_command_class_atom; ui_user_command_class_view_kb;;
+
+ui_menu_agent_of_assign_user_as_administrator => nrel_main_idtf: 
+	[Назначить пользователя администратором] 
+	(* <- lang_ru;; *);
+	[Assign user as administrator] 
+	(* <- lang_en;; *);;
+
+ui_menu_agent_of_assign_user_as_administrator => ui_nrel_command_template:
+	[*
+		action_assign_user_as_administrator _-> ._action_assign_user_as_administrator_instance
+			(*
+			_-> ui_arg_1;;				
+			*);;
+		._action_assign_user_as_administrator_instance _<- question;;
+	*];;
+
+ui_menu_agent_of_assign_user_as_administrator => ui_nrel_command_lang_template: 
+	[Назначить администратором: $ui_arg_1] 
+	(* <- lang_ru;; *);
+	[Assign user as administrator: $ui_arg_1] 
+	(* <- lang_en;; *);;
+
+*];;

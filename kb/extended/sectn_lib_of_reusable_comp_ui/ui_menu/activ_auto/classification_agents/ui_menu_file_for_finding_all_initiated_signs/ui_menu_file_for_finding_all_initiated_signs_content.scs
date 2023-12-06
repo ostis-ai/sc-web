@@ -1,0 +1,19 @@
+lib_component_ui_menu_file_for_finding_all_initiated_signs =  [*
+ui_menu_file_for_finding_all_initiated_signs <- ui_user_command_class_atom; ui_user_command_class_view_kb; ui_no_argument_command_class;;
+
+ui_menu_file_for_finding_all_initiated_signs => nrel_main_idtf: [Найти все инициированные знаки действий] (* <- lang_ru;; *);;
+ui_menu_file_for_finding_all_initiated_signs => nrel_main_idtf: [Find all initiated signs of actions] (* <- lang_en;; *);;
+
+ui_menu_file_for_finding_all_initiated_signs => ui_nrel_command_template:
+	[*
+		action_of_finding_all_initiated_signs _-> ._action_of_finding_all_initiated_signs_instance
+			(*
+			_-> question_initiated;;
+			*);;
+		._action_of_finding_all_initiated_signs_instance _<- question;;
+	*];;
+
+ui_menu_file_for_finding_all_initiated_signs => ui_nrel_command_lang_template: [Найти все инициированные знаки действий.] (* <- lang_ru;; *);;
+ui_menu_file_for_finding_all_initiated_signs => ui_nrel_command_lang_template: [Find all initiated signs of actions.] (* <- lang_en;; *);;
+
+*];;

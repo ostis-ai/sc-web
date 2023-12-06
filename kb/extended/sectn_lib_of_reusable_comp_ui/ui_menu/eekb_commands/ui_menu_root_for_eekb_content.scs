@@ -1,0 +1,57 @@
+lib_ui_menu_root_for_eekb =  [*
+ui_menu_root_for_eekb <- ui_user_command_class_noatom;
+=> nrel_main_idtf: [Команды СПБЗ] (* <- lang_ru;; *);
+=> nrel_main_idtf: [Commands of EEKB] (* <- lang_en;; *);
+<= nrel_ui_commands_decomposition:
+{
+	ui_menu_my_changes_for_eekb
+		(*
+		=> nrel_command_order: 
+			ui_menu_navigation_for_eekb;;
+		*);
+
+	ui_menu_navigation_for_eekb
+		(*
+		=> nrel_command_order: 
+			ui_menu_activity_automatisation_for_eekb;;
+		*);
+
+	ui_menu_activity_automatisation_for_eekb
+		(*
+		=> nrel_command_order: 
+			ui_menu_specification_for_eekb;;
+		*);	
+
+	ui_menu_specification_for_eekb
+		(*
+		=> nrel_command_order: 
+			ui_menu_kb_editing_for_eekb;;
+		*);		
+
+	ui_menu_kb_editing_for_eekb
+		(*
+		=> nrel_command_order: 
+			ui_menu_kb_verification_for_eekb;;
+		*);
+
+	ui_menu_kb_verification_for_eekb
+		(*
+		=> nrel_command_order: 
+			ui_menu_ontology_forming_for_eekb;;
+		*);	
+
+	ui_menu_ontology_forming_for_eekb
+		(*
+		=> nrel_command_order: 
+			ui_menu_kb_evaluation_for_eekb;;
+		*);		
+
+	ui_menu_kb_evaluation_for_eekb
+
+};;
+
+ui_menu_root_for_eekb <= nrel_command_access: ...
+		(*
+			-> nrel_authorised_user;;
+		*);;
+*];;

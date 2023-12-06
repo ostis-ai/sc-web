@@ -1,0 +1,19 @@
+lib_component_ui_menu_file_for_check_the_main_idtf_for_all_foreign_lang  =  [*
+ui_menu_file_for_check_the_main_idtf_for_all_foreign_lang <- ui_user_command_class_atom; ui_user_command_class_view_kb;
+
+=> nrel_main_idtf: [Проверить наличие основных идентификаторов sc-элементов для всех внешних языков] (* <- lang_ru;;*);
+=> nrel_main_idtf: [Сheck existence of main identifiers for sc-elements for all external languages] (* <- lang_en;;*);;
+ui_menu_file_for_check_the_main_idtf_for_all_foreign_lang => ui_nrel_command_template:
+	[*
+		action_check_the_main_idtf_for_all_foreign_lang _-> ._action_check_the_main_idtf_for_all_foreign_lang_instance
+			(*
+			_-> ui_arg_1;;
+			*);;
+		._action_check_the_main_idtf_for_all_foreign_lang_instance _<- question;;
+	*];;
+
+ui_menu_file_for_check_the_main_idtf_for_all_foreign_lang => ui_nrel_command_lang_template: [Проверить наличие основных идентификаторов sc-элементов для всех внешних языков: $ui_arg_1] (* <- lang_ru;;*);;
+ui_menu_file_for_check_the_main_idtf_for_all_foreign_lang => ui_nrel_command_lang_template: [Сheck existence of main identifiers for sc-elements for all external languages: $ui_arg_1] (* <- lang_en;;*);;
+
+
+*];;

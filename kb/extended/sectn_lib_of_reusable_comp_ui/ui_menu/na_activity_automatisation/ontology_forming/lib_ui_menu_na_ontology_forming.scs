@@ -1,0 +1,17 @@
+lib_ui_menu_na_ontology_forming
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команды формирования онтологии]
+	(* <- lang_ru;; *);
+	[Library component. Commands of forming ontology]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_non_atomic_reusable_components;
+
+<= nrel_library_component_decomposition:
+	{		
+		lib_ui_menu_file_for_forming_logical_ontology_for_the_given_domain;
+		lib_component_ui_menu_file_of_forming_set_theoretic_ontology;
+		lib_component_ui_menu_file_for_forming_terminological_ontology
+	};;
+

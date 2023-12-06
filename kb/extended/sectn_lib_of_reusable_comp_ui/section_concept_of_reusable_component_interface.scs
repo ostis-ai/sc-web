@@ -1,0 +1,11 @@
+section_concept_of_reusable_component_interface
+<- atomic_section;
+=> nrel_main_idtf:
+	[Раздел. Понятие многократно используемого компонента sc-моделей интерфейсов компьютерных систем]
+	(* <- lang_ru;; *);
+	[Section. Concept of reusable component of interface sc-model of computer systems]
+	(* <- lang_en;; *);
+<- not_enough_formed_structure;;
+
+
+rrel_key_sc_element -> (section_concept_of_reusable_component_interface -> library_of_reusable_components_interfaces);;

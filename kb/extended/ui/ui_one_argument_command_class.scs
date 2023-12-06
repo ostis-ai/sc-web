@@ -1,0 +1,8 @@
+ui_one_argument_command_class
+<- sc_node_not_relation;
+=> nrel_main_idtf: 
+    [класс команд с одним аргументом] 
+    (* <- lang_ru;; *);
+=> nrel_main_idtf: 
+    [command class with one argument] 
+    (* <- lang_en;; *);;

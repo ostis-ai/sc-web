@@ -1,0 +1,27 @@
+lib_ui_menu_file_for_finding_rejected_proposals_by_user_with_context
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команда пользовательского интерфейса для поиска всех отклоненных предложений конкретным пользователем в ракмках заданного контекста]
+	(* <- lang_ru;; *);
+	[Library component. User interface command of finding all proposals, which rejected by concrete user within the context]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_atomic_reusable_components;
+<- library_of_reusable_components_of_knowledge_bases;
+
+<- rrel_key_sc_element:
+	... 
+	(*
+	<- explanation;;
+	<= nrel_sc_text_translation:
+		...
+		(*
+		-> rrel_example:
+			"file://htmls/Ui_Of_finding_rejected_proposals_by_user_with_context.html"
+			(*
+			<- lang_ru;;
+			=> nrel_format: format_html;;
+			*);;
+		*);;
+	*);;
+

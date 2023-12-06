@@ -1,0 +1,43 @@
+lib_component_ui_menu_file_for_finding_key_concepts_with_context
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команда пользовательского интерфейса поиска ключевых sc-элементов для заданной предметной области с заданным контекстом]
+	(* <- lang_ru;; *);
+	[Library component. Library component. User interface command of finding key sc-elements for given subject domain with the given context]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_atomic_reusable_components;
+<- library_of_reusable_components_of_knowledge_bases;
+
+<- rrel_key_sc_element:
+	... 
+	(*
+	<- explanation;;
+	<= nrel_sc_text_translation:
+		...
+		(*
+		-> rrel_example:
+			"file://htmls/Ui_Key_Concepts_with_context.html"
+			(*
+			<- lang_ru;;
+			=> nrel_format: format_html;;
+			*);;
+		*);;
+	*);
+	
+<- rrel_key_sc_element:
+	... 
+	(*
+	<- illustration;;
+	<= nrel_sc_text_translation:
+		...
+		(*
+		-> rrel_example:
+			"file://images/key_concepts.png" (* => nrel_format: format_png;; *);; 
+		*);;
+	*);;
+
+
+
+
+

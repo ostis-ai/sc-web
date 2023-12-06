@@ -1,0 +1,19 @@
+lib_component_ui_menu_file_for_formation_suggestion_edit_kb =  [*
+ui_menu_file_for_formation_suggestion_edit_kb <- ui_user_command_class_atom; ui_user_command_class_view_kb;;
+
+ui_menu_file_for_formation_suggestion_edit_kb => nrel_main_idtf: [Сформировать предложение по редактированию базы знаний] (* <- lang_ru;; *);;
+ui_menu_file_for_formation_suggestion_edit_kb => nrel_main_idtf: [Form proposal for editing the knowledge base] (* <- lang_en;; *);;
+
+ui_menu_file_for_formation_suggestion_edit_kb => ui_nrel_command_template:
+	[*
+		action_to_form_a_proposal_for_editing_the_knowledge_base _-> ._action_to_form_a_proposal_for_editing_the_knowledge_base_instance
+			(*
+			_-> ui_arg_1;;
+			*);;
+		._action_to_form_a_proposal_for_editing_the_knowledge_base_instance _<- question;;
+	*];;
+
+ui_menu_file_for_formation_suggestion_edit_kb => ui_nrel_command_lang_template: [Сформировать предложение по редактированию базы знаний: $ui_arg_1] (* <- lang_ru;; *);;
+ui_menu_file_for_formation_suggestion_edit_kb => ui_nrel_command_lang_template: [Form proposal for editing the knowledge base: $ui_arg_1] (* <- lang_en;; *);;
+
+*];;

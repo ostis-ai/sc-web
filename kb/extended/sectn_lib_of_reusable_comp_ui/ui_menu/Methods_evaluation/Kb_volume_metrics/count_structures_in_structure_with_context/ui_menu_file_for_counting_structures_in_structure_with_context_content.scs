@@ -1,0 +1,33 @@
+lib_component_ui_menu_file_for_counting_structures_in_structure_with_context =  [*
+ui_menu_file_for_counting_structures_in_structure_with_context <- ui_user_command_class_atom; ui_user_command_class_view_kb;
+ui_user_command_with_context;
+ui_two_argument_command_class;;
+
+ui_menu_file_for_counting_structures_in_structure_with_context
+=> nrel_main_idtf: 
+	[Посчитать количество знаков структур в структуре с заданным контекстом] 
+	(* <- lang_ru;; *);
+=> nrel_main_idtf:
+	[Count number of sings of structure in structure within the context] 
+	(* <- lang_en;; *);;
+
+ui_menu_file_for_counting_structures_in_structure_with_context
+=> ui_nrel_command_template:
+	[*
+		action_to_count_structures_in_structure _-> ._action_to_count_structures_in_structure_instance
+			(*
+			_-> ui_arg_1;;
+			_=> nrel_context_of_action:: ui_arg_2;;
+			*);;
+		._action_to_count_structures_in_structure_instance _<- question;;
+	*];;
+
+ui_menu_file_for_counting_structures_in_structure_with_context
+=> ui_nrel_command_lang_template: 
+	[Посчитать количество знаков структур в структуре $ui_arg_1 с заданным контекстом ($ui_arg_2)] 
+	(* <- lang_ru;; *);
+=> ui_nrel_command_lang_template:
+	[Count number of sings of structure in structure $ui_arg_1 with the given context ($ui_arg_2)] 
+	(* <- lang_en;; *);;
+
+*];;

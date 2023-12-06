@@ -1,0 +1,26 @@
+lib_ui_menu_na_view_kb_extended_for_unauthorized_users
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команды расширенного просмотра БЗ]
+	(* <- lang_ru;; *);
+	[Library component. Commands to view KB extended]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_non_atomic_reusable_components;
+
+<= nrel_library_component_decomposition:
+	{		
+		lib_ui_menu_na_view_kb_base_for_unauthorized_users;
+		lib_ui_menu_na_view_kb_structure_for_unauthorized_users;
+		lib_ui_na_ontologies_for_unauthorized_users;
+		//TODO: lib_ui_na_relations;
+		//TODO: lib_ui_na_statements;
+		lib_ui_na_various_concepts_for_unauthorized_users;
+		lib_ui_na_various_objects_for_unauthorized_users;
+		lib_ui_na_subject_domains_for_unauthorized_users;
+		lib_ui_menu_na_view_kb_semantic_square_for_unauthorized_users;
+		lib_ui_menu_na_view_kb_identifiers_for_unauthorized_users;
+		lib_ui_menu_na_view_kb_pattern_for_unauthorized_users
+		//TODO: lib_component_ui_na_tasks
+	};;
+

@@ -1,0 +1,5 @@
+scg_code => nrel_main_idtf: 
+	[SCg-код] (* <- lang_ru;; *);
+	[SCg-code] (* <- lang_en;; *); 
+=> nrel_idtf: 
+	[Semantic Computer graphic Сode] (* <- lang_en;; *);;

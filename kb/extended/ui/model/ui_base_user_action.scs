@@ -1,0 +1,51 @@
+ui_base_user_action
+=> nrel_main_idtf:
+	[элементарное пользовательское действие] (* <- lang_ru;; *);
+
+<= nrel_subdividing:
+	{
+		ui_base_user_action_mouse;
+		ui_base_user_action_keyboard
+	};;
+
+// --- mouse ---
+ui_base_user_action_mouse
+=> nrel_main_idtf:
+	[элементарное пользовательское действие совершенное с помощью мыши] (* <- lang_ru;; *);
+<- rrel_key_sc_element:
+	...
+	(*
+	<- sc_explanation;;
+	<= nrel_sc_text_translation:
+		... (* ->	[множество элементарных пользовательских действий совершенных с помощью мыши] (* <- lang_ru;; *);; *);;
+	*);
+<= nrel_subdividing:
+	{
+		ui_base_user_action_mouse_move;
+		ui_base_user_action_mouse_press_button;
+		ui_base_user_action_mouse_release_button
+	};;
+
+ui_base_user_action_mouse_move
+=> nrel_main_idtf:
+	[элементарное пользовательское действие перемещения указателя мыши] (* <- lang_ru;; *);;
+
+ui_base_user_action_mouse_press_button
+=> nrel_main_idtf:
+	[элементарное пользовательское действие нажатия клавиши мыши] (* <- lang_ru;; *);;
+
+ui_base_user_action_mouse_release_button
+=> nrel_main_idtf:
+	[элементарное пользовательское действие отпускания клавиши мыши] (* <- lang_ru;; *);;
+
+// --- keyboard ---
+ui_base_user_action_keyboard
+=> nrel_main_idtf:
+	[элементарное пользовательское действие совершенное с помощь клавиатуры] (* <- lang_ru;; *);
+<- rrel_key_sc_element:
+	...
+	(*
+	<- sc_explanation;;
+	<= nrel_sc_text_translation:
+		... (* ->	[множество элементарных пользовательских действий совершенных с помощью клавиатуры] (* <- lang_ru;; *);; *);;
+	*);;

@@ -1,0 +1,17 @@
+lib_ui_na_various_objects
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команды для произвольных объектов]
+	(* <- lang_ru;; *);
+	[Library component. Commands for various objects]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_non_atomic_reusable_components;
+
+<= nrel_library_component_decomposition:
+	{		
+		lib_component_ui_menu_file_for_finding_illustrations;
+		lib_component_ui_menu_file_for_finding_definitions;
+		lib_component_ui_menu_file_for_finding_connections
+	};;
+

@@ -1,0 +1,24 @@
+lib_ui_menu_navigation_for_eekb =  [*
+ui_menu_navigation_for_eekb <- ui_user_command_class_noatom;
+=> nrel_main_idtf: [Навигация] (* <- lang_ru;; *);
+=> nrel_main_idtf: [Navigation] (* <- lang_en;; *);
+<= nrel_ui_commands_decomposition:
+{
+	ui_menu_file_for_finding_all_drafts_of_author
+		(*
+		=> nrel_command_order: 
+			ui_menu_navigation_by_proposal_for_eekb;;
+		*);
+	ui_menu_navigation_by_proposal_for_eekb
+		(*
+		=> nrel_command_order: 
+			ui_menu_navigation_by_initiated_signs_for_eekb;;
+		*);
+	ui_menu_navigation_by_initiated_signs_for_eekb
+};;
+
+ui_menu_navigation_for_eekb <= nrel_command_access: ...
+		(*
+			-> nrel_authorised_user;;
+		*);;
+*];;

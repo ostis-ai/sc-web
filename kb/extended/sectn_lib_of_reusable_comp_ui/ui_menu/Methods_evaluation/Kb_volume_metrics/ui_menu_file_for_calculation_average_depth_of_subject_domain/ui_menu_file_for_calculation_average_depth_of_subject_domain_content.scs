@@ -1,0 +1,25 @@
+lib_component_ui_menu_file_for_calculation_average_depth_of_subject_domain =  [*
+ui_menu_file_for_calculation_average_depth_of_subject_domain <- ui_user_command_class_atom; ui_user_command_class_view_kb;;
+
+ui_menu_file_for_calculation_average_depth_of_subject_domain => nrel_main_idtf: 
+	[Вычислить cреднюю глубину предметных областей] 
+	(* <- lang_ru;; *);
+	[Calculate average depth of subject domain] 
+	(* <- lang_en;; *);;
+
+ui_menu_file_for_calculation_average_depth_of_subject_domain => ui_nrel_command_template:
+	[*
+		action_to_calculate_average_depth_of_subject_domain _-> ._action_to_calculate_average_depth_of_subject_domain_instance
+			(*
+			_-> ui_arg_1;;				
+			*);;
+		._action_to_calculate_average_depth_of_subject_domain_instance _<- question;;
+	*];;
+
+ui_menu_file_for_calculation_average_depth_of_subject_domain => ui_nrel_command_lang_template: 
+	[Вычислить cреднюю глубину предметных областей: $ui_arg_1] 
+	(* <- lang_ru;; *);
+	[Calculate average depth of subject domain: $ui_arg_1] 
+	(* <- lang_en;; *);;
+
+*];;

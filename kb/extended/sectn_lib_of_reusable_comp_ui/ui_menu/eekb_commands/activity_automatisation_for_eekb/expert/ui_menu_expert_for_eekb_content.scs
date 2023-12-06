@@ -1,0 +1,16 @@
+lib_ui_menu_expert_for_eekb =  [*
+ui_menu_expert_for_eekb <- ui_user_command_class_noatom;
+=> nrel_main_idtf: [Команды эксперта] (* <- lang_ru;; *);
+=> nrel_main_idtf: [Expert commands] (* <- lang_en;; *);
+<= nrel_ui_commands_decomposition:
+{
+	ui_menu_file_for_assignment_form_to_the_verification_produce;
+	ui_menu_file_for_expert_rejection_of_verified_proposal;
+	ui_menu_agent_of_expert_approval_of_verified_proposal
+};;
+
+ui_menu_expert_for_eekb <= nrel_command_access: ...
+		(*
+			-> nrel_expert;;
+		*);;
+*];;

@@ -1,0 +1,37 @@
+lib_component_ui_menu_file_for_finding_pattern =  [*
+ui_menu_file_for_finding_pattern <- ui_user_command_class_atom; ui_user_command_class_view_kb; ui_one_argument_command_class;;
+
+ui_menu_file_for_finding_pattern 
+=> nrel_main_idtf: 
+	[Какие структуры удовлетворяют указываемому образцу?] 
+	(* <- lang_ru;; *);
+=> nrel_idtf: 
+	[Запрос всех конструкций, удовлетворяющих заданному образцу] 
+	(* <- lang_ru;; *);;
+
+ui_menu_file_for_finding_pattern 
+=> nrel_main_idtf: 
+	[Which constructions meet the given pattern?] 
+	(* <- lang_en;; *);
+=> nrel_idtf: 
+	[Request of all constructions which meet the given pattern] 
+	(* <- lang_en;; *);;
+
+ui_menu_file_for_finding_pattern => ui_nrel_command_template:
+	[*
+		action_search_structure_which_is_isomorphic_to_given_pattern _-> ._question_of_finding_pattern_instance
+			(*
+			_-> ui_arg_1;;				
+			*);;
+		._question_of_finding_pattern_instance _<- question;;
+	*];;
+
+ui_menu_file_for_finding_pattern => ui_nrel_command_lang_template: 
+	[Какие структуры удовлетворяют образцу $ui_arg_1] 
+	(* <- lang_ru;; *);;
+
+ui_menu_file_for_finding_pattern => ui_nrel_command_lang_template: 
+	[Which constructions meet the pattern $ui_arg_1] 
+	(* <- lang_en;; *);;
+
+*];;

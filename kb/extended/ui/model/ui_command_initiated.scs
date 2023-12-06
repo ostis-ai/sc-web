@@ -1,0 +1,3 @@
+ui_command_initiated <- sc_node_not_relation;;
+
+ui_command_initiated => nrel_main_idtf: [инициированная команда пользовательского интерфейса] (* <- lang_ru;; *);;

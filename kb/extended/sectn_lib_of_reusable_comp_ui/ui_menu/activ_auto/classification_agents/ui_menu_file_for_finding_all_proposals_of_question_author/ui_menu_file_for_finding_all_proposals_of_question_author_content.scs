@@ -1,0 +1,25 @@
+lib_ui_menu_file_for_finding_all_proposals_of_question_author =  [*
+ui_menu_file_for_finding_all_proposals_of_question_author <- ui_user_command_class_atom; ui_user_command_class_view_kb; ui_no_argument_command_class;;
+
+ui_menu_file_for_finding_all_proposals_of_question_author => nrel_main_idtf: 
+	[Показать мои предложения] 
+	(* <- lang_ru;; *);;
+
+ui_menu_file_for_finding_all_proposals_of_question_author => nrel_main_idtf: 
+	[Show my proposals] 
+	(* <- lang_en;; *);;
+
+ui_menu_file_for_finding_all_proposals_of_question_author => ui_nrel_command_template:
+	[*
+		action_of_finding_all_proposals_of_question_author _-> ._action_of_finding_all_proposals_of_question_author_instance;;
+		._action_of_finding_all_proposals_of_question_author_instance _<- question;;
+	*];;
+
+ui_menu_file_for_finding_all_proposals_of_question_author => ui_nrel_command_lang_template: 
+	[Показать мои предложения] 
+	(* <- lang_ru;; *);;
+ui_menu_file_for_finding_all_proposals_of_question_author => ui_nrel_command_lang_template: 
+	[Show my proposals] 
+	(* <- lang_eng;; *);;
+
+*];;

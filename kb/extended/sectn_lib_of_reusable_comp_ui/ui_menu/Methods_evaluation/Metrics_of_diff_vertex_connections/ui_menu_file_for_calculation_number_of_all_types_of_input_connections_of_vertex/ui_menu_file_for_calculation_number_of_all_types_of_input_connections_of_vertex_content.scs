@@ -1,0 +1,25 @@
+lib_component_ui_menu_file_for_calculation_number_of_all_types_of_input_connections_of_vertex =  [*
+ui_menu_file_for_calculation_number_of_all_types_of_input_connections_of_vertex <- ui_user_command_class_atom; ui_user_command_class_view_kb;;
+
+ui_menu_file_for_calculation_number_of_all_types_of_input_connections_of_vertex => nrel_main_idtf: 
+	[Вычислить среднее значение количества различных типов входящих связей вершины онтологии] 
+	(* <- lang_ru;; *);
+	[Calculate number of all types of input connections of vertex] 
+	(* <- lang_en;; *);;
+
+ui_menu_file_for_calculation_number_of_all_types_of_input_connections_of_vertex => ui_nrel_command_template:
+	[*
+		action_to_calculate_average_value_of_input_connections_of_vertex _-> ._action_to_calculate_average_value_of_input_connections_of_vertex_instance
+			(*
+			_-> ui_arg_1;;				
+			*);;
+		._action_to_calculate_average_value_of_input_connections_of_vertex_instance _<- question;;
+	*];;
+
+ui_menu_file_for_calculation_number_of_all_types_of_input_connections_of_vertex => ui_nrel_command_lang_template: 
+	[Вычислить среднее значение количества различных типов входящих связей вершины онтологии: $ui_arg_1] 
+	(* <- lang_ru;; *);
+	[Calculate number of all types of input connections of vertex: $ui_arg_1] 
+	(* <- lang_en;; *);;
+
+*];;

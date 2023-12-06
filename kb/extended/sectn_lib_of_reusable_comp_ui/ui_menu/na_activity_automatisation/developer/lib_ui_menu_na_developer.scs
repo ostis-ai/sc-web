@@ -1,0 +1,18 @@
+lib_ui_menu_na_developer
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команды разработчика БЗ]
+	(* <- lang_ru;; *);
+	[Library component. Commands of KB developer]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_non_atomic_reusable_components;
+
+<= nrel_library_component_decomposition:
+	{		
+		lib_component_ui_menu_file_for_formation_suggestion_edit_kb;
+		lib_component_ui_menu_file_for_formation_suggestion_edit_kb_to_concrete_section;
+		lib_component_ui_menu_file_for_formation_proposal_executor_of_project_task;
+		lib_component_ui_menu_file_for_formation_proposed_project_tasks
+	};;
+

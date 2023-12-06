@@ -1,0 +1,18 @@
+lib_ui_menu_Ingwe_Miller_metrics_for_eekb =  [*
+ui_menu_Ingwe_Miller_metrics_for_eekb <- ui_user_command_class_noatom;
+=> nrel_main_idtf: [Метрики Ингве-Миллера] (* <- lang_ru;; *);
+=> nrel_main_idtf: [Ingwe-Miller metrics] (* <- lang_en;; *);
+<= nrel_ui_commands_decomposition:
+{
+	ui_menu_file_for_calculation_ninetieth_percentile_vertex_degrees;
+	ui_menu_file_for_calculation_average_value_of_vertex_degrees;
+	ui_menu_file_for_calculation_dispersion_of_vertex_degrees;
+	ui_menu_file_for_calculation_median_of_vertex_degrees;
+	ui_menu_file_for_calculation_normalized_number_of_vertexes_with_normal_degree
+};;
+
+ui_menu_Ingwe_Miller_metrics_for_eekb <= nrel_command_access: ...
+		(*
+			-> nrel_authorised_user;;
+		*);;
+*];;

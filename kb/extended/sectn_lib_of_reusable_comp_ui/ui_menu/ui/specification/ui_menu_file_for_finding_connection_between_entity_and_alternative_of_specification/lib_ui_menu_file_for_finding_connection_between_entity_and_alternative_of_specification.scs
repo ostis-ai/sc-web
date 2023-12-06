@@ -1,0 +1,27 @@
+lib_ui_menu_file_for_finding_connection_between_entity_and_alternative_of_specification
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команда пользовательского интерфейса для нахождения связи между сущностью и альтернативой спецификации]
+	(* <- lang_ru;; *);
+	[Library component. User interface command for finding connection between entity and alternative of specification]
+	(* <- lang_en;; *);
+
+<- platform_independent_reusable_component_OSTIS;
+<- atomic_reusable_component_OSTIS;
+<- reusable_knowledge_base_sc_model_component;
+
+<- rrel_key_sc_element:
+	... 
+	(*
+	<- explanation;;
+	<= nrel_sc_text_translation:
+		...
+		(*
+		-> rrel_example:
+			"file://htmls/Ui_Check_For_Finding_Connection_Between_Entity_And_Alternative_Of_Specification.html"
+			(*
+			<- lang_ru;;
+			=> nrel_format: format_html;;
+			*);;
+		*);;
+	*);;
+

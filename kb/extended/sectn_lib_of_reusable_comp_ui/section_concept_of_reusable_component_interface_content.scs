@@ -1,0 +1,42 @@
+section_concept_of_reusable_component_interface =  [*
+library_of_reusable_components_interfaces
+=> nrel_main_idtf:
+	[Библиотека многократно используемых компонентов sc-моделей интерфейсов]
+	(* <- lang_ru;; *);
+	[Library of reusable components of interfaces sc-models]
+	(* <- lang_en;; *);
+
+=> nrel_idtf:
+	[Библиотека многократно используемых компонентов sc-моделей интерфейсов]
+	(* <- lang_ru;; *);
+	[многократно используемый компонент sc-моделей интерфейсов]
+	(* <- lang_ru;; *);
+
+<= nrel_subdividing:
+	{
+	library_of_external_languages_description;
+	library_of_external_info_constructions_editors;
+	library_of_translators_to_sc;
+	library_of_translators_from_sc;
+	library_of_visualizators;
+	library_of_communication_environments;
+	library_of_user_interface_control_elements
+	};
+
+<- rrel_key_sc_element:
+	...
+	(*
+	<- explanation;;
+	<= nrel_sc_text_translation:	
+		...
+		(*
+		-> rrel_example:
+			"file://nl_files/library_of_reusable_components_interfaces.html"
+			(*
+			<- lang_ru;;
+			=> nrel_format: format_html;;
+			*);;
+		*);;
+	*);;
+
+*];;

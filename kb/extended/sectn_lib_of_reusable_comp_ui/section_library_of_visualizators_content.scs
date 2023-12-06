@@ -1,0 +1,9 @@
+section_library_of_visualizators =  [*
+library_of_visualizators
+
+=> nrel_main_idtf:
+	[Библиотека визуализаторов]
+	(* <- lang_ru;; *);
+	[Library of visualizators]
+	(* <- lang_en;; *);;
+*];;

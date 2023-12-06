@@ -1,0 +1,27 @@
+lib_component_ui_menu_for_finding_initiated_action_for_a_specific_performer =  [*
+ui_menu_for_finding_initiated_action_for_a_specific_performer <- ui_user_command_class_atom; ui_user_command_class_view_kb;ui_one_argument_command_class;;
+
+ui_menu_for_finding_initiated_action_for_a_specific_performer => nrel_main_idtf: 
+	[Найти действия, закреплённые за конкретным исполнителем] 
+	(* <- lang_ru;; *);
+	[Find actions assigned for a specific performer] 
+	(* <- lang_en;; *);;
+
+ui_menu_for_finding_initiated_action_for_a_specific_performer => ui_nrel_command_template:
+	[*
+		action_of_finding_initiated_action_for_a_specific_performer _-> ._action_of_finding_initiated_action_for_a_specific_performer_instance
+			(*
+			_-> ui_arg_1;;				
+			*);;
+		._action_of_finding_initiated_action_for_a_specific_performer_instance _<- question;;
+	*];;
+
+ui_menu_for_agent_of_finding_initiated_action_for_a_specific_performer => ui_nrel_command_lang_template: 
+	[Найти действия, закреплённые за конкретным исполнителем: $ui_arg_1] 
+	(* <- lang_ru;; *);
+	[Find actions assigned for a specific performer: $ui_arg_1] 
+	(* <- lang_en;; *);;
+
+
+
+*];;

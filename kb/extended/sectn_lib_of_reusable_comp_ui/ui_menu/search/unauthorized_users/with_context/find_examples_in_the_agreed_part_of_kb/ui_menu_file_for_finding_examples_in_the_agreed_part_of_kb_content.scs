@@ -1,0 +1,40 @@
+lib_component_ui_menu_file_for_finding_examples_in_the_agreed_part_of_kb =  [*
+ui_menu_file_for_finding_examples_in_the_agreed_part_of_kb <- ui_user_command_class_atom; ui_user_command_class_view_kb; ui_user_command_with_context;  ui_two_argument_command_class;;
+
+ui_menu_file_for_finding_examples_in_the_agreed_part_of_kb 
+=> nrel_main_idtf: 
+    [Найти примеры, соответствующие указываемому понятию] 
+    (* <- lang_ru;; *);
+=> nrel_idtf: 
+    [Запрос примеров для заданного понятия] 
+    (* <- lang_ru;; *);;
+
+ui_menu_file_for_finding_examples_in_the_agreed_part_of_kb 
+=> nrel_main_idtf: 
+    [Find examples correspond to given concept] 
+    (* <- lang_en;; *);
+=> nrel_main_idtf: 
+    [Request of examples for the given concept] 
+    (* <- lang_en;; *);;
+
+ui_menu_file_for_finding_examples_in_the_agreed_part_of_kb => ui_nrel_command_template:
+    [*
+        question_of_finding_examples _-> ._question_of_finding_examples_instance
+            (*
+            _-> ui_arg_1;;
+            _=> nrel_context_of_action:: concerted_part_of_specific_kb;;                 
+            *);;
+        ._question_of_finding_examples_instance _<- question;;
+    *];;
+
+ui_menu_file_for_finding_examples_in_the_agreed_part_of_kb => ui_nrel_command_lang_template: 
+    [Найти примеры, соответствующие указываемому понятию $ui_arg_1] 
+    (* <- lang_ru;; *);;
+
+ui_menu_file_for_finding_examples_in_the_agreed_part_of_kb => ui_nrel_command_lang_template: 
+    [Find examples correspond to given concept of $ui_arg_1] 
+    (* <- lang_en;; *);;
+
+
+
+*];;

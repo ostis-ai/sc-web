@@ -1,0 +1,39 @@
+lib_component_ui_menu_file_for_finding_main_concept =  [*
+ui_menu_file_for_finding_main_concept <- ui_user_command_class_atom; ui_user_command_class_view_kb; ui_one_argument_command_class;;
+
+ui_menu_file_for_finding_main_concept 
+=> nrel_main_idtf: 
+	[Какие понятия определяются на основе указываемого понятия?] 
+	(* <- lang_ru;; *);
+=> nrel_idtf: 
+	[Запрос понятий, которые определяются на основе заданного] 
+	(* <- lang_ru;; *);;
+
+ui_menu_file_for_finding_main_concept 
+=> nrel_main_idtf: 
+	[Which concepts are defined on the base of given concept?] 
+	(* <- lang_en;; *);
+=> nrel_idtf: 
+	[Request of concepts, which are defined on the base of given] 
+	(* <- lang_en;; *);;
+
+ui_menu_file_for_finding_main_concept => ui_nrel_command_template:
+	[*
+		question_of_finding_main_concept _-> ._question_of_finding_main_concept_instance
+			(*
+			_-> ui_arg_1;;				
+			*);;
+		._question_of_finding_main_concept_instance _<- question;;
+	*];;
+
+ui_menu_file_for_finding_main_concept => ui_nrel_command_lang_template: 
+	[Какие понятия определяются на основе понятия $ui_arg_1] 
+	(* <- lang_ru;; *);;
+
+ui_menu_file_for_finding_main_concept => ui_nrel_command_lang_template:
+	[Which concepts are defined on the base of concept $ui_arg_1] 
+	(* <- lang_en;; *);;
+
+
+
+*];;

@@ -1,0 +1,28 @@
+ui_user 
+<- sc_node_not_relation;
+
+=> nrel_main_idtf: 
+    [пользователь] 
+    (* <- lang_ru;; *);
+
+=> nrel_main_idtf: 
+    [user] 
+    (* <- lang_en;; *);
+
+<- rrel_key_sc_element:
+    ..e
+    (*
+    <- sc_explanation;;
+    <= nrel_sc_text_translation:	
+	    ..t1
+	    (*
+        -> [SC-узел обозначающий множество всех пользователей системы] (* <- lang_ru;; *);;
+        *);
+        ..t2
+        (*
+        -> [SC-node that designates set of all users in system] (* <- lang_en;; *);;
+        *);;
+    *);;
+
+
+

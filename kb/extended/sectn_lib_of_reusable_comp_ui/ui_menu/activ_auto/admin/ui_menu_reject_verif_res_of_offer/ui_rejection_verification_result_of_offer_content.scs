@@ -1,0 +1,18 @@
+lib_component_ui_menu_file_for_rejection_verification_result_of_offer =  [*
+ui_rejection_verification_result_of_offer <- ui_user_command_class_atom; ui_user_command_class_view_kb;;
+
+ui_rejection_verification_result_of_offer => nrel_main_idtf: [Отклонить результат верификации предложения] (* <- lang_ru;; *);;
+ui_rejection_verification_result_of_offer => nrel_main_idtf: [Reject the verification result of offer] (* <- lang_en;; *);;
+ui_rejection_verification_result_of_offer => ui_nrel_command_template:
+	[*
+		action_to_reject_the_result_of_proposal_verification _-> ._action_to_reject_the_result_of_proposal_verification_instance
+			(*
+				_-> rrel_1:: ui_arg_1;;			
+			*);;
+		._action_to_reject_the_result_of_proposal_verification_instance _<- question;;
+	*];;
+
+ui_rejection_verification_result_of_offer => ui_nrel_command_lang_template: [Отклонить результат верификации предложения: $ui_arg_1] (* <- lang_ru;; *);;
+ui_rejection_verification_result_of_offer => ui_nrel_command_lang_template: [Reject the verification result of offer: $ui_arg_1] (* <- lang_en;; *);;
+
+*];;

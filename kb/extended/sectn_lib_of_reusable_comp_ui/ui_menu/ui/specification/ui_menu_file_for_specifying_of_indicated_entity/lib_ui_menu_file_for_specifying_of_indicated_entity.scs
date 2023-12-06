@@ -1,0 +1,30 @@
+lib_ui_menu_file_for_specifying_of_indicated_entity
+=> nrel_main_idtf:
+	[Компонент библиотеки. Команда пользовательского интерфейса для спецификации указываемой сущности]
+	(* <- lang_ru;; *);
+	[Library component. User interface command for specifying of indicated entity]
+	(* <- lang_en;; *);
+
+<- library_of_platform_independent_reusable_components;
+<- library_of_atomic_reusable_components;
+<- library_of_reusable_components_of_knowledge_bases;
+
+
+<- rrel_key_sc_element:
+	... 
+	(*
+	<- explanation;;
+	<= nrel_sc_text_translation:
+		...
+		(*
+		-> rrel_example:
+			"file://htmls/Ui_Check_For_Specifying_Of_Indicated_Entity.html"
+			(*
+			<- lang_ru;;
+			=> nrel_format: format_html;;
+			*);;
+		*);;
+	*);;
+
+
+

@@ -1,0 +1,24 @@
+<p> <b><sc_element sys_idtf  = "system_sc_identifier">cистемный идентификатор</sc_element></b> – это <i><sc_element sys_idtf  = "sc_identifier">идентификатор</sc_element></i>, являющийся уникальным в рамках всей <i><sc_element sys_idtf  = "knowledge_base">базы знаний</sc_element></i>. Данный <i><sc_element sys_idtf  = "sc_identifier">идентификатор</sc_element></i>, как правило, используется в исходных текстах <i><sc_element sys_idtf  = "knowledge_base">базы знаний</sc_element></i> нижнего уровня. Для обеспечения интернационализации рекомендуется записывать <b><sc_element sys_idtf  = "system_sc_identifier">системные идентификаторы</sc_element></b> на английском языке. </p>
+
+<p> Символами, использующимися в <b><sc_element sys_idtf  = "system_sc_identifier">системном идентификаторе</sc_element></b>, могут быть буквы латинского алфавита, цифры, знак нижнего подчеркивания и знак тире. </p>
+
+<p> Таким образом, наиболее целесообразно формировать <b><sc_element sys_idtf  = "system_sc_identifier">системный идентификатор</sc_element></b> <i><sc_element sys_idtf  = "sc_element">sc-элемента</sc_element></i> из основного англоязычного путем замены всех символов, не входящих в описанный выше алфавит на символ «_». </p>
+
+<p> Например: 
+основной англоязычный <i><sc_element sys_idtf  = "sc_identifier">идентификатор</sc_element></i>: Partition. SCs-code. Dividers <br>
+<b><sc_element sys_idtf  = "system_sc_identifier">системный идентификатор</sc_element></b>: Partition_SCs-code_Dividers <br>
+Для именования <i><sc_element sys_idtf  = "sc_element">sc-элементов</sc_element></i>, являющихся знаками <i><sc_element sys_idtf  = "role_relation">ролевых отношений</sc_element></i>, вместо знака «’» в <b><sc_element sys_idtf  = "system_sc_identifier">системном идентификаторе</sc_element></b> используется приставка «rrel» и далее после нижнего подчеркивания записывается имя <i><sc_element sys_idtf  = "role_relation">ролевого отношения</sc_element></i>. <br>
+Для именования <i><sc_element sys_idtf  = "sc_element">sc-элементов</sc_element></i>, являющихся знаками <i><sc_element sys_idtf  = "norole_relation">неролевых отношений</sc_element></i>, вместо знака «*» в <b><sc_element sys_idtf  = "system_sc_identifier">системном идентификаторе</sc_element></b> используется приставка «nrel» и далее после нижнего подчеркивания записывается имя <i><sc_element sys_idtf  = "norole_relation">неролевого отношения</sc_element></i>. <br>
+Для именования <i><sc_element sys_idtf  = "sc_element">sc-элементов</sc_element></i>, являющихся знаками <i><sc_element sys_idtf  = "class">классов</sc_element></i> понятий в <i><sc_element sys_idtf  = "sc_identifier">идентификаторе</sc_element></i> используется приставка «concept» и далее после нижнего подчеркивания записывается имя <i><sc_element sys_idtf  = "class">класса</sc_element></i>. <br>
+Для именования <i><sc_element sys_idtf  = "sc_element">sc-элементов</sc_element></i>, являющихся знаками <i><sc_element sys_idtf  = "structure">структур</sc_element></i> в <i><sc_element sys_idtf  = "sc_identifier">идентификаторе</sc_element></i> используется приставка «struct» и далее после нижнего подчеркивания записывается имя <i><sc_element sys_idtf  = "structure">структуры</sc_element></i>. <br>
+Для именования <i><sc_element sys_idtf  = "sc_element">sc-элементов</sc_element></i>, являющихся знаками <i><sc_element sys_idtf  = "oriented_set">кортежей</sc_element></i> в <i><sc_element sys_idtf  = "sc_identifier">идентификаторе</sc_element></i> используется приставка «tuple» и далее после нижнего подчеркивания записывается имя <i><sc_element sys_idtf  = "oriented_set">кортежа</sc_element></i>. </p>
+
+<p> Например: <br>
+rrel_summand<br>
+/*ролевое отношение «слагаемое’»*/<br>
+nrel_inclusion<br>
+/*неролевое отношение «включение*» */<br>
+concept_triangle <br>
+/*класс «треугольник» */ <br>
+struct_Triangle_A_B_C <br>
+/*структура «Треугк(ТчкA;ТчкB;ТчкC)» */ </p>

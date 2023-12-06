@@ -1,0 +1,39 @@
+lib_component_ui_menu_file_for_finding_examples =  [*
+ui_menu_file_for_finding_examples <- ui_user_command_class_atom; ui_user_command_class_view_kb; ui_one_argument_command_class;;
+
+ui_menu_file_for_finding_examples 
+=> nrel_main_idtf: 
+	[Какие примеры соответствуют указываемому понятию?] 
+	(* <- lang_ru;; *);
+=> nrel_idtf: 
+	[Запрос примеров для заданного понятия] 
+	(* <- lang_ru;; *);;
+
+ui_menu_file_for_finding_examples 
+=> nrel_main_idtf: 
+	[Which examples correspond to given concept?] 
+	(* <- lang_en;; *);
+=> nrel_main_idtf: 
+	[Request of examples for the given concept] 
+	(* <- lang_en;; *);;
+
+ui_menu_file_for_finding_examples => ui_nrel_command_template:
+	[*
+		question_of_finding_examples _-> ._question_of_finding_examples_instance
+			(*
+			_-> ui_arg_1;;				
+			*);;
+		._question_of_finding_examples_instance _<- question;;
+	*];;
+
+ui_menu_file_for_finding_examples => ui_nrel_command_lang_template: 
+	[Какие примеры соответствуют понятию $ui_arg_1] 
+	(* <- lang_ru;; *);;
+
+ui_menu_file_for_finding_examples => ui_nrel_command_lang_template: 
+	[Which examples correspond to concept of $ui_arg_1] 
+	(* <- lang_en;; *);;
+
+
+
+*];;
