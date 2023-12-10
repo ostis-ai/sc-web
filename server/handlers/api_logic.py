@@ -753,7 +753,7 @@ class ScSession:
                     sc_types.EDGE_D_COMMON_VAR,
                     links[0],
                     sc_types.EDGE_ACCESS_VAR_POS_PERM,
-                    self.keynodes[KeynodeSysIdentifiers.nrel_email.value],
+                    self.keynodes[KeynodeSysIdentifiers.nrel_email.value, sc_types.NODE_CONST_NOROLE],
                 )
                 search = client.template_search(template)
                 return search[0].get(0)
@@ -784,7 +784,7 @@ class ScSession:
     def get_used_language(self) -> ScAddr:
         """Returns sc-addr of currently used natural language
         """
-        ui_nrel_user_used_language = self.keynodes[KeynodeSysIdentifiers.ui_nrel_user_used_language.value]
+        ui_nrel_user_used_language = self.keynodes[KeynodeSysIdentifiers.ui_nrel_user_used_language.value, sc_types.NODE_CONST_NOROLE]
         template = ScTemplate()
         template.triple_with_relation(
             self.get_sc_addr(),
@@ -801,7 +801,7 @@ class ScSession:
             return results[0].get(2)
 
         # setup russian mode by default
-        _lang = self.keynodes[KeynodeSysIdentifiers.lang_ru.value]
+        _lang = self.keynodes[KeynodeSysIdentifiers.lang_ru.value, sc_types.NODE_CONST_CLASS]
         self.set_current_lang_mode(_lang)
 
         logger.info(f'User language: {KeynodeSysIdentifiers.lang_ru.value}')
@@ -811,7 +811,7 @@ class ScSession:
     def get_default_ext_lang(self) -> ScAddr:
         """Returns sc-addr of default external language
         """
-        default_ext_language = self.keynodes[KeynodeSysIdentifiers.ui_nrel_user_default_ext_language.value]
+        default_ext_language = self.keynodes[KeynodeSysIdentifiers.ui_nrel_user_default_ext_language.value, sc_types.NODE_CONST_NOROLE]
         template = ScTemplate()
         template.triple_with_relation(
             self.get_sc_addr(),
@@ -827,7 +827,7 @@ class ScSession:
             return ext_lang_addr
 
         # setup default language
-        _lang = self.keynodes[KeynodeSysIdentifiers.scn_code.value]
+        _lang = self.keynodes[KeynodeSysIdentifiers.scn_code.value, sc_types.NODE_CONST]
         self.set_default_ext_lang(_lang)
 
         logger.info(f'User ext language: {KeynodeSysIdentifiers.scn_code.value}')
@@ -840,7 +840,7 @@ class ScSession:
         logger.info(f'Set lang {get_system_identifier(mode_addr)}')
 
         # try to find currently used mode and remove it
-        used_language = self.keynodes[KeynodeSysIdentifiers.ui_nrel_user_used_language.value]
+        used_language = self.keynodes[KeynodeSysIdentifiers.ui_nrel_user_used_language.value, sc_types.NODE_CONST_NOROLE]
         template = ScTemplate()
         template.triple_with_relation(
             self.get_sc_addr(),
@@ -866,7 +866,7 @@ class ScSession:
         logger.info(f'Set ext lang {get_system_identifier(lang_addr)}')
 
         # try to find default external language and remove it
-        default_ext_language = self.keynodes[KeynodeSysIdentifiers.ui_nrel_user_default_ext_language.value]
+        default_ext_language = self.keynodes[KeynodeSysIdentifiers.ui_nrel_user_default_ext_language.value, sc_types.NODE_CONST_NOROLE]
         template = ScTemplate()
         template.triple_with_relation(
             self.get_sc_addr(),
@@ -892,8 +892,8 @@ class ScSession:
         return value
 
     def _create_user_with_system_idtf(self, idtf) -> ScAddr:
-        keynode_ui_user = self.keynodes[KeynodeSysIdentifiers.ui_user.value]
-        sys_idtf = self.keynodes[KeynodeSysIdentifiers.nrel_system_identifier.value]
+        keynode_ui_user = self.keynodes[KeynodeSysIdentifiers.ui_user.value, sc_types.NODE_CONST]
+        sys_idtf = self.keynodes[KeynodeSysIdentifiers.nrel_system_identifier.value, sc_types.NODE_CONST_NOROLE]
 
         # create user node
         construction = ScConstruction()

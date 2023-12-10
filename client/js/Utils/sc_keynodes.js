@@ -24,6 +24,7 @@ ScKeynodes.prototype.init = async function () {
 
     'nrel_ui_commands_decomposition',
 
+    'ui_expert_mode',
     'ui_menu_erase_elements',
     'ui_command_initiated',
     'ui_command_finished',

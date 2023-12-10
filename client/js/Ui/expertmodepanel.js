@@ -21,6 +21,9 @@ SCWeb.ui.ExpertModePanel = {
                         resolve();
                     });
                 }
+                else {
+                    resolve();
+                }
             });
         })
     },
