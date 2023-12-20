@@ -100,9 +100,45 @@ SCg.Editor.prototype = {
         var container = '#' + this.containerId;
         $(container).prepend('<div id="tools-' + this.containerId + '"></div>');
         var tools_container = '#tools-' + this.containerId;
-        $(tools_container).load('static/components/html/scg-tools-panel.html', function () {
+
+        const panelPaths = {
+            toolPanel: {
+                default: 'static/components/html/scg-tools-panel.html',
+                demo: 'static/components/html/demo-scg-tools-panel.html',
+            },
+            nodesTypes: {
+                default: 'static/components/html/scg-types-panel-nodes.html',
+                demo: 'static/components/html/demo-scg-types-panel-nodes.html',
+            },
+            edgesTypes: {
+                default: 'static/components/html/scg-types-panel-edges.html',
+                demo: 'static/components/html/demo-scg-types-panel-edges.html',
+            },
+            fragments: {
+                default: 'static/components/html/scg-fragments-panel.html',
+                demo: 'static/components/html/demo-scg-fragments-panel.html',
+            },
+            changeIdtf: {
+                default: 'static/components/html/scg-change-idtf.html',
+                demo: 'static/components/html/demo-scg-change-idtf.html',
+            },
+            setContent: {
+                default: 'static/components/html/scg-set-content.html',
+                demo: 'static/components/html/demo-scg-set-content.html',
+            },
+        };
+
+        const implementation = window.demoImplementation ? 'demo' : 'default';
+        // const implementation = 'demo';
+        console.log("implementation = " + implementation);
+
+        if (window.demoImplementation) {
+            $('.panel-body').addClass('demo-scg-shadow');
+        }
+
+        $(tools_container).load(panelPaths.toolPanel[implementation], function () {
             $.ajax({
-                url: "static/components/html/scg-types-panel-nodes.html",
+                url: panelPaths.nodesTypes[implementation],
                 dataType: 'html',
                 success: function (response) {
                     self.node_types_panel_content = response;
@@ -112,7 +148,7 @@ SCg.Editor.prototype = {
                 },
                 complete: function () {
                     $.ajax({
-                        url: "static/components/html/scg-types-panel-links.html",
+                        url: "static/components/html/scg-types-panel-links.html", //! Mksm Нету демо
                         dataType: 'html',
                         success: function (response) {
                             self.link_types_panel_content = response;
@@ -123,7 +159,7 @@ SCg.Editor.prototype = {
                         },
                         complete: function () {
                             $.ajax({
-                                url: "static/components/html/scg-types-panel-connectors.html",
+                                url: panelPaths.edgesTypes[implementation],
                                 dataType: 'html',
                                 success: function (response) {
                                     self.connector_types_panel_content = response;
@@ -134,7 +170,7 @@ SCg.Editor.prototype = {
                                 },
                                 complete: function () {
                                     $.ajax({
-                                        url: 'static/components/html/scg-delete-panel.html',
+                                        url: 'static/components/html/scg-delete-panel.html', //! Mksm Нету демо
                                         dataType: 'html',
                                         success: function (response) {
                                             self.delete_panel_content = response;
