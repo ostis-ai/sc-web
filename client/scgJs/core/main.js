@@ -116,9 +116,9 @@ SCWeb.core.Main = {
                     window.top.postMessage(command, '*');
 
                     window.addEventListener('message', (e) => {
-                        console.log("sdsd", e.data);
+                        console.log("addEventListener data", e.data);
                         if (e.data.type == 'renderScg') {
-                            renderScg(720909, 135);
+                            renderScg(524293, 135);
                             window.top.postMessage({ 'type': 'onInitializationFinished' }, '*');
                         }
                     })
