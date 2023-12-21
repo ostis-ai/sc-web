@@ -105,7 +105,6 @@ SCWeb.core.Main = {
                     const addrs = await SCWeb.core.Server.resolveScAddr(["format_scg_json", "lang_ru"]);
 
                     const renderScg = (question, lang = addrs["lang_ru"]) => {
-                        console.log('IT WORKS!!!!');
                         SCWeb.core.Translation.setLanguage(lang, () => { });
                         const commandState = new SCWeb.core.CommandState(undefined, undefined, addrs["format_scg_json"], lang);
                         SCWeb.ui.WindowManager.activateWindow(question, commandState);
@@ -117,8 +116,10 @@ SCWeb.core.Main = {
 
                     window.addEventListener('message', (e) => {
                         console.log("addEventListener data", e.data);
-                        if (e.data.type == 'renderScg') {
-                            renderScg(524293, 135);
+                        if (e.data.type === 'renderScg') {
+                            // e.target.closest('[sc_addr]').getAttribute('sc_addr')
+                            window.demoImplementation = true;
+                            renderScg(524293, addrs["lang_ru"]);
                             window.top.postMessage({ 'type': 'onInitializationFinished' }, '*');
                         }
                     })

@@ -129,8 +129,6 @@ SCg.Editor.prototype = {
         };
 
         const implementation = window.demoImplementation ? 'demo' : 'default';
-        // const implementation = 'demo';
-        console.log("implementation = " + implementation);
 
         if (window.demoImplementation) {
             $('.panel-body').addClass('demo-scg-shadow');
