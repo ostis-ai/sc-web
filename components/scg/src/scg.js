@@ -114,10 +114,6 @@ SCg.Editor.prototype = {
                 default: 'static/components/html/scg-types-panel-edges.html',
                 demo: 'static/components/html/demo-scg-types-panel-edges.html',
             },
-            fragments: {
-                default: 'static/components/html/scg-fragments-panel.html',
-                demo: 'static/components/html/demo-scg-fragments-panel.html',
-            },
             changeIdtf: {
                 default: 'static/components/html/scg-change-idtf.html',
                 demo: 'static/components/html/demo-scg-change-idtf.html',
@@ -725,9 +721,6 @@ SCg.Editor.prototype = {
                     hide: 100
                 }
             }).popover('show');
-            cont.find('.popover-content').append(
-                '<button id="scg-close-btn" type="button" class="close scg-close-btn-fragments-window">&times;</button>'
-            );
 
             if (self.scene.selected_objects.length === 1) {
                 if (!self.scene.selected_objects[0].sc_addr) {
@@ -749,8 +742,6 @@ SCg.Editor.prototype = {
                     : cont.find('.delete-from-db-btn').prop('disabled', true).addClass('disabled-delete-btn');
             }
 
-            cont.find('.popover').addClass('scg-tool-fragments-popover');
-            cont.find('.popover-content').addClass('scg-tool-fragments-popover-content');
             cont.find('.popover>.arrow').addClass('scg-tool-popover-arrow-hide');
             
             cont.find('#scg-close-btn').click(function () {
