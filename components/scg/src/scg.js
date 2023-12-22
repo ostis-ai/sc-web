@@ -616,6 +616,8 @@ SCg.Editor.prototype = {
                 tool.popover('destroy');
                 self.scene.event_selection_changed();
                 self.scene.updateObjectsVisual();
+                self.scene.setEditMode(SCgEditMode.SCgModeSelect);
+                select.button('toggle');
             }
 
             var obj = self.scene.selected_objects[0];
@@ -631,7 +633,7 @@ SCg.Editor.prototype = {
 
             el = $(this);
             el.popover({
-                content: types,
+                content: (obj instanceof SCg.ModelEdge) ? self.edge_types_panel_content : self.node_types_panel_content,
                 container: container,
                 title: 'Change type',
                 html: true,
@@ -640,6 +642,15 @@ SCg.Editor.prototype = {
                     hide: 100
                 }
             }).popover('show');
+
+            if (window.demoImplementation) {
+                cont.find('.popover').addClass('demo-scg-popover-layout popover-position-change-type');
+                cont.find('.popover-title').addClass('demo-scg-popover-title');
+                cont.find('.popover>.arrow').addClass('scg-tool-popover-arrow-hide');
+                cont.find('.popover-title').text(
+                    (obj instanceof SCg.ModelEdge) ? 'Изменить тип дуги' : 'Изменить тип узла'
+                );
+            }
 
             cont.find('.popover-title').append(
                 '<button id="scg-type-close" type="button" class="close">&times;</button>');
@@ -658,6 +669,9 @@ SCg.Editor.prototype = {
                 });
                 self.scene.commandManager.execute(new SCgWrapperCommand(command));
                 self.scene.updateObjectsVisual();
+                stop_modal();
+            });
+            $('.switchingItemsLi').click(function () {
                 stop_modal();
             });
         });
