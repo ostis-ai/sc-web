@@ -583,8 +583,7 @@ SCg.Editor.prototype = {
             // process controls
             $(container + ' #scg-change-idtf-apply').click(async function () {
                 const obj = self.scene.selected_objects[0];
-                if (!self._selectedIdtf) self._selectedIdtf = input.val();
-                wrapperChangeApply(obj, self._selectedIdtf).then(stop_modal);
+                wrapperChangeApply(obj, input, self);
             });
             $(container + ' #scg-change-idtf-cancel').click(function () {
                 stop_modal();
