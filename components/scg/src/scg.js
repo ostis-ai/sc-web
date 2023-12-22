@@ -185,7 +185,20 @@ SCg.Editor.prototype = {
                                                         "Error to get change idtf panel");
                                                 },
                                                 complete: function () {
-                                                    self.bindToolEvents();
+                                                    $.ajax({
+                                                        url: panelPaths.setContent[implementation],
+                                                        dataType: 'html',
+                                                        success: function (response) {
+                                                            self.set_content_panel = response;
+                                                        },
+                                                        error: function () {
+                                                            SCgDebug.error(
+                                                                "Error to get set content panel");
+                                                        },
+                                                        complete: function () {
+                                                            self.bindToolEvents();
+                                                        }
+                                                    });
                                                 }
                                             });
                                         }
@@ -651,7 +664,7 @@ SCg.Editor.prototype = {
 
 
         this.toolSetContent().click(function () {
-            let tool = $(this);
+            var tool = $(this);
             const startValueLink = self.scene.selected_objects[0].content.trim();
 
             function stop_modal() {
@@ -662,21 +675,97 @@ SCg.Editor.prototype = {
 
             self.scene.setModal(SCgModalMode.SCgModalIdtf);
             $(this).popover({
-                container: container
+                content: self.set_content_panel,
+                container: container,
+                title: 'Change content',
+                html: true,
+                delay: {
+                    show: 500,
+                    hide: 100
+                }
             });
             $(this).popover('show');
 
-            const obj = self.scene.selected_objects[0];
-            const input = $(container + ' #scg-set-content-input');
-            const input_content = $(container + " input#content[type='file']");
+            var obj = self.scene.selected_objects[0];
+            var input = $(container + ' #scg-set-content-input');
+            var input_content = $(container + " input#content[type='file']");
+            var input_content_type = $(container + " #scg-set-content-type");
             input.val(self.scene.selected_objects[0].content);
+            input_content_type.val(self.scene.selected_objects[0].contentType);
+
+            if (window.demoImplementation) {
+                cont.find('.popover').addClass('demo-scg-popover-layout popover-position-change-type demo-popover-width popover-position-set-content');
+                cont.find('.popover-title').addClass('demo-scg-popover-title demo-text-align-center');
+                cont.find('.popover>.arrow').addClass('scg-tool-popover-arrow-hide');
+                cont.find('.popover-title').text('Изменить содержимое');
+
+                const demoSelect = document.querySelector('.demo-select');
+                const demoSelectValue = document.querySelector('.demo-select-value');
+                const listOfOptions = document.querySelectorAll('.demo-option');
+                const fileInput = document.querySelector('.file-input');
+                const fileInputText = document.querySelector('.demo-file-input-text');
+                const body = document.body;
+
+                const toggleDropdown = (event) => {
+                    event.stopPropagation();
+                    demoSelect.classList.toggle('opened');
+                };
+
+                const selectOption = (event) => {
+                    const options = document.querySelectorAll('.demo-option');
+
+                    options.forEach((option) => {
+                        if (option.classList.contains('demo-selected-option')) {
+                            option.classList.remove('demo-selected-option');
+                        }
+                    });
+
+                    event.currentTarget.classList.add("demo-selected-option");
+                    demoSelectValue.value = event.currentTarget.textContent;
+                    input_content_type.val(demoSelectValue.value);
+                };
+
+                const closeDropdownFromOutside = () => {
+                    if (demoSelect.classList.contains('opened')) {
+                        demoSelect.classList.remove('opened');
+                    }
+                };
+
+                const changeFileInputText = (e) => {
+                    if (e.currentTarget.value) {
+                        fileInputText.innerHTML = e.currentTarget.value;
+                    } else {
+                        fileInputText.innerHTML = "Файл не выбран";
+                    }
+                }
+
+                body.addEventListener('click', closeDropdownFromOutside);
+
+                listOfOptions.forEach((option) => {
+                    option.addEventListener('click', selectOption);
+                });
+
+                demoSelect.addEventListener('click', toggleDropdown);
+
+                fileInput.addEventListener('change', changeFileInputText);
+
+                demoSelectValue.value = input_content_type.val();
+            };
+
             setTimeout(function () {
                 input.focus();
             }, 1);
 
+            if (input.val() && (obj.contentType === 'image' || obj.contentType === 'html')) {
+                $(container + ' .popover-content').prepend(input.val());
+                $(container + ' .popover-content').children('img').css({ 'height': '150px', 'width': '150px' });
+                input.val('');
+            };
+
             const wrapperRenameAttachLink = async () => {
-                const endValueLink = input.val().trim();
-                const file = input_content[0].files[0];
+                var endValueLink = input.val().trim();
+                var file = input_content[0].files[0];
+
                 if ((startValueLink === endValueLink && obj.sc_addr) && !file) stop_modal();
                 obj.changedValue = true;
 
@@ -700,50 +789,58 @@ SCg.Editor.prototype = {
                     const objMainConcept = self.scene.getObjectByScAddr(Number(addrMainConcept));
                     self.scene.commandManager.execute(new SCgCommandChangeIdtf(objMainConcept, input.val()));
                     document.querySelector(`[sc_addr="${addrMainConcept}"]`).nextSibling.textContent = input.val();
-                }
+                };
 
                 if (startValueLink !== endValueLink && obj.sc_addr) {
                     obj.changedValue = true;
                 }
 
-                if (file) {
-                    let fileReader = new FileReader();
+                if (file !== undefined) {
+                    setTimeout(() => {
+                        if (obj.contentType === 'image') {
+                            self.scene.commandManager.execute(new SCgCommandChangeContent(
+                                obj,
+                                obj.content,
+                                obj.contentType,
+                                null,
+                            ));
+                            stop_modal();
+                        }
+                    }, 100);
+
+                    const fileReader = new FileReader();
                     fileReader.onload = function () {
                         const scLinkHelper = new ScFileLinkHelper(file, this.result);
-                        if (obj.sc_addr) obj.changedValue = true;
-                        self.scene.commandManager.execute(new SCgCommandChangeContent(
-                            obj,
-                            scLinkHelper.htmlViewResult(),
-                            scLinkHelper.type,
-                        ));
+                        if (obj.fileReaderResult !== scLinkHelper.fileArrayBuffer || obj.contentType !== scLinkHelper.type) {
+                            if (obj.sc_addr) obj.changedValue = true;
+                            self.scene.commandManager.execute(new SCgCommandChangeContent(
+                                obj,
+                                scLinkHelper.htmlViewResult(),
+                                scLinkHelper.type,
+                                scLinkHelper.fileArrayBuffer,
+                            ));
+                        }
                         stop_modal();
                     };
                     fileReader.readAsArrayBuffer(file);
                 } else {
-                    const preDefineStringContentType = function (content) {
-                        function isHTML(str) {
-                            return /<[a-z][\s\S]*>/i.test(str);
-                        }
-
-                        return isHTML(content) ? 'html' : 'string';
-                    }
-
-                    if (obj.content !== input.val()) {
+                    if (obj.content !== input.val() || obj.contentType !== input_content_type.val()) {
                         if (obj.sc_addr) obj.changedValue = true;
-                        self.scene.commandManager.execute(new SCgCommandChangeContent(
-                            obj,
+
+                        self.scene.commandManager.execute(new SCgCommandChangeContent(obj,
                             input.val(),
-                            preDefineStringContentType(input.val()),
+                            input_content_type.val(),
+                            null
                         ));
                     }
                     stop_modal();
                 }
             }
 
-            input.keypress(async function (e) {
+            input.keypress(function (e) {
                 if (e.keyCode === KeyCode.Enter || e.keyCode === KeyCode.Escape) {
                     if (e.keyCode === KeyCode.Enter) {
-                        wrapperRenameAttachLink().then(null);
+                        wrapperRenameAttachLink();
                     }
                     stop_modal();
                     e.preventDefault();
@@ -751,9 +848,16 @@ SCg.Editor.prototype = {
             });
             // process controls
             $(container + ' #scg-set-content-apply').click(async function () {
-                wrapperRenameAttachLink().then(null);
+                wrapperRenameAttachLink();
+                setTimeout(() => {
+                    self.scene.updateLinkVisual();
+                    self.scene.updateRender();
+                }, 100)
             });
             $(container + ' #scg-set-content-cancel').click(function () {
+                stop_modal();
+            });
+            $('.switchingItemsLi').click(function () {
                 stop_modal();
             });
         });
