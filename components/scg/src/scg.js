@@ -174,11 +174,24 @@ SCg.Editor.prototype = {
                                                 "Error to get delete panel");
                                         },
                                         complete: function () {
-                                            self.bindToolEvents();
+                                            $.ajax({
+                                                url: panelPaths.changeIdtf[implementation],
+                                                dataType: 'html',
+                                                success: function (response) {
+                                                    self.change_idtf_panel_content = response;
+                                                },
+                                                error: function () {
+                                                    SCgDebug.error(
+                                                        "Error to get change idtf panel");
+                                                },
+                                                complete: function () {
+                                                    self.bindToolEvents();
+                                                }
+                                            });
                                         }
                                     });
                                 }
-                            })
+                            });
                         }
                     });
                 }
@@ -440,9 +453,23 @@ SCg.Editor.prototype = {
         this.toolChangeIdtf().click(function () {
             self.scene.setModal(SCgModalMode.SCgModalIdtf);
             $(this).popover({
-                container: container
+                content: self.change_idtf_panel_content,
+                container: container,
+                title: 'Change identifier',
+                html: true,
+                delay: {
+                    show: 500,
+                    hide: 100
+                }
             });
             $(this).popover('show');
+
+            if (window.demoImplementation) {
+                cont.find('.popover').addClass('demo-scg-popover-layout popover-position demo-popover-width popover-position-change-idtf ');
+                cont.find('.popover-title').addClass('demo-scg-popover-title demo-text-align-center');
+                cont.find('.popover>.arrow').addClass('scg-tool-popover-arrow-hide');
+                cont.find('.popover-title').text('Изменить идентификатор');
+            }
 
             const tool = $(this);
 
@@ -450,6 +477,8 @@ SCg.Editor.prototype = {
                 self.scene.setModal(SCgModalMode.SCgModalNone);
                 tool.popover('destroy');
                 self.scene.updateObjectsVisual();
+                self.scene.setEditMode(SCgEditMode.SCgModeSelect);
+                $('#scg-tool-change-idtf').removeClass('active');
             }
 
             const input = $(container + ' #scg-change-idtf-input');
@@ -461,31 +490,65 @@ SCg.Editor.prototype = {
                 input.focus();
             }, 1);
 
-            const wrapperChangeApply = async (obj, selectedIdtf) => {
-                if (obj.text !== selectedIdtf) {
-                    searchNodeByAnyIdentifier(selectedIdtf).then(async (selectedAddr) => {
-                        if (selectedAddr) {
-                            const [type] = await scClient.getElementsTypes([selectedAddr]);
-                            self.scene.commandManager.execute(new SCgCommandGetNodeFromMemory(
-                                obj,
-                                type.value,
-                                selectedIdtf,
-                                selectedAddr.value,
-                                self.scene)
-                            );
-                        } else {
-                            self.scene.commandManager.execute(new SCgCommandChangeIdtf(obj, selectedIdtf));
-                        }
+            const checkEnterValue = async (text) => {
+                let linkAddrs = await window.scClient.getLinksByContents([text]);
+                if (!linkAddrs.length) return;
+
+                let template = new sc.ScTemplate();
+                template.quintuple(
+                    [sc.ScType.VarNode, '_node'],
+                    sc.ScType.VarCommonArc,
+                    linkAddrs[0][0],
+                    sc.ScType.VarPermPosArc,
+                    new sc.ScAddr(window.scKeynodes['nrel_main_idtf']),
+                );
+
+                const result = await scClient.searchByTemplate(template);
+                if (!result.length) return;
+
+                return result[0].get("_node");
+            }
+
+            const wrapperChangeApply = async (obj, input, self) => {
+                const addrNodeEnterValue = await checkEnterValue(input[0].value);
+                if (obj.text !== input.val() && !self._selectedIdtf && !addrNodeEnterValue) {
+                    self.scene.commandManager.execute(new SCgCommandChangeIdtf(obj, input.val()));
+                }
+
+                if (!self._selectedIdtf && addrNodeEnterValue) {
+                    if (!addrNodeEnterValue) stop_modal();
+                    const [type] = await scClient.checkElements([addrNodeEnterValue]);
+                    self.scene.commandManager.execute(new SCgCommandGetNodeFromMemory(
+                        obj,
+                        type.value,
+                        input[0].value,
+                        addrNodeEnterValue.value,
+                        self.scene));
+                    stop_modal();
+                }
+
+                if (self._selectedIdtf) {
+                    searchNodeByAnyIdentifier(self._selectedIdtf).then(async (selectedAddr) => {
+                        if (!selectedAddr) stop_modal();
+
+                        const [type] = await scClient.checkElements([selectedAddr]);
+                        self.scene.commandManager.execute(new SCgCommandGetNodeFromMemory(
+                            obj,
+                            type.value,
+                            self._selectedIdtf,
+                            selectedAddr.value,
+                            self.scene));
+                        stop_modal();
                     });
                 }
+                else stop_modal();
             }
 
             input.keypress(function (e) {
                 if (e.keyCode === KeyCode.Enter || e.keyCode === KeyCode.Escape) {
                     if (e.keyCode === KeyCode.Enter) {
-                        const obj = self.scene.selected_objects[0];
-                        if (!self._selectedIdtf) self._selectedIdtf = input.val();
-                        wrapperChangeApply(obj, self._selectedIdtf).then(stop_modal);
+                        var obj = self.scene.selected_objects[0];
+                        wrapperChangeApply(obj, input, self);
                     }
                     stop_modal();
                     e.preventDefault();
