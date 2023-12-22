@@ -801,10 +801,10 @@ class ScSession:
             return results[0].get(2)
 
         # setup russian mode by default
-        _lang = self.keynodes[KeynodeSysIdentifiers.lang_ru.value]
+        _lang = self.keynodes[KeynodeSysIdentifiers.lang_en.value]
         self.set_current_lang_mode(_lang)
 
-        logger.info(f'User language: {KeynodeSysIdentifiers.lang_ru.value}')
+        logger.info(f'User language: {KeynodeSysIdentifiers.lang_en.value}')
 
         return _lang
 
