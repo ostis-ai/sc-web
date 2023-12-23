@@ -22,11 +22,8 @@ SCWeb.ui.Core = {
 
             Promise.all([
               SCWeb.ui.WindowManager.init(data),
-              SCWeb.ui.ExpertModePanel.init(),
-              SCWeb.ui.KeyboardHandler.init(SCWeb.ui.WindowManager),
               self.resolveElementsAddr('body')
             ]).then(() => {
-                SCWeb.core.ExpertModeEnabled = true;
                 $('.switchingItemsLi').eq(0).addClass('selectItemLi');
                 // listen clicks on sc-elements
                 var sc_elements_cmd_selector = '[sc_addr]:not(.sc-window, .sc-no-default-cmd)';
