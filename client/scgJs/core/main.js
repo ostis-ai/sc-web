@@ -49,11 +49,6 @@ function ScClientCreate() {
     });
 }
 
-
-// window.addEventListener('message', () => {
-//     console.log('!!!! HELP !!!!!');
-// })
-
 SCWeb.core.Main = {
     editMode: 0,
     viewMode: 0,
@@ -111,16 +106,16 @@ SCWeb.core.Main = {
                     }
                     window.renderScg = renderScg;
 
-                    const command = { 'type': 'readyForRender' };
+                    const command = { 'type': 'onInitializationFinished' };
+                    console.log("SC-WEB post onInitializationFinished");
                     window.top.postMessage(command, '*');
+                    window.demoImplementation = true;
 
                     window.addEventListener('message', (e) => {
-                        console.log("addEventListener data", e.data);
                         if (e.data.type === 'renderScg') {
-                            // e.target.closest('[sc_addr]').getAttribute('sc_addr')
-                            window.demoImplementation = true;
-                            renderScg(524293, addrs["lang_ru"]);
-                            window.top.postMessage({ 'type': 'onInitializationFinished' }, '*');
+                            console.log("SC-WEB get renderScg");
+                            console.log(e.data);
+                            renderScg(e.data.addr, e.data.lang);
                         }
                     })
 
