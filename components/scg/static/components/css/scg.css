@@ -468,6 +468,7 @@ path.SCgBusPath {
 }
 
 .btn-group-vertical {
+    width: fit-content;
     display: flex !important;
     flex-direction: column;
     align-items: center;

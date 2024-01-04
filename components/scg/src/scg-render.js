@@ -306,6 +306,7 @@ SCg.Render.prototype = {
             .append("xhtml:link_body")
             .style("background", "transparent")
             .style("margin", "0 0 0 0")
+            .style("cursor", "pointer")
             .html(function (d) {
                 return '<div id="link_' + self.containerId + '_' + d.id + '" class=\"SCgLinkContainer\"><div id="' + d.containerId + '" style="display: inline-block;" class="impl"></div></div>';
             });
