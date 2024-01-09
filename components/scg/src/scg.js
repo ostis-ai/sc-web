@@ -163,7 +163,6 @@ SCg.Editor.prototype = {
                 self.hideTool(self.toolContour());
                 self.hideTool(self.toolOpen());
                 self.hideTool(self.toolSave());
-                self.hideTool(self.toolIntegrate());
                 self.hideTool(self.toolUndo());
                 self.hideTool(self.toolRedo());
             }
@@ -266,10 +265,6 @@ SCg.Editor.prototype = {
         return this.tool('clear');
     },
 
-    toolIntegrate: function () {
-        return this.tool('integrate');
-    },
-
     toolOpen: function () {
         return this.tool('open');
     },
@@ -313,8 +308,7 @@ SCg.Editor.prototype = {
             self.toolDelete(),
             self.toolClear(),
             self.toolOpen(),
-            self.toolSave(),
-            self.toolIntegrate()
+            self.toolSave()
             ];
             for (var button = 0; button < tools.length; button++) {
                 self.toggleTool(tools[button]);
@@ -801,16 +795,6 @@ SCg.Editor.prototype = {
             saveAs(blob, "new_file.gwf");
         });
 
-        const updateConfirmedData = async function () {
-            self._disableTool(self.toolIntegrate());
-            if (self.translateToSc)
-                self.translateToSc(() => {
-                    self._enableTool(self.toolIntegrate());
-                });
-
-            self._enableTool(self.toolClear());
-        }
-
         const getElement = async function (arr) {
             let construction = new sc.ScConstruction();
             construction.createNode(sc.ScType.NodeConst, 'node')
@@ -822,22 +806,6 @@ SCg.Editor.prototype = {
             const elements = await scClient.createElements(construction);
             return elements[0];
         }
-
-        this.toolIntegrate().click(async function () {
-            self.scene.deleted_objects = self.scene.deleted_objects.filter(el => el.sc_addr !== null);
-            if (self.scene.deleted_objects.length) {
-                SCWeb.core.Server.doCommand(
-                    window.scKeynodes["ui_menu_erase_elements"],
-                    [(await getElement(self.scene.deleted_objects)).value],
-                    function (get_result) {
-                        updateConfirmedData();
-                    }
-                );
-                self.scene.deleted_objects = [];
-                return;
-            }
-            await updateConfirmedData();
-        });
 
         this.toolAutoSize().click(function () {
             const scaleDelta = 0.05;
@@ -1021,7 +989,6 @@ SCg.Editor.prototype = {
         update_tool(this.toolAutoSize());
         update_tool(this.toolZoomIn());
         update_tool(this.toolZoomOut());
-        update_tool(this.toolIntegrate());
         update_tool(this.toolOpen());
     },
 
