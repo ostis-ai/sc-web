@@ -337,30 +337,41 @@ var SCgAlphabet = {
             } else if (edge.sc_type & (sc_type_arc_common | sc_type_edge_common)) {
                 let main_style = 'SCgEdgeCommonBack';
                 if (edge.sc_type & sc_type_edge_common) {
-                    d3_group.append('svg:path')
-                        .classed(main_style, true)
-                        .attr('d', position_path);
+                    if (edge.sc_type & sc_type_var) {
+                        d3_group.append('svg:path')
+                            .classed('SCgEdgeVarDashCommon ' + SCgAlphabet.classLevel(edge), true)
+                            .attr('d', position_path);
+                    }
+                    else {
+                        d3_group.append('svg:path')
+                            .classed(main_style, true)
+                            .attr('d', position_path);
+                    }
                 }
 
                 if (edge.sc_type & sc_type_arc_common) {
-                    d3_group.append('svg:path')
-                        .classed('SCgEdgeCommonBack', true)
-                        .classed('SCgEdgeEndArrowCommon ' + SCgAlphabet.classLevel(edge), edge.sc_type & sc_type_arc_common)
-                        .style("marker-end", "url(#end-arrow-common_" + containerId + ")")
-                        .attr('d', position_path);
+                    if (edge.sc_type & sc_type_var) {
+                        d3_group.append('svg:path')
+                            .classed('SCgEdgeVarDashCommon ' + SCgAlphabet.classLevel(edge), true)
+                            .classed('SCgEdgeEndArrowCommon ' + SCgAlphabet.classLevel(edge), true)
+                            .style("marker-end", "url(#end-arrow-common_" + containerId + ")")
+                            .attr('d', position_path);
+                    }
+                    else {
+                        d3_group.append('svg:path')
+                            .classed('SCgEdgeCommonBack', true)
+                            .classed('SCgEdgeEndArrowCommon ' + SCgAlphabet.classLevel(edge), true)
+                            .style("marker-end", "url(#end-arrow-common_" + containerId + ")")
+                            .attr('d', position_path);
+                    }
                 }
 
                 d3_group.append('svg:path')
                     .classed('SCgEdgeCommonForeground ' + SCgAlphabet.classLevel(edge), true)
                     .attr('d', position_path)
 
-                if (edge.sc_type & sc_type_constancy_mask) {
-                    if (edge.sc_type & sc_type_var) {
-                        d3_group.append('svg:path')
-                            .classed('SCgEdgeVarDashCommon ' + SCgAlphabet.classLevel(edge), true)
-                            .attr('d', position_path);
-                    }
-                } else {
+                if ((edge.sc_type & sc_type_constancy_mask) === 0)
+                {
                     d3_group.append('svg:path')
                         .classed('SCgEdgeVarDashCommon ' + SCgAlphabet.classLevel(edge), true)
                         .attr('d', position_path);
