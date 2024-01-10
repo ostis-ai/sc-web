@@ -114,7 +114,6 @@ SCWeb.core.Main = {
                     window.addEventListener('message', (e) => {
                         if (e.data.type === 'renderScg') {
                             console.log("SC-WEB get renderScg");
-                            console.log(e.data);
                             renderScg(e.data.addr, e.data.lang);
                         }
                     })
@@ -128,12 +127,20 @@ SCWeb.core.Main = {
                             'type': 'onContextMenu', 'payload': e.target.closest('[sc_addr]').getAttribute('sc_addr')
                         }, '*');
                     })
-                    
 
-                    // renderScg(720909, 135)
-                    // window.onInitializationFinished?.();
-                    // const command1 = { 'type': 'onInitializationFinished' };
-                    // window.top.postMessage(command1, '*');
+                    window.addEventListener('message', (e) => {
+                        if (e.data.type === 'deleteScgElement') {
+                            console.log("SC-WEB get deleteScgElement");
+                            window.deleteScgElement();
+                        }
+                    })
+
+                    window.addEventListener('message', (e) => {
+                        if (e.data.type === 'clearScene') {
+                            console.log("SC-WEB get clearScene");
+                            window.clearScene();
+                        }
+                    })
 
                     resolve();
 

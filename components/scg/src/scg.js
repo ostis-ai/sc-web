@@ -876,6 +876,11 @@ SCg.Editor.prototype = {
             });
         });
 
+        window.deleteScgElement = function () {
+            self.scene.deleteObjects(self.scene.selected_objects);
+            self.scene.addDeletedObjects(self.scene.selected_objects);
+        };
+
         this.toolDelete().click(async function () {
             if (!self.scene.selected_objects.length) return;
 
@@ -946,11 +951,26 @@ SCg.Editor.prototype = {
                         function diffArray(arr1, arr2) {
                             return arr1.filter(item => !arr2.includes(item));
                         }
-                        self.scene.deleteObjects(diffArray(self.scene.selected_objects, cantDelete));
-                        self.scene.addDeletedObjects(deletableObjects);
+                        self.scene.elements_to_delete = diffArray(self.scene.selected_objects, cantDelete);
+                        self.scene.deletable_objects = deletableObjects;
+                        console.log(self.scene.elements_to_delete);
+                        if (window.demoImplementation) {
+                            console.log("SC-WEB post deleteScgElement");
+                            const command = {'type': "deleteScgElement"};
+                            window.top.postMessage(command, '*');
+                        }
+                        else {
+                            window.deleteScgElement();
+                        }
                     } else {
-                        self.scene.deleteObjects(self.scene.selected_objects);
-                        self.scene.addDeletedObjects(self.scene.selected_objects);
+                        if (window.demoImplementation) {
+                            console.log("SC-WEB post deleteScgElement");
+                            const command = {'type': "deleteScgElement"};
+                            window.top.postMessage(command, '*');
+                        }
+                        else {
+                            window.deleteScgElement();
+                        }
                     }
                 }
                 self.hideTool(self.toolDelete());
@@ -967,17 +987,28 @@ SCg.Editor.prototype = {
             })
         });
 
+        window.clearScene = function () {
+            self.scene.deleteObjects(self.scene.selected_objects.slice());
+            self.scene.clearSelection();
+            self._enableTool(self.toolClear());
+        }
+
         this.toolClear().click(function () {
             self._disableTool(self.toolClear());
             self.scene.clear = true;
             self.scene.selectAll();
             self.scene.clear = false;
+
             if (self.scene.selected_objects.length) {
-                const objects = self.scene.selected_objects.slice();
-                self.scene.clearSelection();
-                self.scene.deleteObjects(objects);
+                if (window.demoImplementation) {
+                    console.log("SC-WEB post clearScene");
+                    const command = {'type': "clearScene"};
+                    window.top.postMessage(command, '*');
+                }
+                else {
+                    window.clearScene();
+                }
             }
-            self._enableTool(self.toolClear());
         });
 
         this.toolOpen().click(function () {
