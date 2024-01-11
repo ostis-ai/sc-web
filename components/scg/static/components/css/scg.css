@@ -272,31 +272,9 @@
 }
 
 .SCgEdgeVarDashCommon {
+    stroke-width: 8px;
     stroke-dasharray: 14, 14;
-}
-.SCgEdgeVarDashCommon.DBSCgFirstLevelView {
-    stroke-width: 2;
-}
-.SCgEdgeVarDashCommon.DBSCgSecondLevelView {
-    stroke-width: 1.5;
-}
-.SCgEdgeVarDashCommon.DBSCgThirdLevelView {
-    stroke-width: 1;
-}
-.SCgEdgeVarDashCommon.DBSCgFourthLevelView {
-    stroke-width: 0.5;
-}
-.SCgEdgeVarDashCommon.DBSCgFifthLevelView {
-    stroke-width: 0.5;
-    opacity: 0.8;
-}
-.SCgEdgeVarDashCommon.DBSCgSixthLevelView {
-    stroke-width: 0.5;
-    opacity: 0.6;
-}
-.SCgEdgeVarDashCommon.DBSCgSeventhLevelView {
-    stroke-width: 0.5;
-    opacity: 0.4;
+    fill: none;
 }
 
 .SCgEdgePermNegDash {
