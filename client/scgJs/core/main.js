@@ -119,10 +119,10 @@ SCWeb.core.Main = {
                     })
 
                     window.addEventListener('contextmenu', function (e) {
-                        console.log('my context menu ********');
+                        console.log("SC-WEB get contextmenu");
                         e.preventDefault();
-                        const target = e.target.closest('[sc_addr]');
-
+                        console.log(e.target.closest('[sc_addr]').getAttribute('sc_addr'));
+                        console.log("SC-WEB post onContextMenu");
                         window.top.postMessage({
                             'type': 'onContextMenu', 'payload': e.target.closest('[sc_addr]').getAttribute('sc_addr')
                         }, '*');
