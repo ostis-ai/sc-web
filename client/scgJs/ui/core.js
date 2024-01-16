@@ -1,8 +1,9 @@
 SCWeb.ui.Core = {
 
     init: function (data) {
-        var self = this;
+        let self = this;
         return new Promise(resolve => {
+
             this.tooltip_interval = null;
             this.tooltip_element = null;
 
@@ -21,41 +22,55 @@ SCWeb.ui.Core = {
             }
 
             Promise.all([
-              SCWeb.ui.WindowManager.init(data),
-              self.resolveElementsAddr('body')
-            ]).then(() => {
-                $('.switchingItemsLi').eq(0).addClass('selectItemLi');
+                SCWeb.ui.Menu.init(data),
+                SCWeb.ui.WindowManager.init(data),
+                self.resolveElementsAddr('body'),
+            ]).then(function () {
+
+                // Display interface elements only after page load
+                $('#header, #search-panel, #footer').removeClass('no_display');
+
                 // listen clicks on sc-elements
                 var sc_elements_cmd_selector = '[sc_addr]:not(.sc-window, .sc-no-default-cmd)';
                 $('#window-container,#help-modal').delegate(sc_elements_cmd_selector, 'click', function (e) {
-                    SCWeb.core.Main.doDefaultCommand([$(e.currentTarget).attr('sc_addr')]);
+                    if (!SCWeb.ui.ArgumentsPanel.isArgumentAddState()) {
+                        SCWeb.core.Main.doDefaultCommand([$(e.currentTarget).attr('sc_addr')]);
+                        e.stopPropagation();
+                    }
+                });
+
+                var sc_elements_arg_selector = '[sc_addr]:not(.sc-window)';
+                $('body').delegate(sc_elements_arg_selector, 'click', function (e) {
+                    if (SCWeb.ui.ArgumentsPanel.isArgumentAddState()) {
+                        SCWeb.core.Arguments.appendArgument($(this).attr('sc_addr'));
+                        e.stopPropagation();
+                    }
                 });
 
                 var sc_elements_tooltip_selector = '[sc_addr]:not(.sc-window, .ui-no-tooltip)';
                 $('body')
                     .delegate(sc_elements_tooltip_selector, 'mouseover', function (e) {
-                        if(!$(this).hasClass('argument-item')) {
-                            clearTooltipInterval();
-                            self.tooltip_element = $(this);
-                            self.tooltip_interval = setInterval(function () {
-                                clearInterval(self.tooltip_interval);
-                                self.tooltip_interval = null;
-                                var addr = self.tooltip_element.attr('sc_addr');
-                                if (addr) {
-                                    SCWeb.core.Server.resolveIdentifiers([addr]).then(idf => {
-                                        if (self.tooltip_element) { // check mouseout destroy
-                                            self.tooltip_element.tooltip({
-                                                placement: 'auto',
-                                                title: idf[addr]
-                                            }).tooltip('show');
-                                        }
-                                    }, () => {
-                                        destroyTooltip();
-                                    });
-                                }
-                            }, 1000);
-                        }
-                }).delegate(sc_elements_tooltip_selector, 'mouseout', function (e) {
+
+                        clearTooltipInterval();
+                        self.tooltip_element = $(this);
+                        self.tooltip_interval = setInterval(function () {
+                            clearInterval(self.tooltip_interval);
+                            self.tooltip_interval = null;
+                            var addr = self.tooltip_element.attr('sc_addr');
+                            if (addr) {
+                                SCWeb.core.Server.resolveIdentifiers([addr]).then(function (idf) {
+                                    if (self.tooltip_element) { // check mouseout destroy
+                                        self.tooltip_element.tooltip({
+                                            placement: ($(self.tooltip_element).hasClass("btn-default") || $(self.tooltip_element).is("#arguments_clear_button")) ? 'right' : "auto",
+                                            title: idf[addr]
+                                        }).tooltip('show');
+                                    }
+                                }, function () {
+                                    destroyTooltip();
+                                });
+                            }
+                        }, 1000);
+                    }).delegate(sc_elements_tooltip_selector, 'mouseout', function (e) {
                     clearTooltipInterval();
                     destroyTooltip();
                 }).delegate(sc_elements_tooltip_selector, 'keydown', function (e) {

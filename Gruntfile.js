@@ -63,6 +63,7 @@ module.exports = function (grunt) {
                     webCoreScgCompPath + 'utils/sc_helper.js',
                     webCoreScgCompPath + 'utils/stringview.js',
                     webCoreScgCompPath + 'utils/cache.js',
+                    webCoreScgCompPath + 'utils/cookie.js',
                     webCoreScgCompPath + 'utils/fqueue.js',
                     webCoreScgCompPath + 'utils/binary.js',
                     webCoreScgCompPath + 'utils/triples.js',
@@ -80,6 +81,7 @@ module.exports = function (grunt) {
                     webCoreScgCompPath + 'core/eventmanager.js',
 
                     webCoreScgCompPath + 'ui/namespace.js',
+                    webCoreScgCompPath + 'ui/menu.js',
                     webCoreScgCompPath + 'ui/locker.js',
                     webCoreScgCompPath + 'ui/core.js',
                     webCoreScgCompPath + 'ui/KeyboardHandler.js',
@@ -87,6 +89,7 @@ module.exports = function (grunt) {
                     webCoreScgCompPath + 'ui/windowmanager.js',
                     webCoreScgCompPath + 'ui/OpenComponentHandler.js',
                     webCoreScgCompPath + 'ui/expertmodepanel.js',
+                    webCoreScgCompPath + 'ui/ExpertModeHandler.js',
                 ],
                 dest: clientJsDirPath + `scg-web-core.js`,
             },

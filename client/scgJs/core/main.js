@@ -118,16 +118,6 @@ SCWeb.core.Main = {
                         }
                     })
 
-                    window.addEventListener('contextmenu', function (e) {
-                        console.log("SC-WEB get contextmenu");
-                        e.preventDefault();
-                        console.log(e.target.closest('[sc_addr]').getAttribute('sc_addr'));
-                        console.log("SC-WEB post onContextMenu");
-                        window.top.postMessage({
-                            'type': 'onContextMenu', 'payload': e.target.closest('[sc_addr]').getAttribute('sc_addr')
-                        }, '*');
-                    })
-
                     window.addEventListener('message', (e) => {
                         if (e.data.type === 'deleteScgElement') {
                             console.log("SC-WEB get deleteScgElement");
