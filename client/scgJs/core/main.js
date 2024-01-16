@@ -107,27 +107,23 @@ SCWeb.core.Main = {
                     window.renderScg = renderScg;
 
                     const command = { 'type': 'onInitializationFinished' };
-                    console.log("SC-WEB post onInitializationFinished");
                     window.top.postMessage(command, '*');
                     window.demoImplementation = true;
 
                     window.addEventListener('message', (e) => {
                         if (e.data.type === 'renderScg') {
-                            console.log("SC-WEB get renderScg");
                             renderScg(e.data.addr, e.data.lang);
                         }
                     })
 
                     window.addEventListener('message', (e) => {
                         if (e.data.type === 'deleteScgElement') {
-                            console.log("SC-WEB get deleteScgElement");
                             window.deleteScgElement();
                         }
                     })
 
                     window.addEventListener('message', (e) => {
                         if (e.data.type === 'clearScene') {
-                            console.log("SC-WEB get clearScene");
                             window.clearScene();
                         }
                     })
