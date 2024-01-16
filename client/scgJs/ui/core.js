@@ -24,6 +24,7 @@ SCWeb.ui.Core = {
             Promise.all([
                 SCWeb.ui.Menu.init(data),
                 SCWeb.ui.WindowManager.init(data),
+                SCWeb.ui.KeyboardHandler.init(SCWeb.ui.WindowManager),
                 self.resolveElementsAddr('body'),
             ]).then(function () {
 
@@ -41,7 +42,7 @@ SCWeb.ui.Core = {
 
                 var sc_elements_arg_selector = '[sc_addr]:not(.sc-window)';
                 $('body').delegate(sc_elements_arg_selector, 'click', function (e) {
-                    if (SCWeb.ui.ArgumentsPanel.isArgumentAddState()) {
+                    if (SCWeb.ui.ArgumentsPanel && SCWeb.ui.ArgumentsPanel.isArgumentAddState()) {
                         SCWeb.core.Arguments.appendArgument($(this).attr('sc_addr'));
                         e.stopPropagation();
                     }
