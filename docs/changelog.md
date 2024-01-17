@@ -16,7 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Script `install.sh`
 
 ## [0.8.0-Fusion] - 24.09.2023
+
 ### Added
+
 - Add CLI argument to add hosts to CORS Allowed Origin header  
 - Duplicate target sc.g-elements on sc.g-scene for reflexive and multiple connectors
 - Change sc.g-links types
@@ -44,6 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add optional buttons to delete function
 
 ### Fixed
+
 - Check OS type in `install_dependencies.sh`
 - Check apt command for Linux OS in `install_deps_ubuntu.sh`
 - Node classes svg elements
@@ -71,21 +74,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Display interface elements only after page load
 
 ### Changed
+
 - SC.g-elements icons in change type tools
 - Refactor scg-update-from-sc-translator and scg-update-to-sc-translator
 - View identifiers with scn-component from sc-json
 
 ### Deprecated
+
 - Deprecate url argument `mode` by `edit_mode`
 - Deprecate url argument `edit_mode` value `scg_just_view` by `scg_view_only`
 - Deprecate url flag `scg_structure_view_only` by `full_screen_scg`
 
 ### Removed
+
 - Popover view for set link content
 - Remove `A` button from main frame
 
 ## [0.7.0-Rebirth] - 12.10.2022
+
 ### Added
+
 - Add images mime types handling from kb
 - Add ctrl+c logic on py-server
 - Add logging levels
@@ -93,6 +101,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add latex docs from OSTIS Standard
 
 ### Changed
+
 - Move search by substring from py-server to js-server
 - Move links/contents handling from py-server to js-server
 - Switch on py-sc-client on py-server and ts-sc-client in js-server
@@ -100,12 +109,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Change external language from `scs_code` to `scn_code` for `SCsComponent`
 
 ### Removed
+
 - Remove legacy configs, refactor config file
 - Remove db-reader
 - Remove py-sctp-client and js-sctp-client
 
 ## [0.6.1] - 28.04.2022
+
 ### Added
+
 - Support of rocksdb for search
 - API to initiate an action
 - Identifiers indexing for search optimization
@@ -114,10 +126,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Auto-scaling svg within container border
 
 ### Changed
+
 - Migrate tornado server from python2 to python3
 - Migrate from tornado 4.2 to tornado 6.1.0
 - Imrpove README
 - Clean up dependencies installation
 
 ### Fixed
+
 - hide background after tool buttons click
