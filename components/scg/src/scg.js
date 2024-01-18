@@ -994,26 +994,21 @@ SCg.Editor.prototype = {
         });
 
         window.clearScene = function () {
-            self.scene.deleteObjects(self.scene.selected_objects.slice());
-            self.scene.clearSelection();
-            self._enableTool(self.toolClear());
-        }
-
-        this.toolClear().click(function () {
-            self._disableTool(self.toolClear());
             self.scene.clear = true;
             self.scene.selectAll();
             self.scene.clear = false;
+            self.scene.deleteObjects(self.scene.selected_objects);
+            self.scene.addDeletedObjects(self.scene.selected_objects);
+        }
 
-            if (self.scene.selected_objects.length) {
-                if (window.demoImplementation) {
-                    console.log("SC-WEB post clearScene");
-                    const command = {'type': "clearScene"};
-                    window.top.postMessage(command, '*');
-                }
-                else {
-                    window.clearScene();
-                }
+        this.toolClear().click(function () {
+            if (window.demoImplementation) {
+                console.log("SC-WEB post clearScene");
+                const command = {'type': "clearScene"};
+                window.top.postMessage(command, '*');
+            }
+            else {
+                window.clearScene();
             }
         });
 
