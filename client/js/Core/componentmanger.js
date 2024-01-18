@@ -115,6 +115,7 @@ SCWeb.core.ComponentManager = {
                     window_id: options.window_id,
                     addr: options.addr,
                     content: options.content,
+                    contentStyle: options.contentStyle,
                     is_struct: options.is_struct,
                     format_addr: options.format_addr,
                     keynodes: this._keynodes,

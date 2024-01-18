@@ -89,14 +89,15 @@ SCWeb.ui.Core = {
                         body.addClass('loading');
                         // try to find content
                         SCWeb.core.Server.resolveScAddr(['ui_start_help']).then(function (addrs) {
-                            var a = addrs['ui_start_help'];
-                            if (a) {
-                                body.html('<div id="help-modal-content" class="sc-window" sc_addr="' + a + '"> </div>');
-                                SCWeb.ui.WindowManager.createViewersForScLinks({'help-modal-content': a})
-                                  .then(function () {
-                                      body.removeClass('loading');
-                                      body.removeClass('modal-empty');
-                                  });
+                            const linkAddr = addrs['ui_start_help'];
+                            if (linkAddr) {
+                                body.html('<div id="help-modal-content" class="sc-window" sc_addr="' + linkAddr + '"> </div>');
+                                SCWeb.ui.WindowManager.createViewersForScLinks(
+                                    {'help-modal-content': {'addr': linkAddr, contentStyle: {'maxWidth': '100%', 'maxHeight': '100%'}}})
+                                .then(function () {
+                                    body.removeClass('loading');
+                                    body.removeClass('modal-empty');
+                                });
                             }
                         });
                     }

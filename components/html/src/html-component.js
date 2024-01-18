@@ -58,7 +58,7 @@ var HtmlViewer = function(sandbox) {
                     var addr = addrs[$(sc_links_el[i]).attr('sys_idtf')];
                     if (addr) {
                         var containerId = this.sandbox.container + '_' + i;
-                        sc_links[containerId] = {addr: addr};
+                        sc_links[containerId] = {addr: addr, contentStyle: sandbox.contentStyle};
                         $(sc_links_el[i]).html('<div class="sc-content" sc_addr="' + addr + '" id="' + containerId + '"></div>');
                     }
                 }
