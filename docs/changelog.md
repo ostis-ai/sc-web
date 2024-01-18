@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Help modal
 - Fix sc.g-edge and sc.g-arc common var styles
 
 ### Removed
