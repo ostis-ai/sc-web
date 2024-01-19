@@ -18,6 +18,7 @@ SCWeb.core.ComponentSandbox = function (options) {
     this.container_selector = "#" + SCWeb.ui.Core.selectorWindowScAddr(options.window_id);
     this.addr = options.addr ? new sc.ScAddr(parseInt(options.addr)) : new sc.ScAddr();
     this.content = options.content;
+    this.contentStyle = options.contentStyle;
     this.is_struct = options.is_struct;
     this.format_addr = options.format_addr;
     this.is_editor = options.canEdit;

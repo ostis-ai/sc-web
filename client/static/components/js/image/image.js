@@ -14,8 +14,8 @@ const ImageViewer = function (sandbox) {
         $(this.container).empty();
 
         let img = $('<img>').attr('src', 'data:' + mimeType + ';base64,' + data).css({
-            'max-width': '300px',
-            'max-height': '300px'
+            'max-width': sandbox.contentStyle ? sandbox.contentStyle.maxWidth : '300px',
+            'max-height': sandbox.contentStyle ? sandbox.contentStyle.maxHeight :'300px'
         }).on('load', function() {
             SCWeb.core.EventManager.emit("render/update");
         });

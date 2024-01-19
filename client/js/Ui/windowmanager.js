@@ -311,12 +311,14 @@ SCWeb.ui.WindowManager = {
                           const fmt = formats[id];
                           const addr = link.addr;
                           const content = link.content;
+                          const contentStyle = link.contentStyle;
 
                           if (fmt) {
                               const sandbox = SCWeb.core.ComponentManager.createWindowSandboxByFormat({
                                   format_addr: fmt,
                                   addr: addr,
                                   content: content,
+                                  contentStyle: contentStyle,
                                   is_struct: false,
                                   container: id,
                                   canEdit: false
