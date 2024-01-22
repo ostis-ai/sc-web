@@ -1,6 +1,6 @@
 {
   "name": "sc-web",
-  "version": "0.8.0-Fusion",
+  "version": "0.8.1-Unlock",
   "module": "commonjs",
   "dependencies": {
     "grunt": "^1.0.1",
