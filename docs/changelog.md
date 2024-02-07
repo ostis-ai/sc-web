@@ -6,10 +6,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.8.1-Unlock] - 22.01.2024
 
-### Added 
-- Script ```install.sh```
-- Installation via component-manager as a reusable component
-
 ### Fixed
 
 - Specification of component
