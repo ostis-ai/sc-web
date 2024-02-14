@@ -226,6 +226,8 @@ SCWeb.core.Main = {
             if (result.question !== undefined) {
                 const commandState = new SCWeb.core.CommandState(cmd_addr, cmd_args, fmt_addr);
                 SCWeb.ui.WindowManager.appendHistoryItem(result.question, commandState);
+                const message = {"type": "commandExecuted", "payload": {"state": commandState, "response": result}};
+                window.top.postMessage(message, "*")
             } else {
                 alert("There are no any answer. Try another request");
             }
