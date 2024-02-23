@@ -1,0 +1,34 @@
+<select id="scg-set-content-type" class="form-control">
+  <option value="string">string</option>
+  <option value="float">float</option>
+  <option value="int8">int8</option>
+  <option value="int16">int16</option>
+  <option value="int32">int32</option>
+  <option value="html">html</option>
+</select>
+<textarea
+  cols="30"
+  rows="3"
+  id="scg-set-content-input"
+  class="form-control pull-left"
+  value=""
+  autofocus
+/>
+<br />
+<input id="content" type="file" accept="image/*,text/html,application/pdf" />
+<div id="scg-set-content-buttons-group" class="row">
+  <button
+    type="button"
+    id="scg-set-content-apply"
+    class="btn btn-success pull-left"
+  >
+    <span class="glyphicon glyphicon-ok-sign" />Apply
+  </button>
+  <button
+    type="button"
+    id="scg-set-content-cancel"
+    class="btn btn-danger pull-right"
+  >
+    <span class="glyphicon glyphicon-remove-sign" />Cancel
+  </button>
+</div>
