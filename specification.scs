@@ -11,7 +11,7 @@ sc_web_specification = [*
     <- concept_reusable_dynamically_installed_component;;
     <- concept_reusable_source_code_component;;
 
-    => nrel_sc_identifier: [SC-web](* <- lang_en;; *);;
+    => nrel_main_idtf: [SC-web](* <- lang_en;; <- lang_ru;;*);;
     => nrel_explanation: [SC-Web is an intelligent knowledge base user interface] (*<- lang_en;; *);;
     => nrel_component_dependencies: ... (* <- empty_set;; *);;
 
