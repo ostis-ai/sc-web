@@ -7,7 +7,7 @@ sc_web_specification = [*
     <- concept_reusable_component;;
     <- concept_atomic_reusable_component;;
     <- concept_independent_reusable_component;;
-    <- concept_reusable_interface_component;;
+    <- concept_reusable_ui_component;;
     <- concept_reusable_dynamically_installed_component;;
     <- concept_reusable_source_code_component;;
 
