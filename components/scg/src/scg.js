@@ -104,9 +104,39 @@ SCg.Editor.prototype = {
         var container = '#' + this.containerId;
         $(container).prepend('<div id="tools-' + this.containerId + '"></div>');
         var tools_container = '#tools-' + this.containerId;
-        $(tools_container).load('static/components/html/scg-tools-panel.html', function () {
+
+        const panelPaths = {
+            toolPanel: {
+                default: 'static/components/html/scg-tools-panel.html',
+                demo: 'static/components/html/demo-scg-tools-panel.html',
+            },
+            nodesTypes: {
+                default: 'static/components/html/scg-types-panel-nodes.html',
+                demo: 'static/components/html/demo-scg-types-panel-nodes.html',
+            },
+            edgesTypes: {
+                default: 'static/components/html/scg-types-panel-edges.html',
+                demo: 'static/components/html/demo-scg-types-panel-edges.html',
+            },
+            changeIdtf: {
+                default: 'static/components/html/scg-change-idtf.html',
+                demo: 'static/components/html/demo-scg-change-idtf.html',
+            },
+            setContent: {
+                default: 'static/components/html/scg-set-content.html',
+                demo: 'static/components/html/demo-scg-set-content.html',
+            },
+        };
+
+        const implementation = window.demoImplementation ? 'demo' : 'default';
+
+        if (window.demoImplementation) {
+            $('.panel-body').addClass('demo-scg-shadow');
+        }
+
+        $(tools_container).load(panelPaths.toolPanel[implementation], function () {
             $.ajax({
-                url: "static/components/html/scg-types-panel-nodes.html",
+                url: panelPaths.nodesTypes[implementation],
                 dataType: 'html',
                 success: function (response) {
                     self.node_types_panel_content = response;
@@ -116,7 +146,7 @@ SCg.Editor.prototype = {
                 },
                 complete: function () {
                     $.ajax({
-                        url: "static/components/html/scg-types-panel-links.html",
+                        url: "static/components/html/scg-types-panel-links.html", //! Mksm Нету демо
                         dataType: 'html',
                         success: function (response) {
                             self.link_types_panel_content = response;
@@ -127,7 +157,7 @@ SCg.Editor.prototype = {
                         },
                         complete: function () {
                             $.ajax({
-                                url: "static/components/html/scg-types-panel-edges.html",
+                                url: panelPaths.edgesTypes[implementation],
                                 dataType: 'html',
                                 success: function (response) {
                                     self.edge_types_panel_content = response;
@@ -138,7 +168,7 @@ SCg.Editor.prototype = {
                                 },
                                 complete: function () {
                                     $.ajax({
-                                        url: 'static/components/html/scg-delete-panel.html',
+                                        url: 'static/components/html/scg-delete-panel.html', //! Mksm Нету демо
                                         dataType: 'html',
                                         success: function (response) {
                                             self.delete_panel_content = response;
@@ -148,11 +178,37 @@ SCg.Editor.prototype = {
                                                 "Error to get delete panel");
                                         },
                                         complete: function () {
-                                            self.bindToolEvents();
+                                            $.ajax({
+                                                url: panelPaths.changeIdtf[implementation],
+                                                dataType: 'html',
+                                                success: function (response) {
+                                                    self.change_idtf_panel_content = response;
+                                                },
+                                                error: function () {
+                                                    SCgDebug.error(
+                                                        "Error to get change idtf panel");
+                                                },
+                                                complete: function () {
+                                                    $.ajax({
+                                                        url: panelPaths.setContent[implementation],
+                                                        dataType: 'html',
+                                                        success: function (response) {
+                                                            self.set_content_panel = response;
+                                                        },
+                                                        error: function () {
+                                                            SCgDebug.error(
+                                                                "Error to get set content panel");
+                                                        },
+                                                        complete: function () {
+                                                            self.bindToolEvents();
+                                                        }
+                                                    });
+                                                }
+                                            });
                                         }
                                     });
                                 }
-                            })
+                            });
                         }
                     });
                 }
@@ -414,9 +470,23 @@ SCg.Editor.prototype = {
         this.toolChangeIdtf().click(function () {
             self.scene.setModal(SCgModalMode.SCgModalIdtf);
             $(this).popover({
-                container: container
+                content: self.change_idtf_panel_content,
+                container: container,
+                title: 'Change identifier',
+                html: true,
+                delay: {
+                    show: 500,
+                    hide: 100
+                }
             });
             $(this).popover('show');
+
+            if (window.demoImplementation) {
+                cont.find('.popover').addClass('demo-scg-popover-layout popover-position demo-popover-width popover-position-change-idtf ');
+                cont.find('.popover-title').addClass('demo-scg-popover-title demo-text-align-center');
+                cont.find('.popover>.arrow').addClass('scg-tool-popover-arrow-hide');
+                cont.find('.popover-title').text('Изменить идентификатор');
+            }
 
             const tool = $(this);
 
@@ -424,6 +494,8 @@ SCg.Editor.prototype = {
                 self.scene.setModal(SCgModalMode.SCgModalNone);
                 tool.popover('destroy');
                 self.scene.updateObjectsVisual();
+                self.scene.setEditMode(SCgEditMode.SCgModeSelect);
+                $('#scg-tool-change-idtf').removeClass('active');
             }
 
             const input = $(container + ' #scg-change-idtf-input');
@@ -435,31 +507,65 @@ SCg.Editor.prototype = {
                 input.focus();
             }, 1);
 
-            const wrapperChangeApply = async (obj, selectedIdtf) => {
-                if (obj.text !== selectedIdtf) {
-                    searchNodeByAnyIdentifier(selectedIdtf).then(async (selectedAddr) => {
-                        if (selectedAddr) {
-                            const [type] = await scClient.checkElements([selectedAddr]);
-                            self.scene.commandManager.execute(new SCgCommandGetNodeFromMemory(
-                                obj,
-                                type.value,
-                                selectedIdtf,
-                                selectedAddr.value,
-                                self.scene)
-                            );
-                        } else {
-                            self.scene.commandManager.execute(new SCgCommandChangeIdtf(obj, selectedIdtf));
-                        }
+            const checkEnterValue = async (text) => {
+                let linkAddrs = await window.scClient.getLinksByContents([text]);
+                if (!linkAddrs.length) return;
+
+                let template = new sc.ScTemplate();
+                template.tripleWithRelation(
+                    [sc.ScType.NodeVar, '_node'],
+                    sc.ScType.EdgeDCommonVar,
+                    linkAddrs[0][0],
+                    sc.ScType.EdgeAccessVarPosPerm,
+                    new sc.ScAddr(window.scKeynodes['nrel_main_idtf']),
+                );
+
+                const result = await scClient.templateSearch(template);
+                if (!result.length) return;
+
+                return result[0].get("_node");
+            }
+
+            const wrapperChangeApply = async (obj, input, self) => {
+                const addrNodeEnterValue = await checkEnterValue(input[0].value);
+                if (obj.text !== input.val() && !self._selectedIdtf && !addrNodeEnterValue) {
+                    self.scene.commandManager.execute(new SCgCommandChangeIdtf(obj, input.val()));
+                }
+
+                if (!self._selectedIdtf && addrNodeEnterValue) {
+                    if (!addrNodeEnterValue) stop_modal();
+                    const [type] = await scClient.checkElements([addrNodeEnterValue]);
+                    self.scene.commandManager.execute(new SCgCommandGetNodeFromMemory(
+                        obj,
+                        type.value,
+                        input[0].value,
+                        addrNodeEnterValue.value,
+                        self.scene));
+                    stop_modal();
+                }
+
+                if (self._selectedIdtf) {
+                    searchNodeByAnyIdentifier(self._selectedIdtf).then(async (selectedAddr) => {
+                        if (!selectedAddr) stop_modal();
+
+                        const [type] = await scClient.checkElements([selectedAddr]);
+                        self.scene.commandManager.execute(new SCgCommandGetNodeFromMemory(
+                            obj,
+                            type.value,
+                            self._selectedIdtf,
+                            selectedAddr.value,
+                            self.scene));
+                        stop_modal();
                     });
                 }
+                else stop_modal();
             }
 
             input.keypress(function (e) {
                 if (e.keyCode === KeyCode.Enter || e.keyCode === KeyCode.Escape) {
                     if (e.keyCode === KeyCode.Enter) {
-                        const obj = self.scene.selected_objects[0];
-                        if (!self._selectedIdtf) self._selectedIdtf = input.val();
-                        wrapperChangeApply(obj, self._selectedIdtf).then(stop_modal);
+                        var obj = self.scene.selected_objects[0];
+                        wrapperChangeApply(obj, input, self);
                     }
                     stop_modal();
                     e.preventDefault();
@@ -494,8 +600,7 @@ SCg.Editor.prototype = {
             // process controls
             $(container + ' #scg-change-idtf-apply').click(async function () {
                 const obj = self.scene.selected_objects[0];
-                if (!self._selectedIdtf) self._selectedIdtf = input.val();
-                wrapperChangeApply(obj, self._selectedIdtf).then(stop_modal);
+                wrapperChangeApply(obj, input, self);
             });
             $(container + ' #scg-change-idtf-cancel').click(function () {
                 stop_modal();
@@ -515,22 +620,15 @@ SCg.Editor.prototype = {
                 tool.popover('destroy');
                 self.scene.event_selection_changed();
                 self.scene.updateObjectsVisual();
+                self.scene.setEditMode(SCgEditMode.SCgModeSelect);
+                select.button('toggle');
             }
 
-            var obj = self.scene.selected_objects[0];
-
-            let types;
-            if (obj instanceof SCg.ModelEdge) {
-                types = self.edge_types_panel_content;
-            } else if (obj instanceof SCg.ModelNode) {
-                types = self.node_types_panel_content;
-            } else if (obj instanceof SCg.ModelLink) {
-                types = self.link_types_panel_content;
-            }
+            const obj = self.scene.selected_objects[0];
 
             el = $(this);
             el.popover({
-                content: types,
+                content: (obj instanceof SCg.ModelEdge) ? self.edge_types_panel_content : self.node_types_panel_content,
                 container: container,
                 title: 'Change type',
                 html: true,
@@ -539,6 +637,15 @@ SCg.Editor.prototype = {
                     hide: 100
                 }
             }).popover('show');
+
+            if (window.demoImplementation) {
+                cont.find('.popover').addClass('demo-scg-popover-layout popover-position-change-type');
+                cont.find('.popover-title').addClass('demo-scg-popover-title');
+                cont.find('.popover>.arrow').addClass('scg-tool-popover-arrow-hide');
+                cont.find('.popover-title').text(
+                    (obj instanceof SCg.ModelEdge) ? 'Изменить тип дуги' : 'Изменить тип узла'
+                );
+            }
 
             cont.find('.popover-title').append(
                 '<button id="scg-type-close" type="button" class="close">&times;</button>');
@@ -559,11 +666,14 @@ SCg.Editor.prototype = {
                 self.scene.updateObjectsVisual();
                 stop_modal();
             });
+            $('.switchingItemsLi').click(function () {
+                stop_modal();
+            });
         });
 
 
         this.toolSetContent().click(function () {
-            let tool = $(this);
+            var tool = $(this);
             const startValueLink = self.scene.selected_objects[0].content.trim();
 
             function stop_modal() {
@@ -574,88 +684,172 @@ SCg.Editor.prototype = {
 
             self.scene.setModal(SCgModalMode.SCgModalIdtf);
             $(this).popover({
-                container: container
+                content: self.set_content_panel,
+                container: container,
+                title: 'Change content',
+                html: true,
+                delay: {
+                    show: 500,
+                    hide: 100
+                }
             });
             $(this).popover('show');
 
-            const obj = self.scene.selected_objects[0];
-            const input = $(container + ' #scg-set-content-input');
-            const input_content = $(container + " input#content[type='file']");
+            var obj = self.scene.selected_objects[0];
+            var input = $(container + ' #scg-set-content-input');
+            var input_content = $(container + " input#content[type='file']");
+            var input_content_type = $(container + " #scg-set-content-type");
             input.val(self.scene.selected_objects[0].content);
+            input_content_type.val(self.scene.selected_objects[0].contentType);
+
+            if (window.demoImplementation) {
+                cont.find('.popover').addClass('demo-scg-popover-layout popover-position-change-type demo-popover-width popover-position-set-content');
+                cont.find('.popover-title').addClass('demo-scg-popover-title demo-text-align-center');
+                cont.find('.popover>.arrow').addClass('scg-tool-popover-arrow-hide');
+                cont.find('.popover-title').text('Изменить содержимое');
+
+                const demoSelect = document.querySelector('.demo-select');
+                const demoSelectValue = document.querySelector('.demo-select-value');
+                const listOfOptions = document.querySelectorAll('.demo-option');
+                const fileInput = document.querySelector('.file-input');
+                const fileInputText = document.querySelector('.demo-file-input-text');
+                const body = document.body;
+
+                const toggleDropdown = (event) => {
+                    event.stopPropagation();
+                    demoSelect.classList.toggle('opened');
+                };
+
+                const selectOption = (event) => {
+                    const options = document.querySelectorAll('.demo-option');
+
+                    options.forEach((option) => {
+                        if (option.classList.contains('demo-selected-option')) {
+                            option.classList.remove('demo-selected-option');
+                        }
+                    });
+
+                    event.currentTarget.classList.add("demo-selected-option");
+                    demoSelectValue.value = event.currentTarget.textContent;
+                    input_content_type.val(demoSelectValue.value);
+                };
+
+                const closeDropdownFromOutside = () => {
+                    if (demoSelect.classList.contains('opened')) {
+                        demoSelect.classList.remove('opened');
+                    }
+                };
+
+                const changeFileInputText = (e) => {
+                    if (e.currentTarget.value) {
+                        fileInputText.innerHTML = e.currentTarget.value;
+                    } else {
+                        fileInputText.innerHTML = "Файл не выбран";
+                    }
+                }
+
+                body.addEventListener('click', closeDropdownFromOutside);
+
+                listOfOptions.forEach((option) => {
+                    option.addEventListener('click', selectOption);
+                });
+
+                demoSelect.addEventListener('click', toggleDropdown);
+
+                fileInput.addEventListener('change', changeFileInputText);
+
+                demoSelectValue.value = input_content_type.val();
+            };
+
             setTimeout(function () {
                 input.focus();
             }, 1);
 
+            if (input.val() && (obj.contentType === 'image' || obj.contentType === 'html')) {
+                $(container + ' .popover-content').prepend(input.val());
+                $(container + ' .popover-content').children('img').css({ 'height': '150px', 'width': '150px' });
+                input.val('');
+            };
+
             const wrapperRenameAttachLink = async () => {
-                const endValueLink = input.val().trim();
-                const file = input_content[0].files[0];
+                var endValueLink = input.val().trim();
+                var file = input_content[0].files[0];
+
                 if ((startValueLink === endValueLink && obj.sc_addr) && !file) stop_modal();
                 obj.changedValue = true;
 
                 let addrMainConcept;
-                if (obj.sc_addr) {
-                    let templateAddr = new sc.ScTemplate();
-                    templateAddr.tripleWithRelation(
-                        [sc.ScType.NodeVar, "_node"],
-                        sc.ScType.EdgeDCommonVar,
-                        new sc.ScAddr(obj.sc_addr),
-                        sc.ScType.EdgeAccessVarPosPerm,
-                        new sc.ScAddr(window.scKeynodes['nrel_main_idtf'])
-                    );
-                    addrMainConcept = await window.scClient.templateSearch(templateAddr)
-                        .then(result => {
-                            if (!result.length) return;
-                            return result[0].get("_node").value;
-                        });
-                }
+                let templateAddr = new sc.ScTemplate();
+
+                templateAddr.tripleWithRelation(
+                    [sc.ScType.NodeVar, "_node"],
+                    sc.ScType.EdgeDCommonVar,
+                    new sc.ScAddr(obj.sc_addr),
+                    sc.ScType.EdgeAccessVarPosPerm,
+                    new sc.ScAddr(window.scKeynodes['nrel_main_idtf'])
+                );
+                addrMainConcept = await window.scClient.templateSearch(templateAddr)
+                    .then(result => {
+                        if (!result.length) return;
+                        return result[0].get("_node").value;
+                    });
+
                 if (addrMainConcept) {
                     const objMainConcept = self.scene.getObjectByScAddr(Number(addrMainConcept));
                     self.scene.commandManager.execute(new SCgCommandChangeIdtf(objMainConcept, input.val()));
                     document.querySelector(`[sc_addr="${addrMainConcept}"]`).nextSibling.textContent = input.val();
-                }
+                };
 
                 if (startValueLink !== endValueLink && obj.sc_addr) {
                     obj.changedValue = true;
                 }
 
-                if (file) {
-                    let fileReader = new FileReader();
+                if (file !== undefined) {
+                    setTimeout(() => {
+                        if (obj.contentType === 'image') {
+                            self.scene.commandManager.execute(new SCgCommandChangeContent(
+                                obj,
+                                obj.content,
+                                obj.contentType,
+                                null,
+                            ));
+                            stop_modal();
+                        }
+                    }, 100);
+
+                    const fileReader = new FileReader();
                     fileReader.onload = function () {
                         const scLinkHelper = new ScFileLinkHelper(file, this.result);
-                        if (obj.sc_addr) obj.changedValue = true;
-                        self.scene.commandManager.execute(new SCgCommandChangeContent(
-                            obj,
-                            scLinkHelper.htmlViewResult(),
-                            scLinkHelper.type,
-                        ));
+                        if (obj.fileReaderResult !== scLinkHelper.fileArrayBuffer || obj.contentType !== scLinkHelper.type) {
+                            if (obj.sc_addr) obj.changedValue = true;
+                            self.scene.commandManager.execute(new SCgCommandChangeContent(
+                                obj,
+                                scLinkHelper.htmlViewResult(),
+                                scLinkHelper.type,
+                                scLinkHelper.fileArrayBuffer,
+                            ));
+                        }
                         stop_modal();
                     };
                     fileReader.readAsArrayBuffer(file);
                 } else {
-                    const preDefineStringContentType = function (content) {
-                        function isHTML(str) {
-                            return /<[a-z][\s\S]*>/i.test(str);
-                        }
-
-                        return isHTML(content) ? 'html' : 'string';
-                    }
-
-                    if (obj.content !== input.val()) {
+                    if (obj.content !== input.val() || obj.contentType !== input_content_type.val()) {
                         if (obj.sc_addr) obj.changedValue = true;
-                        self.scene.commandManager.execute(new SCgCommandChangeContent(
-                            obj,
+
+                        self.scene.commandManager.execute(new SCgCommandChangeContent(obj,
                             input.val(),
-                            preDefineStringContentType(input.val()),
+                            input_content_type.val(),
+                            null
                         ));
                     }
                     stop_modal();
                 }
             }
 
-            input.keypress(async function (e) {
+            input.keypress(function (e) {
                 if (e.keyCode === KeyCode.Enter || e.keyCode === KeyCode.Escape) {
                     if (e.keyCode === KeyCode.Enter) {
-                        wrapperRenameAttachLink().then(null);
+                        wrapperRenameAttachLink();
                     }
                     stop_modal();
                     e.preventDefault();
@@ -663,12 +857,24 @@ SCg.Editor.prototype = {
             });
             // process controls
             $(container + ' #scg-set-content-apply').click(async function () {
-                wrapperRenameAttachLink().then(null);
+                wrapperRenameAttachLink();
+                setTimeout(() => {
+                    self.scene.updateLinkVisual();
+                    self.scene.updateRender();
+                }, 100)
             });
             $(container + ' #scg-set-content-cancel').click(function () {
                 stop_modal();
             });
+            $('.switchingItemsLi').click(function () {
+                stop_modal();
+            });
         });
+
+        window.deleteScgElement = function () {
+            self.scene.deleteObjects(self.scene.selected_objects);
+            self.scene.addDeletedObjects(self.scene.selected_objects);
+        };
 
         this.toolDelete().click(async function () {
             if (!self.scene.selected_objects.length) return;
@@ -719,6 +925,7 @@ SCg.Editor.prototype = {
                     : cont.find('.delete-from-db-btn').prop('disabled', true).addClass('disabled-delete-btn');
             }
 
+
             cont.find('.popover').addClass('scg-tool-fragments-popover');
             cont.find('.popover-content').addClass('scg-tool-fragments-popover-content');
             cont.find('.popover>.arrow').addClass('scg-tool-popover-arrow-hide');
@@ -745,11 +952,26 @@ SCg.Editor.prototype = {
                         function diffArray(arr1, arr2) {
                             return arr1.filter(item => !arr2.includes(item));
                         }
-                        self.scene.deleteObjects(diffArray(self.scene.selected_objects, cantDelete));
-                        self.scene.addDeletedObjects(deletableObjects);
+                        self.scene.elements_to_delete = diffArray(self.scene.selected_objects, cantDelete);
+                        self.scene.deletable_objects = deletableObjects;
+                        console.log(self.scene.elements_to_delete);
+                        if (window.demoImplementation) {
+                            console.log("SC-WEB post deleteScgElement");
+                            const command = {'type': "deleteScgElement"};
+                            window.top.postMessage(command, '*');
+                        }
+                        else {
+                            window.deleteScgElement();
+                        }
                     } else {
-                        self.scene.deleteObjects(self.scene.selected_objects);
-                        self.scene.addDeletedObjects(self.scene.selected_objects);
+                        if (window.demoImplementation) {
+                            console.log("SC-WEB post deleteScgElement");
+                            const command = {'type': "deleteScgElement"};
+                            window.top.postMessage(command, '*');
+                        }
+                        else {
+                            window.deleteScgElement();
+                        }
                     }
                 }
                 self.hideTool(self.toolDelete());
@@ -766,17 +988,23 @@ SCg.Editor.prototype = {
             })
         });
 
-        this.toolClear().click(function () {
-            self._disableTool(self.toolClear());
+        window.clearScene = function () {
             self.scene.clear = true;
             self.scene.selectAll();
             self.scene.clear = false;
-            if (self.scene.selected_objects.length) {
-                const objects = self.scene.selected_objects.slice();
-                self.scene.clearSelection();
-                self.scene.deleteObjects(objects);
+            self.scene.deleteObjects(self.scene.selected_objects);
+            self.scene.addDeletedObjects(self.scene.selected_objects);
+        }
+
+        this.toolClear().click(function () {
+            if (window.demoImplementation) {
+                console.log("SC-WEB post clearScene");
+                const command = {'type': "clearScene"};
+                window.top.postMessage(command, '*');
             }
-            self._enableTool(self.toolClear());
+            else {
+                window.clearScene();
+            }
         });
 
         this.toolOpen().click(function () {
