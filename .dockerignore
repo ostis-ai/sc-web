@@ -3,5 +3,6 @@
 .github
 Dockerfile
 .dockerignore
+.venv
 node_modules
 docs
