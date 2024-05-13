@@ -14,12 +14,12 @@ USER root
 
 WORKDIR /sc-web
 # dependencies
+COPY --from=web-buildenv /sc-web/scripts /sc-web/scripts
 COPY --from=web-buildenv /sc-web/requirements.txt /sc-web/requirements.txt
 
 # install runtime dependencies
 # tini is a lightweight PID1 to forward interrupt signals
-RUN apt update && apt --no-install-recommends -y install python3-pip python3 tini
-RUN python3 -m pip install --no-cache-dir --default-timeout=100 -r requirements.txt
+RUN apt update && apt --no-install-recommends -y install tini python3 python3-pip python3-venv && /sc-web/scripts/install_deps_python.sh
 
 # the app itself
 COPY --from=web-buildenv /sc-web/client /sc-web/client
@@ -35,4 +35,4 @@ COPY --from=web-buildenv /sc-web/sc-web.ini /sc-web/sc-web.ini
 WORKDIR /sc-web/server
 
 EXPOSE 8000
-ENTRYPOINT ["tini", "--", "/usr/bin/python3", "/sc-web/server/app.py" ]
+ENTRYPOINT ["/usr/bin/tini", "--", "/sc-web/scripts/run_sc_web.sh" ]
