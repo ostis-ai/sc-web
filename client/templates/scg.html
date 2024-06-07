@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    <title>{% block title %}OntoFin-DevKit{% end %}</title>
+
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="/static/common/bootstrap/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="/static/components/css/common.css"
+    />
+
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="/static/components/css/redesign.css"
+    />
+
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="/static/components/css/scg.css"
+    />
+
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="/static/components/css/html.css"
+    />
+
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="/static/components/css/github.css"
+    />
+
+    <script
+      type="text/javascript"
+      charset="utf-8"
+      src="/static/common/jquery/jquery-2.1.3.js"
+    ></script>
+
+    <script
+      type="text/javascript"
+      charset="utf-8"
+      src="/static/common/jquery/jquery.namespace.js"
+    ></script>
+    <script
+      type="text/javascript"
+      charset="utf-8"
+      src="/static/common/bootstrap/js/bootstrap.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      charset="utf-8"
+      src="/static/common/typeahead/typeahead.bundle.min.js"
+    ></script>
+
+    <script
+      type="text/javascript"
+      charset="utf-8"
+      src="/static/common/kinetic/kinetic-v4.0.1.js"
+    ></script>
+
+    <script
+      type="text/javascript"
+      charset="utf-8"
+      src="/static/common/d3/d3.js"
+    ></script>
+
+    <script
+      type="text/javascript"
+      charset="utf-8"
+      src="/static/common/base64/base64.min.js"
+    ></script>
+
+    <script
+      type="text/javascript"
+      charset="utf-8"
+      src="/static/components/js/scg-web-core.js"
+    ></script>
+
+    <script
+      type="text/javascript"
+      charset="utf-8"
+      src="/static/components/js/scg/scg.js"
+    ></script>
+    <script
+      type="text/javascript"
+      charset="utf-8"
+      src="/static/components/js/image/image.js"
+    ></script>
+
+    <script
+      type="text/javascript"
+      charset="utf-8"
+      src="/static/components/js/txt/txt.js"
+    ></script>
+
+    <script
+      type="text/javascript"
+      charset="utf-8"
+      src="/static/components/js/html/html.js"
+    ></script>
+
+    <script
+      type="text/javascript"
+      charset="utf-8"
+      src="/static/components/js/youtube/youtubelink.js"
+    ></script>
+
+    <script
+      type="text/javascript"
+      charset="utf-8"
+      src="/static/components/js/map/googlemaplink.js"
+    ></script>
+  </head>
+  <body id="body">
+    <div id="main-container" class="main-container">
+      <div class="window-wrapper">
+        <div id="window-container" class="col-xs-10 col-sm-10 col-md-10">
+          <div class="open-fragment-window-fade">
+            <div class="open-fragment-window">
+              <span class="open-fragment-window-title"
+                >Существующие фрагменты</span
+              >
+              <div class="items-fragments">
+                <!-- + =============== without server integration =============== + -->
+                <!-- | -->
+                <span class="item-fragment">Фрагмент 1</span>
+                <!-- | -->
+                <!-- | -->
+                <span class="item-fragment">Фрагмент 2</span>
+                <!-- | -->
+                <!-- | -->
+                <span class="item-fragment">Фрагмент 3</span>
+                <!-- | -->
+                <!-- | -->
+                <span class="item-fragment">Фрагмент 4</span>
+                <!-- | -->
+                <!-- | -->
+                <span class="item-fragment">Фрагмент 5</span>
+                <!-- | -->
+                <!-- | -->
+                <span class="item-fragment">Фрагмент 6</span>
+                <!-- | -->
+                <!-- | -->
+                <span class="item-fragment">Фрагмент 7</span>
+                <!-- | -->
+                <!-- | -->
+                <span class="item-fragment">Фрагмент 8</span>
+                <!-- | -->
+                <!-- | -->
+                <span class="item-fragment">Фрагмент 9</span>
+                <!-- | -->
+                <!-- | -->
+                <span class="item-fragment">Фрагмент 10</span>
+                <!-- | -->
+                <!-- + ========================================================== + -->
+              </div>
+              <div class="open-fragment-window-btns">
+                <button
+                  class="btn-close open-fragment-window-btn scg-fragments-btn"
+                >
+                  Отмена
+                </button>
+                <button
+                  class="btn-open open-fragment-window-btn btn-non-click scg-fragments-btn"
+                >
+                  Открыть
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="create-fragment-window-fade">
+            <div class="create-fragment-window">
+              <span class="create-fragment-window-title"
+                >Название фрагмента онтологии</span
+              >
+              <input
+                id="create-fragment-input"
+                placeholder="Название..."
+                autocomplete="off"
+                maxlength="50"
+              />
+              <div class="creat-fragment-window-btns">
+                <button
+                  class="btn-close create-fragment-window-btn scg-fragments-btn"
+                >
+                  Отмена
+                </button>
+                <button
+                  class="btn-create create-fragment-window-btn btn-non-click scg-fragments-btn"
+                >
+                  Продолжить
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="delete-scg-elem-popup-fade">
+            <div class="delete-scg-elem-popup">
+              <span class="delete-scg-elem-popup-title"
+                >Вы действительно хотите удалить выделенный элемент?</span
+              >
+              <div class="delete-scg-elem-popup-btns">
+                <button
+                  class="delete-scg-elem-popup-btn close-delete-popup-btn"
+                >
+                  Отмена
+                </button>
+                <button class="delete-scg-elem-popup-btn delete-scg-elem-btn">
+                  Удалить
+                </button>
+              </div>
+            </div>
+          </div>
+          {# Windows will be added later #}
+        </div>
+      </div>
+    </div>
+
+    <script>
+      var serverHost = "{{ public_url }}";
+    </script>
+
+    <!-- Modal -->
+    <div
+      id="help-modal"
+      class="modal fade bs-modal-lg"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="Help"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg">
+        <div id="help-modal-body" class="modal-content modal-empty"></div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+
+    <script type="text/javascript">
+      $(document).ready(function() {
+          var params = {
+              canEdit: {{can_edit}},
+              isAdmin: {{is_admin}},
+              menu_container_id: 'menu_container',
+              {% if first_time == "1" %}first_time: true,{% end %}
+          };
+          SCWeb.core.Main.init(params)
+      });
+    </script>
+  </body>
+</html>
