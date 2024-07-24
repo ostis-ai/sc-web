@@ -85,7 +85,7 @@ def init_app_rules():
         (r"/api/cmd/do/", api.CmdDo),
         (r"/api/cmd/text/", NaturalLanguageSearch),
 
-        (r"/api/question/answer/translate/", api.QuestionAnswerTranslate),
+        (r"/api/action/answer/translate/", api.ActionAnswerTranslate),
 
         (r"/api/languages/", api.Languages),
         (r"/api/languages/set/", api.LanguageSet),

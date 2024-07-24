@@ -68,10 +68,10 @@ class CmdDo(base.BaseHandler):
             self.finish(json.dumps(result))
 
 
-class QuestionAnswerTranslate(base.BaseHandler):
+class ActionAnswerTranslate(base.BaseHandler):
     # @tornado.web.asynchronous
     def post(self):
-        question_addr = ScAddr(int(self.get_argument(u'question', None)))
+        action_addr = ScAddr(int(self.get_argument(u'action', None)))
         format_addr = ScAddr(int(self.get_argument(u'format', None)))
 
         lang_arg = self.get_argument(u'lang', None)
@@ -85,18 +85,18 @@ class QuestionAnswerTranslate(base.BaseHandler):
         ui_command_translate_from_sc = keynodes[KeynodeSysIdentifiers.ui_command_translate_from_sc.value]
         ui_command_initiated = keynodes[KeynodeSysIdentifiers.ui_command_initiated.value]
 
-        # try to find answer for the question
+        # try to find answer for the action
         wait_time = 0
         wait_dt = 0.1
 
-        answer = logic.find_answer(question_addr)
+        answer = logic.find_answer(action_addr)
         while not answer:
             time.sleep(wait_dt)
             wait_time += wait_dt
             if wait_time > tornado.options.options.event_wait_timeout:
                 return logic.serialize_error(self, 404, 'Timeout waiting for answer')
 
-            answer = logic.find_answer(question_addr)
+            answer = logic.find_answer(action_addr)
 
         if not answer:
             return logic.serialize_error(self, 404, 'Answer not found')

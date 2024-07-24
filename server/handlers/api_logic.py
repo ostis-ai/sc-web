@@ -251,17 +251,17 @@ def find_cmd_result(command_addr: ScAddr) -> List[ScTemplateResult]:
 
 
 @decorators.method_logging
-def find_answer(question_addr: ScAddr) -> List[ScTemplateResult]:
+def find_answer(action_addr: ScAddr) -> List[ScTemplateResult]:
     def _get_answer():
         keynodes = ScKeynodes()
 
         template = ScTemplate()
         template.triple_with_relation(
-            question_addr,
+            action_addr,
             sc_types.EDGE_D_COMMON_VAR,
             sc_types.NODE_VAR,
             sc_types.EDGE_ACCESS_VAR_POS_PERM,
-            keynodes[KeynodeSysIdentifiers.question_nrel_answer.value],
+            keynodes[KeynodeSysIdentifiers.action_nrel_answer.value],
         )
         return client.template_search(template)
 
@@ -597,23 +597,23 @@ def do_command(cmd_addr: ScAddr, arguments: List[ScAddr], handler: BaseHandler):
             return serialize_error(handler, 404, "Can't resolve user node")
 
         keynode_init_set = None
-        keynode_question = keynodes[KeynodeSysIdentifiers.question.value]
+        keynode_action = keynodes[KeynodeSysIdentifiers.action.value]
 
-        # try to find question node
+        # try to find action node
         template = ScTemplate()
         template.triple_with_relation(
-            keynode_question,
+            keynode_action,
             sc_types.EDGE_ACCESS_VAR_POS_PERM,
             sc_types.NODE_VAR,
             sc_types.EDGE_ACCESS_VAR_POS_PERM,
             cmd_result,
         )
-        question = client.template_search(template)
-        if question:
-            instance_node = question[0].get(2)
-            result_key = 'question'
+        action = client.template_search(template)
+        if action:
+            instance_node = action[0].get(2)
+            result_key = 'action'
 
-            keynode_init_set = keynodes[KeynodeSysIdentifiers.question_initiated.value]
+            keynode_init_set = keynodes[KeynodeSysIdentifiers.action_initiated.value]
 
             construction = ScConstruction()
             construction.create_edge(
