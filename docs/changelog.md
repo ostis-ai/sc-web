@@ -6,8 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Breaking changes
+
+- All questions were renamed to actions.
+
 ### Changed
 
+- Rename questions to actions
 - Use venv for python dependencies
 
 ## [0.8.1-Unlock] - 22.01.2024
