@@ -136,12 +136,12 @@ ScHelper.prototype.getOutputLanguages = function () {
   return window.scHelper.getSetElements(window.scKeynodes['ui_external_languages']);
 };
 
-/*! Function to find answer for a specified question
- * @param question_addr sc-addr of question to get answer
+/*! Function to find answer for a specified action
+ * @param action_addr sc-addr of action to get answer
  * @returns Returns promise object, that resolves with sc-addr of found answer structure.
  * If function fails, then promise rejects
  */
-ScHelper.prototype.getAnswer = function (question_addr) {
+ScHelper.prototype.getAnswer = function (action_addr) {
   return new Promise(async (resolve) => {
     let template = new sc.ScTemplate();
     let timer = setTimeout(async () => {
@@ -150,7 +150,7 @@ ScHelper.prototype.getAnswer = function (question_addr) {
       resolve(null);
     }, 10_000);
     template.tripleWithRelation(
-      new sc.ScAddr(parseInt(question_addr)),
+      new sc.ScAddr(parseInt(action_addr)),
       sc.ScType.EdgeDCommonVar,
       [sc.ScType.NodeVar, "_answer"],
       sc.ScType.EdgeAccessVarPosPerm,

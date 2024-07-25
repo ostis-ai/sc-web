@@ -112,17 +112,17 @@ SCWeb.core.Main = {
     },
 
     pageShowedForUrlParameters(urlObject) {
-        return SCWeb.core.Main.questionParameterProcessed(urlObject)
+        return SCWeb.core.Main.actionParameterProcessed(urlObject)
             || SCWeb.core.Main.systemIdentifierParameterProcessed(urlObject)
             || SCWeb.core.Main.commandParameterProcessed(urlObject);
     },
 
-    questionParameterProcessed(urlObject) {
-        const question = urlObject['question'];
-        if (question) {
-            /// @todo Check question is really a question
-            const commandState = new SCWeb.core.CommandState(question, null, null);
-            SCWeb.ui.WindowManager.appendHistoryItem(question, commandState);
+    actionParameterProcessed(urlObject) {
+        const action = urlObject['action'];
+        if (action) {
+            /// @todo Check action is really a action
+            const commandState = new SCWeb.core.CommandState(action, null, null);
+            SCWeb.ui.WindowManager.appendHistoryItem(action, commandState);
             return true;
         }
         return false;
@@ -257,9 +257,9 @@ SCWeb.core.Main = {
     doCommand: function (cmd_addr, cmd_args) {
         SCWeb.core.Arguments.clear();
         SCWeb.core.Server.doCommand(cmd_addr, cmd_args, function (result) {
-            if (result.question !== undefined) {
+            if (result.action !== undefined) {
                 const commandState = new SCWeb.core.CommandState(cmd_addr, cmd_args);
-                SCWeb.ui.WindowManager.appendHistoryItem(result.question, commandState);
+                SCWeb.ui.WindowManager.appendHistoryItem(result.action, commandState);
             } else if (result.command !== undefined) {
             } else {
                 alert("There are no any answer. Try another request");
@@ -288,8 +288,8 @@ SCWeb.core.Main = {
     doCommandWithPromise: function (command_state) {
         return new Promise(function (resolve, reject) {
             SCWeb.core.Server.doCommand(command_state.command_addr, command_state.command_args, function (result) {
-                if (result.question !== undefined) {
-                    resolve(result.question)
+                if (result.action !== undefined) {
+                    resolve(result.action)
                 } else if (result.command !== undefined) {
 
                 } else {
@@ -301,8 +301,8 @@ SCWeb.core.Main = {
 
     getTranslatedAnswer: function (command_state) {
         return new Promise(function (resolve) {
-            SCWeb.core.Main.doCommandWithPromise(command_state).then(function (question_addr) {
-                SCWeb.core.Server.getAnswerTranslated(question_addr, command_state.format, command_state.lang, function (answer) {
+            SCWeb.core.Main.doCommandWithPromise(command_state).then(function (action_addr) {
+                SCWeb.core.Server.getAnswerTranslated(action_addr, command_state.format, command_state.lang, function (answer) {
                     resolve(answer.link);
                 })
             })
@@ -316,9 +316,9 @@ SCWeb.core.Main = {
 
     doTextCommand: function (query) {
         SCWeb.core.Server.textCommand(query, function (result) {
-            if (result.question !== undefined) {
+            if (result.action !== undefined) {
                 const commandState = new SCWeb.core.CommandState(null, null, null);
-                SCWeb.ui.WindowManager.appendHistoryItem(result.question, commandState);
+                SCWeb.ui.WindowManager.appendHistoryItem(result.action, commandState);
             } else if (result.command !== undefined) {
 
             } else {
@@ -367,9 +367,9 @@ SCWeb.core.Main = {
     */
     doCommandWithFormat: function (cmd_addr, cmd_args, fmt_addr) {
         SCWeb.core.Server.doCommand(cmd_addr, cmd_args, function (result) {
-            if (result.question !== undefined) {
+            if (result.action !== undefined) {
                 const commandState = new SCWeb.core.CommandState(cmd_addr, cmd_args, fmt_addr);
-                SCWeb.ui.WindowManager.appendHistoryItem(result.question, commandState);
+                SCWeb.ui.WindowManager.appendHistoryItem(result.action, commandState);
             } else {
                 alert("There are no any answer. Try another request");
             }

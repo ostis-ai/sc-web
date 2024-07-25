@@ -48,10 +48,10 @@ class KeynodeSysIdentifiers(Enum):
     nrel_ui_commands_decomposition = 'nrel_ui_commands_decomposition'
     nrel_ui_nrel_command_lang_template = 'ui_nrel_command_lang_template'
     
-    question = 'question'
-    question_nrel_answer = 'nrel_answer'
-    question_initiated = 'question_initiated'
-    question_search_all_output_arcs = 'question_search_all_output_arcs'
+    action = 'action'
+    action_nrel_answer = 'nrel_answer'
+    action_initiated = 'action_initiated'
+    action_search_all_output_arcs = 'action_search_all_output_arcs'
     
     command = 'command'
     command_initiated = 'command_initiated'

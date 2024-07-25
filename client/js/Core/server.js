@@ -325,16 +325,16 @@ SCWeb.core.Server = {
     },
 
     /*! Function to get answer translated into specified format
-     * @param {question_addr} sc-addr of question to get answer translated
+     * @param {action_addr} sc-addr of action to get answer translated
      * @param {format_addr} sc-addr of format to translate answer
      * @param {lang_addr} sc-addr of language to translate answer
      * @param {callback} Function, that will be called with received data in specified format
      */
-    getAnswerTranslated: function (question_addr, format_addr, lang_addr, callback) {
+    getAnswerTranslated: function (action_addr, format_addr, lang_addr, callback) {
         this._push_task({
             type: "POST",
-            url: "api/question/answer/translate/",
-            data: {"question": question_addr, "format": format_addr, "lang": lang_addr},
+            url: "api/action/answer/translate/",
+            data: {"action": action_addr, "format": format_addr, "lang": lang_addr},
             success: callback
         });
     },

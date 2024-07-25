@@ -10,9 +10,9 @@ SCWeb.ui.WindowManager = {
     active_history_addr: null,
 
 
-    // function to create hash from question addr and format addr
-    hash_addr: function (question_addr, fmt_addr) {
-        return question_addr + '_' + fmt_addr;
+    // function to create hash from action addr and format addr
+    hash_addr: function (action_addr, fmt_addr) {
+        return action_addr + '_' + fmt_addr;
     },
 
     isWindowExist: function (id) {
@@ -40,20 +40,20 @@ SCWeb.ui.WindowManager = {
 
                 if (SCWeb.ui.ArgumentsPanel.isArgumentAddState()) return;
 
-                var question_addr = self.active_history_addr;
+                var action_addr = self.active_history_addr;
                 var lang_addr = $(this).attr('sc_addr');
 
                 var fmt_addr = SCWeb.core.ComponentManager.getPrimaryFormatForExtLang(lang_addr);
                 var lang = SCWeb.core.Translation.getCurrentLanguage();
                 if (fmt_addr) {
                     var command_state = new SCWeb.core.CommandState(null, null, fmt_addr, lang);
-                    var id = self.hash_addr(question_addr, command_state);
+                    var id = self.hash_addr(action_addr, command_state);
                     if (self.isWindowExist(id)) {
                         self.setWindowActive(id);
                     } else {
-                        self.appendWindow(question_addr, command_state);
-                        self.window_active_formats[question_addr] = command_state.format;
-                        self.windows[self.hash_addr(question_addr, command_state.format)] = question_addr;
+                        self.appendWindow(action_addr, command_state);
+                        self.window_active_formats[action_addr] = command_state.format;
+                        self.windows[self.hash_addr(action_addr, command_state.format)] = action_addr;
                     }
                 }
             });
@@ -99,19 +99,19 @@ SCWeb.ui.WindowManager = {
         },
 
     getUrlToCurrentWindow: function () {
-        return window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + "/?question=" + this.active_history_addr;
+        return window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + "/?action=" + this.active_history_addr;
     },
 
     // ----------- History ------------
     /**
      * Append new tab into history
-     * @param {String} question_addr sc-addr of item to append into history
+     * @param {String} action_addr sc-addr of item to append into history
      * @param command_state
      */
-    appendHistoryItem: function (question_addr, command_state) {
+    appendHistoryItem: function (action_addr, command_state) {
         // @todo check if tab exist        
-        var tab_html = '<a class="list-group-item history-item ui-no-tooltip" sc_addr="' + question_addr + '">' +
-            '<p>' + question_addr + '</p>' +
+        var tab_html = '<a class="list-group-item history-item ui-no-tooltip" sc_addr="' + action_addr + '">' +
+            '<p>' + action_addr + '</p>' +
             '</a>';
 
         this.history_tabs.prepend(tab_html);
@@ -127,30 +127,30 @@ SCWeb.ui.WindowManager = {
             command_state.lang = SCWeb.core.Translation.getCurrentLanguage();
 
         if (command_state.format) {
-            var id = this.hash_addr(question_addr, command_state.format, command_state.command_args)
+            var id = this.hash_addr(action_addr, command_state.format, command_state.command_args)
             if (this.isWindowExist(id)) {
                 this.setWindowActive(id);
             } else {
-                this.appendWindow(question_addr, command_state);
-                this.window_active_formats[question_addr] = command_state.format;
+                this.appendWindow(action_addr, command_state);
+                this.window_active_formats[action_addr] = command_state.format;
             }
         }
 
-        this.setHistoryItemActive(question_addr);
+        this.setHistoryItemActive(action_addr);
 
         // setup input handlers
         var self = this;
         this.history_tabs.find("[sc_addr]").click(function (event) {
-            var question_addr = $(this).attr('sc_addr');
-            self.setHistoryItemActive(question_addr);
-            self.setWindowActive(self.hash_addr(question_addr, self.window_active_formats[question_addr]));
+            var action_addr = $(this).attr('sc_addr');
+            self.setHistoryItemActive(action_addr);
+            self.setWindowActive(self.hash_addr(action_addr, self.window_active_formats[action_addr]));
         });
 
         // translate added item
-        SCWeb.core.Translation.translate([question_addr]).then(function (namesMap) {
-            value = namesMap[question_addr];
+        SCWeb.core.Translation.translate([action_addr]).then(function (namesMap) {
+            value = namesMap[action_addr];
             if (value) {
-                $(self.history_tabs_id + " [sc_addr='" + question_addr + "']").text(value);
+                $(self.history_tabs_id + " [sc_addr='" + action_addr + "']").text(value);
             }
         });
     },
@@ -180,17 +180,17 @@ SCWeb.ui.WindowManager = {
     // ------------ Windows ------------
     /**
      * Append new window
-     * @param question_addr
+     * @param action_addr
      * @param command_state
      */
-    appendWindow: function (question_addr, command_state) {
+    appendWindow: function (action_addr, command_state) {
         var self = this;
         SCWeb.ui.Locker.show();
         var f = function (addr, is_struct) {
-            var id = self.hash_addr(question_addr, command_state.format);
+            var id = self.hash_addr(action_addr, command_state.format);
             if (!self.isWindowExist(id)) {
-                var window_id = 'window_' + question_addr + "_format_" + command_state.format;
-                var window_html = '<div class="panel panel-default sc-window" id="' + id + '" sc_addr="' + question_addr + '" sc-addr-fmt="' + command_state.format + '">' +
+                var window_id = 'window_' + action_addr + "_format_" + command_state.format;
+                var window_html = '<div class="panel panel-default sc-window" id="' + id + '" sc_addr="' + action_addr + '" sc-addr-fmt="' + command_state.format + '">' +
                     '<div class="panel-body" id="' + window_id + '"></div>'
                 '</div>';
                 self.window_container.prepend(window_html);
@@ -226,14 +226,14 @@ SCWeb.ui.WindowManager = {
         };
 
         var translated = function () {
-            SCWeb.core.Server.getAnswerTranslated(question_addr, command_state.format, command_state.lang, function (d) {
+            SCWeb.core.Server.getAnswerTranslated(action_addr, command_state.format, command_state.lang, function (d) {
                 f(d.link, false);
             });
         };
 
         if (SCWeb.core.ComponentManager.isStructSupported(command_state.format)) {
             // determine answer structure
-            window.scHelper.getAnswer(question_addr).then(function (addr) {
+            window.scHelper.getAnswer(action_addr).then(function (addr) {
                 f(addr, true);
             }).catch(function (v) {
                 translated();
