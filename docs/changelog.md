@@ -8,10 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Breaking changes
 
+- All action answers were renamed to results.
 - All questions were renamed to actions.
 
 ### Changed
 
+- Rename answer to result
 - Rename questions to actions
 - Use venv for python dependencies
 
