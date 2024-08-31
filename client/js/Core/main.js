@@ -262,7 +262,7 @@ SCWeb.core.Main = {
                 SCWeb.ui.WindowManager.appendHistoryItem(result.action, commandState);
             } else if (result.command !== undefined) {
             } else {
-                alert("There are no any answer. Try another request");
+                alert("There are no any result. Try another request");
             }
         });
     },
@@ -293,17 +293,17 @@ SCWeb.core.Main = {
                 } else if (result.command !== undefined) {
 
                 } else {
-                    reject("There are no any answer. Try another request");
+                    reject("There are no any result. Try another request");
                 }
             })
         });
     },
 
-    getTranslatedAnswer: function (command_state) {
+    getTranslatedResult: function (command_state) {
         return new Promise(function (resolve) {
             SCWeb.core.Main.doCommandWithPromise(command_state).then(function (action_addr) {
-                SCWeb.core.Server.getAnswerTranslated(action_addr, command_state.format, command_state.lang, function (answer) {
-                    resolve(answer.link);
+                SCWeb.core.Server.getResultTranslated(action_addr, command_state.format, command_state.lang, function (result) {
+                    resolve(result.link);
                 })
             })
         })
@@ -322,7 +322,7 @@ SCWeb.core.Main = {
             } else if (result.command !== undefined) {
 
             } else {
-                alert("There are no any answer. Try another request");
+                alert("There are no any result. Try another request");
             }
         });
     },
@@ -371,7 +371,7 @@ SCWeb.core.Main = {
                 const commandState = new SCWeb.core.CommandState(cmd_addr, cmd_args, fmt_addr);
                 SCWeb.ui.WindowManager.appendHistoryItem(result.action, commandState);
             } else {
-                alert("There are no any answer. Try another request");
+                alert("There are no any result. Try another request");
             }
         });
     },

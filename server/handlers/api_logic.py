@@ -30,7 +30,7 @@ from .base import BaseHandler
 __all__ = (
     'parse_menu_command',
     'find_cmd_result',
-    'find_answer',
+    'find_result',
     'find_translation',
     'check_command_finished',
     'append_to_system_elements',
@@ -251,8 +251,8 @@ def find_cmd_result(command_addr: ScAddr) -> List[ScTemplateResult]:
 
 
 @decorators.method_logging
-def find_answer(action_addr: ScAddr) -> List[ScTemplateResult]:
-    def _get_answer():
+def find_result(action_addr: ScAddr) -> List[ScTemplateResult]:
+    def _get_result():
         keynodes = ScKeynodes()
 
         template = ScTemplate()
@@ -261,16 +261,16 @@ def find_answer(action_addr: ScAddr) -> List[ScTemplateResult]:
             sc_types.EDGE_D_COMMON_VAR,
             sc_types.NODE_VAR,
             sc_types.EDGE_ACCESS_VAR_POS_PERM,
-            keynodes[KeynodeSysIdentifiers.action_nrel_answer.value],
+            keynodes[KeynodeSysIdentifiers.action_nrel_result.value],
         )
         return client.template_search(template)
 
     wait_dt = 0.01
     begin_time = time.time()
-    result = _get_answer()
-    while (((begin_time + tornado.options.options.answer_wait_timeout) > time.time()) and result == None):
+    result = _get_result()
+    while (((begin_time + tornado.options.options.action_result_wait_timeout) > time.time()) and result == None):
         time.sleep(wait_dt)
-        result = _get_answer()
+        result = _get_result()
     return result
 
 
