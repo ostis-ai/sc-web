@@ -8,7 +8,7 @@ ScKeynodes.prototype.init = async function () {
     'nrel_system_identifier',
     'nrel_main_idtf',
     'nrel_idtf',
-    'nrel_answer',
+    'nrel_result',
     'basic_ontology_structure',
 
     'ui_user',

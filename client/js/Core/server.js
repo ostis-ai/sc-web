@@ -324,16 +324,16 @@ SCWeb.core.Server = {
         });
     },
 
-    /*! Function to get answer translated into specified format
-     * @param {action_addr} sc-addr of action to get answer translated
-     * @param {format_addr} sc-addr of format to translate answer
-     * @param {lang_addr} sc-addr of language to translate answer
+    /*! Function to get result translated into specified format
+     * @param {action_addr} sc-addr of action to get result translated
+     * @param {format_addr} sc-addr of format to translate result
+     * @param {lang_addr} sc-addr of language to translate result
      * @param {callback} Function, that will be called with received data in specified format
      */
-    getAnswerTranslated: function (action_addr, format_addr, lang_addr, callback) {
+    getResultTranslated: function (action_addr, format_addr, lang_addr, callback) {
         this._push_task({
             type: "POST",
-            url: "api/action/answer/translate/",
+            url: "api/action/result/translate/",
             data: {"action": action_addr, "format": format_addr, "lang": lang_addr},
             success: callback
         });

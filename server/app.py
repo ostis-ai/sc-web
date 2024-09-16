@@ -37,7 +37,7 @@ def parse_options():
                            help="path to template files directory",
                            type=str)
     tornado.options.define("event_wait_timeout", default=10, help="time to wait commands processing", type=int)
-    tornado.options.define("answer_wait_timeout", default=2, help="time to wait answer getting", type=int)
+    tornado.options.define("action_result_wait_timeout", default=2, help="time to wait action result getting", type=int)
     tornado.options.define("idtf_search_limit", default=100,
                            help="number of maximum results for searching by identifier", type=int)
     tornado.options.define("host", default="localhost", help="host name", type=str)
@@ -85,7 +85,7 @@ def init_app_rules():
         (r"/api/cmd/do/", api.CmdDo),
         (r"/api/cmd/text/", NaturalLanguageSearch),
 
-        (r"/api/action/answer/translate/", api.ActionAnswerTranslate),
+        (r"/api/action/result/translate/", api.ActionResultTranslate),
 
         (r"/api/languages/", api.Languages),
         (r"/api/languages/set/", api.LanguageSet),

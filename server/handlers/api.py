@@ -68,7 +68,7 @@ class CmdDo(base.BaseHandler):
             self.finish(json.dumps(result))
 
 
-class ActionAnswerTranslate(base.BaseHandler):
+class ActionResultTranslate(base.BaseHandler):
     # @tornado.web.asynchronous
     def post(self):
         action_addr = ScAddr(int(self.get_argument(u'action', None)))
@@ -85,34 +85,34 @@ class ActionAnswerTranslate(base.BaseHandler):
         ui_command_translate_from_sc = keynodes[KeynodeSysIdentifiers.ui_command_translate_from_sc.value]
         ui_command_initiated = keynodes[KeynodeSysIdentifiers.ui_command_initiated.value]
 
-        # try to find answer for the action
+        # try to find result for the action
         wait_time = 0
         wait_dt = 0.1
 
-        answer = logic.find_answer(action_addr)
-        while not answer:
+        result = logic.find_result(action_addr)
+        while not result:
             time.sleep(wait_dt)
             wait_time += wait_dt
             if wait_time > tornado.options.options.event_wait_timeout:
-                return logic.serialize_error(self, 404, 'Timeout waiting for answer')
+                return logic.serialize_error(self, 404, 'Timeout waiting for result')
 
-            answer = logic.find_answer(action_addr)
+            result = logic.find_result(action_addr)
 
-        if not answer:
-            return logic.serialize_error(self, 404, 'Answer not found')
+        if not result:
+            return logic.serialize_error(self, 404, 'Result not found')
 
-        answer_addr = answer[0].get(2)
+        result_addr = result[0].get(2)
 
         # try to find translation to specified format
-        result_link_addr = logic.find_translation_with_format(answer_addr, format_addr)
+        result_link_addr = logic.find_translation_with_format(result_addr, format_addr)
 
-        # if link addr not found, then run translation of answer to specified format
+        # if link addr not found, then run translation of result to specified format
         result = {}
         if not result_link_addr.is_valid():
             construction = ScConstruction()
             construction.create_node(sc_types.NODE_CONST, 'trans_cmd_addr')
             construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'trans_cmd_addr')
-            construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, 'trans_cmd_addr', answer_addr, 'arc_addr')
+            construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, 'trans_cmd_addr', result_addr, 'arc_addr')
             construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_addr')
             construction.create_edge(
                 sc_types.EDGE_ACCESS_CONST_POS_PERM, ui_rrel_source_sc_construction, 'arc_addr', 'arc_addr_2')
@@ -142,14 +142,14 @@ class ActionAnswerTranslate(base.BaseHandler):
 
             # now we need to wait translation result
             wait_time = 0
-            translation = logic.find_translation_with_format(answer_addr, format_addr)
+            translation = logic.find_translation_with_format(result_addr, format_addr)
             while not translation.is_valid():
                 time.sleep(wait_dt)
                 wait_time += wait_dt
                 if wait_time > tornado.options.options.event_wait_timeout:
-                    return logic.serialize_error(self, 404, 'Timeout waiting for answer translation')
+                    return logic.serialize_error(self, 404, 'Timeout waiting for result translation')
 
-                translation = logic.find_translation_with_format(answer_addr, format_addr)
+                translation = logic.find_translation_with_format(result_addr, format_addr)
 
             if translation is not None:
                 result_link_addr = translation

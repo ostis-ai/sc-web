@@ -136,12 +136,12 @@ ScHelper.prototype.getOutputLanguages = function () {
   return window.scHelper.getSetElements(window.scKeynodes['ui_external_languages']);
 };
 
-/*! Function to find answer for a specified action
- * @param action_addr sc-addr of action to get answer
- * @returns Returns promise object, that resolves with sc-addr of found answer structure.
+/*! Function to find result for a specified action
+ * @param action_addr sc-addr of action to get result
+ * @returns Returns promise object, that resolves with sc-addr of found result structure.
  * If function fails, then promise rejects
  */
-ScHelper.prototype.getAnswer = function (action_addr) {
+ScHelper.prototype.getResult = function (action_addr) {
   return new Promise(async (resolve) => {
     let template = new sc.ScTemplate();
     let timer = setTimeout(async () => {
@@ -152,15 +152,15 @@ ScHelper.prototype.getAnswer = function (action_addr) {
     template.tripleWithRelation(
       new sc.ScAddr(parseInt(action_addr)),
       sc.ScType.EdgeDCommonVar,
-      [sc.ScType.NodeVar, "_answer"],
+      [sc.ScType.NodeVar, "_result"],
       sc.ScType.EdgeAccessVarPosPerm,
-      new sc.ScAddr(window.scKeynodes['nrel_answer']),
+      new sc.ScAddr(window.scKeynodes['nrel_result']),
     );
     let templateSearch = [];
     while (!templateSearch.length && timer) {
       templateSearch = await this.scClient.templateSearch(template);
       if (templateSearch.length) {
-        resolve(templateSearch[0].get("_answer").value);
+        resolve(templateSearch[0].get("_result").value);
         clearTimeout(timer);
         break;
       }

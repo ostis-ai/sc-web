@@ -164,13 +164,13 @@ SCWeb.core.ComponentSandbox.prototype.removeChild = function removeChild() {
     this.childs = {};
 };
 
-SCWeb.core.ComponentSandbox.prototype.updateAnswer = function () {
-    var performAnswer = jQuery.proxy(function (answer_addr) {
-        this.addr = answer_addr;
+SCWeb.core.ComponentSandbox.prototype.updateResult = function () {
+    var performResult = jQuery.proxy(function (result_addr) {
+        this.addr = result_addr;
         this.removeChild();
     }, this);
-    return SCWeb.core.Main.getTranslatedAnswer(this.command_state)
-        .then(performAnswer);
+    return SCWeb.core.Main.getTranslatedResult(this.command_state)
+        .then(performResult);
 }
 
 /**

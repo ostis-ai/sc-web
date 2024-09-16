@@ -226,14 +226,14 @@ SCWeb.ui.WindowManager = {
         };
 
         var translated = function () {
-            SCWeb.core.Server.getAnswerTranslated(action_addr, command_state.format, command_state.lang, function (d) {
+            SCWeb.core.Server.getResultTranslated(action_addr, command_state.format, command_state.lang, function (d) {
                 f(d.link, false);
             });
         };
 
         if (SCWeb.core.ComponentManager.isStructSupported(command_state.format)) {
-            // determine answer structure
-            window.scHelper.getAnswer(action_addr).then(function (addr) {
+            // determine result structure
+            window.scHelper.getResult(action_addr).then(function (addr) {
                 f(addr, true);
             }).catch(function (v) {
                 translated();

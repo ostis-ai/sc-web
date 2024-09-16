@@ -49,7 +49,7 @@ class KeynodeSysIdentifiers(Enum):
     nrel_ui_nrel_command_lang_template = 'ui_nrel_command_lang_template'
     
     action = 'action'
-    action_nrel_answer = 'nrel_answer'
+    action_nrel_result = 'nrel_result'
     action_initiated = 'action_initiated'
     action_search_all_output_arcs = 'action_search_all_output_arcs'
     
