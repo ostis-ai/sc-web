@@ -36,6 +36,12 @@ If you're using Ubuntu, you can install node and python runtimes using our scrip
 ./scripts/install_dependencies.sh
 ```
 
+After installing dependencies, you need to reopen the terminal and make sure that you use the specific version of nodejs. Otherwise, use the following command:
+
+```sh
+nvm use 16
+```
+
 Otherwise, the following dependencies should be installed:
 
 - python3
