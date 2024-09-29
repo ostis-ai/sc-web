@@ -53,7 +53,7 @@ SCs.SCnOutput.prototype = {
         if (treeNode.type == SCs.SCnTreeNodeType.Keyword) {
             output = '<div class="scs-scn-field scs-scn-field-root"><div class="scs-scn-keyword">' + this.treeNodeElementHtml(treeNode, true) + '</div>';
 
-            if (treeNode.element.type & sc_type_link) {
+            if (treeNode.element.type & sc_type_node_link) {
                 output += '<div class="scs-scn-field"><div class="scs-scn-field-marker scs-scn-element">=</div>'
                     //+ '' //sc_addr="' + treeNode.element.addr + '">'
                     + this.treeNodeElementHtml(treeNode)
@@ -136,7 +136,7 @@ SCs.SCnOutput.prototype = {
 
     treeNodeElementHtml: function (treeNode, isKeyword) {
 
-        if (!isKeyword && treeNode.element.type & sc_type_link) {
+        if (!isKeyword && treeNode.element.type & sc_type_node_link) {
             var containerId = this.container + '_' + this.linkCounter;
             this.linkCounter++;
             this.sc_links[containerId] = {addr: treeNode.element.addr};
@@ -359,7 +359,7 @@ SCs.SCnOutput.prototype = {
             var idx = 0;
             while (idx < node.childs.length) {
                 var child = node.childs[idx];
-                if (child.predicate.type == sc_type_arc_pos_const_perm) {
+                if (child.predicate.type == sc_type_const_perm_pos_arc) {
                     elements = elements.concat(node.childs.splice(idx, 1));
                 } else {
                     idx++;
@@ -383,7 +383,7 @@ SCs.SCnOutput.prototype = {
             for (idx in this.tree.triples) {
                 var tpl = this.tree.triples[idx];
 
-                if (tpl[1].type != (sc_type_arc_common | sc_type_const)) continue;
+                if (tpl[1].type != (sc_type_common_arc | sc_type_const)) continue;
                 if (!checkInElements(tpl[0].addr) || !checkInElements(tpl[2].addr)) continue;
 
                 // determine if it's order relation

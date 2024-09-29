@@ -79,12 +79,12 @@ var SCnViewer = function (sandbox) {
 var SCsConnectors = {};
 
 $(document).ready(function () {
-    SCsConnectors[sc_type_arc_pos_const_perm] = "->";
-    SCsConnectors[sc_type_edge_common | sc_type_const] = "==";
-    SCsConnectors[sc_type_edge_common | sc_type_var] = "_==";
-    SCsConnectors[sc_type_arc_common | sc_type_const] = "=>";
-    SCsConnectors[sc_type_arc_common | sc_type_var] = "_=>";
-    SCsConnectors[sc_type_arc_access | sc_type_var | sc_type_arc_pos | sc_type_arc_perm] = "_->";
+    SCsConnectors[sc_type_const_perm_pos_arc] = "->";
+    SCsConnectors[sc_type_common_edge | sc_type_const] = "==";
+    SCsConnectors[sc_type_common_edge | sc_type_var] = "_==";
+    SCsConnectors[sc_type_common_arc | sc_type_const] = "=>";
+    SCsConnectors[sc_type_common_arc | sc_type_var] = "_=>";
+    SCsConnectors[sc_type_var | sc_type_membership_arc | sc_type_pos_arc | sc_type_perm_arc] = "_->";
 });
 
 

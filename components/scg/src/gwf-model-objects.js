@@ -352,7 +352,7 @@ GwfObjectLink.prototype.parseObject = function (args) {
 GwfObjectLink.prototype.buildObject = function (args) {
     var scene = args.scene;
     let constancy = this.attributes["type"] & sc_type_constancy_mask;
-    let linkType = sc_type_link | constancy;
+    let linkType = sc_type_node_link | constancy;
     var link = SCg.Creator.createLink(linkType, new SCg.Vector3(this.attributes["x"] + GwfObjectController.getXOffset(),
             this.attributes["y"] + +GwfObjectController.getYOffset(),
         0),

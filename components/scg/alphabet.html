@@ -27,15 +27,15 @@
         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="viewer">
             <defs>
                 
-                <circle id="scg.node.const.outer" cx="0" cy="0" r="10"/>
-                <rect id="scg.node.var.outer" width="20" height="20" x="-10" y="-10"/>
+                <circle id="scg.const.node.outer" cx="0" cy="0" r="10"/>
+                <rect id="scg.var.node.outer" width="20" height="20" x="-10" y="-10"/>
                 
-                <clip-path id="scg.node.const.clip">
-                    <use xlink:href="#scg.node.const.outer" />
+                <clip-path id="scg.const.node.clip">
+                    <use xlink:href="#scg.const.node.outer" />
                 </clip-path>
                 
-                <clip-path id="scg.node.var.clip">
-                    <use xlink:href="#scg.node.var.outer" />
+                <clip-path id="scg.var.node.clip">
+                    <use xlink:href="#scg.var.node.outer" />
                 </clip-path>
                 
                 <!-- define constant nodes -->
@@ -44,47 +44,47 @@
                     <text x="7" y="15" class="SCgText">scg.node</text>
                 </g>
                 
-                <g id="scg.node.const">
-                    <use xlink:href="#scg.node.const.outer"/>
-                    <text x="17" y="21" class="SCgText">scg.node.const</text>
+                <g id="scg.const.node">
+                    <use xlink:href="#scg.const.node.outer"/>
+                    <text x="17" y="21" class="SCgText">scg.const.node</text>
                 </g>
                 
-                <g id="scg.node.const.tuple">
-                    <use xlink:href="#scg.node.const.outer"/>
+                <g id="scg.const.node.tuple">
+                    <use xlink:href="#scg.const.node.outer"/>
                     <line x1="-10" x2="10" y1="0" y2="0" stroke-width="3px"/>
-                    <text x="17" y="21" class="SCgText">scg.node.const.tuple</text>
+                    <text x="17" y="21" class="SCgText">scg.const.node.tuple</text>
                 </g>
                 
-                <g id="scg.node.const.struct">
-                    <use xlink:href="#scg.node.const.outer"/>
+                <g id="scg.const.node.struct">
+                    <use xlink:href="#scg.const.node.outer"/>
                     <circle cx="0" cy="0" r="3" stroke="none" fill="#000"/>
-                    <text x="17" y="21" class="SCgText">scg.node.const.struct</text>
+                    <text x="17" y="21" class="SCgText">scg.const.node.struct</text>
                 </g>
                 
-                <g id="scg.node.const.role">
-                    <use xlink:href="#scg.node.const.outer"/>
+                <g id="scg.const.node.role">
+                    <use xlink:href="#scg.const.node.outer"/>
                     <line x1="-10" x2="10" y1="0" y2="0" stroke-width="3px"/>
                     <line x1="0" x2="0" y1="-10" y2="10" stroke-width="3px"/>
-                    <text x="17" y="21" class="SCgText">scg.node.const.role</text>
+                    <text x="17" y="21" class="SCgText">scg.const.node.role</text>
                 </g>
                 
-                <g id="scg.node.const.norole">
-                    <use xlink:href="#scg.node.const.outer"/>
+                <g id="scg.const.node.norole">
+                    <use xlink:href="#scg.const.node.outer"/>
                     <line x1="-10" x2="10" y1="0" y2="0" stroke-width="3px" transform="rotate(45, 0, 0)"/>
                     <line x1="-10" x2="10" y1="0" y2="0" stroke-width="3px" transform="rotate(-45, 0, 0)"/>
-                    <text x="17" y="21" class="SCgText">scg.node.const.norole</text>
+                    <text x="17" y="21" class="SCgText">scg.const.node.norole</text>
                 </g>
                 
-                <g id="scg.node.const.class">
-                    <use xlink:href="#scg.node.const.outer"/>
+                <g id="scg.const.node.class">
+                    <use xlink:href="#scg.const.node.outer"/>
                     <line x1="-10" x2="10" y1="0" y2="0" stroke-width="3px" transform="rotate(45, 0, 0)"/>
                     <line x1="-10" x2="10" y1="0" y2="0" stroke-width="3px" transform="rotate(-45, 0, 0)"/>
                     <line x1="-10" x2="10" y1="0" y2="0" stroke-width="3px"/>
-                    <text x="17" y="21" class="SCgText">scg.node.const.class</text>
+                    <text x="17" y="21" class="SCgText">scg.const.node.class</text>
                 </g>
                 
-                <g id="scg.node.const.abstract" ">
-                    <use xlink:href="#scg.node.const.outer"/>
+                <g id="scg.const.node.superclass" ">
+                    <use xlink:href="#scg.const.node.outer"/>
                     <g stroke-width="1px ">
                         <line x1="-10" x2="10" y1="-6" y2="-6"/>
                         <line x1="-10" x2="10" y1="-3" y2="-3"/>
@@ -92,11 +92,11 @@
                         <line x1="-10" x2="10" y1="3" y2="3"/>
                         <line x1="-10" x2="10" y1="6" y2="6"/>
                     </g>
-                    <text x="17" y="21" class="SCgText">scg.node.const.abstract</text>
+                    <text x="17" y="21" class="SCgText">scg.const.node.superclass</text>
                 </g>
                 
-                <g id="scg.node.const.material">
-                    <use xlink:href="#scg.node.const.outer"/>
+                <g id="scg.const.node.material">
+                    <use xlink:href="#scg.const.node.outer"/>
                     <g stroke-width="1px" transform="rotate(-45, 0, 0)">
                         <line x1="-10" x2="10" y1="-6" y2="-6"/>
                         <line x1="-10" x2="10" y1="-3" y2="-3"/>
@@ -104,52 +104,52 @@
                         <line x1="-10" x2="10" y1="3" y2="3"/>
                         <line x1="-10" x2="10" y1="6" y2="6"/>
                     </g>
-                    <text x="17" y="21" class="SCgText">scg.node.const.material</text>
+                    <text x="17" y="21" class="SCgText">scg.const.node.material</text>
                 </g>
                 
                 
                 <!-- define variable nodes -->
-                <g id="scg.node.var">
-                    <use xlink:href="#scg.node.var.outer"/>
-                    <text x="17" y="21" class="SCgText">scg.node.var</text>
+                <g id="scg.var.node">
+                    <use xlink:href="#scg.var.node.outer"/>
+                    <text x="17" y="21" class="SCgText">scg.var.node</text>
                 </g>
                 
-                <g id="scg.node.var.tuple">
-                    <use xlink:href="#scg.node.var.outer"/>
+                <g id="scg.var.node.tuple">
+                    <use xlink:href="#scg.var.node.outer"/>
                     <line x1="-10" x2="10" y1="0" y2="0" stroke-width="3px"/>
-                    <text x="17" y="21" class="SCgText">scg.node.var.tuple</text>
+                    <text x="17" y="21" class="SCgText">scg.var.node.tuple</text>
                 </g>
                 
-                <g id="scg.node.var.struct">
-                    <use xlink:href="#scg.node.var.outer"/>
+                <g id="scg.var.node.struct">
+                    <use xlink:href="#scg.var.node.outer"/>
                     <circle cx="0" cy="0" r="3" stroke="none" fill="#000"/>
-                    <text x="17" y="21" class="SCgText">scg.node.var.struct</text>
+                    <text x="17" y="21" class="SCgText">scg.var.node.struct</text>
                 </g>
                 
-                <g id="scg.node.var.role">
-                    <use xlink:href="#scg.node.var.outer"/>
+                <g id="scg.var.node.role">
+                    <use xlink:href="#scg.var.node.outer"/>
                     <line x1="-10" x2="10" y1="0" y2="0" stroke-width="3px"/>
                     <line x1="0" x2="0" y1="-10" y2="10" stroke-width="3px"/>
-                    <text x="17" y="21" class="SCgText">scg.node.var.role</text>
+                    <text x="17" y="21" class="SCgText">scg.var.node.role</text>
                 </g>
                 
-                <g id="scg.node.var.norole">
-                    <use xlink:href="#scg.node.var.outer"/>
+                <g id="scg.var.node.norole">
+                    <use xlink:href="#scg.var.node.outer"/>
                     <line x1="-10" x2="10" y1="0" y2="0" stroke-width="3px" transform="rotate(45, 0, 0)"/>
                     <line x1="-10" x2="10" y1="0" y2="0" stroke-width="3px" transform="rotate(-45, 0, 0)"/>
-                    <text x="17" y="21" class="SCgText">scg.node.var.norole</text>
+                    <text x="17" y="21" class="SCgText">scg.var.node.norole</text>
                 </g>
                 
-                <g id="scg.node.var.class">
-                    <use xlink:href="#scg.node.var.outer"/>
+                <g id="scg.var.node.class">
+                    <use xlink:href="#scg.var.node.outer"/>
                     <line x1="-10" x2="10" y1="0" y2="0" stroke-width="3px" transform="rotate(45, 0, 0)"/>
                     <line x1="-10" x2="10" y1="0" y2="0" stroke-width="3px" transform="rotate(-45, 0, 0)"/>
                     <line x1="-10" x2="10" y1="0" y2="0" stroke-width="3px"/>
-                    <text x="17" y="21" class="SCgText">scg.node.var.class</text>
+                    <text x="17" y="21" class="SCgText">scg.var.node.class</text>
                 </g>
                 
-                <g id="scg.node.var.abstract">
-                    <use xlink:href="#scg.node.var.outer"/>
+                <g id="scg.var.node.superclass">
+                    <use xlink:href="#scg.var.node.outer"/>
                     <g stroke-width="1px">
                         <line x1="-10" x2="10" y1="-6" y2="-6"/>
                         <line x1="-10" x2="10" y1="-3" y2="-3"/>
@@ -157,11 +157,11 @@
                         <line x1="-10" x2="10" y1="3" y2="3"/>
                         <line x1="-10" x2="10" y1="6" y2="6"/>
                     </g>
-                    <text x="17" y="21" class="SCgText">scg.node.var.abstract</text>
+                    <text x="17" y="21" class="SCgText">scg.var.node.superclass</text>
                 </g>
                 
-                <g id="scg.node.var.material">
-                    <use xlink:href="#scg.node.var.outer"/>
+                <g id="scg.var.node.material">
+                    <use xlink:href="#scg.var.node.outer"/>
                     <g stroke-width="1px" transform="rotate(-45, 0, 0)">
                         <line x1="-10" x2="10" y1="-6" y2="-6"/>
                         <line x1="-10" x2="10" y1="-3" y2="-3"/>
@@ -169,7 +169,7 @@
                         <line x1="-10" x2="10" y1="3" y2="3"/>
                         <line x1="-10" x2="10" y1="6" y2="6"/>
                     </g>
-                    <text x="17" y="21" class="SCgText">scg.node.var.material</text>
+                    <text x="17" y="21" class="SCgText">scg.var.node.material</text>
                 </g>
                 
                 
@@ -190,24 +190,24 @@
 
             <!-- constant nodes -->
             <use xlink:href="#scg.node" x="75" y="25" id="comp1"/>
-            <use xlink:href="#scg.node.const" x="75" y="75" id="comp2" class="SCgNode"/>
-            <use xlink:href="#scg.node.const.tuple" x="75" y="125" id="comp3" class="SCgNode"/>
-            <use xlink:href="#scg.node.const.struct" x="75" y="175" id="comp4" class="SCgNode"/>
-            <use xlink:href="#scg.node.const.role" x="75" y="225" id="comp5" class="SCgNode"/>
-            <use xlink:href="#scg.node.const.norole" x="75" y="275" id="comp6" class="SCgNode"/>
-            <use xlink:href="#scg.node.const.class" x="75" y="325" id="comp7" class="SCgNode"/>
-            <use xlink:href="#scg.node.const.abstract" x="75" y="375" id="comp8" class="SCgNode"/>
-            <use xlink:href="#scg.node.const.material" x="75" y="425" id="comp9" class="SCgNode"/>
+            <use xlink:href="#scg.const.node" x="75" y="75" id="comp2" class="SCgNode"/>
+            <use xlink:href="#scg.const.node.tuple" x="75" y="125" id="comp3" class="SCgNode"/>
+            <use xlink:href="#scg.const.node.struct" x="75" y="175" id="comp4" class="SCgNode"/>
+            <use xlink:href="#scg.const.node.role" x="75" y="225" id="comp5" class="SCgNode"/>
+            <use xlink:href="#scg.const.node.norole" x="75" y="275" id="comp6" class="SCgNode"/>
+            <use xlink:href="#scg.const.node.class" x="75" y="325" id="comp7" class="SCgNode"/>
+            <use xlink:href="#scg.const.node.superclass" x="75" y="375" id="comp8" class="SCgNode"/>
+            <use xlink:href="#scg.const.node.material" x="75" y="425" id="comp9" class="SCgNode"/>
             
             <!-- variable nodes -->
-            <use xlink:href="#scg.node.var" x="325" y="75" id="comp10" class="SCgNode SCgHighlighted"/>
-            <use xlink:href="#scg.node.var.tuple" x="325" y="125" id="comp11" class="SCgNode"/>
-            <use xlink:href="#scg.node.var.struct" x="325" y="175" id="comp12" class="SCgNode"/>
-            <use xlink:href="#scg.node.var.role" x="325" y="225" id="comp13" class="SCgNode"/>
-            <use xlink:href="#scg.node.var.norole" x="325" y="275" id="comp14" class="SCgNode"/>
-            <use xlink:href="#scg.node.var.class" x="325" y="325" id="comp15" class="SCgNode"/>
-            <use xlink:href="#scg.node.var.abstract" x="325" y="375" id="comp16" class="SCgNode"/>
-            <use xlink:href="#scg.node.var.material" x="325" y="425" id="comp17" class="SCgNode"/>
+            <use xlink:href="#scg.var.node" x="325" y="75" id="comp10" class="SCgNode SCgHighlighted"/>
+            <use xlink:href="#scg.var.node.tuple" x="325" y="125" id="comp11" class="SCgNode"/>
+            <use xlink:href="#scg.var.node.struct" x="325" y="175" id="comp12" class="SCgNode"/>
+            <use xlink:href="#scg.var.node.role" x="325" y="225" id="comp13" class="SCgNode"/>
+            <use xlink:href="#scg.var.node.norole" x="325" y="275" id="comp14" class="SCgNode"/>
+            <use xlink:href="#scg.var.node.class" x="325" y="325" id="comp15" class="SCgNode"/>
+            <use xlink:href="#scg.var.node.superclass" x="325" y="375" id="comp16" class="SCgNode"/>
+            <use xlink:href="#scg.var.node.material" x="325" y="425" id="comp17" class="SCgNode"/>
             
             
             <!-- edges -->

@@ -71,7 +71,7 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
         let copiedObject;
         if (type & sc_type_node) {
             copiedObject = createNode(addr, type);
-        } else if (type & sc_type_link) {
+        } else if (type & sc_type_node_link) {
             copiedObject = createLink(addr, type);
         } else if (type & sc_type_arc_mask) {
             copiedObject = createEdge(object.source, object.target, type);
@@ -112,7 +112,7 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
 
             if (type & sc_type_node) {
                 object = createNode(addr, type);
-            } else if (type & sc_type_link) {
+            } else if (type & sc_type_node_link) {
                 object = createLink(addr, type);
             } else if (type & sc_type_arc_mask) {
                 const sourceHash = task[4];
@@ -428,7 +428,7 @@ const SCgStructToScTranslatorImpl = function (_editor, _sandbox) {
     const translateContours = async function (contours) {
         // now need to process arcs from contours to child elements
         const arcGen = async function (contour, child) {
-            let edgeExist = await window.scHelper.checkEdge(contour.sc_addr, sc_type_arc_pos_const_perm, child.sc_addr);
+            let edgeExist = await window.scHelper.checkEdge(contour.sc_addr, sc_type_const_perm_pos_arc, child.sc_addr);
             if (!edgeExist) {
                 let scConstruction = new sc.ScConstruction();
                 scConstruction.createEdge(sc.ScType.EdgeAccessConstPosPerm, new sc.ScAddr(contour.sc_addr), new sc.ScAddr(child.sc_addr), 'edge');

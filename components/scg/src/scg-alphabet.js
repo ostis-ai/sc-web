@@ -27,18 +27,18 @@ var SCgAlphabet = {
             .attr('d', 'M0,-4L10,0L0,4').attr('fill', '#000');
 
         // nodes
-        defs.append('svg:circle').attr('id', 'scg.node.const.outer').attr('cx', '0').attr('cy', '0').attr('r', '10');
-        defs.append('svg:rect').attr('id', 'scg.node.var.outer').attr('x', '-10').attr('y', '-10').attr('width', '20').attr('height', '20');
+        defs.append('svg:circle').attr('id', 'scg.const.node.outer').attr('cx', '0').attr('cy', '0').attr('r', '10');
+        defs.append('svg:rect').attr('id', 'scg.var.node.outer').attr('x', '-10').attr('y', '-10').attr('width', '20').attr('height', '20');
 
         defs.append('svg:clip-path')
-            .attr('id', 'scg.node.const.clip')
+            .attr('id', 'scg.const.node.clip')
             .append('svg:use')
-            .attr('xlink:href', '#scg.node.const.clip');
+            .attr('xlink:href', '#scg.const.node.clip');
 
         defs.append('svg:clip-path')
-            .attr('id', 'scg.node.var.clip')
+            .attr('id', 'scg.var.node.clip')
             .append('svg:use')
-            .attr('xlink:href', '#scg.node.var.clip');
+            .attr('xlink:href', '#scg.var.node.clip');
 
 
         //  ----- define constant nodes -----      
@@ -46,52 +46,49 @@ var SCgAlphabet = {
         g.append('svg:circle').attr('cx', '0').attr('cy', '0').attr('r', '5');
         g.append('svg:text').attr('x', '7').attr('y', '15').attr('class', 'SCgText');
 
-        g = defs.append('svg:g').attr('id', 'scg.node.const');
-        g.append('svg:use').attr('xlink:href', '#scg.node.const.outer');
+        g = defs.append('svg:g').attr('id', 'scg.const.node');
+        g.append('svg:use').attr('xlink:href', '#scg.const.node.outer');
         this.appendText(g);
 
-        g = defs.append('svg:g').attr('id', 'scg.node.const.tuple');
-        g.append('svg:use').attr('xlink:href', '#scg.node.const.outer');
+        g = defs.append('svg:g').attr('id', 'scg.const.node.tuple');
+        g.append('svg:use').attr('xlink:href', '#scg.const.node.outer');
         g.append('svg:line').attr('x1', '-10').attr('x2', '10').attr('y1', '0').attr('y2', '0').attr('stroke-width', nodeLineStroke);
         this.appendText(g);
 
-        g = defs.append('svg:g').attr('id', 'scg.node.const.struct');
-        g.append('svg:use').attr('xlink:href', '#scg.node.const.outer');
+        g = defs.append('svg:g').attr('id', 'scg.const.node.struct');
+        g.append('svg:use').attr('xlink:href', '#scg.const.node.outer');
         g.append('svg:circle').attr('cx', '0').attr('cy', '0').attr('r', '2').attr('stroke', 'none').attr('fill', '#000');
         this.appendText(g);
 
-        g = defs.append('svg:g').attr('id', 'scg.node.const.role');
-        g.append('svg:use').attr('xlink:href', '#scg.node.const.outer');
+        g = defs.append('svg:g').attr('id', 'scg.const.node.role');
+        g.append('svg:use').attr('xlink:href', '#scg.const.node.outer');
         g.append('svg:line').attr('x1', '0').attr('x2', '0').attr('y1', '-10').attr('y2', '10').attr('stroke-width', nodeLineStroke);
         g.append('svg:line').attr('x1', '-10').attr('x2', '10').attr('y1', '0').attr('y2', '0').attr('stroke-width', nodeLineStroke);
         this.appendText(g);
 
-        g = defs.append('svg:g').attr('id', 'scg.node.const.norole');
-        g.append('svg:use').attr('xlink:href', '#scg.node.const.outer');
+        g = defs.append('svg:g').attr('id', 'scg.const.node.norole');
+        g.append('svg:use').attr('xlink:href', '#scg.const.node.outer');
         g.append('svg:line').attr('x1', '-10').attr('x2', '10').attr('y1', '0').attr('y2', '0').attr('stroke-width', nodeLineStroke).attr('transform', 'rotate(45, 0, 0)');
         g.append('svg:line').attr('x1', '-10').attr('x2', '10').attr('y1', '0').attr('y2', '0').attr('stroke-width', nodeLineStroke).attr('transform', 'rotate(-45, 0, 0)');
         this.appendText(g);
 
-        g = defs.append('svg:g').attr('id', 'scg.node.const.class');
-        g.append('svg:use').attr('xlink:href', '#scg.node.const.outer');
+        g = defs.append('svg:g').attr('id', 'scg.const.node.class');
+        g.append('svg:use').attr('xlink:href', '#scg.const.node.outer');
         g.append('svg:line').attr('x1', '-10').attr('x2', '10').attr('y1', '-3').attr('y2', '-3').attr('stroke-width', nodeLineStroke)
         g.append('svg:line').attr('x1', '-10').attr('x2', '10').attr('y1', '3').attr('y2', '3').attr('stroke-width', nodeLineStroke);
         g.append('svg:line').attr('x1', '-3').attr('x2', '-3').attr('y1', '-10').attr('y2', '10').attr('stroke-width', nodeLineStroke);
         g.append('svg:line').attr('x1', '3').attr('x2', '3').attr('y1', '-10').attr('y2', '10').attr('stroke-width', nodeLineStroke);
         this.appendText(g);
 
-        g = defs.append('svg:g').attr('id', 'scg.node.const.abstract');//.attr('clip-path', 'url(#scg.node.const.clip)');
-        g.append('svg:use').attr('xlink:href', '#scg.node.const.outer');
-        var g2 = g.append('svg:g').attr('stroke-width', nodeLineStroke);
-        g2.append('svg:line').attr('x1', '-10').attr('x2', '10').attr('y1', '-6').attr('y2', '-6');
-        g2.append('svg:line').attr('x1', '-10').attr('x2', '10').attr('y1', '-3').attr('y2', '-3');
-        g2.append('svg:line').attr('x1', '-10').attr('x2', '10').attr('y1', '0').attr('y2', '0');
-        g2.append('svg:line').attr('x1', '-10').attr('x2', '10').attr('y1', '3').attr('y2', '3');
-        g2.append('svg:line').attr('x1', '-10').attr('x2', '10').attr('y1', '6').attr('y2', '6');
+        g = defs.append('svg:g').attr('id', 'scg.const.node.superclass');
+        g.append('svg:use').attr('xlink:href', '#scg.const.node.outer');
+        // Draw the circumflex shape
+        g.append('svg:line').attr('x1', '-7').attr('x2', '0').attr('y1', '7').attr('y2', '-7').attr('stroke-width', nodeLineStroke);
+        g.append('svg:line').attr('x1', '7').attr('x2', '0').attr('y1', '7').attr('y2', '-7').attr('stroke-width', nodeLineStroke);
         this.appendText(g);
 
-        g = defs.append('svg:g').attr('id', 'scg.node.const.material');//.attr('clip-path', 'url(#scg.node.const.clip)');
-        g.append('svg:use').attr('xlink:href', '#scg.node.const.outer');
+        g = defs.append('svg:g').attr('id', 'scg.const.node.material');//.attr('clip-path', 'url(#scg.const.node.clip)');
+        g.append('svg:use').attr('xlink:href', '#scg.const.node.outer');
         var g2 = g.append('svg:g').attr('stroke-width', nodeLineStroke).attr('transform', 'rotate(-45, 0, 0)');
         g2.append('svg:line').attr('x1', '-9').attr('x2', '9').attr('y1', '-6').attr('y2', '-6');
         g2.append('svg:line').attr('x1', '-10').attr('x2', '10').attr('y1', '-3').attr('y2', '-3');
@@ -102,52 +99,49 @@ var SCgAlphabet = {
 
 
         //  ----- define variable nodes -----
-        g = defs.append('svg:g').attr('id', 'scg.node.var');
-        g.append('svg:use').attr('xlink:href', '#scg.node.var.outer');
+        g = defs.append('svg:g').attr('id', 'scg.var.node');
+        g.append('svg:use').attr('xlink:href', '#scg.var.node.outer');
         this.appendText(g);
 
-        g = defs.append('svg:g').attr('id', 'scg.node.var.tuple');
-        g.append('svg:use').attr('xlink:href', '#scg.node.var.outer');
+        g = defs.append('svg:g').attr('id', 'scg.var.node.tuple');
+        g.append('svg:use').attr('xlink:href', '#scg.var.node.outer');
         g.append('svg:line').attr('x1', '-10').attr('x2', '10').attr('y1', '0').attr('y2', '0').attr('stroke-width', nodeLineStroke);
         this.appendText(g);
 
-        g = defs.append('svg:g').attr('id', 'scg.node.var.struct');
-        g.append('svg:use').attr('xlink:href', '#scg.node.var.outer');
+        g = defs.append('svg:g').attr('id', 'scg.var.node.struct');
+        g.append('svg:use').attr('xlink:href', '#scg.var.node.outer');
         g.append('svg:circle').attr('cx', '0').attr('cy', '0').attr('r', '2').attr('stroke', 'none').attr('fill', '#000');
         this.appendText(g);
 
-        g = defs.append('svg:g').attr('id', 'scg.node.var.role');
-        g.append('svg:use').attr('xlink:href', '#scg.node.var.outer');
+        g = defs.append('svg:g').attr('id', 'scg.var.node.role');
+        g.append('svg:use').attr('xlink:href', '#scg.var.node.outer');
         g.append('svg:line').attr('x1', '0').attr('x2', '0').attr('y1', '-10').attr('y2', '10').attr('stroke-width', nodeLineStroke);
         g.append('svg:line').attr('x1', '-10').attr('x2', '10').attr('y1', '0').attr('y2', '0').attr('stroke-width', nodeLineStroke);
         this.appendText(g);
 
-        g = defs.append('svg:g').attr('id', 'scg.node.var.norole');
-        g.append('svg:use').attr('xlink:href', '#scg.node.var.outer');
+        g = defs.append('svg:g').attr('id', 'scg.var.node.norole');
+        g.append('svg:use').attr('xlink:href', '#scg.var.node.outer');
         g.append('svg:line').attr('x1', '-12').attr('x2', '12').attr('y1', '0').attr('y2', '0').attr('stroke-width', nodeLineStroke).attr('transform', 'rotate(45, 0, 0)');
         g.append('svg:line').attr('x1', '-12').attr('x2', '12').attr('y1', '0').attr('y2', '0').attr('stroke-width', nodeLineStroke).attr('transform', 'rotate(-45, 0, 0)');
         this.appendText(g);
 
-        g = defs.append('svg:g').attr('id', 'scg.node.var.class');
-        g.append('svg:use').attr('xlink:href', '#scg.node.var.outer');
+        g = defs.append('svg:g').attr('id', 'scg.var.node.class');
+        g.append('svg:use').attr('xlink:href', '#scg.var.node.outer');
         g.append('svg:line').attr('x1', '-10').attr('x2', '10').attr('y1', '-3').attr('y2', '-3').attr('stroke-width', nodeLineStroke)
         g.append('svg:line').attr('x1', '-10').attr('x2', '10').attr('y1', '3').attr('y2', '3').attr('stroke-width', nodeLineStroke);
         g.append('svg:line').attr('x1', '-3').attr('x2', '-3').attr('y1', '-10').attr('y2', '10').attr('stroke-width', nodeLineStroke);
         g.append('svg:line').attr('x1', '3').attr('x2', '3').attr('y1', '-10').attr('y2', '10').attr('stroke-width', nodeLineStroke);
         this.appendText(g);
 
-        g = defs.append('svg:g').attr('id', 'scg.node.var.abstract');//.attr('clip-path', 'url(#scg.node.var.clip)');
-        g.append('svg:use').attr('xlink:href', '#scg.node.var.outer');
-        var g2 = g.append('svg:g').attr('stroke-width', nodeLineStroke);
-        g2.append('svg:line').attr('x1', '-10').attr('x2', '10').attr('y1', '-6').attr('y2', '-6');
-        g2.append('svg:line').attr('x1', '-10').attr('x2', '10').attr('y1', '-3').attr('y2', '-3');
-        g2.append('svg:line').attr('x1', '-10').attr('x2', '10').attr('y1', '0').attr('y2', '0');
-        g2.append('svg:line').attr('x1', '-10').attr('x2', '10').attr('y1', '3').attr('y2', '3');
-        g2.append('svg:line').attr('x1', '-10').attr('x2', '10').attr('y1', '6').attr('y2', '6');
+        g = defs.append('svg:g').attr('id', 'scg.var.node.superclass');
+        g.append('svg:use').attr('xlink:href', '#scg.var.node.outer');
+        // Draw the circumflex shape
+        g.append('svg:line').attr('x1', '-9').attr('x2', '0').attr('y1', '9').attr('y2', '-7').attr('stroke-width', nodeLineStroke);
+        g.append('svg:line').attr('x1', '9').attr('x2', '0').attr('y1', '9').attr('y2', '-7').attr('stroke-width', nodeLineStroke);
         this.appendText(g);
 
-        g = defs.append('svg:g').attr('id', 'scg.node.var.material');//.attr('clip-path', 'url(#scg.node.var.clip)');
-        g.append('svg:use').attr('xlink:href', '#scg.node.var.outer');
+        g = defs.append('svg:g').attr('id', 'scg.var.node.material');//.attr('clip-path', 'url(#scg.var.node.clip)');
+        g.append('svg:use').attr('xlink:href', '#scg.var.node.outer');
         var g2 = g.append('svg:g').attr('stroke-width', nodeLineStroke).attr('transform', 'rotate(-45, 0, 0)');
         g2.append('svg:line').attr('x1', '-9').attr('x2', '9').attr('y1', '-6').attr('y2', '-6');
         g2.append('svg:line').attr('x1', '-11').attr('x2', '11').attr('y1', '-3').attr('y2', '-3');
@@ -156,7 +150,7 @@ var SCgAlphabet = {
         g2.append('svg:line').attr('x1', '-9').attr('x2', '9').attr('y1', '6').attr('y2', '6');
         this.appendText(g);
 
-        g = defs.append('svg:g').attr('id', 'scg.link');
+        g = defs.append('svg:g').attr('id', 'scg.node.link');
         g.append('svg:rect').attr('fill', '#aaa').attr('stroke-width', '3');
     },
 
@@ -186,27 +180,27 @@ var SCgAlphabet = {
      */
     initTypesMapping: function () {
         this.scType2Str[sc_type_node] = 'scg.node';
-        this.scType2Str[sc_type_node | sc_type_const] = 'scg.node.const';
-        this.scType2Str[sc_type_node | sc_type_const | sc_type_node_material] = 'scg.node.const.material';
-        this.scType2Str[sc_type_node | sc_type_const | sc_type_node_abstract] = 'scg.node.const.abstract';
-        this.scType2Str[sc_type_node | sc_type_const | sc_type_node_class] = 'scg.node.const.class';
-        this.scType2Str[sc_type_node | sc_type_const | sc_type_node_struct] = 'scg.node.const.struct';
-        this.scType2Str[sc_type_node | sc_type_const | sc_type_node_norole] = 'scg.node.const.norole';
-        this.scType2Str[sc_type_node | sc_type_const | sc_type_node_role] = 'scg.node.const.role';
-        this.scType2Str[sc_type_node | sc_type_const | sc_type_node_tuple] = 'scg.node.const.tuple';
+        this.scType2Str[sc_type_const | sc_type_node] = 'scg.const.node';
+        this.scType2Str[sc_type_const | sc_type_node | sc_type_node_material] = 'scg.const.node.material';
+        this.scType2Str[sc_type_const | sc_type_node | sc_type_node_abstract] = 'scg.const.node.superclass';
+        this.scType2Str[sc_type_const | sc_type_node | sc_type_node_class] = 'scg.const.node.class';
+        this.scType2Str[sc_type_const | sc_type_node | sc_type_node_structure] = 'scg.const.node.struct';
+        this.scType2Str[sc_type_const | sc_type_node | sc_type_node_norole] = 'scg.const.node.norole';
+        this.scType2Str[sc_type_const | sc_type_node | sc_type_node_role] = 'scg.const.node.role';
+        this.scType2Str[sc_type_const | sc_type_node | sc_type_node_tuple] = 'scg.const.node.tuple';
 
-        this.scType2Str[sc_type_node | sc_type_var] = 'scg.node.var';
-        this.scType2Str[sc_type_node | sc_type_var | sc_type_node_material] = 'scg.node.var.material';
-        this.scType2Str[sc_type_node | sc_type_var | sc_type_node_abstract] = 'scg.node.var.abstract';
-        this.scType2Str[sc_type_node | sc_type_var | sc_type_node_class] = 'scg.node.var.class';
-        this.scType2Str[sc_type_node | sc_type_var | sc_type_node_struct] = 'scg.node.var.struct';
-        this.scType2Str[sc_type_node | sc_type_var | sc_type_node_norole] = 'scg.node.var.norole';
-        this.scType2Str[sc_type_node | sc_type_var | sc_type_node_role] = 'scg.node.var.role';
-        this.scType2Str[sc_type_node | sc_type_var | sc_type_node_tuple] = 'scg.node.var.tuple';
+        this.scType2Str[sc_type_var | sc_type_node] = 'scg.var.node';
+        this.scType2Str[sc_type_var | sc_type_node | sc_type_node_material] = 'scg.var.node.material';
+        this.scType2Str[sc_type_var | sc_type_node | sc_type_node_abstract] = 'scg.var.node.superclass';
+        this.scType2Str[sc_type_var | sc_type_node | sc_type_node_class] = 'scg.var.node.class';
+        this.scType2Str[sc_type_var | sc_type_node | sc_type_node_structure] = 'scg.var.node.struct';
+        this.scType2Str[sc_type_var | sc_type_node | sc_type_node_norole] = 'scg.var.node.norole';
+        this.scType2Str[sc_type_var | sc_type_node | sc_type_node_role] = 'scg.var.node.role';
+        this.scType2Str[sc_type_var | sc_type_node | sc_type_node_tuple] = 'scg.var.node.tuple';
 
-        this.scType2Str[sc_type_link] = 'scg.link';
-        this.scType2Str[sc_type_link | sc_type_const] = 'scg.link.const';
-        this.scType2Str[sc_type_link | sc_type_var] = 'scg.link.var';
+        this.scType2Str[sc_type_node_link] = 'scg.node.link';
+        this.scType2Str[sc_type_node_link | sc_type_const] = 'scg.const.node.link';
+        this.scType2Str[sc_type_node_link | sc_type_var] = 'scg.var.node.link';
     },
 
     classLevel: function (obj) {
@@ -307,10 +301,10 @@ var SCgAlphabet = {
             d3_group.append('svg:path').classed('SCgEdgeSelectBounds', true).attr('d', position_path);
 
             // if it accessory, then append main line
-            if (edge.sc_type & sc_type_arc_access) {
+            if (edge.sc_type & sc_type_membership_arc) {
 
                 let main_style = 'SCgEdgeAccessPerm';
-                if (edge.sc_type & sc_type_arc_temp) {
+                if (edge.sc_type & sc_type_temp_arc) {
                     main_style = edge.sc_type & sc_type_var ? 'SCgEdgeAccessTempVar' : 'SCgEdgeAccessTemp';
                 }
 
@@ -322,21 +316,21 @@ var SCgAlphabet = {
                     .attr('d', position_path);
 
                 if (edge.sc_type & sc_type_constancy_mask) {
-                    p.classed('SCgEdgeVarDashAccessPerm', (edge.sc_type & sc_type_var) && (edge.sc_type & sc_type_arc_perm));
+                    p.classed('SCgEdgeVarDashAccessPerm', (edge.sc_type & sc_type_var) && (edge.sc_type & sc_type_perm_arc));
                 } else {
                     d3_group.append('svg:path')
                         .classed('SCgEdgeAccessCommonDash', true)
                         .attr('d', position_path);
                 }
 
-                if (edge.sc_type & sc_type_arc_neg) {
+                if (edge.sc_type & sc_type_neg_arc) {
                     d3_group.append('svg:path')
                         .classed('SCgEdgePermNegDash ' + SCgAlphabet.classLevel(edge), true)
                         .attr('d', position_path);
                 }
-            } else if (edge.sc_type & (sc_type_arc_common | sc_type_edge_common)) {
+            } else if (edge.sc_type & (sc_type_common_arc | sc_type_common_edge)) {
                 let main_style = 'SCgEdgeCommonBack';
-                if (edge.sc_type & sc_type_edge_common) {
+                if (edge.sc_type & sc_type_common_edge) {
                     if (edge.sc_type & sc_type_var) {
                         d3_group.append('svg:path')
                             .classed('SCgEdgeVarDashCommon ' + SCgAlphabet.classLevel(edge), true)
@@ -349,7 +343,7 @@ var SCgAlphabet = {
                     }
                 }
 
-                if (edge.sc_type & sc_type_arc_common) {
+                if (edge.sc_type & sc_type_common_arc) {
                     if (edge.sc_type & sc_type_var) {
                         d3_group.append('svg:path')
                             .classed('SCgEdgeVarDashCommon ' + SCgAlphabet.classLevel(edge), true)
@@ -392,7 +386,7 @@ var SCgAlphabet = {
         }
 
         // now we need to draw fuz markers (for now it is not supported)
-        if (edge.sc_type & sc_type_arc_fuz) {
+        if (edge.sc_type & sc_type_fuz_arc) {
             d3_group.selectAll('path').attr('stroke', '#f00');
             d3_group.append('svg:path')
                 .classed('SCgEdgeFuzDash', true)

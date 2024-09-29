@@ -489,7 +489,7 @@ SCg.ModelEdge.prototype.update = function () {
 /*! Checks if this edge need to be drawen with arrow at the end
  */
 SCg.ModelEdge.prototype.hasArrow = function () {
-    return this.sc_type & (sc_type_arc_common | sc_type_arc_access);
+    return this.sc_type & (sc_type_common_arc | sc_type_membership_arc);
 };
 
 /*!
@@ -605,7 +605,7 @@ SCg.ModelContour = function (options) {
 
     this.childs = [];
     this.points = options.verticies ? options.verticies : [];
-    this.sc_type = options.sc_type ? options.sc_type : sc_type_node_struct | sc_type_node;
+    this.sc_type = options.sc_type ? options.sc_type : sc_type_node_structure | sc_type_node;
     this.previousPoint = null;
 
     var cx = 0;

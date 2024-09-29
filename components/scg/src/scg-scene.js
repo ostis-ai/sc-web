@@ -29,8 +29,8 @@ var KeyCode = {
     Z: 90
 };
 
-var SCgTypeEdgeNow = sc_type_arc_pos_const_perm;
-var SCgTypeNodeNow = sc_type_node | sc_type_const;
+var SCgTypeEdgeNow = sc_type_const_perm_pos_arc;
+var SCgTypeNodeNow = sc_type_const | sc_type_node;
 
 SCg.Scene = function (options) {
 

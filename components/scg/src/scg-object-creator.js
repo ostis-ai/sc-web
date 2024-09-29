@@ -41,7 +41,7 @@ SCg.Creator.createEdge = function (source, target, sc_type) {
     return new SCg.ModelEdge({
         source: source,
         target: target,
-        sc_type: sc_type ? sc_type : sc_type_edge_common
+        sc_type: sc_type ? sc_type : sc_type_common_edge
     });
 };
 
