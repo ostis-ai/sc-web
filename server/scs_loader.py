@@ -86,4 +86,4 @@ def read_scs_fragments(root_path: str):
 
 
 def load_scs_fragments(root_path: str):
-    client.create_elements_by_scs(read_scs_fragments(root_path))
+    client.generate_elements_by_scs(read_scs_fragments(root_path))

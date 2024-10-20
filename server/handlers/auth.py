@@ -7,7 +7,7 @@ import tornado.options
 import tornado.web
 
 from sc_client import client
-from sc_client.constants import sc_types
+from sc_client.constants import sc_type
 from sc_client.models import ScTemplate, ScConstruction, ScLinkContent, ScLinkContentType, ScAddr
 from sc_client.sc_keynodes import ScKeynodes
 
@@ -63,57 +63,57 @@ class GoogleOAuth2LoginHandler(base.BaseHandler, tornado.auth.GoogleOAuth2Mixin)
 
     def authorise_user(self, email: str) -> None:
         logger.info('User authorization')
-        links = client.get_links_by_content(email)[0]
+        links = client.search_link_by_contents(email)[0]
         if links and len(links) == 1:
             logger.debug('Link is found by email')
             USER_NODE = "_user"
             template = ScTemplate()
-            template.triple_with_relation(
-                [sc_types.NODE_VAR, USER_NODE],
-                sc_types.EDGE_D_COMMON_VAR,
+            template.quintuple(
+                (sc_type.VAR_NODE, USER_NODE),
+                sc_type.VAR_COMMON_ARC,
                 links[0],
-                sc_types.EDGE_ACCESS_VAR_POS_PERM,
+                sc_type.VAR_PERM_POS_ARC,
                 self._keynodes[KeynodeSysIdentifiers.nrel_email.value]
             )
-            users = client.template_search(template)
+            users = client.search_by_template(template)
             for user in users:
                 construction = ScConstruction()
-                construction.create_edge(
-                    sc_types.EDGE_D_COMMON_CONST,
+                construction.generate_connector(
+                    sc_type.VAR_COMMON_ARC,
                     self._keynodes[KeynodeSysIdentifiers.Myself.value],
                     user.get(USER_NODE),
                     'bin_arc_authorised'
                 )
-                construction.create_edge(
-                    sc_types.EDGE_ACCESS_CONST_POS_PERM,
+                construction.generate_connector(
+                    sc_type.CONST_PERM_POS_ARC,
                     self._keynodes[KeynodeSysIdentifiers.nrel_authorised_user.value],
                     'bin_arc_authorised'
                 )
-                client.create_elements(construction)
+                client.generate_elements(construction)
 
     def register_user(self, email: str, user_name: str) -> None:
         logger.info('User registration')
-        links = client.get_links_by_content(email)[0]
+        links = client.search_link_by_contents(email)[0]
         if links and len(links) == 1:
             logger.debug('Link is found by email')
             template = ScTemplate()
-            template.triple_with_relation(
-                sc_types.NODE_VAR,
-                sc_types.EDGE_D_COMMON_VAR,
+            template.quintuple(
+                sc_type.VAR_NODE,
+                sc_type.VAR_COMMON_ARC,
                 links[0],
-                sc_types.EDGE_ACCESS_VAR_POS_PERM,
+                sc_type.VAR_PERM_POS_ARC,
                 self._keynodes[KeynodeSysIdentifiers.nrel_email.value]
             )
-            user = client.template_search(template)
+            user = client.search_by_template(template)
             if user and user[0] and user[0].get(0).is_valid():
-                template.triple_with_relation(
+                template.quintuple(
                     self._keynodes[KeynodeSysIdentifiers.Myself.value],
-                    sc_types.EDGE_D_COMMON_VAR,
+                    sc_type.VAR_COMMON_ARC,
                     user[0].get(0),
-                    sc_types.EDGE_ACCESS_VAR_POS_PERM,
+                    sc_type.VAR_PERM_POS_ARC,
                     self._keynodes[KeynodeSysIdentifiers.nrel_registered_user.value]
                 )
-                results = client.template_search(template)
+                results = client.search_by_template(template)
                 if not results:
                     self.gen_registred_user_relation(user[0].get(0))
             else:
@@ -126,60 +126,60 @@ class GoogleOAuth2LoginHandler(base.BaseHandler, tornado.auth.GoogleOAuth2Mixin)
     def create_ui_user_node_at_kb(self, email: str, username: str) -> ScAddr:
         logger.debug('Creating ui user node at kb ...')
         construction = ScConstruction()
-        construction.create_node(sc_types.NODE_CONST, 'user_node')
-        construction.create_edge(
-            sc_types.EDGE_ACCESS_CONST_POS_PERM, self._keynodes[KeynodeSysIdentifiers.ui_user.value], 'user_node')
+        construction.generate_node(sc_type.CONST_NODE, 'user_node')
+        construction.generate_connector(
+            sc_type.CONST_PERM_POS_ARC, self._keynodes[KeynodeSysIdentifiers.ui_user.value], 'user_node')
 
         # create system_idtf
         sys_idtf = email.split('@')[0]
-        construction.create_link(
-            sc_types.LINK_CONST, ScLinkContent(sys_idtf, ScLinkContentType.STRING.value), 'sys_idtf_link')
-        construction.create_edge(sc_types.EDGE_D_COMMON_CONST, 'user_node', 'sys_idtf_link', 'bin_arc_sys_idtf')
-        construction.create_edge(
-            sc_types.EDGE_ACCESS_CONST_POS_PERM,
+        construction.generate_link(
+            sc_type.CONST_NODE_LINK, ScLinkContent(sys_idtf, ScLinkContentType.STRING.value), 'sys_idtf_link')
+        construction.generate_connector(sc_type.CONST_COMMON_ARC, 'user_node', 'sys_idtf_link', 'bin_arc_sys_idtf')
+        construction.generate_connector(
+            sc_type.CONST_PERM_POS_ARC,
             self._keynodes[KeynodeSysIdentifiers.nrel_system_identifier.value],
             'bin_arc_sys_idtf'
         )
 
         # create main_idtf (lang_ru)
-        construction.create_link(
-            sc_types.LINK_CONST, ScLinkContent(username, ScLinkContentType.STRING.value), 'main_idtf_link')
-        construction.create_edge(sc_types.EDGE_D_COMMON_CONST, 'user_node', 'main_idtf_link', 'bin_arc_main_idtf')
-        construction.create_edge(
-            sc_types.EDGE_ACCESS_CONST_POS_PERM,
+        construction.generate_link(
+            sc_type.CONST_NODE_LINK, ScLinkContent(username, ScLinkContentType.STRING.value), 'main_idtf_link')
+        construction.generate_connector(sc_type.CONST_COMMON_ARC, 'user_node', 'main_idtf_link', 'bin_arc_main_idtf')
+        construction.generate_connector(
+            sc_type.CONST_PERM_POS_ARC,
             self._keynodes[KeynodeSysIdentifiers.nrel_main_idtf.value],
             'bin_arc_main_idtf'
         )
-        construction.create_edge(
-            sc_types.EDGE_ACCESS_CONST_POS_PERM, self._keynodes[KeynodeSysIdentifiers.lang_ru.value], 'main_idtf_link')
+        construction.generate_connector(
+            sc_type.CONST_PERM_POS_ARC, self._keynodes[KeynodeSysIdentifiers.lang_ru.value], 'main_idtf_link')
 
         # create email
-        construction.create_link(
-            sc_types.LINK_CONST, ScLinkContent(email, ScLinkContentType.STRING.value), 'email_link')
-        construction.create_edge(sc_types.EDGE_D_COMMON_CONST, 'user_node', 'email_link', 'bin_arc_email')
-        construction.create_edge(
-            sc_types.EDGE_ACCESS_CONST_POS_PERM,
+        construction.generate_link(
+            sc_type.CONST_NODE_LINK, ScLinkContent(email, ScLinkContentType.STRING.value), 'email_link')
+        construction.generate_connector(sc_type.CONST_COMMON_ARC, 'user_node', 'email_link', 'bin_arc_email')
+        construction.generate_connector(
+            sc_type.CONST_PERM_POS_ARC,
             self._keynodes[KeynodeSysIdentifiers.nrel_email.value],
             'bin_arc_email'
         )
 
-        result = client.create_elements(construction)
+        result = client.generate_elements(construction)
         return result[construction.get_index('user_node')]
 
     def gen_registred_user_relation(self, user: ScAddr) -> None:
         construction = ScConstruction()
-        construction.create_edge(
-            sc_types.EDGE_D_COMMON_CONST,
+        construction.generate_connector(
+            sc_type.VAR_COMMON_ARC,
             self._keynodes[KeynodeSysIdentifiers.Myself.value],
             user,
             'bin_arc_registered'
         )
-        construction.create_edge(
-            sc_types.EDGE_ACCESS_CONST_POS_PERM,
+        construction.generate_connector(
+            sc_type.CONST_PERM_POS_ARC,
             self._keynodes[KeynodeSysIdentifiers.nrel_registered_user.value],
             'bin_arc_registered'
         )
-        client.create_elements(construction)
+        client.generate_elements(construction)
 
     @tornado.gen.coroutine
     def get(self):
@@ -236,26 +236,26 @@ class LogOut(base.BaseHandler):
         logger.info('Logout from kb')
         keys = ScKeynodes()
         sc_session = logic.ScSession(self, keys)
-        links = client.get_links_by_content(sc_session.email)[0]
+        links = client.search_link_by_contents(sc_session.email)[0]
         if links and len(links) == 1:
             USER_NODE = "_user"
             USER_ARC = "_arc"
 
             template = ScTemplate()
-            template.triple_with_relation(
-                [sc_types.NODE_VAR, USER_NODE],
-                sc_types.EDGE_D_COMMON_VAR,
+            template.quintuple(
+                (sc_type.VAR_NODE, USER_NODE),
+                sc_type.VAR_COMMON_ARC,
                 links[0],
-                sc_types.EDGE_ACCESS_VAR_POS_PERM,
+                sc_type.VAR_PERM_POS_ARC,
                 keys[KeynodeSysIdentifiers.nrel_email.value]
             )
-            template.triple_with_relation(
+            template.quintuple(
                 keys[KeynodeSysIdentifiers.Myself.value],
-                [sc_types.EDGE_D_COMMON_VAR, USER_ARC],
+                (sc_type.VAR_COMMON_ARC, USER_ARC),
                 USER_NODE,
-                sc_types.EDGE_ACCESS_VAR_POS_PERM,
+                sc_type.VAR_PERM_POS_ARC,
                 keys[KeynodeSysIdentifiers.nrel_authorised_user.value]
             )
-            result = client.template_search(template)
+            result = client.search_by_template(template)
             for items in result:
-                client.delete_elements(items.get(USER_ARC))
+                client.erase_elements(items.get(USER_ARC))

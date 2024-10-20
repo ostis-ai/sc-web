@@ -8,7 +8,7 @@ import tornado.web
 import json
 
 from sc_client import client
-from sc_client.constants import sc_types
+from sc_client.constants import sc_type
 from sc_client.models import ScTemplate, ScAddr, ScConstruction
 from sc_client.sc_keynodes import ScKeynodes
 
@@ -54,7 +54,7 @@ class CmdDo(base.BaseHandler):
             if arg is not None:
                 arg = ScAddr(int(arg))
                 # check if sc-element exist
-                if client.check_elements(arg)[0].is_valid():
+                if client.get_elements_types(arg)[0].is_valid():
                     arguments.append(arg)
                 else:
                     return logic.serialize_error(404, "Invalid argument: %s" % arg)
@@ -110,35 +110,35 @@ class ActionResultTranslate(base.BaseHandler):
         result = {}
         if not result_link_addr.is_valid():
             construction = ScConstruction()
-            construction.create_node(sc_types.NODE_CONST, 'trans_cmd_addr')
-            construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'trans_cmd_addr')
-            construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, 'trans_cmd_addr', result_addr, 'arc_addr')
-            construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_addr')
-            construction.create_edge(
-                sc_types.EDGE_ACCESS_CONST_POS_PERM, ui_rrel_source_sc_construction, 'arc_addr', 'arc_addr_2')
-            construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_addr_2')
-            construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, 'trans_cmd_addr', format_addr, 'arc_addr_3')
-            construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_addr_3')
+            construction.generate_node(sc_type.CONST_NODE, 'trans_cmd_addr')
+            construction.generate_connector(sc_type.CONST_PERM_POS_ARC, keynode_system_element, 'trans_cmd_addr')
+            construction.generate_connector(sc_type.CONST_PERM_POS_ARC, 'trans_cmd_addr', result_addr, 'arc_addr')
+            construction.generate_connector(sc_type.CONST_PERM_POS_ARC, keynode_system_element, 'arc_addr')
+            construction.generate_connector(
+                sc_type.CONST_PERM_POS_ARC, ui_rrel_source_sc_construction, 'arc_addr', 'arc_addr_2')
+            construction.generate_connector(sc_type.CONST_PERM_POS_ARC, keynode_system_element, 'arc_addr_2')
+            construction.generate_connector(sc_type.CONST_PERM_POS_ARC, 'trans_cmd_addr', format_addr, 'arc_addr_3')
+            construction.generate_connector(sc_type.CONST_PERM_POS_ARC, keynode_system_element, 'arc_addr_3')
 
             if lang_addr:
-                construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, 'trans_cmd_addr', lang_addr, 'arc_addr_4')
-                construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_addr_4')
+                construction.generate_connector(sc_type.CONST_PERM_POS_ARC, 'trans_cmd_addr', lang_addr, 'arc_addr_4')
+                construction.generate_connector(sc_type.CONST_PERM_POS_ARC, keynode_system_element, 'arc_addr_4')
 
             ui_rrel_output_format = keynodes[KeynodeSysIdentifiers.ui_rrel_output_format.value]
-            construction.create_edge(
-                sc_types.EDGE_ACCESS_CONST_POS_PERM, ui_rrel_output_format, 'arc_addr_3', 'arc_addr_3_edge')
-            construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_addr_3_edge')
-            construction.create_edge(
-                sc_types.EDGE_ACCESS_CONST_POS_PERM, ui_rrel_user_lang, 'arc_addr_4', 'arc_addr_4_edge')
-            construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_addr_4_edge')
-            construction.create_edge(
-                sc_types.EDGE_ACCESS_CONST_POS_PERM, ui_command_translate_from_sc, 'trans_cmd_addr', 'arc_addr_5')
-            construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_addr_5')
-            construction.create_edge(
-                sc_types.EDGE_ACCESS_CONST_POS_PERM, ui_command_initiated, 'trans_cmd_addr', 'arc_addr_6')
-            construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_addr_6')
+            construction.generate_connector(
+                sc_type.CONST_PERM_POS_ARC, ui_rrel_output_format, 'arc_addr_3', 'arc_addr_3_edge')
+            construction.generate_connector(sc_type.CONST_PERM_POS_ARC, keynode_system_element, 'arc_addr_3_edge')
+            construction.generate_connector(
+                sc_type.CONST_PERM_POS_ARC, ui_rrel_user_lang, 'arc_addr_4', 'arc_addr_4_edge')
+            construction.generate_connector(sc_type.CONST_PERM_POS_ARC, keynode_system_element, 'arc_addr_4_edge')
+            construction.generate_connector(
+                sc_type.CONST_PERM_POS_ARC, ui_command_translate_from_sc, 'trans_cmd_addr', 'arc_addr_5')
+            construction.generate_connector(sc_type.CONST_PERM_POS_ARC, keynode_system_element, 'arc_addr_5')
+            construction.generate_connector(
+                sc_type.CONST_PERM_POS_ARC, ui_command_initiated, 'trans_cmd_addr', 'arc_addr_6')
+            construction.generate_connector(sc_type.CONST_PERM_POS_ARC, keynode_system_element, 'arc_addr_6')
 
-            result = client.create_elements(construction)
+            result = client.generate_elements(construction)
 
             # now we need to wait translation result
             wait_time = 0
@@ -255,34 +255,34 @@ class User(base.BaseHandler):
         roles = [KeynodeSysIdentifiers.nrel_authorised_user.value]
 
         manager_template = ScTemplate()
-        manager_template.triple_with_relation(
-            sc_types.NODE_VAR,
-            sc_types.EDGE_D_COMMON_VAR,
+        manager_template.quintuple(
+            sc_type.VAR_NODE,
+            sc_type.VAR_COMMON_ARC,
             user_kb_node,
-            sc_types.EDGE_ACCESS_VAR_POS_PERM,
+            sc_type.VAR_PERM_POS_ARC,
             self._keynodes[KeynodeSysIdentifiers.nrel_manager.value]
         )
-        is_manager_role_exist = bool(client.template_search(manager_template))
+        is_manager_role_exist = bool(client.search_by_template(manager_template))
 
         admin_template = ScTemplate()
-        admin_template.triple_with_relation(
-            sc_types.NODE_VAR,
-            sc_types.EDGE_D_COMMON_VAR,
+        admin_template.quintuple(
+            sc_type.VAR_NODE,
+            sc_type.VAR_COMMON_ARC,
             user_kb_node,
-            sc_types.EDGE_ACCESS_VAR_POS_PERM,
+            sc_type.VAR_PERM_POS_ARC,
             self._keynodes[KeynodeSysIdentifiers.nrel_administrator.value]
         )
-        is_admin_role_exist = bool(client.template_search(manager_template))
+        is_admin_role_exist = bool(client.search_by_template(manager_template))
 
         expert_template = ScTemplate()
-        expert_template.triple_with_relation(
-            sc_types.NODE_VAR,
-            sc_types.EDGE_D_COMMON_VAR,
+        expert_template.quintuple(
+            sc_type.VAR_NODE,
+            sc_type.VAR_COMMON_ARC,
             user_kb_node,
-            sc_types.EDGE_ACCESS_VAR_POS_PERM,
+            sc_type.VAR_PERM_POS_ARC,
             self._keynodes[KeynodeSysIdentifiers.nrel_expert.value]
         )
-        is_expert_role_exist = bool(client.template_search(expert_template))
+        is_expert_role_exist = bool(client.search_by_template(expert_template))
 
         if is_admin_role_exist:
             roles.append(KeynodeSysIdentifiers.nrel_administrator.value)
