@@ -84,7 +84,7 @@ module.exports = function(grunt) {
                       scgDirPath + '/src/command/append-object.js',
                       scgDirPath + '/src/command/command-manager.js',
                       scgDirPath + '/src/command/create-node.js',
-                      scgDirPath + '/src/command/create-edge.js',
+                      scgDirPath + '/src/command/create-connector.js',
                       scgDirPath + '/src/command/create-bus.js',
                       scgDirPath + '/src/command/create-contour.js',
                       scgDirPath + '/src/command/create-link.js',

@@ -33687,13 +33687,13 @@ THREE.ConvexGeometry = function( vertices ) {
 
 				for ( var e = 0; e < 3; e++ ) {
 
-					var edge = [ face[ e ], face[ ( e + 1 ) % 3 ] ];
+					var connector = [ face[ e ], face[ ( e + 1 ) % 3 ] ];
 					var boundary = true;
 
 					// remove duplicated edges.
 					for ( var h = 0; h < hole.length; h++ ) {
 
-						if ( equalEdge( hole[ h ], edge ) ) {
+						if ( equalEdge( hole[ h ], connector ) ) {
 
 							hole[ h ] = hole[ hole.length - 1 ];
 							hole.pop();
@@ -33706,7 +33706,7 @@ THREE.ConvexGeometry = function( vertices ) {
 
 					if ( boundary ) {
 
-						hole.push( edge );
+						hole.push( connector );
 
 					}
 

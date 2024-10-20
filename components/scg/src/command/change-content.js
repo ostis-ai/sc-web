@@ -14,7 +14,7 @@ SCgCommandChangeContent.prototype = {
         this.object.setObjectState(SCgObjectState.NewInMemory);
         this.object.scene.updateRender();
         this.object.requestUpdate();
-        this.object.notifyEdgesUpdate();
+        this.object.notifyConnectorsUpdate();
     },
 
     execute: function () {
@@ -22,6 +22,6 @@ SCgCommandChangeContent.prototype = {
         this.object.setObjectState(SCgObjectState.NewInMemory);
         this.object.scene.updateRender();
         this.object.requestUpdate();
-        this.object.notifyEdgesUpdate();
+        this.object.notifyConnectorsUpdate();
     }
 };

@@ -97,7 +97,7 @@ SCg.Render.prototype = {
                 self.scene.listener.finishCreation();
                 d3.event.stopPropagation();
             });
-        this.d3_edges = this.d3_container.append('svg:g').selectAll('path');
+        this.d3_connectors = this.d3_container.append('svg:g').selectAll('path');
         this.d3_buses = this.d3_container.append('svg:g').selectAll('path');
         this.d3_nodes = this.d3_container.append('svg:g').selectAll('g');
         this.d3_links = this.d3_container.append('svg:g').selectAll('g');
@@ -232,7 +232,7 @@ SCg.Render.prototype = {
                         d3.event.stopPropagation();
 
                     if (SCWeb.core.Main.viewMode === SCgViewMode.DistanceBasedSCgView) {
-                        if (self.scene.getObjectByScAddr(d.sc_addr) instanceof SCg.ModelEdge) return;
+                        if (self.scene.getObjectByScAddr(d.sc_addr) instanceof SCg.ModelConnector) return;
 
                         self.sandbox.updateContent(new sc.ScAddr(d.sc_addr));
                         return;
@@ -328,22 +328,22 @@ SCg.Render.prototype = {
 
         this.d3_links.exit().remove();
 
-        // update edges visual
-        this.d3_edges = this.d3_edges.data(this.scene.edges, function (d) {
+        // update connectors visual
+        this.d3_connectors = this.d3_connectors.data(this.scene.connectors, function (d) {
             return d.id;
         });
 
-        // add edges that haven't visual
-        g = this.d3_edges.enter().append('svg:g')
+        // add connectors that haven't visual
+        g = this.d3_connectors.enter().append('svg:g')
             .attr('class', function (d) {
-                const classStyle = 'SCgEdge ' + SCgAlphabet.classLevel(d);
+                const classStyle = 'SCgConnector ' + SCgAlphabet.classLevel(d);
                 return self.classState(d, classStyle);
             })
             .attr('pointer-events', 'visibleStroke');
 
         eventsWrap(g);
 
-        this.d3_edges.exit().remove();
+        this.d3_connectors.exit().remove();
 
         // update contours visual
         this.d3_contours = this.d3_contours.data(this.scene.contours, function (d) {
@@ -519,17 +519,17 @@ SCg.Render.prototype = {
                 });
         });
 
-        this.d3_edges.each(function (d) {
+        this.d3_connectors.each(function (d) {
             if (!d.need_observer_sync) return; // do nothing
             d.need_observer_sync = false;
 
             if (d.need_update)
                 d.update();
-            let d3_edge = d3.select(this);
+            let d3_connector = d3.select(this);
 
-            SCgAlphabet.updateEdge(d, d3_edge, self.containerId);
-            d3_edge.attr('class', function (d) {
-                const classStyle = 'SCgEdge ' + SCgAlphabet.classLevel(d);
+            SCgAlphabet.updateConnector(d, d3_connector, self.containerId);
+            d3_connector.attr('class', function (d) {
+                const classStyle = 'SCgConnector ' + SCgAlphabet.classLevel(d);
                 return self.classState(d, classStyle);
             })
                 .attr("sc_addr", function (d) {
@@ -689,7 +689,7 @@ SCg.Render.prototype = {
         this.d3_links.each(function (d) {
             d.need_observer_sync = true;
         });
-        this.d3_edges.each(function (d) {
+        this.d3_connectors.each(function (d) {
             d.need_observer_sync = true;
             d.need_update = true;
         });
@@ -711,7 +711,7 @@ SCg.Render.prototype = {
         this.d3_links.each(function (d) {
             d.need_observer_sync = true;
         });
-        this.d3_edges.each(function (d) {
+        this.d3_connectors.each(function (d) {
             d.need_observer_sync = true;
             d.need_update = true;
         });

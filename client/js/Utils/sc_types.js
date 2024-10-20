@@ -95,7 +95,7 @@ const sc_type_arc_mask = (sc_type_common_arc | sc_type_membership_arc)
 const sc_type_constancy_mask = (sc_type_const | sc_type_var)
 const sc_type_actuality_mask = (sc_type_actual_arc | sc_type_inactual_arc)
 const sc_type_permanency_mask = (sc_type_perm_arc | sc_type_temp_arc)
-const sc_type_positivity_mask = (sc_type_pos_arc | sc_type_neg_arc | sc_type_fuz_arc)
+const sc_type_positivity_mask = (sc_type_pos_arc | sc_type_neg_arc)
 
 const sc_type_membership_arc_mask = (sc_type_actuality_mask | sc_type_permanency_mask | sc_type_positivity_mask)
 const sc_type_common_arc_mask = (sc_type_common_arc)

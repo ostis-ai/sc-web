@@ -53,7 +53,7 @@ SCs.SCnOutput.prototype = {
         if (treeNode.type == SCs.SCnTreeNodeType.Keyword) {
             output = '<div class="scs-scn-field scs-scn-field-root"><div class="scs-scn-keyword">' + this.treeNodeElementHtml(treeNode, true) + '</div>';
 
-            if (treeNode.element.type & sc_type_node_link) {
+            if ((treeNode.element.type & sc_type_node_link) == sc_type_node_link) {
                 output += '<div class="scs-scn-field"><div class="scs-scn-field-marker scs-scn-element">=</div>'
                     //+ '' //sc_addr="' + treeNode.element.addr + '">'
                     + this.treeNodeElementHtml(treeNode)
@@ -136,7 +136,7 @@ SCs.SCnOutput.prototype = {
 
     treeNodeElementHtml: function (treeNode, isKeyword) {
 
-        if (!isKeyword && treeNode.element.type & sc_type_node_link) {
+        if (!isKeyword && (treeNode.element.type & sc_type_node_link) == sc_type_node_link) {
             var containerId = this.container + '_' + this.linkCounter;
             this.linkCounter++;
             this.sc_links[containerId] = {addr: treeNode.element.addr};
@@ -144,8 +144,8 @@ SCs.SCnOutput.prototype = {
             //return '<div class="scs-scn-element sc-content scs-scn-field scs-scn-highlighted" id="' + containerId + '" sc_addr="' + treeNode.element.addr + '">' + '</div>';
         }
 
-        if (treeNode.element.type & sc_type_arc_mask) {
-            var einfo = this.tree.getEdgeInfo(treeNode.element.addr);
+        if (treeNode.element.type & sc_type_connector) {
+            var einfo = this.tree.getConnectorInfo(treeNode.element.addr);
             if (einfo) {
                 var marker = SCs.SCnConnectors[treeNode.element.type];
                 return '(<a href="#" class="scs-scn-element scs-scn-field scs-scn-highlighted" sc_addr="' + einfo.source.addr + '">' + this.getIdentifier(einfo.source.addr) + '</a>\
@@ -206,7 +206,7 @@ SCs.SCnOutput.prototype = {
                     if (!v) {
                         v = SCs.SCnSortOrder.length;
                     }
-                    if (attrs[i].n.type & sc_type_node_role) {
+                    if ((attrs[i].n.type & sc_type_node_role) == sc_type_node_role) {
                         if (v === null) {
                             v = 0;
                         }
@@ -352,7 +352,7 @@ SCs.SCnOutput.prototype = {
                 queue.push(node.childs[idx]);
 
             if (node.type == SCs.SCnTreeNodeType.Keyword) continue;
-            if (!(node.element.type & sc_type_node_tuple)) continue;
+            if ((node.element.type & sc_type_node_tuple) != sc_type_node_tuple) continue;
 
             // find all child nodes of set
             var elements = [];

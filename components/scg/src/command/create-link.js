@@ -21,7 +21,7 @@ SCgCommandCreateLink.prototype = {
 
     execute: function () {
         if (this.link == null) {
-            this.link = SCg.Creator.createLink(sc_type_node_link | sc_type_const, new SCg.Vector3(this.x, this.y, 0), this.scene.links.length);
+            this.link = SCg.Creator.generateLink(sc_type_node_link | sc_type_const, new SCg.Vector3(this.x, this.y, 0), this.scene.links.length);
             this.scene.appendLink(this.link);
             this.scene.updateRender();
             this.scene.clearSelection();

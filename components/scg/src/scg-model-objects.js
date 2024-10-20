@@ -64,7 +64,7 @@ SCg.ModelObject = function (options) {
     }
 
     this.id = ObjectId++;
-    this.edges = [];    // list of connected edges
+    this.connectors = [];    // list of connected connectors
     this.copies = {};
     this.need_update = true;    // update flag
     this.state = SCgObjectState.FromMemory;
@@ -96,7 +96,7 @@ SCg.ModelObject.prototype.setPosition = function (pos) {
     this.need_observer_sync = true;
 
     this.requestUpdate();
-    this.notifyEdgesUpdate();
+    this.notifyConnectorsUpdate();
     this.notifyBusUpdate();
 };
 
@@ -135,12 +135,12 @@ SCg.ModelObject.prototype.setScType = function (type) {
 
 
 /**
- * Notify all connected edges to sync
+ * Notify all connected connectors to sync
  */
-SCg.ModelObject.prototype.notifyEdgesUpdate = function () {
-    for (let i = 0; i < this.edges.length; i++) {
-        this.edges[i].need_update = true;
-        this.edges[i].need_observer_sync = true;
+SCg.ModelObject.prototype.notifyConnectorsUpdate = function () {
+    for (let i = 0; i < this.connectors.length; i++) {
+        this.connectors[i].need_update = true;
+        this.connectors[i].need_observer_sync = true;
     }
 };
 
@@ -159,8 +159,8 @@ SCg.ModelObject.prototype.notifyBusUpdate = function () {
  */
 SCg.ModelObject.prototype.requestUpdate = function () {
     this.need_update = true;
-    for (let i = 0; i < this.edges.length; ++i) {
-        this.edges[i].requestUpdate();
+    for (let i = 0; i < this.connectors.length; ++i) {
+        this.connectors[i].requestUpdate();
     }
 
     if (this.bus != undefined) {
@@ -174,11 +174,11 @@ SCg.ModelObject.prototype.update = function () {
     this.need_update = false;
     this.need_observer_sync = true;
 
-    for (let i = 0; i < this.edges.length; ++i) {
-        let edge = this.edges[i];
+    for (let i = 0; i < this.connectors.length; ++i) {
+        let connector = this.connectors[i];
 
-        if (edge.need_update) {
-            edge.update();
+        if (connector.need_update) {
+            connector.update();
         }
     }
 };
@@ -216,18 +216,18 @@ SCg.ModelObject.prototype._setSelected = function (value) {
 };
 
 /**
- * Remove edge from edges list
+ * Remove connector from connectors list
  */
-SCg.ModelObject.prototype.removeEdge = function (edge) {
-    const idx = this.edges.indexOf(edge);
+SCg.ModelObject.prototype.removeConnector = function (connector) {
+    const idx = this.connectors.indexOf(connector);
 
     if (idx < 0) return;
 
-    this.edges.splice(idx, 1);
+    this.connectors.splice(idx, 1);
 };
 
 /**
- * Remove edge from edges list
+ * Remove connector from connectors list
  */
 SCg.ModelObject.prototype.removeBus = function () {
     this.bus = null;
@@ -346,11 +346,11 @@ SCg.ModelLink.prototype.setContent = function (content, contentType) {
 // --------------- arc -----------
 
 /**
- * Initialize sc.g-arc(edge) object
+ * Initialize sc.g-arc(connector) object
  * @param {Object} options
  *      Initial opations of sc.g-arc.
  */
-SCg.ModelEdge = function (options) {
+SCg.ModelConnector = function (options) {
 
     SCg.ModelObject.call(this, options);
 
@@ -363,7 +363,7 @@ SCg.ModelEdge = function (options) {
         this.setTarget(options.target);
 
     this.source_pos = null; // the begin position of egde in world coordinates
-    this.target_pos = null; // the end position of edge in world coordinates
+    this.target_pos = null; // the end position of connector in world coordinates
     this.points = [];
     this.source_dot = 0.5;
     this.target_dot = 0.5;
@@ -372,9 +372,9 @@ SCg.ModelEdge = function (options) {
     //this.update();
 };
 
-SCg.ModelEdge.prototype = Object.create(SCg.ModelObject.prototype);
+SCg.ModelConnector.prototype = Object.create(SCg.ModelObject.prototype);
 
-SCg.ModelEdge.prototype.setPosition = function (offset) {
+SCg.ModelConnector.prototype.setPosition = function (offset) {
     var dp = offset.clone().sub(this.position);
     for (var i = 0; i < this.points.length; i++) {
         this.points[i].x += dp.x;
@@ -386,28 +386,28 @@ SCg.ModelEdge.prototype.setPosition = function (offset) {
 /**
  * Destroy object
  */
-SCg.ModelEdge.prototype.destroy = function () {
+SCg.ModelConnector.prototype.destroy = function () {
     SCg.ModelObject.prototype.destroy.call(this);
 
     if (this.target)
-        this.target.removeEdge(this);
+        this.target.removeConnector(this);
     if (this.source)
-        this.source.removeEdge(this);
+        this.source.removeConnector(this);
 };
 
 /**
- * Setup new source object for sc.g-edge
+ * Setup new source object for sc.g-connector
  * @param {Object} scg_obj
- *      sc.g-object, that will be the source of edge
+ *      sc.g-object, that will be the source of connector
  */
-SCg.ModelEdge.prototype.setSource = function (scg_obj) {
+SCg.ModelConnector.prototype.setSource = function (scg_obj) {
     if (this.source == scg_obj) return; // do nothing
 
     if (this.source)
-        this.source.removeEdge(this);
+        this.source.removeConnector(this);
 
     this.source = scg_obj;
-    this.source.edges.push(this);
+    this.source.connectors.push(this);
     this.need_observer_sync = true;
     this.need_update = true;
 };
@@ -415,26 +415,26 @@ SCg.ModelEdge.prototype.setSource = function (scg_obj) {
 /**
  * Setup new value of source dot position
  */
-SCg.ModelEdge.prototype.setSourceDot = function (dot) {
+SCg.ModelConnector.prototype.setSourceDot = function (dot) {
     this.source_dot = dot;
     this.need_observer_sync = true;
     this.need_update = true;
 };
 
 /**
- * Setup new target object for sc.g-edge
+ * Setup new target object for sc.g-connector
  * @param {Object} scg_obj
- *      sc.g-object, that will be the target of edge
+ *      sc.g-object, that will be the target of connector
  */
-SCg.ModelEdge.prototype.setTarget = function (scg_obj) {
+SCg.ModelConnector.prototype.setTarget = function (scg_obj) {
 
     if (this.target == scg_obj) return; // do nothing
 
     if (this.target)
-        this.target.removeEdge(this);
+        this.target.removeConnector(this);
 
     this.target = scg_obj;
-    this.target.edges.push(this);
+    this.target.connectors.push(this);
     this.need_observer_sync = true;
     this.need_update = true;
 };
@@ -442,13 +442,13 @@ SCg.ModelEdge.prototype.setTarget = function (scg_obj) {
 /**
  * Setup new value of target dot position
  */
-SCg.ModelEdge.prototype.setTargetDot = function (dot) {
+SCg.ModelConnector.prototype.setTargetDot = function (dot) {
     this.target_dot = dot;
     this.need_observer_sync = true;
     this.need_update = true;
 };
 
-SCg.ModelEdge.prototype.update = function () {
+SCg.ModelConnector.prototype.update = function () {
     if (isNaN(this.source.position.x) || isNaN(this.source.position.y))
         this.source.setPosition(new SCg.Vector3(250.0, 250.0, 0.0))
     if (isNaN(this.target.position.x) || isNaN(this.target.position.y))
@@ -464,7 +464,7 @@ SCg.ModelEdge.prototype.update = function () {
     // calculate begin and end positions
     if (this.points.length > 0) {
 
-        if (this.source instanceof SCg.ModelEdge) {
+        if (this.source instanceof SCg.ModelConnector) {
             this.source_pos = this.source.getConnectionPos(new SCg.Vector3(this.points[0].x, this.points[0].y, 0), this.source_dot);
             this.target_pos = this.target.getConnectionPos(new SCg.Vector3(this.points[this.points.length - 1].x, this.points[this.points.length - 1].y, 0), this.target_dot);
         } else {
@@ -474,7 +474,7 @@ SCg.ModelEdge.prototype.update = function () {
 
     } else {
 
-        if (this.source instanceof SCg.ModelEdge) {
+        if (this.source instanceof SCg.ModelConnector) {
             this.source_pos = this.source.getConnectionPos(this.target_pos, this.source_dot);
             this.target_pos = this.target.getConnectionPos(this.source_pos, this.target_dot);
         } else {
@@ -486,22 +486,22 @@ SCg.ModelEdge.prototype.update = function () {
     this.position.copyFrom(this.target_pos).add(this.source_pos).multiplyScalar(0.5);
 };
 
-/*! Checks if this edge need to be drawen with arrow at the end
+/*! Checks if this connector need to be drawen with arrow at the end
  */
-SCg.ModelEdge.prototype.hasArrow = function () {
+SCg.ModelConnector.prototype.hasArrow = function () {
     return this.sc_type & (sc_type_common_arc | sc_type_membership_arc);
 };
 
 /*!
- * Setup new points for edge
+ * Setup new points for connector
  */
-SCg.ModelEdge.prototype.setPoints = function (points) {
+SCg.ModelConnector.prototype.setPoints = function (points) {
     this.points = points;
     this.need_observer_sync = true;
     this.requestUpdate();
 };
 
-SCg.ModelEdge.prototype.getConnectionPos = function (from, dotPos) {
+SCg.ModelConnector.prototype.getConnectionPos = function (from, dotPos) {
 
     if (this.need_update) this.update();
 
@@ -549,7 +549,7 @@ SCg.ModelEdge.prototype.getConnectionPos = function (from, dotPos) {
     return result;
 }
 
-SCg.ModelEdge.prototype.calculateDotPos = function (pos) {
+SCg.ModelConnector.prototype.calculateDotPos = function (pos) {
 
     var pts = [this.source_pos.to2d()];
     for (idx in this.points)
@@ -595,7 +595,7 @@ SCg.ModelEdge.prototype.calculateDotPos = function (pos) {
 
 //---------------- contour ----------------
 /**
- * Initialize sc.g-arc(edge) object
+ * Initialize sc.g-arc(connector) object
  * @param {Object} options
  *      Initial opations of sc.g-arc.
  */
@@ -683,14 +683,14 @@ SCg.ModelContour.prototype.addNodesWhichAreInContourPolygon = function (nodes) {
     }
 };
 
-SCg.ModelContour.prototype.isEdgeInPolygon = function (edge) {
-    return !edge.contour && this.isNodeInPolygon(edge.source) && this.isNodeInPolygon(edge.target);
+SCg.ModelContour.prototype.isConnectorInPolygon = function (connector) {
+    return !connector.contour && this.isNodeInPolygon(connector.source) && this.isNodeInPolygon(connector.target);
 };
 
-SCg.ModelContour.prototype.addEdgesWhichAreInContourPolygon = function (edges) {
-    for (let i = 0; i < edges.length; i++) {
-        if (this.isEdgeInPolygon(edges[i])) {
-            this.addChild(edges[i]);
+SCg.ModelContour.prototype.addConnectorsWhichAreInContourPolygon = function (connectors) {
+    for (let i = 0; i < connectors.length; i++) {
+        if (this.isConnectorInPolygon(connectors[i])) {
+            this.addChild(connectors[i]);
         }
     }
 };
@@ -698,7 +698,7 @@ SCg.ModelContour.prototype.addEdgesWhichAreInContourPolygon = function (edges) {
 SCg.ModelContour.prototype.addElementsWhichAreInContourPolygon = function (scene) {
     this.addNodesWhichAreInContourPolygon(scene.nodes);
     this.addNodesWhichAreInContourPolygon(scene.links);
-    this.addEdgesWhichAreInContourPolygon(scene.edges);
+    this.addConnectorsWhichAreInContourPolygon(scene.connectors);
 };
 
 SCg.ModelContour.prototype.getConnectionPos = function (from, dotPos) {
@@ -776,7 +776,7 @@ SCg.ModelBus.prototype.update = function () {
     // calculate begin and end positions
     if (this.points.length > 0) {
 
-        if (this.source instanceof SCg.ModelEdge) {
+        if (this.source instanceof SCg.ModelConnector) {
             this.source_pos = this.source.getConnectionPos(new SCg.Vector3(this.points[0].x, this.points[0].y, 0), this.source_dot);
         } else {
             this.source_pos = this.source.getConnectionPos(new SCg.Vector3(this.points[0].x, this.points[0].y, 0), this.source_dot);
@@ -784,7 +784,7 @@ SCg.ModelBus.prototype.update = function () {
 
     } else {
 
-        if (this.source instanceof SCg.ModelEdge) {
+        if (this.source instanceof SCg.ModelConnector) {
             this.source_pos = this.source.getConnectionPos(this.target_pos, this.source_dot);
         } else {
             this.source_pos = this.source.getConnectionPos(this.target_pos, this.source_dot);
@@ -830,9 +830,9 @@ SCg.ModelBus.prototype.setPoints = function (points) {
     this.requestUpdate();
 };
 
-SCg.ModelBus.prototype.getConnectionPos = SCg.ModelEdge.prototype.getConnectionPos;
+SCg.ModelBus.prototype.getConnectionPos = SCg.ModelConnector.prototype.getConnectionPos;
 
-SCg.ModelBus.prototype.calculateDotPos = SCg.ModelEdge.prototype.calculateDotPos;
+SCg.ModelBus.prototype.calculateDotPos = SCg.ModelConnector.prototype.calculateDotPos;
 
 SCg.ModelBus.prototype.changePosition = function (mouse_pos) {
 
@@ -857,7 +857,7 @@ SCg.ModelBus.prototype.changePosition = function (mouse_pos) {
     this.need_observer_sync = true;
 
     this.requestUpdate();
-    this.notifyEdgesUpdate();
+    this.notifyConnectorsUpdate();
 };
 
 SCg.ModelBus.prototype.destroy = function () {

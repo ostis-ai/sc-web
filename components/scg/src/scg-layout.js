@@ -1,6 +1,6 @@
 const SCgLayoutObjectType = {
     Node: 0,
-    Edge: 1,
+    Connector: 1,
     Link: 2,
     Contour: 3,
     DotPoint: 4
@@ -12,9 +12,9 @@ const SCgLayoutObjectType = {
 /**
  * Base layout algorithm
  */
-SCg.LayoutAlgorithm = function (nodes, edges, contours, onTickUpdate) {
+SCg.LayoutAlgorithm = function (nodes, connectors, contours, onTickUpdate) {
     this.nodes = nodes;
-    this.edges = edges;
+    this.connectors = connectors;
     this.contours = contours;
     this.onTickUpdate = onTickUpdate;
 };
@@ -25,8 +25,8 @@ SCg.LayoutAlgorithm.prototype = {
 
 // --------------------------
 
-SCg.LayoutAlgorithmForceBased = function (nodes, edges, contours, onTickUpdate, rect) {
-    SCg.LayoutAlgorithm.call(this, nodes, edges, contours, onTickUpdate);
+SCg.LayoutAlgorithmForceBased = function (nodes, connectors, contours, onTickUpdate, rect) {
+    SCg.LayoutAlgorithm.call(this, nodes, connectors, contours, onTickUpdate);
     this.rect = rect;
 };
 
@@ -53,26 +53,26 @@ SCg.LayoutAlgorithmForceBased.prototype.start = function () {
 
     this.force = d3.layout.force()
         .nodes(this.nodes)
-        .links(this.edges)
+        .links(this.connectors)
         .size(this.rect)
         .friction(0.75)
         .gravity(0.03)
-        .linkDistance(function (edge) {
-            const p1 = edge.source.object.getConnectionPos(edge.target.object.position, edge.object.source_dot);
-            const p2 = edge.target.object.getConnectionPos(edge.source.object.position, edge.object.target_dot);
-            const cd = edge.source.object.position.clone().sub(edge.target.object.position).length();
+        .linkDistance(function (connector) {
+            const p1 = connector.source.object.getConnectionPos(connector.target.object.position, connector.object.source_dot);
+            const p2 = connector.target.object.getConnectionPos(connector.source.object.position, connector.object.target_dot);
+            const cd = connector.source.object.position.clone().sub(connector.target.object.position).length();
             const d = cd - p1.sub(p2).length();
 
-            if (edge.source.type == SCgLayoutObjectType.DotPoint ||
-                edge.target.type == SCgLayoutObjectType.DotPoint) {
+            if (connector.source.type == SCgLayoutObjectType.DotPoint ||
+                connector.target.type == SCgLayoutObjectType.DotPoint) {
                 return d + 50;
             }
 
             return 100 + d;
         })
-        .linkStrength(function (edge) {
-            if (edge.source.type == SCgLayoutObjectType.DotPoint ||
-                edge.target.type == SCgLayoutObjectType.DotPoint) {
+        .linkStrength(function (connector) {
+            if (connector.source.type == SCgLayoutObjectType.DotPoint ||
+                connector.target.type == SCgLayoutObjectType.DotPoint) {
                 return 1;
             }
 
@@ -113,12 +113,12 @@ SCg.LayoutAlgorithmForceBased.prototype.onLayoutTick = function () {
     for (let idx in dots) {
         const dot = dots[idx];
 
-        let edge = dot.object.target;
+        let connector = dot.object.target;
         if (dot.source)
-            edge = dot.object.source;
+            connector = dot.object.source;
 
-        dot.x = edge.position.x;
-        dot.y = edge.position.y;
+        dot.x = connector.position.x;
+        dot.y = connector.position.y;
     }
 
     this.onTickUpdate();
@@ -138,7 +138,7 @@ SCg.LayoutManager.prototype = {
 SCg.LayoutManager.prototype.init = function (scene) {
     this.scene = scene;
     this.nodes = null;
-    this.edges = null;
+    this.connectors = null;
 
     this.algorithm = null;
 };
@@ -148,11 +148,11 @@ SCg.LayoutManager.prototype.init = function (scene) {
  */
 SCg.LayoutManager.prototype.prepareObjects = function () {
     this.nodes = {};
-    this.edges = {};
+    this.connectors = {};
     let objDict = {};
 
     this.nodes[0] = [];
-    this.edges[0] = [];
+    this.connectors[0] = [];
 
     const appendElement = (element, elements) => {
         const contour = element.contour ? element.contour.sc_addr : 0;
@@ -194,17 +194,17 @@ SCg.LayoutManager.prototype.prepareObjects = function () {
         appendElement(obj, this.nodes);
     }
 
-    for (let idx in this.scene.edges) {
-        const edge = this.scene.edges[idx];
+    for (let idx in this.scene.connectors) {
+        const connector = this.scene.connectors[idx];
 
         let obj = {};
-        obj.object = edge;
-        obj.type = SCgLayoutObjectType.Edge;
-        obj.contour = edge.contour;
+        obj.object = connector;
+        obj.type = SCgLayoutObjectType.Connector;
+        obj.contour = connector.contour;
 
-        objDict[edge.id] = obj;
+        objDict[connector.id] = obj;
 
-        appendElement(obj, this.edges);
+        appendElement(obj, this.connectors);
     }
 
     for (let idx in this.scene.contours) {
@@ -221,17 +221,17 @@ SCg.LayoutManager.prototype.prepareObjects = function () {
         appendElement(obj, this.nodes);
     }
 
-    // store begin and end for edges
-    for (let key in this.edges) {
-        const edges = this.edges[key];
-        for (let idx in edges) {
-            const edge = edges[idx];
+    // store begin and end for connectors
+    for (let key in this.connectors) {
+        const connectors = this.connectors[key];
+        for (let idx in connectors) {
+            const connector = connectors[idx];
 
-            let source = objDict[edge.object.source.id];
-            let target = objDict[edge.object.target.id];
+            let source = objDict[connector.object.source.id];
+            let target = objDict[connector.object.target.id];
 
-            function getEdgeObj(edge, srcObj, isSource) {
-                if (srcObj.type === SCgLayoutObjectType.Edge) {
+            function getConnectorObj(connector, srcObj, isSource) {
+                if (srcObj.type === SCgLayoutObjectType.Connector) {
                     let obj = {};
                     obj.type = SCgLayoutObjectType.DotPoint;
                     obj.object = srcObj.object;
@@ -240,7 +240,7 @@ SCg.LayoutManager.prototype.prepareObjects = function () {
                     return obj;
                 }
 
-                if (!edge.contour) {
+                if (!connector.contour) {
                     if (!srcObj.contour) return srcObj;
 
                     do {
@@ -252,13 +252,13 @@ SCg.LayoutManager.prototype.prepareObjects = function () {
                 return srcObj;
             }
 
-            edge.source = getEdgeObj(edge, source, true);
-            edge.target = getEdgeObj(edge, target, false);
+            connector.source = getConnectorObj(connector, source, true);
+            connector.target = getConnectorObj(connector, target, false);
 
-            if (edge.source !== source)
-                appendElement(edge.source, this.nodes);
-            if (edge.target !== target)
-                appendElement(edge.target, this.nodes);
+            if (connector.source !== source)
+                appendElement(connector.source, this.nodes);
+            if (connector.target !== target)
+                appendElement(connector.target, this.nodes);
         }
     }
 };
@@ -273,7 +273,7 @@ SCg.LayoutManager.prototype.doLayout = function () {
     }
 
     this.prepareObjects();
-    this.algorithm = new SCg.LayoutAlgorithmForceBased(this.nodes[0], this.edges[0], null,
+    this.algorithm = new SCg.LayoutAlgorithmForceBased(this.nodes[0], this.connectors[0], null,
         $.proxy(this.onTickUpdate, this),
         this.scene.getContainerSize());
     this.algorithm.start();

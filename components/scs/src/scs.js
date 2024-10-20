@@ -16,44 +16,140 @@ SCs.SCnSortOrder = [,
 SCs.SCnBallMarker = '●';
 
 $(document).ready(function () {
-    SCs.Connectors[sc_type_common_edge] = {f: "<>", b: "<>"};
-    SCs.Connectors[sc_type_common_arc] = {f: ">", b: "<"};
-    SCs.Connectors[sc_type_membership_arc] = {f: "..>", b: "<.."};
-    SCs.Connectors[sc_type_common_edge | sc_type_const] = {f: "<=>", b: "<=>"};
-    SCs.Connectors[sc_type_common_edge | sc_type_var] = {f: "_<=>", b: "_<=>"};
-    SCs.Connectors[sc_type_common_arc | sc_type_const] = {f: "=>", b: "<="};
-    SCs.Connectors[sc_type_common_arc | sc_type_var] = {f: "_=>", b: "_<="};
-    SCs.Connectors[sc_type_membership_arc | sc_type_const | sc_type_pos_arc | sc_type_perm_arc] = {f: "->", b: "<-"};
-    SCs.Connectors[sc_type_membership_arc | sc_type_const | sc_type_neg_arc | sc_type_perm_arc] = {f: "-|>", b: "<|-"};
-    SCs.Connectors[sc_type_membership_arc | sc_type_const | sc_type_fuz_arc | sc_type_perm_arc] = {f: "-/>", b: "</-"};
-    SCs.Connectors[sc_type_membership_arc | sc_type_const | sc_type_pos_arc | sc_type_temp_arc] = {f: "~>", b: "<~"};
-    SCs.Connectors[sc_type_membership_arc | sc_type_const | sc_type_neg_arc | sc_type_temp_arc] = {f: "~|>", b: "<|~"};
-    SCs.Connectors[sc_type_membership_arc | sc_type_const | sc_type_fuz_arc | sc_type_temp_arc] = {f: "~/>", b: "</~"};
-    SCs.Connectors[sc_type_var | sc_type_membership_arc | sc_type_pos_arc | sc_type_perm_arc] = {f: "_->", b: "_<-"};
-    SCs.Connectors[sc_type_var | sc_type_membership_arc | sc_type_neg_arc | sc_type_perm_arc] = {f: "_-|>", b: "_<|-"};
-    SCs.Connectors[sc_type_var | sc_type_membership_arc | sc_type_fuz_arc | sc_type_perm_arc] = {f: "_-/>", b: "_</-"};
-    SCs.Connectors[sc_type_var | sc_type_membership_arc | sc_type_pos_arc | sc_type_temp_arc] = {f: "_~>", b: "_<~"};
-    SCs.Connectors[sc_type_var | sc_type_membership_arc | sc_type_neg_arc | sc_type_temp_arc] = {f: "_~|>", b: "_<|~"};
-    SCs.Connectors[sc_type_var | sc_type_membership_arc | sc_type_fuz_arc | sc_type_temp_arc] = {f: "_~/>", b: "_</~"};
+    SCs.Connectors[sc_type_common_edge] = {f: "?<=>", b: "?<=>"};
+    SCs.Connectors[sc_type_common_arc] = {f: "?=>", b: "<=?"};
+    SCs.Connectors[sc_type_membership_arc] = {f: "?.?>", b: "<?.?"};
+
+    SCs.Connectors[sc_type_const | sc_type_common_edge] = {f: "<=>", b: "<=>"};
+    SCs.Connectors[sc_type_var | sc_type_common_edge] = {f: "_<=>", b: "_<=>"};
+
+    SCs.Connectors[sc_type_const | sc_type_common_arc] = {f: "=>", b: "<="};
+    SCs.Connectors[sc_type_var | sc_type_common_arc] = {f: "_=>", b: "<=_"};
+
+    SCs.Connectors[sc_type_const | sc_type_membership_arc] = {f: ".?>", b: "<?."};
+    SCs.Connectors[sc_type_var | sc_type_membership_arc] = {f: "_.?>", b: "<?._"};
+
+    SCs.Connectors[sc_type_pos_arc] = {f: "?.>", b: "<.?"};
+    SCs.Connectors[sc_type_neg_arc] = {f: "?.|>", b: "<|.?"};
+    SCs.Connectors[sc_type_fuz_arc] = {f: "?/>", b: "</?"};
+
+    SCs.Connectors[sc_type_perm_arc] = {f: "?-?>", b: "<?-?"};
+    SCs.Connectors[sc_type_temp_arc] = {f: "?..?>", b: "<?..?"};
+    SCs.Connectors[sc_type_actual_arc] = {f: "?~?>", b: "<?~?"};
+    SCs.Connectors[sc_type_inactual_arc] = {f: "?%?>", b: "<?%?"};
+
+    SCs.Connectors[sc_type_const | sc_type_pos_arc] = {f: ".>", b: "<."};
+    SCs.Connectors[sc_type_const | sc_type_neg_arc] = {f: ".|>", b: "<|."};
+    SCs.Connectors[sc_type_const | sc_type_fuz_arc] = {f: "/>", b: "</"};
+
+    SCs.Connectors[sc_type_var | sc_type_pos_arc] = {f: "_.>", b: "<._"};
+    SCs.Connectors[sc_type_var | sc_type_neg_arc] = {f: "_.|>", b: "<|._"};
+    SCs.Connectors[sc_type_var | sc_type_fuz_arc] = {f: "_/>", b: "</_"};
+
+    SCs.Connectors[sc_type_const | sc_type_perm_arc] = {f: "-?>", b: "<?-"};
+    SCs.Connectors[sc_type_const | sc_type_temp_arc] = {f: "..?>", b: "<?.."};
+    SCs.Connectors[sc_type_const | sc_type_actual_arc] = {f: "~?>", b: "<?~"};
+    SCs.Connectors[sc_type_const | sc_type_inactual_arc] = {f: "%?>", b: "<?%"};
+
+    SCs.Connectors[sc_type_var | sc_type_perm_arc] = {f: "_-?>", b: "<?-_"};
+    SCs.Connectors[sc_type_var | sc_type_temp_arc] = {f: "_..?>", b: "<?.._"};
+    SCs.Connectors[sc_type_var | sc_type_actual_arc] = {f: "_~?>", b: "<?~_"};
+    SCs.Connectors[sc_type_var | sc_type_inactual_arc] = {f: "_%?>", b: "<?%_"};
+
+    SCs.Connectors[sc_type_perm_arc | sc_type_pos_arc] = {f: "?->", b: "<-?"};
+    SCs.Connectors[sc_type_perm_arc | sc_type_neg_arc] = {f: "?-|>", b: "<|-?"};
+
+    SCs.Connectors[sc_type_temp_arc | sc_type_pos_arc] = {f: "?..>", b: "<..?"};
+    SCs.Connectors[sc_type_temp_arc | sc_type_neg_arc] = {f: "?..|>", b: "<|..?"};
+    SCs.Connectors[sc_type_actual_arc | sc_type_pos_arc] = {f: "?~>", b: "<~?"};
+    SCs.Connectors[sc_type_actual_arc | sc_type_neg_arc] = {f: "?~|>", b: "<|~?"};
+    SCs.Connectors[sc_type_inactual_arc | sc_type_pos_arc] = {f: "?%>", b: "<%?"};
+    SCs.Connectors[sc_type_inactual_arc | sc_type_neg_arc] = {f: "?%|>", b: "<|%?"};
+
+    SCs.Connectors[sc_type_const | sc_type_perm_arc | sc_type_pos_arc] = {f: "->", b: "<-"};
+    SCs.Connectors[sc_type_const | sc_type_perm_arc | sc_type_neg_arc] = {f: "-|>", b: "<|-"};
+    SCs.Connectors[sc_type_const | sc_type_temp_arc | sc_type_pos_arc] = {f: "..>", b: "<.."};
+    SCs.Connectors[sc_type_const | sc_type_temp_arc | sc_type_neg_arc] = {f: "..|>", b: "<|.."};
+    SCs.Connectors[sc_type_const | sc_type_actual_arc | sc_type_pos_arc] = {f: "~>", b: "<~"};
+    SCs.Connectors[sc_type_const | sc_type_actual_arc | sc_type_neg_arc] = {f: "~|>", b: "<|~"};
+    SCs.Connectors[sc_type_const | sc_type_inactual_arc | sc_type_pos_arc] = {f: "%>", b: "<%"};
+    SCs.Connectors[sc_type_const | sc_type_inactual_arc | sc_type_neg_arc] = {f: "%|>", b: "<|%"};
+
+    SCs.Connectors[sc_type_var | sc_type_perm_arc | sc_type_pos_arc] = {f: "_->", b: "<-_"};
+    SCs.Connectors[sc_type_var | sc_type_perm_arc | sc_type_neg_arc] = {f: "_-|>", b: "<|-_"};
+    SCs.Connectors[sc_type_var | sc_type_temp_arc | sc_type_pos_arc] = {f: "_..>", b: "<.._"};
+    SCs.Connectors[sc_type_var | sc_type_temp_arc | sc_type_neg_arc] = {f: "_..|>", b: "<|.._"};
+    SCs.Connectors[sc_type_var | sc_type_actual_arc | sc_type_pos_arc] = {f: "_~>", b: "<~_"};
+    SCs.Connectors[sc_type_var | sc_type_actual_arc | sc_type_neg_arc] = {f: "_~|>", b: "<|~_"};
+    SCs.Connectors[sc_type_var | sc_type_inactual_arc | sc_type_pos_arc] = {f: "_%>", b: "<%_"};
+    SCs.Connectors[sc_type_var | sc_type_inactual_arc | sc_type_neg_arc] = {f: "_%|>", b: "<|%_"};
 
 
-    SCs.SCnConnectors[sc_type_common_edge] = {f: "↔", b: "↔"};
-    SCs.SCnConnectors[sc_type_common_arc] = {f: "→", b: "←"};
-    SCs.SCnConnectors[sc_type_membership_arc] = {f: "..∍", b: "∊.."};
-    SCs.SCnConnectors[sc_type_common_edge | sc_type_const] = {f: "⇔", b: "⇔"};
-    SCs.SCnConnectors[sc_type_common_edge | sc_type_var] = {f: "⇐⇒", b: "⇐⇒"};
-    SCs.SCnConnectors[sc_type_common_arc | sc_type_const] = {f: "⇒", b: "⇐"};
-    SCs.SCnConnectors[sc_type_common_arc | sc_type_var] = {f: "_⇒", b: "_⇐"};
-    SCs.SCnConnectors[sc_type_membership_arc | sc_type_const | sc_type_pos_arc | sc_type_perm_arc] = {f: "∍", b: "∊"};
-    SCs.SCnConnectors[sc_type_membership_arc | sc_type_const | sc_type_neg_arc | sc_type_perm_arc] = {f: "∌", b: "∉"};
-    SCs.SCnConnectors[sc_type_membership_arc | sc_type_const | sc_type_fuz_arc | sc_type_perm_arc] = {f: "/∍", b: "∊/"};
-    SCs.SCnConnectors[sc_type_membership_arc | sc_type_const | sc_type_pos_arc | sc_type_temp_arc] = {f: "~∍", b: "∊~"};
-    SCs.SCnConnectors[sc_type_membership_arc | sc_type_const | sc_type_neg_arc | sc_type_temp_arc] = {f: "~∌", b: "∉~"};
-    SCs.SCnConnectors[sc_type_membership_arc | sc_type_const | sc_type_fuz_arc | sc_type_temp_arc] = {f: "~/∍", b: "∊/~"};
-    SCs.SCnConnectors[sc_type_var | sc_type_membership_arc | sc_type_pos_arc | sc_type_perm_arc] = {f: "_∍", b: "_∊"};
-    SCs.SCnConnectors[sc_type_var | sc_type_membership_arc | sc_type_neg_arc | sc_type_perm_arc] = {f: "_∌", b: "_∉"};
-    SCs.SCnConnectors[sc_type_var | sc_type_membership_arc | sc_type_fuz_arc | sc_type_perm_arc] = {f: "_/∍", b: "_∊/"};
-    SCs.SCnConnectors[sc_type_var | sc_type_membership_arc | sc_type_pos_arc | sc_type_temp_arc] = {f: "_~∍", b: "_∊~"};
-    SCs.SCnConnectors[sc_type_var | sc_type_membership_arc | sc_type_neg_arc | sc_type_temp_arc] = {f: "_~∌", b: "_∉~"};
-    SCs.SCnConnectors[sc_type_var | sc_type_membership_arc | sc_type_fuz_arc | sc_type_temp_arc] = {f: "_~/∍", b: "_∊/~"};
+    SCs.SCnConnectors[sc_type_common_edge] = {f: "?⇔", b: "?⇔"};
+    SCs.SCnConnectors[sc_type_common_arc] = {f: "?⇒", b: "⇐?"};
+    SCs.SCnConnectors[sc_type_membership_arc] = {f: "?.?∍", b: "∊?.?"};
+
+    SCs.SCnConnectors[sc_type_const | sc_type_common_edge] = {f: "⇔", b: "⇔"};
+    SCs.SCnConnectors[sc_type_var | sc_type_common_edge] = {f: "_⇔", b: "_⇔"};
+
+    SCs.SCnConnectors[sc_type_const | sc_type_common_arc] = {f: "⇒", b: "⇐"};
+    SCs.SCnConnectors[sc_type_var | sc_type_common_arc] = {f: "_⇒", b: "⇐_"};
+
+    SCs.SCnConnectors[sc_type_const | sc_type_membership_arc] = {f: ".?∍", b: "∊?."};
+    SCs.SCnConnectors[sc_type_var | sc_type_membership_arc] = {f: "_.?∍", b: "∊?._"};
+
+    SCs.SCnConnectors[sc_type_pos_arc] = {f: "?.∍", b: "∊.?"};
+    SCs.SCnConnectors[sc_type_neg_arc] = {f: "?.∌", b: "∉.?"};
+    SCs.SCnConnectors[sc_type_fuz_arc] = {f: "?/∍", b: "∊/?"};
+
+    SCs.SCnConnectors[sc_type_perm_arc] = {f: "?-?∍", b: "∊?-?"};
+    SCs.SCnConnectors[sc_type_temp_arc] = {f: "?..?∍", b: "∊?..?"};
+    SCs.SCnConnectors[sc_type_actual_arc] = {f: "?~?∍", b: "∊?~?"};
+    SCs.SCnConnectors[sc_type_inactual_arc] = {f: "?%?∍", b: "∊?%?"};
+
+    SCs.SCnConnectors[sc_type_const | sc_type_pos_arc] = {f: ".∍", b: "∊."};
+    SCs.SCnConnectors[sc_type_const | sc_type_neg_arc] = {f: ".∌", b: "∉."};
+    SCs.SCnConnectors[sc_type_const | sc_type_fuz_arc] = {f: "/∍", b: "∊/"};
+
+    SCs.SCnConnectors[sc_type_var | sc_type_pos_arc] = {f: "_.∍", b: "∊._"};
+    SCs.SCnConnectors[sc_type_var | sc_type_neg_arc] = {f: "_.∌", b: "∉._"};
+    SCs.SCnConnectors[sc_type_var | sc_type_fuz_arc] = {f: "_/∍", b: "∊/_"};
+
+    SCs.SCnConnectors[sc_type_const | sc_type_perm_arc] = {f: "-?∍", b: "∊?-"};
+    SCs.SCnConnectors[sc_type_const | sc_type_temp_arc] = {f: "..?∍", b: "∊?.."};
+    SCs.SCnConnectors[sc_type_const | sc_type_actual_arc] = {f: "~?∍", b: "∊?~"};
+    SCs.SCnConnectors[sc_type_const | sc_type_inactual_arc] = {f: "%?∍", b: "∊?%"};
+
+    SCs.SCnConnectors[sc_type_var | sc_type_perm_arc] = {f: "_-?∍", b: "∊?-_"};
+    SCs.SCnConnectors[sc_type_var | sc_type_temp_arc] = {f: "_..?∍", b: "∊?.._"};
+    SCs.SCnConnectors[sc_type_var | sc_type_actual_arc] = {f: "_~?∍", b: "∊?~_"};
+    SCs.SCnConnectors[sc_type_var | sc_type_inactual_arc] = {f: "_%?∍", b: "∊?%_"};
+
+    SCs.SCnConnectors[sc_type_perm_arc | sc_type_pos_arc] = {f: "?∍", b: "∊?"};
+    SCs.SCnConnectors[sc_type_perm_arc | sc_type_neg_arc] = {f: "?∌", b: "∉?"};
+
+    SCs.SCnConnectors[sc_type_temp_arc | sc_type_pos_arc] = {f: "?..∍", b: "∊..?"};
+    SCs.SCnConnectors[sc_type_temp_arc | sc_type_neg_arc] = {f: "?..∌", b: "∉..?"};
+    SCs.SCnConnectors[sc_type_actual_arc | sc_type_pos_arc] = {f: "?~∍", b: "∊~?"};
+    SCs.SCnConnectors[sc_type_actual_arc | sc_type_neg_arc] = {f: "?~∌", b: "∉~?"};
+    SCs.SCnConnectors[sc_type_inactual_arc | sc_type_pos_arc] = {f: "?%∍", b: "∊%?"};
+    SCs.SCnConnectors[sc_type_inactual_arc | sc_type_neg_arc] = {f: "?%∌", b: "∉%?"};
+
+    SCs.SCnConnectors[sc_type_const | sc_type_perm_arc | sc_type_pos_arc] = {f: "∍", b: "∊"};
+    SCs.SCnConnectors[sc_type_const | sc_type_perm_arc | sc_type_neg_arc] = {f: "∌", b: "∉"};
+    SCs.SCnConnectors[sc_type_const | sc_type_temp_arc | sc_type_pos_arc] = {f: "..∍", b: "∊.."};
+    SCs.SCnConnectors[sc_type_const | sc_type_temp_arc | sc_type_neg_arc] = {f: "..∌", b: "∉.."};
+    SCs.SCnConnectors[sc_type_const | sc_type_actual_arc | sc_type_pos_arc] = {f: "~∍", b: "∊~"};
+    SCs.SCnConnectors[sc_type_const | sc_type_actual_arc | sc_type_neg_arc] = {f: "~∌", b: "∉~"};
+    SCs.SCnConnectors[sc_type_const | sc_type_inactual_arc | sc_type_pos_arc] = {f: "%∍", b: "∊%"};
+    SCs.SCnConnectors[sc_type_const | sc_type_inactual_arc | sc_type_neg_arc] = {f: "%∌", b: "∉%"};
+
+    SCs.SCnConnectors[sc_type_var | sc_type_perm_arc | sc_type_pos_arc] = {f: "_∍", b: "∊_"};
+    SCs.SCnConnectors[sc_type_var | sc_type_perm_arc | sc_type_neg_arc] = {f: "_∌", b: "∉_"};
+    SCs.SCnConnectors[sc_type_var | sc_type_temp_arc | sc_type_pos_arc] = {f: "_..∍", b: "∊.._"};
+    SCs.SCnConnectors[sc_type_var | sc_type_temp_arc | sc_type_neg_arc] = {f: "_..∌", b: "∉.._"};
+    SCs.SCnConnectors[sc_type_var | sc_type_actual_arc | sc_type_pos_arc] = {f: "_~∍", b: "∊~_"};
+    SCs.SCnConnectors[sc_type_var | sc_type_actual_arc | sc_type_neg_arc] = {f: "_~∌", b: "∉~_"};
+    SCs.SCnConnectors[sc_type_var | sc_type_inactual_arc | sc_type_pos_arc] = {f: "_%∍", b: "∊%_"};
+    SCs.SCnConnectors[sc_type_var | sc_type_inactual_arc | sc_type_neg_arc] = {f: "_%∌", b: "∉%_"};
 });

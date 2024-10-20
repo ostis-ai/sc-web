@@ -4,7 +4,7 @@
 #scg-tool-switch {
     margin-bottom: 2px;
 }
-#scg-tool-select, #scg-tool-autosize, #scg-tool-edge, #scg-tool-bus, #scg-tool-contour, #scg-tool-link, #scg-tool-undo, #scg-tool-redo, #scg-tool-change-idtf, #scg-tool-set-content, #scg-tool-zoomin, #scg-tool-zoomout, #scg-tool-integrate, #scg-tool-open, #scg-tool-save, #scg-tool-delete, #scg-tool-change-type {
+#scg-tool-select, #scg-tool-autosize, #scg-tool-connector, #scg-tool-bus, #scg-tool-contour, #scg-tool-link, #scg-tool-undo, #scg-tool-redo, #scg-tool-change-idtf, #scg-tool-set-content, #scg-tool-zoomin, #scg-tool-zoomout, #scg-tool-integrate, #scg-tool-open, #scg-tool-save, #scg-tool-delete, #scg-tool-change-type {
     margin: 2px 0;
 }
 #scg-tool-clear {

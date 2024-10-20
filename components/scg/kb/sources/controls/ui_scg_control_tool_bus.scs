@@ -1,5 +1,5 @@
 ui_scg_control_tool_bus
-    <- ui_scg_control; sc_node_not_relation;
+    <- ui_scg_control; sc_node_class;
     => nrel_main_idtf:
         [Режим создания SCg-шин]
         (* <- lang_ru;; *);

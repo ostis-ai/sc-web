@@ -11,16 +11,16 @@ var SCgAlphabet = {
 
         const nodeLineStroke = 1.3;
 
-        // edge markers
+        // connector markers
         defs.append('svg:marker')
-            .attr('id', 'end-arrow-access_' + containerId).attr('viewBox', '0 -5 10 10').attr('refX', 0)
+            .attr('id', 'membership-arc-arrow-end_' + containerId).attr('viewBox', '0 -5 10 10').attr('refX', 0)
             .attr('markerWidth', 8).attr('markerHeight', 14).attr('orient', 'auto')
             .attr('markerUnits', 'userSpaceOnUse')
             .append('svg:path')
             .attr('d', 'M0,-4L10,0L0,4').attr('fill', '#000');
 
         defs.append('svg:marker')
-            .attr('id', 'end-arrow-common_' + containerId).attr('viewBox', '0 -5 10 10').attr('refX', 0)
+            .attr('id', 'common-arc-arrow-end_' + containerId).attr('viewBox', '0 -5 10 10').attr('refX', 0)
             .attr('markerWidth', 10).attr('markerHeight', 16).attr('orient', 'auto')
             .attr('markerUnits', 'userSpaceOnUse')
             .append('svg:path')
@@ -182,7 +182,7 @@ var SCgAlphabet = {
         this.scType2Str[sc_type_node] = 'scg.node';
         this.scType2Str[sc_type_const | sc_type_node] = 'scg.const.node';
         this.scType2Str[sc_type_const | sc_type_node | sc_type_node_material] = 'scg.const.node.material';
-        this.scType2Str[sc_type_const | sc_type_node | sc_type_node_abstract] = 'scg.const.node.superclass';
+        this.scType2Str[sc_type_const | sc_type_node | sc_type_node_superclass] = 'scg.const.node.superclass';
         this.scType2Str[sc_type_const | sc_type_node | sc_type_node_class] = 'scg.const.node.class';
         this.scType2Str[sc_type_const | sc_type_node | sc_type_node_structure] = 'scg.const.node.struct';
         this.scType2Str[sc_type_const | sc_type_node | sc_type_node_norole] = 'scg.const.node.norole';
@@ -191,7 +191,7 @@ var SCgAlphabet = {
 
         this.scType2Str[sc_type_var | sc_type_node] = 'scg.var.node';
         this.scType2Str[sc_type_var | sc_type_node | sc_type_node_material] = 'scg.var.node.material';
-        this.scType2Str[sc_type_var | sc_type_node | sc_type_node_abstract] = 'scg.var.node.superclass';
+        this.scType2Str[sc_type_var | sc_type_node | sc_type_node_superclass] = 'scg.var.node.superclass';
         this.scType2Str[sc_type_var | sc_type_node | sc_type_node_class] = 'scg.var.node.class';
         this.scType2Str[sc_type_var | sc_type_node | sc_type_node_structure] = 'scg.var.node.struct';
         this.scType2Str[sc_type_var | sc_type_node | sc_type_node_norole] = 'scg.var.node.norole';
@@ -199,8 +199,8 @@ var SCgAlphabet = {
         this.scType2Str[sc_type_var | sc_type_node | sc_type_node_tuple] = 'scg.var.node.tuple';
 
         this.scType2Str[sc_type_node_link] = 'scg.node.link';
-        this.scType2Str[sc_type_node_link | sc_type_const] = 'scg.const.node.link';
-        this.scType2Str[sc_type_node_link | sc_type_var] = 'scg.var.node.link';
+        this.scType2Str[sc_type_const | sc_type_node_link] = 'scg.const.node.link';
+        this.scType2Str[sc_type_var | sc_type_node_link] = 'scg.var.node.link';
     },
 
     classLevel: function (obj) {
@@ -258,24 +258,24 @@ var SCgAlphabet = {
     },
 
     /**
-     * All sc.g-edges represented by group of paths, so we need to update whole group.
+     * All sc.g-connectors represented by group of paths, so we need to update whole group.
      * This function do that work
-     * @param edge {SCg.ModelEdge} Object that represent sc.g-edge
+     * @param connector {SCg.ModelConnector} Object that represent sc.g-connector
      * @param d3_group Object that represents svg group
      */
-    updateEdge: function (edge, d3_group, containerId) {
-        // first of all we need to determine if edge has an end marker
-        let has_marker = edge.hasArrow();
+    updateConnector: function (connector, d3_group, containerId) {
+        // first of all we need to determine if connector has an end marker
+        let has_marker = connector.hasArrow();
 
         // now calculate target and source positions
-        let pos_src = edge.source_pos.clone();
-        let pos_trg = edge.target_pos.clone();
+        let pos_src = connector.source_pos.clone();
+        let pos_trg = connector.target_pos.clone();
 
         // if we have an arrow, then need to fix end position
         if (has_marker) {
             let prev_pos = pos_src;
-            if (edge.points.length > 0) {
-                prev_pos = new SCg.Vector3(edge.points[edge.points.length - 1].x, edge.points[edge.points.length - 1].y, 0);
+            if (connector.points.length > 0) {
+                prev_pos = new SCg.Vector3(connector.points[connector.points.length - 1].x, connector.points[connector.points.length - 1].y, 0);
             }
 
             let dv = pos_trg.clone().sub(prev_pos);
@@ -286,54 +286,60 @@ var SCgAlphabet = {
 
         // make position path
         let position_path = 'M' + pos_src.x + ',' + pos_src.y;
-        for (let idx in edge.points) {
-            position_path += 'L' + edge.points[idx].x + ',' + edge.points[idx].y;
+        for (let idx in connector.points) {
+            position_path += 'L' + connector.points[idx].x + ',' + connector.points[idx].y;
         }
         position_path += 'L' + pos_trg.x + ',' + pos_trg.y;
-
-        const sc_type_str = edge.sc_type.toString();
+        
+        const sc_type_str = connector.sc_type.toString();
         if (d3_group['sc_type'] !== sc_type_str) {
             d3_group.attr('sc_type', sc_type_str);
 
             // remove old
             d3_group.selectAll('path').remove();
 
-            d3_group.append('svg:path').classed('SCgEdgeSelectBounds', true).attr('d', position_path);
+            d3_group.append('svg:path').classed('SCgConnectorSelectBounds', true).attr('d', position_path);
 
             // if it accessory, then append main line
-            if (edge.sc_type & sc_type_membership_arc) {
+            if ((connector.sc_type & sc_type_membership_arc) == sc_type_membership_arc) {
 
-                let main_style = 'SCgEdgeAccessPerm';
-                if (edge.sc_type & sc_type_temp_arc) {
-                    main_style = edge.sc_type & sc_type_var ? 'SCgEdgeAccessTempVar' : 'SCgEdgeAccessTemp';
+                let main_style = 'SCgUnknownArc';
+                if ((connector.sc_type & sc_type_perm_arc) == sc_type_perm_arc) {
+                    main_style = 'SCgPermArc';
+                }
+                else if ((connector.sc_type & sc_type_temp_arc) == sc_type_temp_arc) {
+                    main_style = 'SCgTempArc';
                 }
 
-                main_style += ' ' + SCgAlphabet.classLevel(edge);
+                main_style += ' ' + SCgAlphabet.classLevel(connector);
                 var p = d3_group.append('svg:path')
                     .classed(main_style, true)
-                    .classed('SCgEdgeEndArrowAccess', true)
-                    .style("marker-end", "url(#end-arrow-access_" + containerId + ")")
+                    .classed('SCgMembershipArcArrowEnd', true)
+                    .style("marker-end", "url(#membership-arc-arrow-end_" + containerId + ")")
                     .attr('d', position_path);
 
-                if (edge.sc_type & sc_type_constancy_mask) {
-                    p.classed('SCgEdgeVarDashAccessPerm', (edge.sc_type & sc_type_var) && (edge.sc_type & sc_type_perm_arc));
+                if (connector.sc_type & sc_type_constancy_mask) {
+                    if ((connector.sc_type & sc_type_perm_arc) == sc_type_perm_arc)
+                        p.classed('SCgVarPermArc', (connector.sc_type & sc_type_var) && (connector.sc_type & sc_type_perm_arc));
+                    else if ((connector.sc_type & sc_type_temp_arc) == sc_type_temp_arc)
+                        p.classed('SCgVarTempArc', (connector.sc_type & sc_type_var) && (connector.sc_type & sc_type_perm_arc));
                 } else {
                     d3_group.append('svg:path')
-                        .classed('SCgEdgeAccessCommonDash', true)
+                        .classed('SCgUnknownArc', true)
                         .attr('d', position_path);
                 }
 
-                if (edge.sc_type & sc_type_neg_arc) {
+                if ((connector.sc_type & sc_type_neg_arc) == sc_type_neg_arc) {
                     d3_group.append('svg:path')
-                        .classed('SCgEdgePermNegDash ' + SCgAlphabet.classLevel(edge), true)
+                        .classed('SCgNegArc ' + SCgAlphabet.classLevel(connector), true)
                         .attr('d', position_path);
                 }
-            } else if (edge.sc_type & (sc_type_common_arc | sc_type_common_edge)) {
-                let main_style = 'SCgEdgeCommonBack';
-                if (edge.sc_type & sc_type_common_edge) {
-                    if (edge.sc_type & sc_type_var) {
+            } else if (((connector.sc_type & sc_type_common_arc) == sc_type_common_arc) || ((connector.sc_type & sc_type_common_edge) == sc_type_common_edge)) {
+                let main_style = 'SCgCommonArcBackground';
+                if ((connector.sc_type & sc_type_common_edge) == sc_type_common_edge) {
+                    if (connector.sc_type & sc_type_var) {
                         d3_group.append('svg:path')
-                            .classed('SCgEdgeVarDashCommon ' + SCgAlphabet.classLevel(edge), true)
+                            .classed('SCgVarCommonArc ' + SCgAlphabet.classLevel(connector), true)
                             .attr('d', position_path);
                     }
                     else {
@@ -343,37 +349,37 @@ var SCgAlphabet = {
                     }
                 }
 
-                if (edge.sc_type & sc_type_common_arc) {
-                    if (edge.sc_type & sc_type_var) {
+                if ((connector.sc_type & sc_type_common_arc) == sc_type_common_arc) {
+                    if (connector.sc_type & sc_type_var) {
                         d3_group.append('svg:path')
-                            .classed('SCgEdgeVarDashCommon ' + SCgAlphabet.classLevel(edge), true)
-                            .classed('SCgEdgeEndArrowCommon ' + SCgAlphabet.classLevel(edge), true)
-                            .style("marker-end", "url(#end-arrow-common_" + containerId + ")")
+                            .classed('SCgVarCommonArc ' + SCgAlphabet.classLevel(connector), true)
+                            .classed('SCgCommonArcArrowEnd ' + SCgAlphabet.classLevel(connector), true)
+                            .style("marker-end", "url(#common-arc-arrow-end_" + containerId + ")")
                             .attr('d', position_path);
                     }
                     else {
                         d3_group.append('svg:path')
-                            .classed('SCgEdgeCommonBack', true)
-                            .classed('SCgEdgeEndArrowCommon ' + SCgAlphabet.classLevel(edge), true)
-                            .style("marker-end", "url(#end-arrow-common_" + containerId + ")")
+                            .classed('SCgCommonArcBackground', true)
+                            .classed('SCgCommonArcArrowEnd ' + SCgAlphabet.classLevel(connector), true)
+                            .style("marker-end", "url(#common-arc-arrow-end_" + containerId + ")")
                             .attr('d', position_path);
                     }
                 }
 
                 d3_group.append('svg:path')
-                    .classed('SCgEdgeCommonForeground ' + SCgAlphabet.classLevel(edge), true)
+                    .classed('SCgCommonArcForeground ' + SCgAlphabet.classLevel(connector), true)
                     .attr('d', position_path)
 
-                if ((edge.sc_type & sc_type_constancy_mask) === 0)
+                if ((connector.sc_type & sc_type_constancy_mask) === 0)
                 {
                     d3_group.append('svg:path')
-                        .classed('SCgEdgeVarDashCommon ' + SCgAlphabet.classLevel(edge), true)
+                        .classed('SCgVarCommonArc ' + SCgAlphabet.classLevel(connector), true)
                         .attr('d', position_path);
                 }
 
             } else {
                 // unknown
-                let main_style = 'SCgEdgeUnknown ' + SCgAlphabet.classLevel(edge);
+                let main_style = 'SCgUnknownArc ' + SCgAlphabet.classLevel(connector);
                 d3_group.append('svg:path')
                     .classed(main_style, true)
                     .attr('d', position_path);
@@ -386,10 +392,10 @@ var SCgAlphabet = {
         }
 
         // now we need to draw fuz markers (for now it is not supported)
-        if (edge.sc_type & sc_type_fuz_arc) {
+        if ((connector.sc_type & sc_type_fuz_arc) == sc_type_fuz_arc) {
             d3_group.selectAll('path').attr('stroke', '#f00');
             d3_group.append('svg:path')
-                .classed('SCgEdgeFuzDash', true)
+                .classed('SCgFuzArc', true)
                 .attr('d', position_path)
                 .attr('stroke', '#f00');
         }

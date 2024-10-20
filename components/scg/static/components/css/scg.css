@@ -79,241 +79,241 @@
     min-height: 25px;
 }
 
-/* --- Edges --- */
-.SCgEdgeSelectBounds {
+/* --- Connectors --- */
+.SCgConnectorSelectBounds {
     stroke: none;
     stroke-width: 10px;
     fill: none;
 }
 
-.SCgEdge {
+.SCgConnector {
     fill: none;
     stroke-linejoin: round;
 }
 
-.SCgEdgeUnknown {
+.SCgUnknownArc {
     stroke: #a00;
     stroke-width: 3px;
     fill: none;
 }
 
-.SCgEdgeCommonBack {
+.SCgCommonArcBackground {
     stroke-width: 8px;
     fill: none;
 }
 
-.SCgEdgeCommonForeground {
+.SCgCommonArcForeground {
     stroke-width: 5px;
     stroke: #fff;
     fill: none;
 }
-.SCgEdgeCommonForeground.DBSCgFirstLevelView {
+.SCgCommonArcForeground.DBSCgFirstLevelView {
     stroke-width: 5;
 }
-.SCgEdgeCommonForeground.DBSCgSecondLevelView {
+.SCgCommonArcForeground.DBSCgSecondLevelView {
     stroke-width: 4.5;
 }
-.SCgEdgeCommonForeground.DBSCgThirdLevelView {
+.SCgCommonArcForeground.DBSCgThirdLevelView {
     stroke-width: 4;
 }
-.SCgEdgeCommonForeground.DBSCgFourthLevelView {
+.SCgCommonArcForeground.DBSCgFourthLevelView {
     stroke-width: 3.5;
 }
-.SCgEdgeCommonForeground.DBSCgFifthLevelView {
+.SCgCommonArcForeground.DBSCgFifthLevelView {
     stroke-width: 3.5;
     opacity: 0.8;
 }
-.SCgEdgeCommonForeground.DBSCgSixthLevelView {
+.SCgCommonArcForeground.DBSCgSixthLevelView {
     stroke-width: 3.5;
     opacity: 0.6;
 }
-.SCgEdgeCommonForeground.DBSCgSeventhLevelView {
+.SCgCommonArcForeground.DBSCgSeventhLevelView {
     stroke-width: 3;
     opacity: 0.4;
 }
 
-.SCgEdgeCommonForegroundVar {
+.SCgCommonArcForegroundVar {
     stroke-width: 5px;
     fill: none;
 }
 
-.SCgEdgeAccessCommonDash {
+.SCgUnknownArc {
     stroke-width: 4px;
     stroke-dasharray: 4, 4;
     fill: none;
 }
 
-.SCgEdgeAccessPerm {
+.SCgPermArc {
     stroke-width: 1.5;
     fill: none;
     opacity: 1;
 }
-.SCgEdgeAccessPerm.DBSCgFirstLevelView {
+.SCgPermArc.DBSCgFirstLevelView {
     stroke-width: 1.5;
 }
-.SCgEdgeAccessPerm.DBSCgSecondLevelView {
+.SCgPermArc.DBSCgSecondLevelView {
     stroke-width: 1.2;
 }
-.SCgEdgeAccessPerm.DBSCgThirdLevelView {
+.SCgPermArc.DBSCgThirdLevelView {
     stroke-width: 1;
 }
-.SCgEdgeAccessPerm.DBSCgFourthLevelView {
+.SCgPermArc.DBSCgFourthLevelView {
     stroke-width: 0.5;
 }
-.SCgEdgeAccessPerm.DBSCgFifthLevelView {
+.SCgPermArc.DBSCgFifthLevelView {
     stroke-width: 0.5;
     opacity: 0.8;
 }
-.SCgEdgeAccessPerm.DBSCgSixthLevelView {
+.SCgPermArc.DBSCgSixthLevelView {
     stroke-width: 0.5;
     opacity: 0.6;
 }
-.SCgEdgeAccessPerm.DBSCgSeventhLevelView {
+.SCgPermArc.DBSCgSeventhLevelView {
     stroke-width: 0.5;
     opacity: 0.4;
 }
 
-.SCgEdgeAccessTemp {
+.SCgTempArc {
     stroke-width: 1.5;
     stroke-dasharray: 2, 2;
     fill: none;
 }
-.SCgEdgeAccessTemp.DBSCgFirstLevelView {
+.SCgTempArc.DBSCgFirstLevelView {
     stroke-width: 1.5;
 }
-.SCgEdgeAccessTemp.DBSCgSecondLevelView {
+.SCgTempArc.DBSCgSecondLevelView {
     stroke-width: 1.2;
 }
-.SCgEdgeAccessTemp.DBSCgThirdLevelView {
+.SCgTempArc.DBSCgThirdLevelView {
     stroke-width: 1;
 }
-.SCgEdgeAccessTemp.DBSCgFourthLevelView {
+.SCgTempArc.DBSCgFourthLevelView {
     stroke-width: 0.5;
 }
-.SCgEdgeAccessTemp.DBSCgFifthLevelView {
+.SCgTempArc.DBSCgFifthLevelView {
     stroke-width: 0.5;
     opacity: 0.8;
 }
-.SCgEdgeAccessTemp.DBSCgSixthLevelView {
+.SCgTempArc.DBSCgSixthLevelView {
     stroke-width: 0.5;
     opacity: 0.6;
 }
-.SCgEdgeAccessTemp.DBSCgSeventhLevelView {
+.SCgTempArc.DBSCgSeventhLevelView {
     stroke-width: 0.5;
     opacity: 0.4;
 }
 
-.SCgEdgeAccessTempVar {
+.SCgVarTempArc {
     stroke-width: 1.5;
     stroke-dasharray: 2, 2, 2, 2, 2, 2, 2, 14;
     fill: none;
 }
-.SCgEdgeAccessTempVar.DBSCgFirstLevelView {
+.SCgVarTempArc.DBSCgFirstLevelView {
     stroke-width: 1.5;
 }
-.SCgEdgeAccessTempVar.DBSCgSecondLevelView {
+.SCgVarTempArc.DBSCgSecondLevelView {
     stroke-width: 1.2;
 }
-.SCgEdgeAccessTempVar.DBSCgThirdLevelView {
+.SCgVarTempArc.DBSCgThirdLevelView {
     stroke-width: 1;
 }
-.SCgEdgeAccessTempVar.DBSCgFourthLevelView {
+.SCgVarTempArc.DBSCgFourthLevelView {
     stroke-width: 0.5;
 }
-.SCgEdgeAccessTempVar.DBSCgFifthLevelView {
+.SCgVarTempArc.DBSCgFifthLevelView {
     stroke-width: 0.5;
     opacity: 0.8;
 }
-.SCgEdgeAccessTempVar.DBSCgSixthLevelView {
+.SCgVarTempArc.DBSCgSixthLevelView {
     stroke-width: 0.5;
     opacity: 0.6;
 }
-.SCgEdgeAccessTempVar.DBSCgSeventhLevelView {
+.SCgVarTempArc.DBSCgSeventhLevelView {
     stroke-width: 0.5;
     opacity: 0.4;
 }
 
-.SCgEdgeEndArrowAccess {
+.SCgMembershipArcArrowEnd {
     fill: none;
     stroke-width: 1.5;
 }
 
-.SCgEdgeEndArrowCommon {
+.SCgCommonArcArrowEnd {
     fill: none;
     stroke-width: 7.5;
 }
-.SCgEdgeEndArrowCommon.DBSCgFirstLevelView {
+.SCgCommonArcArrowEnd.DBSCgFirstLevelView {
     stroke-width: 7.5;
 }
-.SCgEdgeEndArrowCommon.DBSCgSecondLevelView {
+.SCgCommonArcArrowEnd.DBSCgSecondLevelView {
     stroke-width: 7.3;
 }
-.SCgEdgeEndArrowCommon.DBSCgThirdLevelView {
+.SCgCommonArcArrowEnd.DBSCgThirdLevelView {
     stroke-width: 6.1;
 }
-.SCgEdgeEndArrowCommon.DBSCgFourthLevelView {
+.SCgCommonArcArrowEnd.DBSCgFourthLevelView {
     stroke-width: 4.9;
 }
-.SCgEdgeEndArrowCommon.DBSCgFifthLevelView {
+.SCgCommonArcArrowEnd.DBSCgFifthLevelView {
     stroke-width: 4.9;
     opacity: 0.8;
 }
-.SCgEdgeEndArrowCommon.DBSCgSixthLevelView {
+.SCgCommonArcArrowEnd.DBSCgSixthLevelView {
     stroke-width: 4.9;
     opacity: 0.6;
 }
-.SCgEdgeEndArrowCommon.DBSCgSeventhLevelView {
+.SCgCommonArcArrowEnd.DBSCgSeventhLevelView {
     stroke-width: 4;
     opacity: 0.4;
 }
 
-.SCgEdgeVarDashAccessPerm {
+.SCgVarPermArc {
     stroke-dasharray: 14, 14;
 }
 
-.SCgEdgeVarDashCommon {
+.SCgVarCommonArc {
     stroke-width: 8px;
     stroke-dasharray: 14, 14;
     fill: none;
 }
 
-.SCgEdgePermNegDash {
+.SCgNegArc {
     stroke-dasharray: 0, 20, 2, 6;
     stroke-width: 10px;
 }
-.SCgEdgePermNegDash.DBSCgFirstLevelView {
+.SCgNegArc.DBSCgFirstLevelView {
     stroke-width: 10px;
 }
-.SCgEdgePermNegDash.DBSCgSecondLevelView {
+.SCgNegArc.DBSCgSecondLevelView {
     stroke-width: 9px;
 }
-.SCgEdgePermNegDash.DBSCgThirdLevelView {
+.SCgNegArc.DBSCgThirdLevelView {
     stroke-width: 8px;
 }
-.SCgEdgePermNegDash.DBSCgFourthLevelView {
+.SCgNegArc.DBSCgFourthLevelView {
     stroke-width: 7px;
 }
-.SCgEdgePermNegDash.DBSCgFifthLevelView {
+.SCgNegArc.DBSCgFifthLevelView {
     stroke-width: 6px;
     opacity: 0.8;
 }
-.SCgEdgePermNegDash.DBSCgSixthLevelView {
+.SCgNegArc.DBSCgSixthLevelView {
     stroke-width: 5px;
     opacity: 0.6;
 }
-.SCgEdgePermNegDash.DBSCgSeventhLevelView {
+.SCgNegArc.DBSCgSeventhLevelView {
     stroke-width: 4px;
     opacity: 0.4;
 }
 
 /* TODO */
-.SCgEdgeFuzDash {
+.SCgFuzArc {
     stroke-dasharray: 0, 20, 2, 6;
     stroke-width: 10px;
 }
 
 /* --------- */
-.SCgEdgePermDash {
+.SCgPermArcDash {
     stroke-dasharray: 4, 10;
 }
 
@@ -375,7 +375,7 @@ path.draglineBus {
     fill:   none;
 }
 
-path.SCgEdge.hidden {
+path.SCgConnector.hidden {
     stroke-width: 0;
 }
 

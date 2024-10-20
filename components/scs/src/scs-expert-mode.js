@@ -121,14 +121,14 @@ class ExpertModeManager {
         this.tripleUtils
             .find3_f_a_a(rrelKeyScElement, sc_type_const_perm_pos_arc, sc_type_const_perm_pos_arc)
             .forEach(triple => {
-                const [translationNode, edge, sourceNode] = this.tripleUtils.getEdge(triple[2].addr);
+                const [translationNode, connector, sourceNode] = this.tripleUtils.getConnector(triple[2].addr);
                 const preLinkNode = this.findPreLinkNodeTriple(translationNode);
                 if (preLinkNode) {
                     arcsToRemove.push(preLinkNode[1], preLinkNode[2], preLinkNode[3]);
                     const linkNodeTriple = this.findLinkNodeTriple(preLinkNode[0]);
                     if (linkNodeTriple) {
                         arcsToRemove.push(linkNodeTriple[1]);
-                        newTriples.push([linkNodeTriple[2], edge, sourceNode]);
+                        newTriples.push([linkNodeTriple[2], connector, sourceNode]);
                     }
                 }
             });

@@ -1,10 +1,10 @@
-SCgEdgeListener = function (scene) {
+SCgConnectorListener = function (scene) {
     this.scene = scene;
 };
 
-SCgEdgeListener.prototype = {
+SCgConnectorListener.prototype = {
 
-    constructor: SCgEdgeListener,
+    constructor: SCgConnectorListener,
 
     onMouseMove: function (x, y) {
         this.scene.mouse_pos.x = x;
@@ -15,7 +15,7 @@ SCgEdgeListener.prototype = {
 
     onMouseDown: function (x, y) {
         if (!this.scene.pointed_object) {
-            if (this.scene.edge_data.source) {
+            if (this.scene.connector_data.source) {
                 this.scene.drag_line_points.push({x: x, y: y, idx: this.scene.drag_line_points.length});
                 return true;
             }
@@ -29,8 +29,8 @@ SCgEdgeListener.prototype = {
 
     onMouseDownObject: function (obj) {
         var scene = this.scene;
-        if (!scene.edge_data.source) {
-            scene.edge_data.source = obj;
+        if (!scene.connector_data.source) {
+            scene.connector_data.source = obj;
             scene.drag_line_points.push({
                 x: scene.mouse_pos.x,
                 y: scene.mouse_pos.y,
@@ -39,9 +39,9 @@ SCgEdgeListener.prototype = {
             return true;
         } else {
             // source and target must be not equal
-            if (scene.edge_data.source != obj) {
-                if (!(obj instanceof SCg.ModelContour && obj.isNodeInPolygon(scene.edge_data.source))) {
-                    scene.commandManager.execute(new SCgCommandCreateEdge(scene.edge_data.source,
+            if (scene.connector_data.source != obj) {
+                if (!(obj instanceof SCg.ModelContour && obj.isNodeInPolygon(scene.connector_data.source))) {
+                    scene.commandManager.execute(new SCgCommandCreateConnector(scene.connector_data.source,
                         obj,
                         this.scene));
                     return true;
@@ -54,7 +54,7 @@ SCgEdgeListener.prototype = {
                     return true;
                 }
             } else {
-                scene.edge_data.source = scene.edge_data.target = null;
+                scene.connector_data.source = scene.connector_data.target = null;
                 scene.drag_line_points.splice(0, scene.drag_line_points.length);
                 scene.clearSelection();
                 scene.appendSelection(obj);

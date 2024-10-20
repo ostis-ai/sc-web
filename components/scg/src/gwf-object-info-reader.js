@@ -101,7 +101,7 @@ GwfObjectInfoReader = {
     parseGroupOfElements: function (parent, tag_name, is_required) {
         var elements = parent.getElementsByTagName(tag_name);
         if (elements.length == 0 && is_required == true) {
-            this.errors.push("Unnable to find " + tag_name + " tag");
+            this.errors.push("Unable to find " + tag_name + " tag");
             return false;
         }
         return elements;
@@ -163,7 +163,7 @@ GwfObjectInfoReader = {
             if (found_attr != null) {
                 result_dict[found_attr.name] = found_attr.value;
             } else {
-                this.errors.push("Unnable to find " + attribute + " attribute.");
+                this.errors.push("Unable to find " + attribute + " attribute.");
                 return false;
             }
         }

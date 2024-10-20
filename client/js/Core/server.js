@@ -200,7 +200,7 @@ SCWeb.core.Server = {
         });
 
         const getIdentifierLink = async function (addr) {
-            const LINK = "_getIdentifierLink_link";
+            const LINK = "_link";
 
             const mainIdtfTemplate = new sc.ScTemplate();
             mainIdtfTemplate.quintuple(
