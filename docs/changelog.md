@@ -10,9 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - All action answers were renamed to results.
 - All questions were renamed to actions.
+- All edges were renamed to connectors.
 
 ### Changed
 
+- Convert .png of sc.g-elements to .svg
+- Migrate to sc-machine 0.10.0
 - Rename answer to result
 - Rename questions to actions
 - Use venv for python dependencies
