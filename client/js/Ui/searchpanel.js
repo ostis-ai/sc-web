@@ -1,6 +1,6 @@
 const searchNodeByAnyIdentifier = async (string) => {
     return new Promise(async (resolve) => {
-        let linkAddrs = await window.scClient.getLinksByContents([string]);
+        let linkAddrs = await window.scClient.searchLinksByContents([string]);
         let addr = null;
 
         if (linkAddrs.length) {
@@ -54,7 +54,7 @@ SCWeb.ui.SearchPanel = {
                     name: 'idtf',
                     source: debouncePanel(function (str, callback) {
                         $('#search-input').addClass('search-processing');
-                        window.scClient.getLinksContentsByContentSubstrings([str]).then((strings) => {
+                        window.scClient.searchLinkContentsByContentSubstrings([str]).then((strings) => {
                             const maxContentSize = 200;
                             const keys = strings.length ? strings[0].filter((string) => string.length < maxContentSize) : [];
                             callback(keys);

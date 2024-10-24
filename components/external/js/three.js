@@ -33693,7 +33693,7 @@ THREE.ConvexGeometry = function( vertices ) {
 					// remove duplicated edges.
 					for ( var h = 0; h < hole.length; h++ ) {
 
-						if ( equalEdge( hole[ h ], connector ) ) {
+						if ( equalConnector ( hole[ h ], connector ) ) {
 
 							hole[ h ] = hole[ hole.length - 1 ];
 							hole.pop();
@@ -33776,7 +33776,7 @@ THREE.ConvexGeometry = function( vertices ) {
 	 * Note that when constructing the convex hull, two same edges can only
 	 * be of the negative direction.
 	 */
-	function equalEdge( ea, eb ) {
+	function equalConnector ( ea, eb ) {
 
 		return ea[ 0 ] === eb[ 1 ] && ea[ 1 ] === eb[ 0 ]; 
 

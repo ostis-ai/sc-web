@@ -47,7 +47,7 @@ SCWeb.core.DefaultSCgSearcher = function (sandbox) {
     };
 
     const initAppendRemoveElementsUpdate = async function () {
-        const addArcEventRequest = new sc.ScEventSubscriptionParams(
+        const generateArcEventRequest = new sc.ScEventSubscriptionParams(
             sandbox.addr,
             sc.ScEventType.AfterGenerateOutgoingArc,
             async (elAddr, connector, otherAddr) => {
@@ -61,7 +61,7 @@ SCWeb.core.DefaultSCgSearcher = function (sandbox) {
                     sceneElementState: SCgObjectState.MergedWithMemory
                 });
             });
-        const removeArcEventRequest = new sc.ScEventSubscriptionParams(
+        const eraseArcEventRequest = new sc.ScEventSubscriptionParams(
             sandbox.addr,
             sc.ScEventType.BeforeEraseOutgoingArc,
             async (elAddr, connector, otherAddr) => {
@@ -74,13 +74,13 @@ SCWeb.core.DefaultSCgSearcher = function (sandbox) {
                     sceneElementState: SCgObjectState.RemovedFromMemory
                 });
             });
-        [self.addArcEvent, self.removeArcEvent] = await window.scClient.createElementaryEventSubscriptions([addArcEventRequest, removeArcEventRequest]);
+        [self.generateArcEvent, self.eraseArcEvent] = await window.scClient.createElementaryEventSubscriptions([generateArcEventRequest, eraseArcEventRequest]);
     };
 
     const destroyAppendRemoveElementsUpdate = async function () {
         let events = [];
-        if (self.addArcEvent) events.push(self.addArcEvent);
-        if (self.removeArcEvent) events.push(self.removeArcEvent);
+        if (self.generateArcEvent) events.push(self.generateArcEvent);
+        if (self.eraseArcEvent) events.push(self.eraseArcEvent);
         await window.scClient.destroyElementaryEventSubscriptions(events);
     };
 
@@ -104,8 +104,8 @@ SCWeb.core.DefaultSCgSearcher = function (sandbox) {
 
 SCWeb.core.DistanceBasedSCgSearcher = function (sandbox) {
     let self = this;
-    this.addArcEvent = null;
-    this.removeArcEvent = null;
+    this.generateArcEvent = null;
+    this.eraseArcEvent = null;
     this.newElements = [];
     this.appendUpdateDelayTime = 200;
 
@@ -451,7 +451,7 @@ SCWeb.core.DistanceBasedSCgSearcher = function (sandbox) {
     }
 
     const initAppendRemoveElementsUpdate = async function () {
-        [self.addArcEvent, self.removeArcEvent] = await window.scClient.createElementaryEventSubscriptions(
+        [self.generateArcEvent, self.eraseArcEvent] = await window.scClient.createElementaryEventSubscriptions(
             [new sc.ScEventSubscriptionParams(
                 sandbox.addr,
                 sc.ScEventType.AfterGenerateOutgoingArc,
@@ -466,8 +466,8 @@ SCWeb.core.DistanceBasedSCgSearcher = function (sandbox) {
 
     const destroyAppendRemoveElementsUpdate = async function () {
         let events = [];
-        if (self.addArcEvent) events.push(self.addArcEvent);
-        if (self.removeArcEvent) events.push(self.removeArcEvent);
+        if (self.generateArcEvent) events.push(self.generateArcEvent);
+        if (self.eraseArcEvent) events.push(self.eraseArcEvent);
         await window.scClient.destroyElementaryEventSubscriptions(events);
     };
 

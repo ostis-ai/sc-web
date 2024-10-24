@@ -63,7 +63,7 @@ class GoogleOAuth2LoginHandler(base.BaseHandler, tornado.auth.GoogleOAuth2Mixin)
 
     def authorise_user(self, email: str) -> None:
         logger.info('User authorization')
-        links = client.search_link_by_contents(email)[0]
+        links = client.search_links_by_contents(email)[0]
         if links and len(links) == 1:
             logger.debug('Link is found by email')
             USER_NODE = "_user"
@@ -93,7 +93,7 @@ class GoogleOAuth2LoginHandler(base.BaseHandler, tornado.auth.GoogleOAuth2Mixin)
 
     def register_user(self, email: str, user_name: str) -> None:
         logger.info('User registration')
-        links = client.search_link_by_contents(email)[0]
+        links = client.search_links_by_contents(email)[0]
         if links and len(links) == 1:
             logger.debug('Link is found by email')
             template = ScTemplate()
@@ -236,7 +236,7 @@ class LogOut(base.BaseHandler):
         logger.info('Logout from kb')
         keys = ScKeynodes()
         sc_session = logic.ScSession(self, keys)
-        links = client.search_link_by_contents(sc_session.email)[0]
+        links = client.search_links_by_contents(sc_session.email)[0]
         if links and len(links) == 1:
             USER_NODE = "_user"
             USER_ARC = "_arc"

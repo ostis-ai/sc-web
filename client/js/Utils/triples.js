@@ -1,6 +1,6 @@
 TripleUtils = function () {
-    this.outputConnectors = {};
-    this.inputConnectors = {};
+    this.outgoingConnectors  = {};
+    this.incomingConnectors  = {};
     this.types = {};
     this.triples = []
 };
@@ -37,13 +37,13 @@ TripleUtils.prototype = {
     find5_f_a_a_a_f: function (addr1, type2, type3, type4, addr5) {
         var res = [];
         // iterate all output connectors from addr1
-        var list = this.outputConnectors[addr1];
+        var list = this.outgoingConnectors [addr1];
         if (!list) return [];
         for (l in list) {
             var connector = list[l];
             if (this._compareType(type2, this._getType(connector.connector)) && this._compareType(type3, this._getType(connector.trg))) {
                 // second triple iteration
-                var list2 = this.inputConnectors[connector.connector];
+                var list2 = this.incomingConnectors [connector.connector];
                 if (list2) {
                     for (l2 in list2) {
                         var connector2 = list2[l2];
@@ -65,14 +65,14 @@ TripleUtils.prototype = {
     },
 
     find5_f_a_f_a_f: function (addr1, type2, addr3, type4, addr5) {
-        const list = this.inputConnectors[addr3];
+        const list = this.incomingConnectors [addr3];
         if (!list) return [];
 
         let res = [];
         for (l in list) {
             var connector = list[l];
             if (this._compareType(type2, this._getType(connector.connector)) && (addr1 === connector.src)) {
-                var list2 = this.inputConnectors[addr5];
+                var list2 = this.incomingConnectors [addr5];
                 if (!list2) continue;
 
                 for (l2 in list2) {
@@ -110,7 +110,7 @@ TripleUtils.prototype = {
     },
 
     find3_f_a_f: function (addr1, type2, addr3) {
-        var list = this.inputConnectors[addr3];
+        var list = this.incomingConnectors [addr3];
         if (!list) return [];
 
         var res = [];
@@ -134,7 +134,7 @@ TripleUtils.prototype = {
      */
     find3_f_a_a: function (addr1, type2, type3) {
         // iterate elements
-        var list = this.outputConnectors[addr1];
+        var list = this.outgoingConnectors [addr1];
         if (!list) return [];
 
         var res = [];
@@ -153,15 +153,15 @@ TripleUtils.prototype = {
     },
 
     checkAnyOutputConnector: function (srcAddr) {
-        return !!this.outputConnectors[srcAddr];
+        return !!this.outgoingConnectors [srcAddr];
     },
 
     checkAnyInputConnector: function (trgAddr) {
-        return !!this.inputConnectors[trgAddr];
+        return !!this.incomingConnectors [trgAddr];
     },
 
     checkAnyOutputConnectorType: function (srcAddr, connectorType) {
-        var list = this.outputConnectors[srcAddr];
+        var list = this.outgoingConnectors [srcAddr];
         if (list) {
             for (l in list) {
                 if (this._checkType(connectorType, this._getType(list[l].connector)))
@@ -172,7 +172,7 @@ TripleUtils.prototype = {
     },
 
     checkAnyInputConnectorType: function (trgAddr, connectorType) {
-        var list = this.inputConnectors[trgAddr];
+        var list = this.incomingConnectors [trgAddr];
         if (list) {
             for (l in list) {
                 if (this._checkType(connectorType, this._getType(list[l].connector)))
@@ -192,22 +192,22 @@ TripleUtils.prototype = {
     },
 
     _appendOutputConnector: function (srcAddr, connectorAddr, trgAddr) {
-        var list = this.outputConnectors[srcAddr];
+        var list = this.outgoingConnectors [srcAddr];
         var connector = {src: srcAddr, connector: connectorAddr, trg: trgAddr};
         if (!list) {
-            this.outputConnectors[srcAddr] = [connector];
+            this.outgoingConnectors [srcAddr] = [connector];
         } else {
             list.push(connector);
         }
     },
 
     _removeOutputConnector: function (srcAddr, connectorAddr) {
-        var list = this.outputConnectors[srcAddr];
+        var list = this.outgoingConnectors [srcAddr];
         if (list) {
             for (e in list) {
                 var connector = list[e];
                 if (connector.connector === connectorAddr) {
-                    this.outputConnectors.splice(e, 1);
+                    this.outgoingConnectors .splice(e, 1);
                     return;
                 }
             }
@@ -217,22 +217,22 @@ TripleUtils.prototype = {
     },
 
     _appendInputConnector: function (srcAddr, connectorAddr, trgAddr) {
-        var list = this.inputConnectors[trgAddr];
+        var list = this.incomingConnectors [trgAddr];
         var connector = {src: srcAddr, connector: connectorAddr, trg: trgAddr};
         if (!list) {
-            this.inputConnectors[trgAddr] = [connector];
+            this.incomingConnectors [trgAddr] = [connector];
         } else {
             list.push(connector);
         }
     },
 
     _removeInputConnector: function (trgAddr, connectorAddr) {
-        var list = this.inputConnectors[trgAddr];
+        var list = this.incomingConnectors [trgAddr];
         if (list) {
             for (e in list) {
                 var connector = list[e];
                 if (connector.connector === connectorAddr) {
-                    this.inputConnectors.splice(e, 1);
+                    this.incomingConnectors .splice(e, 1);
                     return;
                 }
             }

@@ -17,7 +17,7 @@ ScHelper.prototype.getConnectorElements = async function (arc) {
   return [result[0].get("_source"), result[0].get("_target")];
 };
 
-/*! Check if there are specified arc between two objects
+/*! Check if there is specified connector between two objects
  * @param {String} addr1 sc-addr of source sc-element
  * @param {int} type type of sc-connector, that need to be checked for existing
  * @param {String} addr2 sc-addr of target sc-element

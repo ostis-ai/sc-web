@@ -125,9 +125,9 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
                     continue;
                 }
 
-                const multipleArcs = editor.scene.connectors.filter(
+                const multipleConnectors = editor.scene.connectors.filter(
                     connector => connector.source.sc_addr === sourceHash && connector.target.sc_addr === targetHash);
-                if (sourceHash === targetHash || multipleArcs.length > 0) targetObject = createAppendCopyObject(targetObject);
+                if (sourceHash === targetHash || multipleConnectors.length > 0) targetObject = createAppendCopyObject(targetObject);
                 object = generateConnector(sourceObject, targetObject, type);
             }
             appendObjectToScene(object, addr, level, state);
@@ -271,8 +271,8 @@ const SCgStructToScTranslatorImpl = function (_editor, _sandbox) {
         const LINK = 'link';
         const objectAddr = new sc.ScAddr(obj.sc_addr);
 
-        // Checks if identifier is allowed to be system identifier (only letter, digits, '-' and '_')
-        const idtfRelation = /^[a-zA-Z0-9_-]+$/.test(obj.text)
+        // Checks if identifier is allowed to be system identifier (only letter, digits and '_')
+        const idtfRelation = /^[a-zA-Z0-9_]+$/.test(obj.text)
             ? new sc.ScAddr(window.scKeynodes['nrel_system_identifier'])
             : new sc.ScAddr(window.scKeynodes['nrel_main_idtf']);
 
@@ -310,7 +310,7 @@ const SCgStructToScTranslatorImpl = function (_editor, _sandbox) {
     const translateNodes = async function (nodes) {
         const implFunc = async function (node) {
             if (!node.sc_addr && node.text) {
-                let linkAddrs = await scClient.getLinksByContents([node.text]);
+                let linkAddrs = await scClient.searchLinksByContents([node.text]);
                 if (linkAddrs.length) {
                     linkAddrs = linkAddrs[0];
                     if (linkAddrs.length) {
@@ -344,7 +344,7 @@ const SCgStructToScTranslatorImpl = function (_editor, _sandbox) {
         const scAddrGen = async function (c) {
             if (!c.sc_addr) {
                 let scConstruction = new sc.ScConstruction();
-                scConstruction.generateNode(sc.ScType.NodeConstStruct, 'node');
+                scConstruction.generateNode(sc.ScType.ConstNodeStructure, 'node');
                 let result = await scClient.generateElements(scConstruction);
                 let node = result[scConstruction.getIndex('node')].value;
                 c.setScAddr(node);
@@ -467,7 +467,7 @@ const SCgStructToScTranslatorImpl = function (_editor, _sandbox) {
 
             // Find link from kb by system identifier
             if (!link.sc_addr && link.text) {
-                let linkSystemIdentifierAddrs = await scClient.getLinksByContents([link.text]);
+                let linkSystemIdentifierAddrs = await scClient.searchLinksByContents([link.text]);
                 if (linkSystemIdentifierAddrs.length) {
                     linkSystemIdentifierAddrs = linkSystemIdentifierAddrs[0];
                     if (linkSystemIdentifierAddrs.length) {

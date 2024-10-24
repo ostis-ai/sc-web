@@ -745,7 +745,7 @@ class ScSession:
 
     def get_user_kb_node_by_email(self) -> ScAddr:
         if self is not None:
-            links = client.search_link_by_contents(str(self.user.email))[0]
+            links = client.search_links_by_contents(str(self.user.email))[0]
             if links and len(links) == 1:
                 template = ScTemplate()
                 template.quintuple(

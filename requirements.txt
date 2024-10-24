@@ -3,4 +3,4 @@ future
 sqlalchemy
 numpy
 configparser
-py-sc-client==0.3.1
+git+https://github.com/NikitaZotov/py-sc-client.git@f78445b5f28b421fc622daa6af539adb27f06999#egg=py-sc-client

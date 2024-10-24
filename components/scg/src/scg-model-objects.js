@@ -343,12 +343,12 @@ SCg.ModelLink.prototype.setContent = function (content, contentType) {
     this.contentLoaded = false;
 };
 
-// --------------- arc -----------
+// --------------- connector -----------
 
 /**
- * Initialize sc.g-arc(connector) object
+ * Initialize sc.g-connector object
  * @param {Object} options
- *      Initial opations of sc.g-arc.
+ *      Initial options of sc.g-connector.
  */
 SCg.ModelConnector = function (options) {
 
@@ -362,7 +362,7 @@ SCg.ModelConnector = function (options) {
     if (options.target)
         this.setTarget(options.target);
 
-    this.source_pos = null; // the begin position of egde in world coordinates
+    this.source_pos = null; // the begin position of connector in world coordinates
     this.target_pos = null; // the end position of connector in world coordinates
     this.points = [];
     this.source_dot = 0.5;
@@ -489,7 +489,7 @@ SCg.ModelConnector.prototype.update = function () {
 /*! Checks if this connector need to be drawen with arrow at the end
  */
 SCg.ModelConnector.prototype.hasArrow = function () {
-    return this.sc_type & (sc_type_common_arc | sc_type_membership_arc);
+    return this.sc_type & sc_type_arc;
 };
 
 /*!
@@ -595,9 +595,9 @@ SCg.ModelConnector.prototype.calculateDotPos = function (pos) {
 
 //---------------- contour ----------------
 /**
- * Initialize sc.g-arc(connector) object
+ * Initialize sc.g-contour object
  * @param {Object} options
- *      Initial opations of sc.g-arc.
+ *      Initial options of sc.g-contour.
  */
 SCg.ModelContour = function (options) {
 

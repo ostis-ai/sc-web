@@ -75,7 +75,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Reset sc-links formats after synchronize
 - Set and reset link content with images and pdf before and after synchronize
 - Main and system identifier translation with current language in scg-editor
-- Check edges on addArcEventRequest and removeArcEventRequest ([120](https://github.com/ostis-ai/sc-web/issues/120), [121](https://github.com/ostis-ai/sc-web/issues/121))
+- Check edges on generateArcEventRequest and eraseArcEventRequest ([120](https://github.com/ostis-ai/sc-web/issues/120), [121](https://github.com/ostis-ai/sc-web/issues/121))
 - Create links with unspecified constancy in scg-editor
 - SC.g-contours and its sc.g-elements create, edit, extend, select, move, click and delete
 - Integrate nodes in scg-editor
