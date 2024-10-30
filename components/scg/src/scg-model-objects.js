@@ -489,7 +489,7 @@ SCg.ModelConnector.prototype.update = function () {
 /*! Checks if this connector need to be drawen with arrow at the end
  */
 SCg.ModelConnector.prototype.hasArrow = function () {
-    return this.sc_type & sc_type_arc;
+    return ((this.sc_type & sc_type_arc) == sc_type_arc);
 };
 
 /*!

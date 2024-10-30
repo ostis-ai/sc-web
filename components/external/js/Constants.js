@@ -22,6 +22,8 @@ const sc_type_perm_arc = (sc_type_membership_arc | 0x800)
 // sc-arc positivity
 const sc_type_pos_arc = (sc_type_membership_arc | 0x80)
 const sc_type_neg_arc = (sc_type_membership_arc | 0x100)
+
+// fuzziness
 const sc_type_fuz_arc = (sc_type_membership_arc | 0x200)
 
 // semantic sc-node types
@@ -29,7 +31,7 @@ const sc_type_node_link = (sc_type_node | 0x2)
 const sc_type_node_tuple = (sc_type_node | 0x80)
 const sc_type_node_structure = (sc_type_node | 0x100)
 const sc_type_node_role = (sc_type_node | 0x200)
-const sc_type_node_no_role = (sc_type_node | 0x400)
+const sc_type_node_non_role = (sc_type_node | 0x400)
 const sc_type_node_class = (sc_type_node | 0x800)
 const sc_type_node_superclass = (sc_type_node | 0x1000)
 const sc_type_node_material = (sc_type_node | 0x2000)
@@ -49,6 +51,6 @@ const sc_type_common_arc_mask = (sc_type_common_arc)
 const sc_type_common_edge_mask = (sc_type_common_edge)
 
 const sc_type_node_mask
-    = (sc_type_node_link | sc_type_node_tuple | sc_type_node_structure | sc_type_node_role | sc_type_node_no_role
+    = (sc_type_node_link | sc_type_node_tuple | sc_type_node_structure | sc_type_node_role | sc_type_node_non_role
     | sc_type_node_class | sc_type_node_superclass | sc_type_node_material)
 const sc_type_node_link_mask = (sc_type_node | sc_type_node_link | sc_type_node_class)

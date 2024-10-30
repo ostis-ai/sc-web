@@ -63,7 +63,7 @@ const SCgViewerWindow = function (sandbox) {
                 continue;
             }
 
-            if ((el.el_type & sc_type_node_link) == sc_type_node_link) {
+            if (el.el_type & sc_type_node) {
                 var model_node = SCg.Creator.generateNode(el.el_type, new SCg.Vector3(10 * Math.random(), 10 * Math.random(), 0), '');
                 this.editor.scene.appendNode(model_node);
                 this.editor.scene.objects[el.id] = model_node;

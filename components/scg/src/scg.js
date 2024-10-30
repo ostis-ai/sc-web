@@ -18,7 +18,7 @@ SCg.Editor.prototype = {
             'scg-type-const-node-class': sc_type_const_node_class,
             'scg-type-const-node-superclass': sc_type_const_node_superclass,
             'scg-type-const-node-material': sc_type_const_node_material,
-            'scg-type-const-node-norole': sc_type_const_node_norole,
+            'scg-type-const-node-non-role': sc_type_const_node_non_role,
             'scg-type-const-node-role': sc_type_const_node_role,
             'scg-type-const-node-structure': sc_type_const_node_structure,
             'scg-type-const-node-tuple': sc_type_const_node_tuple,
@@ -26,7 +26,7 @@ SCg.Editor.prototype = {
             'scg-type-var-node-class': sc_type_var_node_class,
             'scg-type-var-node-superclass': sc_type_var_node_superclass,
             'scg-type-var-node-material': sc_type_var_node_material,
-            'scg-type-var-node-norole': sc_type_var_node_norole,
+            'scg-type-var-node-non-role': sc_type_var_node_non_role,
             'scg-type-var-node-role': sc_type_var_node_role,
             'scg-type-var-node-structure': sc_type_var_node_structure,
             'scg-type-var-node-tuple': sc_type_var_node_tuple,
@@ -963,7 +963,7 @@ SCg.Editor.prototype = {
                 : this.hideTool(this.toolDelete())
 
             if (this.scene.selected_objects.length > 1) {
-                if (this.scene.isSelectedObjectAllArcsOrAllNodes() && !this.scene.isSelectedObjectAllHaveScAddr()) {
+                if (this.scene.isSelectedObjectAllConnectorsOrAllNodes() && !this.scene.isSelectedObjectAllHaveScAddr()) {
                     this.showTool(this.toolChangeType());
                 }
             } else if (this.scene.selected_objects.length === 1 && !this.scene.selected_objects[0].sc_addr) {

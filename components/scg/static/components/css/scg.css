@@ -92,7 +92,7 @@
     fill: none;
 }
 
-.SCgConstCommonArcBackground {
+.SCgConstCommonConnectorBackground {
     stroke-width: 8px;
     fill: none;
 }
@@ -132,7 +132,7 @@
     fill: none;
 }
 
-.SCgUnknownCommonArcForeground {
+.SCgUnknownCommonConnectorForeground {
     stroke-width: 8px;
     stroke-dasharray: 14, 14;
     fill: none;
@@ -266,7 +266,7 @@
     stroke-dasharray: 14, 14;
 }
 
-.SCgVarCommonArcBackground {
+.SCgVarCommonConnectorBackground {
     stroke-width: 8px;
     stroke-dasharray: 14, 14;
     fill: none;

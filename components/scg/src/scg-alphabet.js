@@ -66,7 +66,7 @@ var SCgAlphabet = {
         g.append('svg:line').attr('x1', '-10').attr('x2', '10').attr('y1', '0').attr('y2', '0').attr('stroke-width', nodeLineStroke);
         this.appendText(g);
 
-        g = defs.append('svg:g').attr('id', 'scg.const.node.norole');
+        g = defs.append('svg:g').attr('id', 'scg.const.node.non.role');
         g.append('svg:use').attr('xlink:href', '#scg.const.node.outer');
         g.append('svg:line').attr('x1', '-10').attr('x2', '10').attr('y1', '0').attr('y2', '0').attr('stroke-width', nodeLineStroke).attr('transform', 'rotate(45, 0, 0)');
         g.append('svg:line').attr('x1', '-10').attr('x2', '10').attr('y1', '0').attr('y2', '0').attr('stroke-width', nodeLineStroke).attr('transform', 'rotate(-45, 0, 0)');
@@ -119,7 +119,7 @@ var SCgAlphabet = {
         g.append('svg:line').attr('x1', '-10').attr('x2', '10').attr('y1', '0').attr('y2', '0').attr('stroke-width', nodeLineStroke);
         this.appendText(g);
 
-        g = defs.append('svg:g').attr('id', 'scg.var.node.norole');
+        g = defs.append('svg:g').attr('id', 'scg.var.node.non.role');
         g.append('svg:use').attr('xlink:href', '#scg.var.node.outer');
         g.append('svg:line').attr('x1', '-12').attr('x2', '12').attr('y1', '0').attr('y2', '0').attr('stroke-width', nodeLineStroke).attr('transform', 'rotate(45, 0, 0)');
         g.append('svg:line').attr('x1', '-12').attr('x2', '12').attr('y1', '0').attr('y2', '0').attr('stroke-width', nodeLineStroke).attr('transform', 'rotate(-45, 0, 0)');
@@ -185,7 +185,7 @@ var SCgAlphabet = {
         this.scType2Str[sc_type_const | sc_type_node | sc_type_node_superclass] = 'scg.const.node.superclass';
         this.scType2Str[sc_type_const | sc_type_node | sc_type_node_class] = 'scg.const.node.class';
         this.scType2Str[sc_type_const | sc_type_node | sc_type_node_structure] = 'scg.const.node.structure';
-        this.scType2Str[sc_type_const | sc_type_node | sc_type_node_no_role] = 'scg.const.node.norole';
+        this.scType2Str[sc_type_const | sc_type_node | sc_type_node_non_role] = 'scg.const.node.non.role';
         this.scType2Str[sc_type_const | sc_type_node | sc_type_node_role] = 'scg.const.node.role';
         this.scType2Str[sc_type_const | sc_type_node | sc_type_node_tuple] = 'scg.const.node.tuple';
 
@@ -194,7 +194,7 @@ var SCgAlphabet = {
         this.scType2Str[sc_type_var | sc_type_node | sc_type_node_superclass] = 'scg.var.node.superclass';
         this.scType2Str[sc_type_var | sc_type_node | sc_type_node_class] = 'scg.var.node.class';
         this.scType2Str[sc_type_var | sc_type_node | sc_type_node_structure] = 'scg.var.node.structure';
-        this.scType2Str[sc_type_var | sc_type_node | sc_type_node_no_role] = 'scg.var.node.norole';
+        this.scType2Str[sc_type_var | sc_type_node | sc_type_node_non_role] = 'scg.var.node.non.role';
         this.scType2Str[sc_type_var | sc_type_node | sc_type_node_role] = 'scg.var.node.role';
         this.scType2Str[sc_type_var | sc_type_node | sc_type_node_tuple] = 'scg.var.node.tuple';
 
@@ -330,7 +330,7 @@ var SCgAlphabet = {
                         .attr('d', position_path);
                 }
             } else if (((connector.sc_type & sc_type_common_arc) == sc_type_common_arc) || ((connector.sc_type & sc_type_common_edge) == sc_type_common_edge)) {
-                let main_style = 'SCgConstCommonArcBackground';
+                let main_style = 'SCgConstCommonConnectorBackground';
                 if ((connector.sc_type & sc_type_common_edge) == sc_type_common_edge) {
                     if (connector.sc_type & sc_type_const) {
                         d3_group.append('svg:path')
@@ -339,7 +339,7 @@ var SCgAlphabet = {
                     }
                     else if (connector.sc_type & sc_type_var) {
                         d3_group.append('svg:path')
-                            .classed('SCgVarCommonArcBackground ' + SCgAlphabet.classLevel(connector), true)
+                            .classed('SCgVarCommonConnectorBackground ' + SCgAlphabet.classLevel(connector), true)
                             .attr('d', position_path);
                     }
                     else {
@@ -358,7 +358,7 @@ var SCgAlphabet = {
                     }
                     else if (connector.sc_type & sc_type_var) {
                         d3_group.append('svg:path')
-                            .classed('SCgVarCommonArcBackground ' + SCgAlphabet.classLevel(connector), true)
+                            .classed('SCgVarCommonConnectorBackground ' + SCgAlphabet.classLevel(connector), true)
                             .classed('SCgCommonConnectorArrowEnd ' + SCgAlphabet.classLevel(connector), true)
                             .style("marker-end", "url(#common-arc-arrow-end_" + containerId + ")")
                             .attr('d', position_path);
@@ -378,7 +378,7 @@ var SCgAlphabet = {
 
                 if ((connector.sc_type & sc_type_constancy_mask) == 0) {
                     d3_group.append('svg:path')
-                        .classed('SCgUnknownCommonArcForeground ' + SCgAlphabet.classLevel(connector), true)
+                        .classed('SCgUnknownCommonConnectorForeground ' + SCgAlphabet.classLevel(connector), true)
                         .attr('d', position_path);
                 }
             } else {

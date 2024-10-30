@@ -635,7 +635,7 @@ SCg.Scene.prototype = {
             this.event_modal_changed();
     },
 
-    isSelectedObjectAllArcsOrAllNodes: function () {
+    isSelectedObjectAllConnectorsOrAllNodes: function () {
         var objects = this.selected_objects;
         var typeMask = objects[0].sc_type & sc_type_connector ? sc_type_connector :
             objects[0].sc_type & sc_type_node ?

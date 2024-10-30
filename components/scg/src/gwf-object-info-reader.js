@@ -10,7 +10,7 @@ GwfObjectInfoReader = {
         "node/const/perm/tuple": sc_type_const | sc_type_node | sc_type_node_tuple,
         "node/const/perm/struct": sc_type_const | sc_type_node | sc_type_node_structure,
         "node/const/perm/role": sc_type_const | sc_type_node | sc_type_node_role,
-        "node/const/perm/relation": sc_type_const | sc_type_node | sc_type_node_no_role,
+        "node/const/perm/relation": sc_type_const | sc_type_node | sc_type_node_non_role,
         "node/const/perm/terminal": sc_type_const | sc_type_node | sc_type_node_material,
         "node/const/perm/group": sc_type_const | sc_type_node | sc_type_node_class,
 
@@ -18,7 +18,7 @@ GwfObjectInfoReader = {
         "node/var/perm/tuple": sc_type_var | sc_type_node | sc_type_node_tuple,
         "node/var/perm/struct": sc_type_var | sc_type_node | sc_type_node_structure,
         "node/var/perm/role": sc_type_var | sc_type_node | sc_type_node_role,
-        "node/var/perm/relation": sc_type_var | sc_type_node | sc_type_node_no_role,
+        "node/var/perm/relation": sc_type_var | sc_type_node | sc_type_node_non_role,
         "node/var/perm/terminal": sc_type_var | sc_type_node | sc_type_node_material,
         "node/var/perm/group": sc_type_var | sc_type_node | sc_type_node_class,
 

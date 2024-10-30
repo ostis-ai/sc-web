@@ -257,7 +257,7 @@ SCs.SCnTree.prototype = {
                 if (!tpl.output && !tpl.ignore) {
                     // arc attributes
                     if (node.type == SCs.SCnTreeNodeType.Sentence) {
-                        if (((tpl[0].type & sc_type_node_role == sc_type_node_role) || (tpl[0].type & sc_type_node_no_role == sc_type_node_no_role))
+                        if (((tpl[0].type & sc_type_node_role == sc_type_node_role) || (tpl[0].type & sc_type_node_non_role == sc_type_node_non_role))
                             && ((tpl[1].type == sc_type_const_perm_pos_arc) || (tpl[1].type == sc_type_var_perm_pos_arc))
                             && tpl[2].addr == node.predicate.addr) {
                             node.attrs.push({n: tpl[0], a: tpl[1], triple: tpl});
@@ -371,8 +371,8 @@ SCs.SCnTree.prototype = {
         function addArc(el, value) {
 
             var n = value;
-            if (el.type & (sc_type_arc_mask | sc_type_node_link))
-                n += -2; // minimize priority of arcs
+            if ((el.type & sc_type_arc_mask) || ((el.type & sc_type_node_link) == sc_type_node_link))
+                n += -2; // minimize priority of arcs and links
 
             if (keywords[el.addr])
                 keywords[el.addr].priority += n;
@@ -385,7 +385,7 @@ SCs.SCnTree.prototype = {
             var tpl = triples[idx];
             var n = 1;
 
-            if (tpl[2].type & sc_type_connector | (tpl[0].type & sc_type_node_link) == sc_type_node_link)
+            if (tpl[0].type & sc_type_connector || tpl[2].type & sc_type_connector)
                 n -= 1; // minimize priority of nodes, that has output/input arcs to other arcs or links
             if ((tpl[2].type & sc_type_node_link) == sc_type_node_link || (tpl[0].type & sc_type_node_link) == sc_type_node_link)
                 n -= 1; // minimize priority of nodes, that has output/input arcs to links

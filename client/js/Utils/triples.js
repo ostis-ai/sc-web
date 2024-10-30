@@ -1,6 +1,6 @@
 TripleUtils = function () {
-    this.outgoingConnectors  = {};
-    this.incomingConnectors  = {};
+    this.outgoingConnectors = {};
+    this.incomingConnectors = {};
     this.types = {};
     this.triples = []
 };
@@ -37,7 +37,7 @@ TripleUtils.prototype = {
     find5_f_a_a_a_f: function (addr1, type2, type3, type4, addr5) {
         var res = [];
         // iterate all output connectors from addr1
-        var list = this.outgoingConnectors [addr1];
+        var list = this.outgoingConnectors[addr1];
         if (!list) return [];
         for (l in list) {
             var connector = list[l];
@@ -134,7 +134,7 @@ TripleUtils.prototype = {
      */
     find3_f_a_a: function (addr1, type2, type3) {
         // iterate elements
-        var list = this.outgoingConnectors [addr1];
+        var list = this.outgoingConnectors[addr1];
         if (!list) return [];
 
         var res = [];
@@ -153,7 +153,7 @@ TripleUtils.prototype = {
     },
 
     checkAnyOutputConnector: function (srcAddr) {
-        return !!this.outgoingConnectors [srcAddr];
+        return !!this.outgoingConnectors[srcAddr];
     },
 
     checkAnyInputConnector: function (trgAddr) {
@@ -161,7 +161,7 @@ TripleUtils.prototype = {
     },
 
     checkAnyOutputConnectorType: function (srcAddr, connectorType) {
-        var list = this.outgoingConnectors [srcAddr];
+        var list = this.outgoingConnectors[srcAddr];
         if (list) {
             for (l in list) {
                 if (this._checkType(connectorType, this._getType(list[l].connector)))
@@ -192,22 +192,22 @@ TripleUtils.prototype = {
     },
 
     _appendOutputConnector: function (srcAddr, connectorAddr, trgAddr) {
-        var list = this.outgoingConnectors [srcAddr];
+        var list = this.outgoingConnectors[srcAddr];
         var connector = {src: srcAddr, connector: connectorAddr, trg: trgAddr};
         if (!list) {
-            this.outgoingConnectors [srcAddr] = [connector];
+            this.outgoingConnectors[srcAddr] = [connector];
         } else {
             list.push(connector);
         }
     },
 
     _removeOutputConnector: function (srcAddr, connectorAddr) {
-        var list = this.outgoingConnectors [srcAddr];
+        var list = this.outgoingConnectors[srcAddr];
         if (list) {
             for (e in list) {
                 var connector = list[e];
                 if (connector.connector === connectorAddr) {
-                    this.outgoingConnectors .splice(e, 1);
+                    this.outgoingConnectors.splice(e, 1);
                     return;
                 }
             }

@@ -23,6 +23,7 @@ ScHelper.prototype.getConnectorElements = async function (arc) {
  * @param {String} addr2 sc-addr of target sc-element
  * @returns Function returns Promise object. If sc-connector exists, then it would be resolved; 
  * otherwise it would be rejected
+ * @note This method can be used if you want to search for constructions with constant sc-connectors only
  */
 ScHelper.prototype.checkConnector = async function (addr1, type, addr2) {
   let template = new sc.ScTemplate();
