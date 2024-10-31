@@ -10,7 +10,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - All action answers were renamed to results.
 - All questions were renamed to actions.
-- All edges were renamed to connectors.
 
 ### Changed
 

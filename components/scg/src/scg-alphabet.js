@@ -352,21 +352,21 @@ var SCgAlphabet = {
                     if (connector.sc_type & sc_type_const) {
                         d3_group.append('svg:path')
                             .classed(main_style, true)
-                            .classed('SCgCommonConnectorArrowEnd ' + SCgAlphabet.classLevel(connector), true)
+                            .classed('SCgCommonArcArrowEnd ' + SCgAlphabet.classLevel(connector), true)
                             .style("marker-end", "url(#common-arc-arrow-end_" + containerId + ")")
                             .attr('d', position_path);
                     }
                     else if (connector.sc_type & sc_type_var) {
                         d3_group.append('svg:path')
                             .classed('SCgVarCommonConnectorBackground ' + SCgAlphabet.classLevel(connector), true)
-                            .classed('SCgCommonConnectorArrowEnd ' + SCgAlphabet.classLevel(connector), true)
+                            .classed('SCgCommonArcArrowEnd ' + SCgAlphabet.classLevel(connector), true)
                             .style("marker-end", "url(#common-arc-arrow-end_" + containerId + ")")
                             .attr('d', position_path);
                     }
                     else {
                         d3_group.append('svg:path')
                             .classed(main_style + ' ' + SCgAlphabet.classLevel(connector), true)
-                            .classed('SCgCommonConnectorArrowEnd ' + SCgAlphabet.classLevel(connector), true)
+                            .classed('SCgCommonArcArrowEnd ' + SCgAlphabet.classLevel(connector), true)
                             .style("marker-end", "url(#common-arc-arrow-end_" + containerId + ")")
                             .attr('d', position_path);
                     }

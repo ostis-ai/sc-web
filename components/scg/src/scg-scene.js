@@ -637,11 +637,8 @@ SCg.Scene.prototype = {
 
     isSelectedObjectAllConnectorsOrAllNodes: function () {
         var objects = this.selected_objects;
-        var typeMask = objects[0].sc_type & sc_type_connector ? sc_type_connector :
-            objects[0].sc_type & sc_type_node ?
-                sc_type_node : 0;
         return (objects.every(function (obj) {
-            return ((obj.sc_type & typeMask) && !(obj instanceof SCg.ModelContour) && !(obj instanceof SCg.ModelBus));
+            return ((obj.sc_type & sc_type_element_mask) && !(obj instanceof SCg.ModelContour) && !(obj instanceof SCg.ModelBus));
         }))
     },
 

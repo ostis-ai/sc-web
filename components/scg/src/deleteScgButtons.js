@@ -2,7 +2,7 @@ DeleteButtons = {
 
     init: function () {
         return new Promise(resolve => {
-            var delete_from_working_place_btn_id = 'ui_scg_control_tool_remove_from_working_place';
+            var delete_from_working_place_btn_id = 'ui_scg_control_tool_clear_working_place_from_selected_elements';
             var delete_from_knowledge_base_btn_id = 'ui_scg_control_tool_erase_from_knowledge_base';
             this.delete_btn_cont_id = '#' + 'delete_buttons_container';
 

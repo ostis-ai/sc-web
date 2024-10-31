@@ -233,31 +233,31 @@
     stroke-width: 1.5;
 }
 
-.SCgCommonConnectorArrowEnd {
+.SCgCommonArcArrowEnd {
     fill: none;
     stroke-width: 7.5;
 }
-.SCgCommonConnectorArrowEnd.DBSCgFirstLevelView {
+.SCgCommonArcArrowEnd.DBSCgFirstLevelView {
     stroke-width: 7.5;
 }
-.SCgCommonConnectorArrowEnd.DBSCgSecondLevelView {
+.SCgCommonArcArrowEnd.DBSCgSecondLevelView {
     stroke-width: 7.3;
 }
-.SCgCommonConnectorArrowEnd.DBSCgThirdLevelView {
+.SCgCommonArcArrowEnd.DBSCgThirdLevelView {
     stroke-width: 6.1;
 }
-.SCgCommonConnectorArrowEnd.DBSCgFourthLevelView {
+.SCgCommonArcArrowEnd.DBSCgFourthLevelView {
     stroke-width: 4.9;
 }
-.SCgCommonConnectorArrowEnd.DBSCgFifthLevelView {
+.SCgCommonArcArrowEnd.DBSCgFifthLevelView {
     stroke-width: 4.9;
     opacity: 0.8;
 }
-.SCgCommonConnectorArrowEnd.DBSCgSixthLevelView {
+.SCgCommonArcArrowEnd.DBSCgSixthLevelView {
     stroke-width: 4.9;
     opacity: 0.6;
 }
-.SCgCommonConnectorArrowEnd.DBSCgSeventhLevelView {
+.SCgCommonArcArrowEnd.DBSCgSeventhLevelView {
     stroke-width: 4;
     opacity: 0.4;
 }
