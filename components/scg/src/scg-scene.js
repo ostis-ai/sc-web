@@ -29,13 +29,13 @@ var KeyCode = {
     Z: 90
 };
 
-var SCgTypeEdgeNow = sc_type_arc_pos_const_perm;
-var SCgTypeNodeNow = sc_type_node | sc_type_const;
+var SCgTypeConnectorNow = sc_type_const_perm_pos_arc;
+var SCgTypeNodeNow = sc_type_const | sc_type_node;
 
 SCg.Scene = function (options) {
 
     this.listener_array = [new SCgSelectListener(this),
-    new SCgEdgeListener(this),
+    new SCgConnectorListener(this),
     new SCgBusListener(this),
     new SCgContourListener(this),
     new SCgLinkListener(this)]
@@ -45,7 +45,7 @@ SCg.Scene = function (options) {
     this.edit = options.edit;
     this.nodes = [];
     this.links = [];
-    this.edges = [];
+    this.connectors = [];
     this.contours = [];
     this.buses = [];
 
@@ -71,8 +71,8 @@ SCg.Scene = function (options) {
     // mouse position
     this.mouse_pos = new SCg.Vector3(0, 0, 0);
 
-    // edge source and target
-    this.edge_data = { source: null, target: null };
+    // connector source and target
+    this.connector_data = { source: null, target: null };
 
     // bus source
     this.bus_data = { source: null, end: null };
@@ -108,8 +108,8 @@ SCg.Scene.prototype = {
             for (let j = 0; j < contours.length; j++) {
                 const contour = contours[j];
 
-                if (element instanceof SCg.ModelEdge) {
-                    if (contour.isEdgeInPolygon(element)) {
+                if (element instanceof SCg.ModelConnector) {
+                    if (contour.isConnectorInPolygon(element)) {
                         if (element.contour) {
                             element.contour.removeChild(element);
                         }
@@ -149,12 +149,12 @@ SCg.Scene.prototype = {
     },
 
     /**
-     * Appends new sc.g-edge to scene
-     * @param {SCg.ModelEdge} edge Edge to append
+     * Appends new sc.g-connector to scene
+     * @param {SCg.ModelConnector} connector Connector to append
      */
-    appendEdge: function (edge) {
-        this.edges.push(edge);
-        edge.scene = this;
+    appendConnector: function (connector) {
+        this.connectors.push(connector);
+        connector.scene = this;
     },
 
     /**
@@ -180,8 +180,8 @@ SCg.Scene.prototype = {
             this.appendNode(obj);
         } else if (obj instanceof SCg.ModelLink) {
             this.appendLink(obj);
-        } else if (obj instanceof SCg.ModelEdge) {
-            this.appendEdge(obj);
+        } else if (obj instanceof SCg.ModelConnector) {
+            this.appendConnector(obj);
         } else if (obj instanceof SCg.ModelContour) {
             this.appendContour(obj);
         } else if (obj instanceof SCg.ModelBus) {
@@ -193,7 +193,7 @@ SCg.Scene.prototype = {
     appendAllElementToContours: function () {
         this.updateContours(this.nodes);
         this.updateContours(this.links);
-        this.updateContours(this.edges);
+        this.updateContours(this.connectors);
     },
 
     /**
@@ -218,8 +218,8 @@ SCg.Scene.prototype = {
             remove_from_list(obj, this.nodes);
         } else if (obj instanceof SCg.ModelLink) {
             remove_from_list(obj, this.links);
-        } else if (obj instanceof SCg.ModelEdge) {
-            remove_from_list(obj, this.edges);
+        } else if (obj instanceof SCg.ModelConnector) {
+            remove_from_list(obj, this.connectors);
         } else if (obj instanceof SCg.ModelContour) {
             remove_from_list(obj, this.contours);
         } else if (obj instanceof SCg.ModelBus) {
@@ -250,8 +250,8 @@ SCg.Scene.prototype = {
                 return;
 
             container.push(root);
-            for (let idx in root.edges) {
-                if (self.edges.indexOf(root.edges[idx]) > -1) collect_objects(container, root.edges[idx]);
+            for (let idx in root.connectors) {
+                if (self.connectors.indexOf(root.connectors[idx]) > -1) collect_objects(container, root.connectors[idx]);
             }
 
             if (root.bus)
@@ -341,7 +341,7 @@ SCg.Scene.prototype = {
      */
     selectAll: function () {
         var self = this;
-        var allObjects = [this.nodes, this.edges, this.buses, this.contours, this.links];
+        var allObjects = [this.nodes, this.connectors, this.buses, this.contours, this.links];
         allObjects.forEach(function (setObjects) {
             setObjects.forEach(function (obj) {
                 if (!obj.is_selected) {
@@ -411,7 +411,7 @@ SCg.Scene.prototype = {
         if (this.selected_objects.length == 1) {
             var obj = this.selected_objects[0];
 
-            if (obj instanceof SCg.ModelEdge || obj instanceof SCg.ModelBus || obj instanceof SCg.ModelContour) { /* @todo add contour and bus */
+            if (obj instanceof SCg.ModelConnector || obj instanceof SCg.ModelBus || obj instanceof SCg.ModelContour) { /* @todo add contour and bus */
                 for (idx in obj.points) {
                     this.line_points.push({ pos: obj.points[idx], idx: idx });
                 }
@@ -494,7 +494,7 @@ SCg.Scene.prototype = {
             } else if (event.which == KeyCode.Key1) {
                 this.edit.toolSelect().click()
             } else if (event.which == KeyCode.Key2) {
-                this.edit.toolEdge().click()
+                this.edit.toolConnector().click()
             } else if (event.which == KeyCode.Key3) {
                 this.edit.toolBus().click()
             } else if (event.which == KeyCode.Key4) {
@@ -544,12 +544,12 @@ SCg.Scene.prototype = {
         this.listener = this.listener_array[mode] ? this.listener_array[mode] : this.listener_array[0];
 
         this.focused_object = null;
-        this.edge_data.source = null;
-        this.edge_data.target = null;
+        this.connector_data.source = null;
+        this.connector_data.target = null;
 
         this.bus_data.source = null;
 
-        this.resetEdgeMode();
+        this.resetConnectorMode();
     },
 
     /**
@@ -561,13 +561,13 @@ SCg.Scene.prototype = {
     },
 
     /**
-     * Reset edge creation mode state
+     * Reset connector creation mode state
      */
-    resetEdgeMode: function () {
+    resetConnectorMode: function () {
         this.drag_line_points.splice(0, this.drag_line_points.length);
         this.render.updateDragLine();
 
-        this.edge_data.source = this.edge_data.target = null;
+        this.connector_data.source = this.connector_data.target = null;
     },
 
     /**
@@ -576,7 +576,7 @@ SCg.Scene.prototype = {
      */
     revertDragPoint: function (idx) {
 
-        if (this.edit_mode != SCgEditMode.SCgModeEdge && this.edit_mode != SCgEditMode.SCgModeBus && this.edit_mode != SCgEditMode.SCgModeContour) {
+        if (this.edit_mode != SCgEditMode.SCgModeConnector && this.edit_mode != SCgEditMode.SCgModeBus && this.edit_mode != SCgEditMode.SCgModeContour) {
             SCgDebug.error('Work with drag point in incorrect edit mode');
             return;
         }
@@ -589,7 +589,7 @@ SCg.Scene.prototype = {
             this.bus_data.end = null;
 
         if (this.drag_line_points.length == 0) {
-            this.edge_data.source = this.edge_data.target = null;
+            this.connector_data.source = this.connector_data.target = null;
             this.bus_data.source = null;
         }
         this.render.updateDragLine();
@@ -604,22 +604,22 @@ SCg.Scene.prototype = {
             return;
         }
 
-        var edge = this.selected_objects[0];
-        if (!(edge instanceof SCg.ModelEdge) && !(edge instanceof SCg.ModelBus) && !(edge instanceof SCg.ModelContour)) {
+        var connector = this.selected_objects[0];
+        if (!(connector instanceof SCg.ModelConnector) && !(connector instanceof SCg.ModelBus) && !(connector instanceof SCg.ModelContour)) {
             SCgDebug.error("Unknown type of selected object");
             return;
         }
 
-        if (edge.points.length <= idx) {
+        if (connector.points.length <= idx) {
             SCgDebug.error('Invalid index of line point');
             return;
         }
-        edge.points[idx].x = pos.x;
-        edge.points[idx].y = pos.y;
+        connector.points[idx].x = pos.x;
+        connector.points[idx].y = pos.y;
 
-        edge.requestUpdate();
-        edge.need_update = true;
-        edge.need_observer_sync = true;
+        connector.requestUpdate();
+        connector.need_update = true;
+        connector.need_observer_sync = true;
 
         this.updateObjectsVisual();
     },
@@ -635,13 +635,10 @@ SCg.Scene.prototype = {
             this.event_modal_changed();
     },
 
-    isSelectedObjectAllArcsOrAllNodes: function () {
+    isSelectedObjectAllConnectorsOrAllNodes: function () {
         var objects = this.selected_objects;
-        var typeMask = objects[0].sc_type & sc_type_arc_mask ? sc_type_arc_mask :
-            objects[0].sc_type & sc_type_node ?
-                sc_type_node : 0;
         return (objects.every(function (obj) {
-            return ((obj.sc_type & typeMask) && !(obj instanceof SCg.ModelContour) && !(obj instanceof SCg.ModelBus));
+            return ((obj.sc_type & sc_type_element_mask) && !(obj instanceof SCg.ModelContour) && !(obj instanceof SCg.ModelBus));
         }))
     },
 

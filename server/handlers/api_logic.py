@@ -10,7 +10,7 @@ from typing import List, Dict
 
 import tornado.web
 from sc_client import client
-from sc_client.constants import sc_types
+from sc_client.constants import sc_type
 from sc_client.models import \
     (
         ScTemplate,
@@ -59,10 +59,10 @@ def parse_menu_command(cmd_addr: ScAddr):
     template = ScTemplate()
     template.triple(
         keynodes[KeynodeSysIdentifiers.ui_user_command_class_atom.value],
-        sc_types.EDGE_ACCESS_VAR_POS_PERM,
+        sc_type.VAR_PERM_POS_ARC,
         cmd_addr,
     )
-    result = client.template_search(template)
+    result = client.search_by_template(template)
 
     if result:
         cmd_type = 'cmd_atom'
@@ -70,10 +70,10 @@ def parse_menu_command(cmd_addr: ScAddr):
         template = ScTemplate()
         template.triple(
             keynodes[KeynodeSysIdentifiers.ui_user_command_class_noatom.value],
-            sc_types.EDGE_ACCESS_VAR_POS_PERM,
+            sc_type.VAR_PERM_POS_ARC,
             cmd_addr,
         )
-        result = client.template_search(template)
+        result = client.search_by_template(template)
 
         if result:
             cmd_type = 'cmd_noatom'
@@ -83,14 +83,14 @@ def parse_menu_command(cmd_addr: ScAddr):
     # try to find decomposition
     DECOMPOSITION_NODE = "_decomposition"
     template = ScTemplate()
-    template.triple_with_relation(
-        [sc_types.NODE_VAR, DECOMPOSITION_NODE],
-        sc_types.EDGE_D_COMMON_VAR,
+    template.quintuple(
+        (sc_type.VAR_NODE, DECOMPOSITION_NODE),
+        sc_type.VAR_COMMON_ARC,
         cmd_addr,
-        sc_types.EDGE_ACCESS_VAR_POS_PERM,
+        sc_type.VAR_PERM_POS_ARC,
         keynodes[KeynodeSysIdentifiers.nrel_ui_commands_decomposition.value],
     )
-    result = client.template_search(template)
+    result = client.search_by_template(template)
     if result:
         # iterate child commands
         decomposition_node = result[0].get(DECOMPOSITION_NODE)
@@ -98,10 +98,10 @@ def parse_menu_command(cmd_addr: ScAddr):
         template = ScTemplate()
         template.triple(
             decomposition_node,
-            sc_types.EDGE_ACCESS_VAR_POS_PERM,
-            sc_types.UNKNOWN
+            sc_type.VAR_PERM_POS_ARC,
+            sc_type.UNKNOWN
         )
-        result = client.template_search(template)
+        result = client.search_by_template(template)
         child_commands = []
         for item in result:
             child_structure = parse_menu_command(item.get(2))
@@ -124,29 +124,29 @@ def find_atomic_commands(cmd_addr: ScAddr, commands: List[int]):
     template = ScTemplate()
     template.triple(
         keynodes[KeynodeSysIdentifiers.ui_user_command_class_atom.value],
-        sc_types.EDGE_ACCESS_VAR_POS_PERM,
+        sc_type.VAR_PERM_POS_ARC,
         cmd_addr,
     )
-    if client.template_search(template):
+    if client.search_by_template(template):
         commands.append(cmd_addr.value)
 
     # try to find decomposition
     DECOMPOSITION_NODE = "_decomposition"
     CHILD_NODE = "_child"
     template = ScTemplate()
-    template.triple_with_relation(
-        [sc_types.NODE_VAR, DECOMPOSITION_NODE],
-        sc_types.EDGE_D_COMMON_VAR,
+    template.quintuple(
+        (sc_type.VAR_NODE, DECOMPOSITION_NODE),
+        sc_type.VAR_COMMON_ARC,
         cmd_addr,
-        sc_types.EDGE_ACCESS_VAR_POS_PERM,
+        sc_type.VAR_PERM_POS_ARC,
         keynodes[KeynodeSysIdentifiers.nrel_ui_commands_decomposition.value],
     )
     template.triple(
         DECOMPOSITION_NODE,
-        sc_types.EDGE_ACCESS_VAR_POS_PERM,
-        [sc_types.UNKNOWN, CHILD_NODE],
+        sc_type.VAR_PERM_POS_ARC,
+        (sc_type.UNKNOWN, CHILD_NODE),
     )
-    children = client.template_search(template)
+    children = client.search_by_template(template)
     for child in children:
         find_atomic_commands(child.get(CHILD_NODE), commands)
 
@@ -158,14 +158,14 @@ def find_tooltip(addr: ScAddr, lang) -> str:
     # try to find structure, where addr is key sc-element
     KEY_SC_ELEMENT = "_key_sc_element"
     template = ScTemplate()
-    template.triple_with_relation(
-        [sc_types.NODE_VAR, KEY_SC_ELEMENT],
-        sc_types.EDGE_ACCESS_VAR_POS_PERM,
+    template.quintuple(
+        (sc_type.VAR_NODE, KEY_SC_ELEMENT),
+        sc_type.VAR_PERM_POS_ARC,
         addr,
-        sc_types.EDGE_ACCESS_VAR_POS_PERM,
+        sc_type.VAR_PERM_POS_ARC,
         keynodes[KeynodeSysIdentifiers.rrel_key_sc_element.value],
     )
-    result = client.template_search(template)
+    result = client.search_by_template(template)
 
     if result:
         found_map = {}
@@ -183,11 +183,11 @@ def find_tooltip(addr: ScAddr, lang) -> str:
             explanation_template = ScTemplate()
             KEY_SC_ELEMENT_CLASS = "_class"
             explanation_template.triple(
-                [sc_types.NODE_VAR, KEY_SC_ELEMENT_CLASS],
-                sc_types.EDGE_ACCESS_VAR_POS_PERM,
+                (sc_type.VAR_NODE, KEY_SC_ELEMENT_CLASS),
+                sc_type.VAR_PERM_POS_ARC,
                 node,
             )
-            explanation_result = client.template_search(explanation_template)
+            explanation_result = client.search_by_template(explanation_template)
             for exp_item in explanation_result:
                 for class_keynode in order_list:
                     if exp_item.get(KEY_SC_ELEMENT_CLASS) == class_keynode:
@@ -199,14 +199,14 @@ def find_tooltip(addr: ScAddr, lang) -> str:
                 # find all translations
                 translations_template = ScTemplate()
                 TRANSLATION_NODE = "_node"
-                translations_template.triple_with_relation(
-                    [sc_types.NODE_VAR, TRANSLATION_NODE],
-                    sc_types.EDGE_D_COMMON_VAR,
+                translations_template.quintuple(
+                    (sc_type.VAR_NODE, TRANSLATION_NODE),
+                    sc_type.VAR_COMMON_ARC,
                     node,
-                    sc_types.EDGE_ACCESS_VAR_POS_PERM,
+                    sc_type.VAR_PERM_POS_ARC,
                     keynodes[KeynodeSysIdentifiers.nrel_sc_text_translation.value],
                 )
-                translations_result = client.template_search(
+                translations_result = client.search_by_template(
                     translations_template)
 
                 for translation in translations_result:
@@ -215,10 +215,10 @@ def find_tooltip(addr: ScAddr, lang) -> str:
                     items_template = ScTemplate()
                     items_template.triple(
                         translation.get(TRANSLATION_NODE),
-                        sc_types.EDGE_ACCESS_VAR_POS_PERM,
-                        [sc_types.LINK_VAR, TEXT_LINK],
+                        sc_type.VAR_PERM_POS_ARC,
+                        (sc_type.VAR_NODE_LINK, TEXT_LINK),
                     )
-                    items_result = client.template_search(items_template)
+                    items_result = client.search_by_template(items_template)
 
                     for item in items_result:
                         text_link = item.get(TEXT_LINK)
@@ -226,10 +226,10 @@ def find_tooltip(addr: ScAddr, lang) -> str:
                         lang_template = ScTemplate()
                         lang_template.triple(
                             lang,
-                            sc_types.EDGE_ACCESS_VAR_POS_PERM,
+                            sc_type.VAR_PERM_POS_ARC,
                             text_link,
                         )
-                        if client.template_search(lang_template):
+                        if client.search_by_template(lang_template):
                             return client.get_link_content(text_link)[0].data
 
     return ""
@@ -240,14 +240,14 @@ def find_cmd_result(command_addr: ScAddr) -> List[ScTemplateResult]:
     keynodes = ScKeynodes()
 
     template = ScTemplate()
-    template.triple_with_relation(
+    template.quintuple(
         command_addr,
-        sc_types.EDGE_D_COMMON_VAR,
-        sc_types.LINK_VAR,
-        sc_types.EDGE_ACCESS_VAR_POS_PERM,
+        sc_type.VAR_COMMON_ARC,
+        sc_type.VAR_NODE_LINK,
+        sc_type.VAR_PERM_POS_ARC,
         keynodes[KeynodeSysIdentifiers.ui_nrel_command_result.value],
     )
-    return client.template_search(template)
+    return client.search_by_template(template)
 
 
 @decorators.method_logging
@@ -256,14 +256,14 @@ def find_result(action_addr: ScAddr) -> List[ScTemplateResult]:
         keynodes = ScKeynodes()
 
         template = ScTemplate()
-        template.triple_with_relation(
+        template.quintuple(
             action_addr,
-            sc_types.EDGE_D_COMMON_VAR,
-            sc_types.NODE_VAR,
-            sc_types.EDGE_ACCESS_VAR_POS_PERM,
+            sc_type.VAR_COMMON_ARC,
+            sc_type.VAR_NODE,
+            sc_type.VAR_PERM_POS_ARC,
             keynodes[KeynodeSysIdentifiers.action_nrel_result.value],
         )
-        return client.template_search(template)
+        return client.search_by_template(template)
 
     wait_dt = 0.01
     begin_time = time.time()
@@ -279,14 +279,14 @@ def find_translation(construction_addr: ScAddr) -> List[ScTemplateResult]:
     keynodes = ScKeynodes()
 
     template = ScTemplate()
-    template.triple_with_relation(
+    template.quintuple(
         construction_addr,
-        sc_types.EDGE_D_COMMON_VAR,
-        sc_types.LINK_VAR,
-        sc_types.EDGE_ACCESS_VAR_POS_PERM,
+        sc_type.VAR_COMMON_ARC,
+        sc_type.VAR_NODE_LINK,
+        sc_type.VAR_PERM_POS_ARC,
         keynodes[KeynodeSysIdentifiers.nrel_translation.value],
     )
-    return client.template_search(template)
+    return client.search_by_template(template)
 
 
 @decorators.method_logging
@@ -302,10 +302,10 @@ def find_translation_with_format(construction_addr, format_addr) -> ScAddr:
         template = ScTemplate()
         template.triple(
             link_addr,
-            sc_types.EDGE_D_COMMON_VAR,
+            sc_type.VAR_COMMON_ARC,
             format_addr,
         )
-        result = client.template_search(template)
+        result = client.search_by_template(template)
         if result:
             return result[0].get(0)
 
@@ -314,7 +314,7 @@ def find_translation_with_format(construction_addr, format_addr) -> ScAddr:
 
 @decorators.method_logging
 def get_by_system_identifier(idtf) -> ScAddr:
-    links = client.get_links_by_content(idtf)
+    links = client.search_links_by_contents(idtf)
     if links:
         for link in links:
             get_by_link_addr(link)
@@ -326,14 +326,14 @@ def get_by_link_addr(link_addr) -> ScAddr:
     keynodes = ScKeynodes()
 
     template = ScTemplate()
-    template.triple_with_relation(
-        sc_types.UNKNOWN,
-        sc_types.EDGE_D_COMMON_VAR,
+    template.quintuple(
+        sc_type.UNKNOWN,
+        sc_type.VAR_COMMON_ARC,
         link_addr,
-        sc_types.EDGE_ACCESS_VAR_POS_PERM,
+        sc_type.VAR_PERM_POS_ARC,
         keynodes[KeynodeSysIdentifiers.nrel_system_identifier.value],
     )
-    elements = client.template_search(template)
+    elements = client.search_by_template(template)
     if elements:
         return elements[0].get(0)
 
@@ -346,19 +346,19 @@ def get_identifier_translated(addr: ScAddr, used_lang: ScAddr) -> str:
 
     LINK = "_link"
     main_idtf_template = ScTemplate()
-    main_idtf_template.triple_with_relation(
+    main_idtf_template.quintuple(
         addr,
-        sc_types.EDGE_D_COMMON_VAR,
-        [sc_types.LINK, LINK],
-        sc_types.EDGE_ACCESS_VAR_POS_PERM,
+        sc_type.VAR_COMMON_ARC,
+        (sc_type.NODE_LINK, LINK),
+        sc_type.VAR_PERM_POS_ARC,
         keynodes[KeynodeSysIdentifiers.nrel_main_idtf.value],
     )
     main_idtf_template.triple(
         used_lang,
-        sc_types.EDGE_ACCESS_VAR_POS_PERM,
+        sc_type.VAR_PERM_POS_ARC,
         LINK,
     )
-    result = client.template_search(main_idtf_template)
+    result = client.search_by_template(main_idtf_template)
     if result:
         return client.get_link_content(result[0].get(LINK))[0].data
 
@@ -371,14 +371,14 @@ def get_system_identifier(addr: ScAddr):
     LINK = "_link"
 
     sys_idtf_template = ScTemplate()
-    sys_idtf_template.triple_with_relation(
+    sys_idtf_template.quintuple(
         addr,
-        sc_types.EDGE_D_COMMON_VAR,
-        [sc_types.LINK_VAR, LINK],
-        sc_types.EDGE_ACCESS_VAR_POS_PERM,
+        sc_type.VAR_COMMON_ARC,
+        (sc_type.VAR_NODE_LINK, LINK),
+        sc_type.VAR_PERM_POS_ARC,
         keynodes[KeynodeSysIdentifiers.nrel_system_identifier.value]
     )
-    result = client.template_search(sys_idtf_template)
+    result = client.search_by_template(sys_idtf_template)
     if result:
         return client.get_link_content(result[0].get(LINK))[0].data
 
@@ -393,7 +393,7 @@ def get_by_identifier_translated(used_lang: ScAddr, idtf: str):
     keynodes_idtfs.append(keynodes[KeynodeSysIdentifiers.nrel_main_idtf.value])
     keynodes_idtfs.append(keynodes[KeynodeSysIdentifiers.nrel_idtf.value])
 
-    links = client.get_links_by_content(idtf)
+    links = client.search_links_by_contents(idtf)
     for link in links:
         get_by_link_addr_translated(used_lang, link)
 
@@ -409,19 +409,19 @@ def get_by_link_addr_translated(used_lang: ScAddr, link: ScAddr) -> ScAddr:
     ELEMENT_NODE = "_element"
     for keynode_idtf in keynodes_idtfs:
         template = ScTemplate()
-        template.triple_with_relation(
-            [sc_types.UNKNOWN, ELEMENT_NODE],
-            sc_types.EDGE_D_COMMON_VAR,
+        template.quintuple(
+            (sc_type.UNKNOWN, ELEMENT_NODE),
+            sc_type.VAR_COMMON_ARC,
             link,
-            sc_types.EDGE_ACCESS_VAR_POS_PERM,
+            sc_type.VAR_PERM_POS_ARC,
             keynode_idtf
         )
         template.triple(
             used_lang,
-            sc_types.EDGE_ACCESS_VAR_POS_PERM,
+            sc_type.VAR_PERM_POS_ARC,
             link
         )
-        elements = client.template_search(template)
+        elements = client.search_by_template(template)
         if elements:
             return elements[0].get(ELEMENT_NODE)
 
@@ -435,10 +435,10 @@ def check_command_finished(command_addr: ScAddr) -> bool:
     template = ScTemplate()
     template.triple(
         keynodes[KeynodeSysIdentifiers.ui_command_finished.value],
-        sc_types.EDGE_ACCESS_VAR_POS_PERM,
+        sc_type.VAR_PERM_POS_ARC,
         command_addr
     )
-    return bool(client.template_search(template))
+    return bool(client.search_by_template(template))
 
 
 @decorators.method_logging
@@ -448,18 +448,18 @@ def check_command_failed(command_addr: ScAddr) -> bool:
     template = ScTemplate()
     template.triple(
         keynodes[KeynodeSysIdentifiers.ui_command_failed.value],
-        sc_types.EDGE_ACCESS_VAR_POS_PERM,
+        sc_type.VAR_PERM_POS_ARC,
         command_addr,
     )
-    return bool(client.template_search(template))
+    return bool(client.search_by_template(template))
 
 
 @decorators.method_logging
 def append_to_system_elements(keynode_system_element: ScAddr, el: ScAddr) -> None:
     construction = ScConstruction()
-    construction.create_edge(
-        sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, el)
-    client.create_elements(construction)
+    construction.generate_connector(
+        sc_type.CONST_PERM_POS_ARC, keynode_system_element, el)
+    client.generate_elements(construction)
 
 
 @decorators.method_logging
@@ -469,10 +469,10 @@ def get_languages_list() -> List[ScAddr]:
     template = ScTemplate()
     template.triple(
         keynodes[KeynodeSysIdentifiers.languages.value],
-        sc_types.EDGE_ACCESS_VAR_POS_PERM,
-        sc_types.NODE_VAR,
+        sc_type.VAR_PERM_POS_ARC,
+        sc_type.VAR_NODE,
     )
-    res_langs = client.template_search(template)
+    res_langs = client.search_by_template(template)
 
     langs = []
     for items in res_langs:
@@ -503,58 +503,58 @@ def do_command(cmd_addr: ScAddr, arguments: List[ScAddr], handler: BaseHandler):
 
         # create command in sc-memory
         construction = ScConstruction()
-        construction.create_node(sc_types.NODE_CONST, 'inst_cmd_addr')
-        construction.create_edge(
-            sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'inst_cmd_addr')
-        construction.create_edge(
-            sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_ui_command_generate_instance, 'inst_cmd_addr', 'arc_1')
-        construction.create_edge(
-            sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_1')
-        construction.create_edge(
-            sc_types.EDGE_ACCESS_CONST_POS_PERM, 'inst_cmd_addr', cmd_addr, 'inst_cmd_arc')
-        construction.create_edge(
-            sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'inst_cmd_arc')
-        construction.create_edge(
-            sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_ui_rrel_commnad, 'inst_cmd_arc', 'arc_2')
-        construction.create_edge(
-            sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_2')
+        construction.generate_node(sc_type.CONST_NODE, 'inst_cmd_addr')
+        construction.generate_connector(
+            sc_type.CONST_PERM_POS_ARC, keynode_system_element, 'inst_cmd_addr')
+        construction.generate_connector(
+            sc_type.CONST_PERM_POS_ARC, keynode_ui_command_generate_instance, 'inst_cmd_addr', 'arc_1')
+        construction.generate_connector(
+            sc_type.CONST_PERM_POS_ARC, keynode_system_element, 'arc_1')
+        construction.generate_connector(
+            sc_type.CONST_PERM_POS_ARC, 'inst_cmd_addr', cmd_addr, 'inst_cmd_arc')
+        construction.generate_connector(
+            sc_type.CONST_PERM_POS_ARC, keynode_system_element, 'inst_cmd_arc')
+        construction.generate_connector(
+            sc_type.CONST_PERM_POS_ARC, keynode_ui_rrel_commnad, 'inst_cmd_arc', 'arc_2')
+        construction.generate_connector(
+            sc_type.CONST_PERM_POS_ARC, keynode_system_element, 'arc_2')
 
         # create arguments
-        construction.create_node(sc_types.NODE_CONST, 'args_addr')
-        construction.create_edge(
-            sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'args_addr')
-        construction.create_edge(
-            sc_types.EDGE_ACCESS_CONST_POS_PERM, 'inst_cmd_addr', 'args_addr', 'args_arc')
-        construction.create_edge(
-            sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'args_arc')
-        construction.create_edge(
-            sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_ui_rrel_command_arguments, 'args_arc', 'arc_3')
-        construction.create_edge(
-            sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_3')
+        construction.generate_node(sc_type.CONST_NODE, 'args_addr')
+        construction.generate_connector(
+            sc_type.CONST_PERM_POS_ARC, keynode_system_element, 'args_addr')
+        construction.generate_connector(
+            sc_type.CONST_PERM_POS_ARC, 'inst_cmd_addr', 'args_addr', 'args_arc')
+        construction.generate_connector(
+            sc_type.CONST_PERM_POS_ARC, keynode_system_element, 'args_arc')
+        construction.generate_connector(
+            sc_type.CONST_PERM_POS_ARC, keynode_ui_rrel_command_arguments, 'args_arc', 'arc_3')
+        construction.generate_connector(
+            sc_type.CONST_PERM_POS_ARC, keynode_system_element, 'arc_3')
 
         idx = 1
         for arg in arguments:
             arg_arc = 'arg_arc_%d' % idx
-            construction.create_edge(
-                sc_types.EDGE_ACCESS_CONST_POS_PERM, 'args_addr', arg, arg_arc)
-            construction.create_edge(
-                sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, arg_arc)
+            construction.generate_connector(
+                sc_type.CONST_PERM_POS_ARC, 'args_addr', arg, arg_arc)
+            construction.generate_connector(
+                sc_type.CONST_PERM_POS_ARC, keynode_system_element, arg_arc)
 
             idx_addr = client.resolve_keynodes(
                 ScIdtfResolveParams(idtf='rrel_%d' % idx, type=None))[0]
             if not idx_addr.is_valid():
                 return serialize_error(handler, 404, 'Error while create "create_instance" command')
             idx_arc_addr = 'idx_arc_addr_%d' % idx
-            construction.create_edge(
-                sc_types.EDGE_ACCESS_CONST_POS_PERM, idx_addr, arg_arc, idx_arc_addr)
-            construction.create_edge(
-                sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, idx_arc_addr)
+            construction.generate_connector(
+                sc_type.CONST_PERM_POS_ARC, idx_addr, arg_arc, idx_arc_addr)
+            construction.generate_connector(
+                sc_type.CONST_PERM_POS_ARC, keynode_system_element, idx_arc_addr)
             idx += 1
 
         # initialize command
-        construction.create_edge(
-            sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_ui_command_initiated, 'inst_cmd_addr')
-        result = client.create_elements(construction)
+        construction.generate_connector(
+            sc_type.CONST_PERM_POS_ARC, keynode_ui_command_initiated, 'inst_cmd_addr')
+        result = client.generate_elements(construction)
         inst_cmd_addr = result[construction.get_index('inst_cmd_addr')]
 
         wait_time = 0
@@ -576,14 +576,14 @@ def do_command(cmd_addr: ScAddr, arguments: List[ScAddr], handler: BaseHandler):
 
         # get command result
         template = ScTemplate()
-        template.triple_with_relation(
+        template.quintuple(
             inst_cmd_addr,
-            sc_types.EDGE_D_COMMON_VAR,
-            sc_types.NODE_VAR,
-            sc_types.EDGE_ACCESS_VAR_POS_PERM,
+            sc_type.VAR_COMMON_ARC,
+            sc_type.VAR_NODE,
+            sc_type.VAR_PERM_POS_ARC,
             keynode_ui_nrel_command_result
         )
-        cmd_result = client.template_search(template)
+        cmd_result = client.search_by_template(template)
         if cmd_result is None:
             return serialize_error(handler, 404, 'Can\'t find "create_instance" command result')
 
@@ -601,14 +601,14 @@ def do_command(cmd_addr: ScAddr, arguments: List[ScAddr], handler: BaseHandler):
 
         # try to find action node
         template = ScTemplate()
-        template.triple_with_relation(
+        template.quintuple(
             keynode_action,
-            sc_types.EDGE_ACCESS_VAR_POS_PERM,
-            sc_types.NODE_VAR,
-            sc_types.EDGE_ACCESS_VAR_POS_PERM,
+            sc_type.VAR_PERM_POS_ARC,
+            sc_type.VAR_NODE,
+            sc_type.VAR_PERM_POS_ARC,
             cmd_result,
         )
-        action = client.template_search(template)
+        action = client.search_by_template(template)
         if action:
             instance_node = action[0].get(2)
             result_key = 'action'
@@ -616,22 +616,22 @@ def do_command(cmd_addr: ScAddr, arguments: List[ScAddr], handler: BaseHandler):
             keynode_init_set = keynodes[KeynodeSysIdentifiers.action_initiated.value]
 
             construction = ScConstruction()
-            construction.create_edge(
-                sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, instance_node)
-            client.create_elements(construction)
+            construction.generate_connector(
+                sc_type.CONST_PERM_POS_ARC, keynode_system_element, instance_node)
+            client.generate_elements(construction)
 
             # generate main identifiers
             langs = get_languages_list()
             if langs:
                 template = ScTemplate()
-                template.triple_with_relation(
+                template.quintuple(
                     cmd_addr,
-                    sc_types.EDGE_D_COMMON_VAR,
-                    sc_types.LINK_VAR,
-                    sc_types.EDGE_ACCESS_VAR_POS_PERM,
+                    sc_type.VAR_COMMON_ARC,
+                    sc_type.VAR_NODE_LINK,
+                    sc_type.VAR_PERM_POS_ARC,
                     keynode_nrel_ui_nrel_command_lang_template,
                 )
-                templates = client.template_search(template)
+                templates = client.search_by_template(template)
                 generated = {}
                 identifiers: Dict[str, Dict[str, str]] = {}
 
@@ -646,11 +646,11 @@ def do_command(cmd_addr: ScAddr, arguments: List[ScAddr], handler: BaseHandler):
                 for template_item in templates:
                     template = ScTemplate()
                     template.triple(
-                        sc_types.NODE_VAR_CLASS,
-                        sc_types.EDGE_ACCESS_VAR_POS_PERM,
+                        sc_type.VAR_NODE_CLASS,
+                        sc_type.VAR_PERM_POS_ARC,
                         template_item.get(2),
                     )
-                    input_arcs = client.template_search(template)
+                    input_arcs = client.search_by_template(template)
                     for arc in input_arcs:
                         for lang in langs:
                             if str(lang) not in generated and arc.get(0).value == lang.value:
@@ -669,33 +669,33 @@ def do_command(cmd_addr: ScAddr, arguments: List[ScAddr], handler: BaseHandler):
 
                                     # generate identifier
                                     construction = ScConstruction()
-                                    construction.create_link(
-                                        sc_types.LINK_CONST,
+                                    construction.generate_link(
+                                        sc_type.CONST_NODE_LINK,
                                         ScLinkContent(
                                             data, ScLinkContentType.STRING.value),
                                         'idtf_link')
-                                    construction.create_edge(
-                                        sc_types.EDGE_ACCESS_CONST_POS_PERM, lang, 'idtf_link')
-                                    construction.create_edge(
-                                        sc_types.EDGE_D_COMMON_CONST, instance_node, 'idtf_link', 'bin_arc')
-                                    construction.create_edge(
-                                        sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_nrel_main_idtf, 'bin_arc')
-                                    client.create_elements(construction)
+                                    construction.generate_connector(
+                                        sc_type.CONST_PERM_POS_ARC, lang, 'idtf_link')
+                                    construction.generate_connector(
+                                        sc_type.CONST_COMMON_ARC, instance_node, 'idtf_link', 'bin_arc')
+                                    construction.generate_connector(
+                                        sc_type.CONST_PERM_POS_ARC, keynode_nrel_main_idtf, 'bin_arc')
+                                    client.generate_elements(construction)
 
                                     generated[str(lang)] = True
 
         else:  # check if command
             keynode_command = keynodes[KeynodeSysIdentifiers.command.value]
             template = ScTemplate()
-            template.triple_with_relation(
+            template.quintuple(
                 keynode_command,
-                sc_types.EDGE_ACCESS_VAR_POS_PERM,
-                sc_types.NODE_VAR,
-                sc_types.EDGE_ACCESS_VAR_POS_PERM,
+                sc_type.VAR_PERM_POS_ARC,
+                sc_type.VAR_NODE,
+                sc_type.VAR_PERM_POS_ARC,
                 cmd_result
             )
 
-            command = client.template_search(template)
+            command = client.search_by_template(template)
             if command:
                 instance_node = command[0].get(2)
                 keynode_init_set = keynodes[KeynodeSysIdentifiers.command_initiated.value]
@@ -704,21 +704,21 @@ def do_command(cmd_addr: ScAddr, arguments: List[ScAddr], handler: BaseHandler):
 
         # create author
         construction = ScConstruction()
-        construction.create_edge(
-            sc_types.EDGE_D_COMMON_CONST, instance_node, user_node, 'author_arc')
-        construction.create_edge(
-            sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'author_arc')
-        construction.create_edge(
-            sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_nrel_authors, 'author_arc', 'arc_1')
-        construction.create_edge(
-            sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_1')
+        construction.generate_connector(
+            sc_type.CONST_COMMON_ARC, instance_node, user_node, 'author_arc')
+        construction.generate_connector(
+            sc_type.CONST_PERM_POS_ARC, keynode_system_element, 'author_arc')
+        construction.generate_connector(
+            sc_type.CONST_PERM_POS_ARC, keynode_nrel_authors, 'author_arc', 'arc_1')
+        construction.generate_connector(
+            sc_type.CONST_PERM_POS_ARC, keynode_system_element, 'arc_1')
 
         # initiate instance
-        construction.create_edge(
-            sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_init_set, instance_node, 'arc_2')
-        construction.create_edge(
-            sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_system_element, 'arc_2')
-        client.create_elements(construction)
+        construction.generate_connector(
+            sc_type.CONST_PERM_POS_ARC, keynode_init_set, instance_node, 'arc_2')
+        construction.generate_connector(
+            sc_type.CONST_PERM_POS_ARC, keynode_system_element, 'arc_2')
+        client.generate_elements(construction)
 
         result = {result_key: instance_node.value}
     return result
@@ -745,17 +745,17 @@ class ScSession:
 
     def get_user_kb_node_by_email(self) -> ScAddr:
         if self is not None:
-            links = client.get_links_by_content(str(self.user.email))[0]
+            links = client.search_links_by_contents(str(self.user.email))[0]
             if links and len(links) == 1:
                 template = ScTemplate()
-                template.triple_with_relation(
-                    sc_types.NODE_VAR,
-                    sc_types.EDGE_D_COMMON_VAR,
+                template.quintuple(
+                    sc_type.VAR_NODE,
+                    sc_type.VAR_COMMON_ARC,
                     links[0],
-                    sc_types.EDGE_ACCESS_VAR_POS_PERM,
-                    self.keynodes[KeynodeSysIdentifiers.nrel_email.value, sc_types.NODE_CONST_NOROLE],
+                    sc_type.VAR_PERM_POS_ARC,
+                    self.keynodes[KeynodeSysIdentifiers.nrel_email.value, sc_type.CONST_NODE_NON_ROLE],
                 )
-                search = client.template_search(template)
+                search = client.search_by_template(template)
                 return search[0].get(0)
         return ScAddr(0)
 
@@ -784,16 +784,16 @@ class ScSession:
     def get_used_language(self) -> ScAddr:
         """Returns sc-addr of currently used natural language
         """
-        ui_nrel_user_used_language = self.keynodes[KeynodeSysIdentifiers.ui_nrel_user_used_language.value, sc_types.NODE_CONST_NOROLE]
+        ui_nrel_user_used_language = self.keynodes[KeynodeSysIdentifiers.ui_nrel_user_used_language.value, sc_type.CONST_NODE_NON_ROLE]
         template = ScTemplate()
-        template.triple_with_relation(
+        template.quintuple(
             self.get_sc_addr(),
-            sc_types.EDGE_D_COMMON_VAR,
-            sc_types.NODE_VAR,
-            sc_types.EDGE_ACCESS_VAR_POS_PERM,
+            sc_type.VAR_COMMON_ARC,
+            sc_type.VAR_NODE,
+            sc_type.VAR_PERM_POS_ARC,
             ui_nrel_user_used_language,
         )
-        results = client.template_search(template)
+        results = client.search_by_template(template)
 
         if results:
             lang_addr = results[0].get(2)
@@ -801,7 +801,7 @@ class ScSession:
             return results[0].get(2)
 
         # setup russian mode by default
-        _lang = self.keynodes[KeynodeSysIdentifiers.lang_ru.value, sc_types.NODE_CONST_CLASS]
+        _lang = self.keynodes[KeynodeSysIdentifiers.lang_ru.value, sc_type.CONST_NODE_CLASS]
         self.set_current_lang_mode(_lang)
 
         logger.info(f'User language: {KeynodeSysIdentifiers.lang_ru.value}')
@@ -811,23 +811,23 @@ class ScSession:
     def get_default_ext_lang(self) -> ScAddr:
         """Returns sc-addr of default external language
         """
-        default_ext_language = self.keynodes[KeynodeSysIdentifiers.ui_nrel_user_default_ext_language.value, sc_types.NODE_CONST_NOROLE]
+        default_ext_language = self.keynodes[KeynodeSysIdentifiers.ui_nrel_user_default_ext_language.value, sc_type.CONST_NODE_NON_ROLE]
         template = ScTemplate()
-        template.triple_with_relation(
+        template.quintuple(
             self.get_sc_addr(),
-            sc_types.EDGE_D_COMMON_VAR,
-            sc_types.NODE_VAR,
-            sc_types.EDGE_ACCESS_VAR_POS_PERM,
+            sc_type.VAR_COMMON_ARC,
+            sc_type.VAR_NODE,
+            sc_type.VAR_PERM_POS_ARC,
             default_ext_language,
         )
-        result = client.template_search(template)
+        result = client.search_by_template(template)
         if result:
             ext_lang_addr = result[0].get(2)
             logger.info(f'User ext language: {get_system_identifier(ext_lang_addr)}')
             return ext_lang_addr
 
         # setup default language
-        _lang = self.keynodes[KeynodeSysIdentifiers.scn_code.value, sc_types.NODE_CONST]
+        _lang = self.keynodes[KeynodeSysIdentifiers.scn_code.value, sc_type.CONST_NODE]
         self.set_default_ext_lang(_lang)
 
         logger.info(f'User ext language: {KeynodeSysIdentifiers.scn_code.value}')
@@ -840,25 +840,25 @@ class ScSession:
         logger.info(f'Set lang {get_system_identifier(mode_addr)}')
 
         # try to find currently used mode and remove it
-        used_language = self.keynodes[KeynodeSysIdentifiers.ui_nrel_user_used_language.value, sc_types.NODE_CONST_NOROLE]
+        used_language = self.keynodes[KeynodeSysIdentifiers.ui_nrel_user_used_language.value, sc_type.CONST_NODE_NON_ROLE]
         template = ScTemplate()
-        template.triple_with_relation(
+        template.quintuple(
             self.get_sc_addr(),
-            sc_types.EDGE_D_COMMON_VAR,
-            sc_types.NODE_VAR,
-            sc_types.EDGE_ACCESS_VAR_POS_PERM,
+            sc_type.VAR_COMMON_ARC,
+            sc_type.VAR_NODE,
+            sc_type.VAR_PERM_POS_ARC,
             used_language
         )
-        search = client.template_search(template)
+        search = client.search_by_template(template)
         if search:
-            client.delete_elements(search[0].get(1))
+            client.erase_elements(search[0].get(1))
 
         construction = ScConstruction()
-        construction.create_edge(
-            sc_types.EDGE_D_COMMON_CONST, self.get_sc_addr(), mode_addr, 'mode_edge')
-        construction.create_edge(
-            sc_types.EDGE_ACCESS_CONST_POS_PERM, used_language, 'mode_edge')
-        client.create_elements(construction)
+        construction.generate_connector(
+            sc_type.CONST_COMMON_ARC, self.get_sc_addr(), mode_addr, 'mode_edge')
+        construction.generate_connector(
+            sc_type.CONST_PERM_POS_ARC, used_language, 'mode_edge')
+        client.generate_elements(construction)
 
     def set_default_ext_lang(self, lang_addr) -> None:
         """Setup new default external language
@@ -866,25 +866,25 @@ class ScSession:
         logger.info(f'Set ext lang {get_system_identifier(lang_addr)}')
 
         # try to find default external language and remove it
-        default_ext_language = self.keynodes[KeynodeSysIdentifiers.ui_nrel_user_default_ext_language.value, sc_types.NODE_CONST_NOROLE]
+        default_ext_language = self.keynodes[KeynodeSysIdentifiers.ui_nrel_user_default_ext_language.value, sc_type.CONST_NODE_NON_ROLE]
         template = ScTemplate()
-        template.triple_with_relation(
+        template.quintuple(
             self.get_sc_addr(),
-            sc_types.EDGE_D_COMMON_VAR,
-            sc_types.NODE_VAR,
-            sc_types.EDGE_ACCESS_VAR_POS_PERM,
+            sc_type.VAR_COMMON_ARC,
+            sc_type.VAR_NODE,
+            sc_type.VAR_PERM_POS_ARC,
             default_ext_language
         )
-        results = client.template_search(template)
+        results = client.search_by_template(template)
         if results:
-            client.delete_elements(results[0].get(1))
+            client.erase_elements(results[0].get(1))
 
         construction = ScConstruction()
-        construction.create_edge(
-            sc_types.EDGE_D_COMMON_CONST, self.get_sc_addr(), lang_addr, 'lang_edge')
-        construction.create_edge(
-            sc_types.EDGE_ACCESS_CONST_POS_PERM, default_ext_language, 'lang_edge')
-        client.create_elements(construction)
+        construction.generate_connector(
+            sc_type.CONST_COMMON_ARC, self.get_sc_addr(), lang_addr, 'lang_edge')
+        construction.generate_connector(
+            sc_type.CONST_PERM_POS_ARC, default_ext_language, 'lang_edge')
+        client.generate_elements(construction)
 
     def _find_user_by_system_idtf(self, idtf) -> ScAddr:
         value = client.resolve_keynodes(
@@ -892,21 +892,21 @@ class ScSession:
         return value
 
     def _create_user_with_system_idtf(self, idtf) -> ScAddr:
-        keynode_ui_user = self.keynodes[KeynodeSysIdentifiers.ui_user.value, sc_types.NODE_CONST]
-        sys_idtf = self.keynodes[KeynodeSysIdentifiers.nrel_system_identifier.value, sc_types.NODE_CONST_NOROLE]
+        keynode_ui_user = self.keynodes[KeynodeSysIdentifiers.ui_user.value, sc_type.CONST_NODE]
+        sys_idtf = self.keynodes[KeynodeSysIdentifiers.nrel_system_identifier.value, sc_type.CONST_NODE_NON_ROLE]
 
         # create user node
         construction = ScConstruction()
-        construction.create_node(sc_types.NODE_CONST, 'user')
-        construction.create_edge(
-            sc_types.EDGE_ACCESS_CONST_POS_PERM, keynode_ui_user, 'user')
-        construction.create_link(sc_types.LINK_CONST, ScLinkContent(
+        construction.generate_node(sc_type.CONST_NODE, 'user')
+        construction.generate_connector(
+            sc_type.CONST_PERM_POS_ARC, keynode_ui_user, 'user')
+        construction.generate_link(sc_type.CONST_NODE_LINK, ScLinkContent(
             idtf, ScLinkContentType.STRING.value), 'idtf')
-        construction.create_edge(
-            sc_types.EDGE_D_COMMON_CONST, 'user', 'idtf', 'sys_idtf_edge')
-        construction.create_edge(
-            sc_types.EDGE_ACCESS_CONST_POS_PERM, sys_idtf, 'sys_idtf_edge')
-        result = client.create_elements(construction)
+        construction.generate_connector(
+            sc_type.CONST_COMMON_ARC, 'user', 'idtf', 'sys_idtf_edge')
+        construction.generate_connector(
+            sc_type.CONST_PERM_POS_ARC, sys_idtf, 'sys_idtf_edge')
+        result = client.generate_elements(construction)
 
         return result[construction.get_index('user')]
 

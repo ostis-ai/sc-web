@@ -1,0 +1,22 @@
+ui_scg_control_tool_remove_elements
+    <- ui_scg_control; sc_node_class;
+    => nrel_main_idtf:
+        [Удаление sc.g-элементов]
+        (* <- lang_ru;; *);
+    => nrel_main_idtf:
+        [Removing sc.g-elements]
+        (* <- lang_en;; *);
+	<- rrel_key_sc_element:
+    		..e
+		(*
+		<- sc_explanation;;
+   		<= nrel_sc_text_translation:	
+	     ..t1
+	    	(*
+        	-> [Используйте эту функцию для удаления sc.g-элементов] (* <- lang_ru;; *);;
+        	*);
+		..t2
+		(*
+		-> [Use this function for removing sc.g-elements] (* <- lang_en;; *);;
+		*);;
+    *);;

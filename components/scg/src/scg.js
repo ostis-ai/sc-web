@@ -14,56 +14,52 @@ SCg.Editor.prototype = {
     init: function (params) {
         this.typesMap = {
             'scg-type-node': sc_type_node,
-            'scg-type-node-const': sc_type_node | sc_type_const,
-            'scg-type-node-const-group': sc_type_node | sc_type_const | sc_type_node_class,
-            'scg-type-node-const-abstract': sc_type_node | sc_type_const | sc_type_node_abstract,
-            'scg-type-node-const-material': sc_type_node | sc_type_const | sc_type_node_material,
-            'scg-type-node-const-norole': sc_type_node | sc_type_const | sc_type_node_norole,
-            'scg-type-node-const-role': sc_type_node | sc_type_const | sc_type_node_role,
-            'scg-type-node-const-struct': sc_type_node | sc_type_const | sc_type_node_struct,
-            'scg-type-node-const-tuple': sc_type_node | sc_type_const | sc_type_node_tuple,
-            'scg-type-node-var': sc_type_node | sc_type_var,
-            'scg-type-node-var-group': sc_type_node | sc_type_var | sc_type_node_class,
-            'scg-type-node-var-abstract': sc_type_node | sc_type_var | sc_type_node_abstract,
-            'scg-type-node-var-material': sc_type_node | sc_type_var | sc_type_node_material,
-            'scg-type-node-var-norole': sc_type_node | sc_type_var | sc_type_node_norole,
-            'scg-type-node-var-role': sc_type_node | sc_type_var | sc_type_node_role,
-            'scg-type-node-var-struct': sc_type_node | sc_type_var | sc_type_node_struct,
-            'scg-type-node-var-tuple': sc_type_node | sc_type_var | sc_type_node_tuple,
-            'scg-type-edge-common': sc_type_edge_common,
-            'scg-type-arc-common': sc_type_arc_common,
-            'scg-type-arc-common-access': sc_type_arc_access,
-            'scg-type-edge-const': sc_type_edge_common | sc_type_const,
-            'scg-type-arc-const': sc_type_arc_common | sc_type_const,
-            'scg-type-arc-const-perm-pos-access': sc_type_arc_access | sc_type_const | sc_type_arc_pos |
-                sc_type_arc_perm,
-            'scg-type-arc-const-perm-neg-access': sc_type_arc_access | sc_type_const | sc_type_arc_neg |
-                sc_type_arc_perm,
-            'scg-type-arc-const-perm-fuz-access': sc_type_arc_access | sc_type_const | sc_type_arc_fuz |
-                sc_type_arc_perm,
-            'scg-type-arc-const-temp-pos-access': sc_type_arc_access | sc_type_const | sc_type_arc_pos |
-                sc_type_arc_temp,
-            'scg-type-arc-const-temp-neg-access': sc_type_arc_access | sc_type_const | sc_type_arc_neg |
-                sc_type_arc_temp,
-            'scg-type-arc-const-temp-fuz-access': sc_type_arc_access | sc_type_const | sc_type_arc_fuz |
-                sc_type_arc_temp,
-            'scg-type-edge-var': sc_type_edge_common | sc_type_var,
-            'scg-type-arc-var': sc_type_arc_common | sc_type_var,
-            'scg-type-arc-var-perm-pos-access': sc_type_arc_access | sc_type_var | sc_type_arc_pos |
-                sc_type_arc_perm,
-            'scg-type-arc-var-perm-neg-access': sc_type_arc_access | sc_type_var | sc_type_arc_neg |
-                sc_type_arc_perm,
-            'scg-type-arc-var-perm-fuz-access': sc_type_arc_access | sc_type_var | sc_type_arc_fuz |
-                sc_type_arc_perm,
-            'scg-type-arc-var-temp-pos-access': sc_type_arc_access | sc_type_var | sc_type_arc_pos |
-                sc_type_arc_temp,
-            'scg-type-arc-var-temp-neg-access': sc_type_arc_access | sc_type_var | sc_type_arc_neg |
-                sc_type_arc_temp,
-            'scg-type-arc-var-temp-fuz-access': sc_type_arc_access | sc_type_var | sc_type_arc_fuz |
-                sc_type_arc_temp,
-            'scg-type-link': sc_type_link,
-            'scg-type-link-const': sc_type_link | sc_type_const,
-            'scg-type-link-var': sc_type_link | sc_type_var,
+            'scg-type-const-node': sc_type_const_node,
+            'scg-type-const-node-class': sc_type_const_node_class,
+            'scg-type-const-node-superclass': sc_type_const_node_superclass,
+            'scg-type-const-node-material': sc_type_const_node_material,
+            'scg-type-const-node-non-role': sc_type_const_node_non_role,
+            'scg-type-const-node-role': sc_type_const_node_role,
+            'scg-type-const-node-structure': sc_type_const_node_structure,
+            'scg-type-const-node-tuple': sc_type_const_node_tuple,
+            'scg-type-var-node': sc_type_var_node,
+            'scg-type-var-node-class': sc_type_var_node_class,
+            'scg-type-var-node-superclass': sc_type_var_node_superclass,
+            'scg-type-var-node-material': sc_type_var_node_material,
+            'scg-type-var-node-non-role': sc_type_var_node_non_role,
+            'scg-type-var-node-role': sc_type_var_node_role,
+            'scg-type-var-node-structure': sc_type_var_node_structure,
+            'scg-type-var-node-tuple': sc_type_var_node_tuple,
+            'scg-type-common-edge': sc_type_common_edge,
+            'scg-type-common-arc': sc_type_common_arc,
+            'scg-type-membership-arc': sc_type_membership_arc,
+            'scg-type-const-common-edge': sc_type_const_common_edge,
+            'scg-type-const-common-arc': sc_type_const_common_arc,
+            'scg-type-const-perm-pos-arc': sc_type_const_perm_pos_arc,
+            'scg-type-const-perm-neg-arc': sc_type_const_perm_neg_arc,
+            'scg-type-const-fuz-arc': sc_type_const_fuz_arc,
+            'scg-type-const-temp-pos-arc': sc_type_const_temp_pos_arc,
+            'scg-type-const-temp-neg-arc': sc_type_const_temp_neg_arc,
+            'scg-type-const-actual-temp-pos-arc': sc_type_const_actual_temp_pos_arc,
+            'scg-type-const-actual-temp-neg-arc': sc_type_const_actual_temp_neg_arc,
+            'scg-type-const-inactual-temp-pos-arc': sc_type_const_inactual_temp_pos_arc,
+            'scg-type-const-inactual-temp-neg-arc': sc_type_const_inactual_temp_neg_arc,
+            'scg-type-var-common-edge': sc_type_var_common_edge,
+            'scg-type-var-common-arc': sc_type_var_common_arc,
+            'scg-type-var-perm-pos-arc': sc_type_var_perm_pos_arc,
+            'scg-type-var-perm-neg-arc': sc_type_var_perm_neg_arc,
+            'scg-type-var-fuz-arc': sc_type_var_fuz_arc,
+            'scg-type-var-temp-pos-arc': sc_type_var_temp_pos_arc,
+            'scg-type-var-temp-neg-arc': sc_type_var_temp_neg_arc,
+            'scg-type-var-actual-temp-pos-arc': sc_type_var_actual_temp_pos_arc,
+            'scg-type-var-actual-temp-neg-arc': sc_type_var_actual_temp_neg_arc,
+            'scg-type-var-inactual-temp-pos-arc': sc_type_var_inactual_temp_pos_arc,
+            'scg-type-var-inactual-temp-neg-arc': sc_type_var_inactual_temp_neg_arc,
+            'scg-type-node-link': sc_type_node_link,
+            'scg-type-const-node-link': sc_type_const_node_link,
+            'scg-type-var-node-link': sc_type_var_node_link,
+            'scg-type-const-node-link-class': sc_type_const_node_link_class,
+            'scg-type-var-node-link-class': sc_type_var_node_link_class,
         };
 
         this.render = new SCg.Render();
@@ -127,14 +123,14 @@ SCg.Editor.prototype = {
                         },
                         complete: function () {
                             $.ajax({
-                                url: "static/components/html/scg-types-panel-edges.html",
+                                url: "static/components/html/scg-types-panel-connectors.html",
                                 dataType: 'html',
                                 success: function (response) {
-                                    self.edge_types_panel_content = response;
+                                    self.connector_types_panel_content = response;
                                 },
                                 error: function () {
                                     SCgDebug.error(
-                                        "Error to get edges type change panel");
+                                        "Error to get connectors type change panel");
                                 },
                                 complete: function () {
                                     $.ajax({
@@ -158,7 +154,7 @@ SCg.Editor.prototype = {
                 }
             });
             if (!self.canEdit) {
-                self.hideTool(self.toolEdge());
+                self.hideTool(self.toolConnector());
                 self.hideTool(self.toolBus());
                 self.hideTool(self.toolContour());
                 self.hideTool(self.toolOpen());
@@ -222,8 +218,8 @@ SCg.Editor.prototype = {
         return this.tool('select');
     },
 
-    toolEdge: function () {
-        return this.tool('edge');
+    toolConnector: function () {
+        return this.tool('connector');
     },
 
     toolBus: function () {
@@ -305,7 +301,7 @@ SCg.Editor.prototype = {
         // handle clicks on mode change
         this.toolSwitch().click(function () {
             self.canEdit = !self.canEdit;
-            var tools = [self.toolEdge(),
+            var tools = [self.toolConnector(),
             self.toolContour(),
             self.toolBus(),
             self.toolUndo(),
@@ -359,23 +355,23 @@ SCg.Editor.prototype = {
                 stop_modal();
             });
         });
-        this.toolEdge().click(function () {
-            self.scene.setEditMode(SCgEditMode.SCgModeEdge);
+        this.toolConnector().click(function () {
+            self.scene.setEditMode(SCgEditMode.SCgModeConnector);
         });
-        this.toolEdge().dblclick(function () {
+        this.toolConnector().dblclick(function () {
             self.scene.setModal(SCgModalMode.SCgModalType);
             self.onModalChanged();
             var tool = $(this);
 
             function stop_modal() {
                 tool.popover('destroy');
-                self.scene.setEditMode(SCgEditMode.SCgModeEdge);
+                self.scene.setEditMode(SCgEditMode.SCgModeConnector);
                 self.scene.setModal(SCgModalMode.SCgModalNone);
             }
 
             el = $(this);
             el.popover({
-                content: self.edge_types_panel_content,
+                content: self.connector_types_panel_content,
                 container: container,
                 title: 'Change type',
                 html: true,
@@ -390,7 +386,7 @@ SCg.Editor.prototype = {
                 stop_modal();
             });
             $(container + ' .popover .btn').click(function () {
-                SCgTypeEdgeNow = self.typesMap[$(this).attr('id')];
+                SCgTypeConnectorNow = self.typesMap[$(this).attr('id')];
                 stop_modal();
             });
         });
@@ -439,7 +435,7 @@ SCg.Editor.prototype = {
                 if (obj.text !== selectedIdtf) {
                     searchNodeByAnyIdentifier(selectedIdtf).then(async (selectedAddr) => {
                         if (selectedAddr) {
-                            const [type] = await scClient.checkElements([selectedAddr]);
+                            const [type] = await scClient.getElementsTypes([selectedAddr]);
                             self.scene.commandManager.execute(new SCgCommandGetNodeFromMemory(
                                 obj,
                                 type.value,
@@ -520,8 +516,8 @@ SCg.Editor.prototype = {
             var obj = self.scene.selected_objects[0];
 
             let types;
-            if (obj instanceof SCg.ModelEdge) {
-                types = self.edge_types_panel_content;
+            if (obj instanceof SCg.ModelConnector) {
+                types = self.connector_types_panel_content;
             } else if (obj instanceof SCg.ModelNode) {
                 types = self.node_types_panel_content;
             } else if (obj instanceof SCg.ModelLink) {
@@ -595,14 +591,14 @@ SCg.Editor.prototype = {
                 let addrMainConcept;
                 if (obj.sc_addr) {
                     let templateAddr = new sc.ScTemplate();
-                    templateAddr.tripleWithRelation(
-                        [sc.ScType.NodeVar, "_node"],
-                        sc.ScType.EdgeDCommonVar,
+                    templateAddr.quintuple(
+                        [sc.ScType.VarNode, "_node"],
+                        sc.ScType.VarCommonArc,
                         new sc.ScAddr(obj.sc_addr),
-                        sc.ScType.EdgeAccessVarPosPerm,
+                        sc.ScType.VarPermPosArc,
                         new sc.ScAddr(window.scKeynodes['nrel_main_idtf'])
                     );
-                    addrMainConcept = await window.scClient.templateSearch(templateAddr)
+                    addrMainConcept = await window.scClient.searchByTemplate(templateAddr)
                         .then(result => {
                             if (!result.length) return;
                             return result[0].get("_node").value;
@@ -813,13 +809,13 @@ SCg.Editor.prototype = {
 
         const getElement = async function (arr) {
             let construction = new sc.ScConstruction();
-            construction.createNode(sc.ScType.NodeConst, 'node')
+            construction.generateNode(sc.ScType.ConstNode, 'node')
 
             arr.forEach(el => {
-                construction.createEdge(sc.ScType.EdgeAccessConstPosPerm, 'node', new sc.ScAddr(el.sc_addr));
+                construction.generateConnector(sc.ScType.ConstPermPosArc, 'node', new sc.ScAddr(el.sc_addr));
             })
 
-            const elements = await scClient.createElements(construction);
+            const elements = await scClient.generateElements(construction);
             return elements[0];
         }
 
@@ -931,10 +927,10 @@ SCg.Editor.prototype = {
         let template = new sc.ScTemplate();
         template.triple(
             new sc.ScAddr(window.scKeynodes["basic_ontology_structure"]),
-            sc.ScType.EdgeAccessVarPosPerm,
+            sc.ScType.VarPermPosArc,
             new sc.ScAddr(addr)
         );
-        const res = await window.scClient.templateSearch(template);
+        const res = await window.scClient.searchByTemplate(template);
 
         return res.length !== 0;
     },
@@ -967,14 +963,14 @@ SCg.Editor.prototype = {
                 : this.hideTool(this.toolDelete())
 
             if (this.scene.selected_objects.length > 1) {
-                if (this.scene.isSelectedObjectAllArcsOrAllNodes() && !this.scene.isSelectedObjectAllHaveScAddr()) {
+                if (this.scene.isSelectedObjectAllConnectorsOrAllNodes() && !this.scene.isSelectedObjectAllHaveScAddr()) {
                     this.showTool(this.toolChangeType());
                 }
             } else if (this.scene.selected_objects.length === 1 && !this.scene.selected_objects[0].sc_addr) {
                 if (this.scene.selected_objects[0] instanceof SCg.ModelNode) {
                     this.showTool(this.toolChangeIdtf());
                     this.showTool(this.toolChangeType());
-                } else if (this.scene.selected_objects[0] instanceof SCg.ModelEdge) {
+                } else if (this.scene.selected_objects[0] instanceof SCg.ModelConnector) {
                     this.showTool(this.toolChangeType());
                 } else if (this.scene.selected_objects[0] instanceof SCg.ModelContour) {
                     this.showTool(this.toolChangeIdtf());
@@ -1007,7 +1003,7 @@ SCg.Editor.prototype = {
 
         update_tool(this.toolSwitch());
         update_tool(this.toolSelect());
-        update_tool(this.toolEdge());
+        update_tool(this.toolConnector());
         update_tool(this.toolBus());
         update_tool(this.toolContour());
         update_tool(this.toolLink());

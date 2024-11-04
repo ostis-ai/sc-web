@@ -102,7 +102,7 @@ GwfObjectNode.prototype.parseObject = function (args) {
 // have to specify scene,builder
 GwfObjectNode.prototype.buildObject = function (args) {
     var scene = args.scene;
-    var node = SCg.Creator.createNode(this.attributes["type"], new SCg.Vector3(this.attributes["x"] + GwfObjectController.getXOffset(), this.attributes["y"] + GwfObjectController.getYOffset(), 0), this.attributes["idtf"]);
+    var node = SCg.Creator.generateNode(this.attributes["type"], new SCg.Vector3(this.attributes["x"] + GwfObjectController.getXOffset(), this.attributes["y"] + GwfObjectController.getYOffset(), 0), this.attributes["idtf"]);
     scene.appendNode(node);
     scene.appendSelection(node);
     args.scg_object = node;
@@ -151,27 +151,27 @@ GwfObjectPair.prototype.buildObject = function (args) {
     var builder = args.builder;
     var source = builder.getOrCreate(this.attributes["id_b"]);
     var target = builder.getOrCreate(this.attributes["id_e"]);
-    var edge = SCg.Creator.createEdge(source, target, this.attributes["type"]);
-    scene.appendEdge(edge);
-    scene.appendSelection(edge);
-    edge.source_dot = parseFloat(this.attributes["dotBBalance"]);
-    edge.target_dot = parseFloat(this.attributes["dotEBalance"]);
-    var edge_points = this.attributes["points"];
+    var connector = SCg.Creator.generateConnector(source, target, this.attributes["type"]);
+    scene.appendConnector(connector);
+    scene.appendSelection(connector);
+    connector.source_dot = parseFloat(this.attributes["dotBBalance"]);
+    connector.target_dot = parseFloat(this.attributes["dotEBalance"]);
+    var connector_points = this.attributes["points"];
     var points = [];
-    for (var i = 0; i < edge_points.length; i++) {
-        var edge_point = edge_points[i];
-        var point = new SCg.Vector2(parseFloat(edge_point.x) + GwfObjectController.getXOffset(), parseFloat(edge_point.y) + GwfObjectController.getYOffset());
+    for (var i = 0; i < connector_points.length; i++) {
+        var connector_point = connector_points[i];
+        var point = new SCg.Vector2(parseFloat(connector_point.x) + GwfObjectController.getXOffset(), parseFloat(connector_point.y) + GwfObjectController.getYOffset());
         points.push(point);
     }
-    edge.setPoints(points);
+    connector.setPoints(points);
     source.update();
     target.update();
     if (source.contour && target.contour && source.contour === target.contour) {
-        edge.contour = source.contour;
-        edge.contour.addChild(edge);
+        connector.contour = source.contour;
+        connector.contour.addChild(connector);
     }
-    edge.update();
-    return edge;
+    connector.update();
+    return connector;
 }
 
 //contour
@@ -352,8 +352,8 @@ GwfObjectLink.prototype.parseObject = function (args) {
 GwfObjectLink.prototype.buildObject = function (args) {
     var scene = args.scene;
     let constancy = this.attributes["type"] & sc_type_constancy_mask;
-    let linkType = sc_type_link | constancy;
-    var link = SCg.Creator.createLink(linkType, new SCg.Vector3(this.attributes["x"] + GwfObjectController.getXOffset(),
+    let linkType = sc_type_node_link | constancy;
+    var link = SCg.Creator.generateLink(linkType, new SCg.Vector3(this.attributes["x"] + GwfObjectController.getXOffset(),
             this.attributes["y"] + +GwfObjectController.getYOffset(),
         0),
         '',

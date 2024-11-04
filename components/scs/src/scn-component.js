@@ -78,14 +78,4 @@ var SCnViewer = function (sandbox) {
 
 var SCsConnectors = {};
 
-$(document).ready(function () {
-    SCsConnectors[sc_type_arc_pos_const_perm] = "->";
-    SCsConnectors[sc_type_edge_common | sc_type_const] = "==";
-    SCsConnectors[sc_type_edge_common | sc_type_var] = "_==";
-    SCsConnectors[sc_type_arc_common | sc_type_const] = "=>";
-    SCsConnectors[sc_type_arc_common | sc_type_var] = "_=>";
-    SCsConnectors[sc_type_arc_access | sc_type_var | sc_type_arc_pos | sc_type_arc_perm] = "_->";
-});
-
-
 SCWeb.core.ComponentManager.appendComponentInitialize(SCnComponent);

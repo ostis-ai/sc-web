@@ -35,7 +35,7 @@ SCgContourListener.prototype = {
 
     onKeyDown: function (event) {
         if (event.which == KeyCode.Escape) {
-            this.scene.resetEdgeMode();
+            this.scene.resetConnectorMode();
             return true;
         }
         return false;

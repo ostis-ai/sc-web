@@ -27,14 +27,14 @@ const ImageViewer = function (sandbox) {
         const MIME_TYPE = "_mime_type";
 
         const template = new sc.ScTemplate();
-        template.tripleWithRelation(
+        template.quintuple(
             new sc.ScAddr(formatAddr),
-            sc.ScType.EdgeDCommonVar,
-            [sc.ScType.LinkVar, MIME_TYPE],
-            sc.ScType.EdgeAccessVarPosPerm,
+            sc.ScType.VarCommonArc,
+            [sc.ScType.VarNodeLink, MIME_TYPE],
+            sc.ScType.VarPermPosArc,
             new sc.ScAddr(window.scKeynodes["nrel_mimetype"]),
         );
-        const result = await scClient.templateSearch(template);
+        const result = await scClient.searchByTemplate(template);
         if (result.length) {
             const mimeLink = result[0].get(MIME_TYPE);
             const contents = await scClient.getLinkContents([mimeLink]);

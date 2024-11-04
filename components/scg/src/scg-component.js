@@ -25,7 +25,7 @@ const SCgViewerWindow = function (sandbox) {
     }
 
     const autocompletionVariants = function (keyword, callback) {
-        window.scClient.getLinksContentsByContentSubstrings([keyword]).then((strings) => {
+        window.scClient.searchLinkContentsByContentSubstrings([keyword]).then((strings) => {
             const maxContentSize = 80;
             const keys = strings.length ? strings[0].filter((string) => string.length < maxContentSize) : [];
             callback(keys);
@@ -52,7 +52,7 @@ const SCgViewerWindow = function (sandbox) {
 
     this._buildGraph = function (data) {
         var elements = {};
-        var edges = [];
+        var connectors = [];
         for (var i = 0; i < data.length; i++) {
             var el = data[i];
 
@@ -63,24 +63,24 @@ const SCgViewerWindow = function (sandbox) {
                 continue;
             }
 
-            if (el.el_type & sc_type_node || el.el_type & sc_type_link) {
-                var model_node = SCg.Creator.createNode(el.el_type, new SCg.Vector3(10 * Math.random(), 10 * Math.random(), 0), '');
+            if (el.el_type & sc_type_node) {
+                var model_node = SCg.Creator.generateNode(el.el_type, new SCg.Vector3(10 * Math.random(), 10 * Math.random(), 0), '');
                 this.editor.scene.appendNode(model_node);
                 this.editor.scene.objects[el.id] = model_node;
                 model_node.setScAddr(el.id);
                 model_node.setObjectState(SCgObjectState.FromMemory);
                 elements[el.id] = model_node;
-            } else if (el.el_type & sc_type_arc_mask) {
-                edges.push(el);
+            } else if (el.el_type & sc_type_connector) {
+                connectors.push(el);
             }
         }
 
-        // create edges
+        // create connectors
         var founded = true;
-        while (edges.length > 0 && founded) {
+        while (connectors.length > 0 && founded) {
             founded = false;
-            for (idx in edges) {
-                var obj = edges[idx];
+            for (idx in connectors) {
+                var obj = connectors[idx];
                 var beginId = obj.begin;
                 var endId = obj.end;
                 // try to get begin and end object for arc
@@ -88,19 +88,19 @@ const SCgViewerWindow = function (sandbox) {
                     var beginNode = elements[beginId];
                     var endNode = elements[endId];
                     founded = true;
-                    edges.splice(idx, 1);
-                    var model_edge = SCg.Creator.createEdge(beginNode, endNode, obj.el_type);
-                    this.editor.scene.appendEdge(model_edge);
-                    this.editor.scene.objects[obj.id] = model_edge;
-                    model_edge.setScAddr(obj.id);
-                    model_edge.setObjectState(SCgObjectState.FromMemory);
-                    elements[obj.id] = model_edge;
+                    connectors.splice(idx, 1);
+                    var model_connector = SCg.Creator.generateConnector(beginNode, endNode, obj.el_type);
+                    this.editor.scene.appendConnector(model_connector);
+                    this.editor.scene.objects[obj.id] = model_connector;
+                    model_connector.setScAddr(obj.id);
+                    model_connector.setObjectState(SCgObjectState.FromMemory);
+                    elements[obj.id] = model_connector;
                 }
             }
         }
 
-        if (edges.length > 0)
-            alert("error");
+        if (connectors.length > 0)
+            alert("There are some sc-connectors that are impossible to be shown.");
 
         this.editor.render.update();
         this.editor.scene.layout();

@@ -16,7 +16,7 @@ SCg.Tree.prototype = {
         for (t in this.triples) {
             var tpl = this.triples[t];
 
-            if (tpl[0].type & sc_type_node_struct)
+            if ((tpl[0].type & sc_type_node_structure) == sc_type_node_structure)
                 contours[tpl[0].addr] = {el: tpl[0], childs: []};
         }
 
@@ -28,7 +28,7 @@ SCg.Tree.prototype = {
             if (tpl.ignore) continue;
 
             for (c in contours) {
-                if ((c == tpl[0].addr) && (tpl[1].type & sc_type_arc_pos_const_perm)) {
+                if ((c == tpl[0].addr) && (tpl[1].type == sc_type_const_perm_pos_arc)) {
                     contours[c].childs.push(tpl[2]);
                     tpl.ignore = true;
                     parentsDict[tpl[2].addr] = c;

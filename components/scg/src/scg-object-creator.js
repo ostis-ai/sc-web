@@ -8,7 +8,7 @@ SCg.Creator = {};
  *
  * @return SCg.ModelNode created node
  */
-SCg.Creator.createNode = function (sc_type, pos, text) {
+SCg.Creator.generateNode = function (sc_type, pos, text) {
     return new SCg.ModelNode({
         position: pos.clone(),
         scale: new SCg.Vector2(20, 20),
@@ -17,7 +17,7 @@ SCg.Creator.createNode = function (sc_type, pos, text) {
     });
 };
 
-SCg.Creator.createLink = function (sc_type, pos, containerId, text) {
+SCg.Creator.generateLink = function (sc_type, pos, containerId, text) {
     var link = new SCg.ModelLink({
         position: pos.clone(),
         scale: new SCg.Vector2(50, 50),
@@ -30,18 +30,18 @@ SCg.Creator.createLink = function (sc_type, pos, containerId, text) {
 };
 
 /**
- * Create edge between two specified objects
- * @param {SCg.ModelObject} source Edge source object
- * @param {SCg.ModelObject} target Edge target object
- * @param {Integer} sc_type SC-type of edge
+ * Create connector between two specified objects
+ * @param {SCg.ModelObject} source Connector source object
+ * @param {SCg.ModelObject} target Connector target object
+ * @param {Integer} sc_type SC-type of connector
  *
- * @return SCg.ModelEdge created edge
+ * @return SCg.ModelConnector created connector
  */
-SCg.Creator.createEdge = function (source, target, sc_type) {
-    return new SCg.ModelEdge({
+SCg.Creator.generateConnector = function (source, target, sc_type) {
+    return new SCg.ModelConnector({
         source: source,
         target: target,
-        sc_type: sc_type ? sc_type : sc_type_edge_common
+        sc_type: sc_type ? sc_type : sc_type_common_edge
     });
 };
 

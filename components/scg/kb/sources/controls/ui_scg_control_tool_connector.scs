@@ -1,0 +1,22 @@
+ui_scg_control_tool_connector
+	<- ui_scg_control; sc_node_class;
+	=> nrel_main_idtf:
+		[Режим создания sc.g-коннектора/Тип создаваемого sc.g-коннектора]
+		(* <- lang_ru;; *);
+	=> nrel_main_idtf:
+        [sc.g-connector creating mode/Type of creating sc.g-connector]
+        (* <- lang_en;; *);
+	<- rrel_key_sc_element:
+    		..e
+		(*
+		<- sc_explanation;;
+   		<= nrel_sc_text_translation:	
+	     ..t1
+	    	(*
+        	-> [Используйте этот режим редактирования для создания sc.g-коннектора между sc.g-элементами] (* <- lang_ru;; *);;
+        	*);
+		..t2
+		(*
+		-> [Use this edit mode to create sc.g-connector between sc.g-elements] (* <- lang_en;; *);;
+		*);;
+    *);;

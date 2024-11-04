@@ -1,6 +1,6 @@
 TripleUtils = function () {
-    this.outputEdges = {};
-    this.inputEdges = {};
+    this.outgoingConnectors = {};
+    this.incomingConnectors = {};
     this.types = {};
     this.triples = []
 };
@@ -13,22 +13,22 @@ TripleUtils.prototype = {
         this.types[tpl[1].addr] = tpl[1].type;
         this.types[tpl[2].addr] = tpl[2].type;
 
-        this._appendOutputEdge(tpl[0].addr, tpl[1].addr, tpl[2].addr);
-        this._appendInputEdge(tpl[0].addr, tpl[1].addr, tpl[2].addr);
+        this._appendOutputConnector(tpl[0].addr, tpl[1].addr, tpl[2].addr);
+        this._appendInputConnector(tpl[0].addr, tpl[1].addr, tpl[2].addr);
     },
 
     removeTriple: function (tpl) {
-        this._removeOutputEdge(tpl[0].addr, tpl[1].addr);
-        this._removeInputEdge(tpl[2].addr, tpl[1].addr);
+        this._removeOutputConnector(tpl[0].addr, tpl[1].addr);
+        this._removeInputConnector(tpl[2].addr, tpl[1].addr);
     },
 
     /**
      *
-     * @param lookupEdgeAddr
-     * @returns {src: number, edge: number, trg: number}
+     * @param lookupConnectorAddr
+     * @returns {src: number, connector: number, trg: number}
      */
-    getEdge: function (lookupEdgeAddr) {
-        return this.triples.find(([src, {addr}, trg]) => addr === lookupEdgeAddr);
+    getConnector: function (lookupConnectorAddr) {
+        return this.triples.find(([src, {addr}, trg]) => addr === lookupConnectorAddr);
     },
 
     /*! Search all constructions, that equal to template. 
@@ -36,24 +36,24 @@ TripleUtils.prototype = {
      */
     find5_f_a_a_a_f: function (addr1, type2, type3, type4, addr5) {
         var res = [];
-        // iterate all output edges from addr1
-        var list = this.outputEdges[addr1];
+        // iterate all output connectors from addr1
+        var list = this.outgoingConnectors[addr1];
         if (!list) return [];
         for (l in list) {
-            var edge = list[l];
-            if (this._compareType(type2, this._getType(edge.edge)) && this._compareType(type3, this._getType(edge.trg))) {
+            var connector = list[l];
+            if (this._compareType(type2, this._getType(connector.connector)) && this._compareType(type3, this._getType(connector.trg))) {
                 // second triple iteration
-                var list2 = this.inputEdges[edge.edge];
+                var list2 = this.incomingConnectors [connector.connector];
                 if (list2) {
                     for (l2 in list2) {
-                        var edge2 = list2[l2];
-                        if (this._compareType(type4, this._getType(edge2.edge)) && (edge2.src === addr5)) {
+                        var connector2 = list2[l2];
+                        if (this._compareType(type4, this._getType(connector2.connector)) && (connector2.src === addr5)) {
                             if (!res) res = [];
                             res.push([
                                 {addr: addr1, type: this._getType(addr1)},
-                                {addr: edge.edge, type: this._getType(edge.edge)},
-                                {addr: edge.trg, type: this._getType(edge.trg)},
-                                {addr: edge2.edge, type: this._getType(edge2.edge)},
+                                {addr: connector.connector, type: this._getType(connector.connector)},
+                                {addr: connector.trg, type: this._getType(connector.trg)},
+                                {addr: connector2.connector, type: this._getType(connector2.connector)},
                                 {addr: addr5, type: this._getType(addr5)}
                             ]);
                         }
@@ -65,25 +65,25 @@ TripleUtils.prototype = {
     },
 
     find5_f_a_f_a_f: function (addr1, type2, addr3, type4, addr5) {
-        const list = this.inputEdges[addr3];
+        const list = this.incomingConnectors [addr3];
         if (!list) return [];
 
         let res = [];
         for (l in list) {
-            var edge = list[l];
-            if (this._compareType(type2, this._getType(edge.edge)) && (addr1 === edge.src)) {
-                var list2 = this.inputEdges[addr5];
+            var connector = list[l];
+            if (this._compareType(type2, this._getType(connector.connector)) && (addr1 === connector.src)) {
+                var list2 = this.incomingConnectors [addr5];
                 if (!list2) continue;
 
                 for (l2 in list2) {
-                    var edge2 = list2[l2];
-                    if (this._compareType(type4, this._getType(edge2.edge)) && (addr3 === edge.src)) {
+                    var connector2 = list2[l2];
+                    if (this._compareType(type4, this._getType(connector2.connector)) && (addr3 === connector.src)) {
                         if (!res) res = [];
                         res.push([
                             {addr: addr1, type: this._getType(addr1)},
-                            {addr: edge.edge, type: this._getType(edge.edge)},
+                            {addr: connector.connector, type: this._getType(connector.connector)},
                             {addr: addr3, type: this._getType(addr3)},
-                            {addr: edge2.edge, type: this._getType(edge2.edge)},
+                            {addr: connector2.connector, type: this._getType(connector2.connector)},
                             {addr: addr5, type: this._getType(addr5)}
                         ]);
                     }
@@ -96,31 +96,31 @@ TripleUtils.prototype = {
         const list = this.find3_f_a_a(addr5, type4, type2);
         if (!list) return [];
         const res = [];
-        for (const [src5, edge4, edge] of list) {
-            const [src1, edge2, trg3] = this.getEdge(edge.addr);
+        for (const [src5, connector4, connector] of list) {
+            const [src1, connector2, trg3] = this.getConnector(connector.addr);
             if (this._compareType(type1, src1.type) &&
-                this._compareType(type2, edge2.type) &&
+                this._compareType(type2, connector2.type) &&
                 addr3 === trg3.addr &&
-                this._compareType(type4, edge4.type) &&
+                this._compareType(type4, connector4.type) &&
                 addr5 === src5.addr) {
-                res.push([src1, edge2, trg3, edge4, src5]);
+                res.push([src1, connector2, trg3, connector4, src5]);
             }
         }
         return res;
     },
 
     find3_f_a_f: function (addr1, type2, addr3) {
-        var list = this.inputEdges[addr3];
+        var list = this.incomingConnectors [addr3];
         if (!list) return [];
 
         var res = [];
         for (l in list) {
-            var edge = list[l];
-            if (this._compareType(type2, edge.edge) && (addr1 === edge.src)) {
+            var connector = list[l];
+            if (this._compareType(type2, connector.connector) && (addr1 === connector.src)) {
                 if (!res) res = [];
                 res.push([
                     {addr: addr1, type: this._getType(addr1)},
-                    {addr: edge.edge, type: this._getType(edge.edge)},
+                    {addr: connector.connector, type: this._getType(connector.connector)},
                     {addr: addr3, type: this._getType(addr3)}
                 ]);
             }
@@ -134,48 +134,48 @@ TripleUtils.prototype = {
      */
     find3_f_a_a: function (addr1, type2, type3) {
         // iterate elements
-        var list = this.outputEdges[addr1];
+        var list = this.outgoingConnectors[addr1];
         if (!list) return [];
 
         var res = [];
         for (l in list) {
-            var edge = list[l];
-            if (this._compareType(type2, this._getType(edge.edge)) && this._compareType(type3, this._getType(edge.trg))) {
+            var connector = list[l];
+            if (this._compareType(type2, this._getType(connector.connector)) && this._compareType(type3, this._getType(connector.trg))) {
                 if (!res) res = [];
                 res.push([
                     {addr: addr1, type: this._getType(addr1)},
-                    {addr: edge.edge, type: this._getType(edge.edge)},
-                    {addr: edge.trg, type: this._getType(edge.trg)}
+                    {addr: connector.connector, type: this._getType(connector.connector)},
+                    {addr: connector.trg, type: this._getType(connector.trg)}
                 ]);
             }
         }
         return res;
     },
 
-    checkAnyOutputEdge: function (srcAddr) {
-        return !!this.outputEdges[srcAddr];
+    checkAnyOutputConnector: function (srcAddr) {
+        return !!this.outgoingConnectors[srcAddr];
     },
 
-    checkAnyInputEdge: function (trgAddr) {
-        return !!this.inputEdges[trgAddr];
+    checkAnyInputConnector: function (trgAddr) {
+        return !!this.incomingConnectors [trgAddr];
     },
 
-    checkAnyOutputEdgeType: function (srcAddr, edgeType) {
-        var list = this.outputEdges[srcAddr];
+    checkAnyOutputConnectorType: function (srcAddr, connectorType) {
+        var list = this.outgoingConnectors[srcAddr];
         if (list) {
             for (l in list) {
-                if (this._checkType(edgeType, this._getType(list[l].edge)))
+                if (this._checkType(connectorType, this._getType(list[l].connector)))
                     return true;
             }
         }
         return false;
     },
 
-    checkAnyInputEdgeType: function (trgAddr, edgeType) {
-        var list = this.inputEdges[trgAddr];
+    checkAnyInputConnectorType: function (trgAddr, connectorType) {
+        var list = this.incomingConnectors [trgAddr];
         if (list) {
             for (l in list) {
-                if (this._checkType(edgeType, this._getType(list[l].edge)))
+                if (this._checkType(connectorType, this._getType(list[l].connector)))
                     return true;
             }
         }
@@ -191,54 +191,54 @@ TripleUtils.prototype = {
         return this.types[addr];
     },
 
-    _appendOutputEdge: function (srcAddr, edgeAddr, trgAddr) {
-        var list = this.outputEdges[srcAddr];
-        var edge = {src: srcAddr, edge: edgeAddr, trg: trgAddr};
+    _appendOutputConnector: function (srcAddr, connectorAddr, trgAddr) {
+        var list = this.outgoingConnectors[srcAddr];
+        var connector = {src: srcAddr, connector: connectorAddr, trg: trgAddr};
         if (!list) {
-            this.outputEdges[srcAddr] = [edge];
+            this.outgoingConnectors[srcAddr] = [connector];
         } else {
-            list.push(edge);
+            list.push(connector);
         }
     },
 
-    _removeOutputEdge: function (srcAddr, edgeAddr) {
-        var list = this.outputEdges[srcAddr];
+    _removeOutputConnector: function (srcAddr, connectorAddr) {
+        var list = this.outgoingConnectors[srcAddr];
         if (list) {
             for (e in list) {
-                var edge = list[e];
-                if (edge.edge === edgeAddr) {
-                    this.outputEdges.splice(e, 1);
+                var connector = list[e];
+                if (connector.connector === connectorAddr) {
+                    this.outgoingConnectors.splice(e, 1);
                     return;
                 }
             }
         }
 
-        throw "Can't find output edges"
+        throw "Can't find output connectors"
     },
 
-    _appendInputEdge: function (srcAddr, edgeAddr, trgAddr) {
-        var list = this.inputEdges[trgAddr];
-        var edge = {src: srcAddr, edge: edgeAddr, trg: trgAddr};
+    _appendInputConnector: function (srcAddr, connectorAddr, trgAddr) {
+        var list = this.incomingConnectors [trgAddr];
+        var connector = {src: srcAddr, connector: connectorAddr, trg: trgAddr};
         if (!list) {
-            this.inputEdges[trgAddr] = [edge];
+            this.incomingConnectors [trgAddr] = [connector];
         } else {
-            list.push(edge);
+            list.push(connector);
         }
     },
 
-    _removeInputEdge: function (trgAddr, edgeAddr) {
-        var list = this.inputEdges[trgAddr];
+    _removeInputConnector: function (trgAddr, connectorAddr) {
+        var list = this.incomingConnectors [trgAddr];
         if (list) {
             for (e in list) {
-                var edge = list[e];
-                if (edge.edge === edgeAddr) {
-                    this.inputEdges.splice(e, 1);
+                var connector = list[e];
+                if (connector.connector === connectorAddr) {
+                    this.incomingConnectors .splice(e, 1);
                     return;
                 }
             }
         }
 
-        throw "Can't find input edges"
+        throw "Can't find input connectors"
     }
 
 };

@@ -4376,16 +4376,16 @@ d3 = function() {
     d3_geom_voronoiTessellate(vertices, function(e) {
       edges[e.region.l.index].push(vertices[e.region.r.index]);
     });
-    edges.forEach(function(edge, i) {
+    edges.forEach(function(connector, i) {
       var v = vertices[i], cx = v[0], cy = v[1];
-      edge.forEach(function(v) {
+      connector.forEach(function(v) {
         v.angle = Math.atan2(v[0] - cx, v[1] - cy);
       });
-      edge.sort(function(a, b) {
+      connector.sort(function(a, b) {
         return a.angle - b.angle;
       });
-      for (var j = 0, m = edge.length - 1; j < m; j++) {
-        triangles.push([ v, edge[j], edge[j + 1] ]);
+      for (var j = 0, m = connector.length - 1; j < m; j++) {
+        triangles.push([ v, connector[j], connector[j + 1] ]);
       }
     });
     return triangles;
@@ -4530,20 +4530,20 @@ d3 = function() {
       }),
       bottomSite: null
     };
-    var EdgeList = {
+    var ConnectorList = {
       list: [],
       leftEnd: null,
       rightEnd: null,
       init: function() {
-        EdgeList.leftEnd = EdgeList.createHalfEdge(null, "l");
-        EdgeList.rightEnd = EdgeList.createHalfEdge(null, "l");
-        EdgeList.leftEnd.r = EdgeList.rightEnd;
-        EdgeList.rightEnd.l = EdgeList.leftEnd;
-        EdgeList.list.unshift(EdgeList.leftEnd, EdgeList.rightEnd);
+        ConnectorList.leftEnd = ConnectorList.createHalfConnector (null, "l");
+        ConnectorList.rightEnd = ConnectorList.createHalfConnector (null, "l");
+        ConnectorList.leftEnd.r = ConnectorList.rightEnd;
+        ConnectorList.rightEnd.l = ConnectorList.leftEnd;
+        ConnectorList.list.unshift(ConnectorList.leftEnd, ConnectorList.rightEnd);
       },
-      createHalfEdge: function(edge, side) {
+      createHalfConnector : function(connector, side) {
         return {
-          edge: edge,
+          connector: connector,
           side: side,
           vertex: null,
           l: null,
@@ -4557,17 +4557,17 @@ d3 = function() {
         lb.r = he;
       },
       leftBound: function(p) {
-        var he = EdgeList.leftEnd;
+        var he = ConnectorList.leftEnd;
         do {
           he = he.r;
-        } while (he != EdgeList.rightEnd && Geom.rightOf(he, p));
+        } while (he != ConnectorList.rightEnd && Geom.rightOf(he, p));
         he = he.l;
         return he;
       },
       del: function(he) {
         he.l.r = he.r;
         he.r.l = he.l;
-        he.edge = null;
+        he.connector = null;
       },
       right: function(he) {
         return he.r;
@@ -4576,10 +4576,10 @@ d3 = function() {
         return he.l;
       },
       leftRegion: function(he) {
-        return he.edge == null ? Sites.bottomSite : he.edge.region[he.side];
+        return he.connector == null ? Sites.bottomSite : he.connector.region[he.side];
       },
       rightRegion: function(he) {
-        return he.edge == null ? Sites.bottomSite : he.edge.region[d3_geom_voronoiOpposite[he.side]];
+        return he.connector == null ? Sites.bottomSite : he.connector.region[d3_geom_voronoiOpposite[he.side]];
       }
     };
     var Geom = {
@@ -4608,7 +4608,7 @@ d3 = function() {
         return newEdge;
       },
       intersect: function(el1, el2) {
-        var e1 = el1.edge, e2 = el2.edge;
+        var e1 = el1.connector, e2 = el2.connector;
         if (!e1 || !e2 || e1.region.r == e2.region.r) {
           return null;
         }
@@ -4634,7 +4634,7 @@ d3 = function() {
         };
       },
       rightOf: function(he, p) {
-        var e = he.edge, topsite = e.region.r, rightOfSite = p.x > topsite.x;
+        var e = he.connector, topsite = e.region.r, rightOfSite = p.x > topsite.x;
         if (rightOfSite && he.side === "l") {
           return 1;
         }
@@ -4667,10 +4667,10 @@ d3 = function() {
         }
         return he.side === "l" ? above : !above;
       },
-      endPoint: function(edge, side, site) {
-        edge.ep[side] = site;
-        if (!edge.ep[d3_geom_voronoiOpposite[side]]) return;
-        callback(edge);
+      endPoint: function(connector, side, site) {
+        connector.ep[side] = site;
+        if (!connector.ep[d3_geom_voronoiOpposite[side]]) return;
+        callback(connector);
       },
       distance: function(s, t) {
         var dx = s.x - t.x, dy = s.y - t.y;
@@ -4716,7 +4716,7 @@ d3 = function() {
         return EventQueue.list.shift();
       }
     };
-    EdgeList.init();
+    ConnectorList.init();
     Sites.bottomSite = Sites.list.shift();
     var newSite = Sites.list.shift(), newIntStar;
     var lbnd, rbnd, llbnd, rrbnd, bisector;
@@ -4727,20 +4727,20 @@ d3 = function() {
         newIntStar = EventQueue.min();
       }
       if (newSite && (EventQueue.empty() || newSite.y < newIntStar.y || newSite.y == newIntStar.y && newSite.x < newIntStar.x)) {
-        lbnd = EdgeList.leftBound(newSite);
-        rbnd = EdgeList.right(lbnd);
-        bot = EdgeList.rightRegion(lbnd);
+        lbnd = ConnectorList.leftBound(newSite);
+        rbnd = ConnectorList.right(lbnd);
+        bot = ConnectorList.rightRegion(lbnd);
         e = Geom.bisect(bot, newSite);
-        bisector = EdgeList.createHalfEdge(e, "l");
-        EdgeList.insert(lbnd, bisector);
+        bisector = ConnectorList.createHalfConnector (e, "l");
+        ConnectorList.insert(lbnd, bisector);
         p = Geom.intersect(lbnd, bisector);
         if (p) {
           EventQueue.del(lbnd);
           EventQueue.insert(lbnd, p, Geom.distance(p, newSite));
         }
         lbnd = bisector;
-        bisector = EdgeList.createHalfEdge(e, "r");
-        EdgeList.insert(lbnd, bisector);
+        bisector = ConnectorList.createHalfConnector (e, "r");
+        ConnectorList.insert(lbnd, bisector);
         p = Geom.intersect(bisector, rbnd);
         if (p) {
           EventQueue.insert(bisector, p, Geom.distance(p, newSite));
@@ -4748,17 +4748,17 @@ d3 = function() {
         newSite = Sites.list.shift();
       } else if (!EventQueue.empty()) {
         lbnd = EventQueue.extractMin();
-        llbnd = EdgeList.left(lbnd);
-        rbnd = EdgeList.right(lbnd);
-        rrbnd = EdgeList.right(rbnd);
-        bot = EdgeList.leftRegion(lbnd);
-        top = EdgeList.rightRegion(rbnd);
+        llbnd = ConnectorList.left(lbnd);
+        rbnd = ConnectorList.right(lbnd);
+        rrbnd = ConnectorList.right(rbnd);
+        bot = ConnectorList.leftRegion(lbnd);
+        top = ConnectorList.rightRegion(rbnd);
         v = lbnd.vertex;
-        Geom.endPoint(lbnd.edge, lbnd.side, v);
-        Geom.endPoint(rbnd.edge, rbnd.side, v);
-        EdgeList.del(lbnd);
+        Geom.endPoint(lbnd.connector, lbnd.side, v);
+        Geom.endPoint(rbnd.connector, rbnd.side, v);
+        ConnectorList.del(lbnd);
         EventQueue.del(rbnd);
-        EdgeList.del(rbnd);
+        ConnectorList.del(rbnd);
         pm = "l";
         if (bot.y > top.y) {
           temp = bot;
@@ -4767,8 +4767,8 @@ d3 = function() {
           pm = "r";
         }
         e = Geom.bisect(bot, top);
-        bisector = EdgeList.createHalfEdge(e, pm);
-        EdgeList.insert(llbnd, bisector);
+        bisector = ConnectorList.createHalfConnector (e, pm);
+        ConnectorList.insert(llbnd, bisector);
         Geom.endPoint(e, d3_geom_voronoiOpposite[pm], v);
         p = Geom.intersect(llbnd, bisector);
         if (p) {
@@ -4783,8 +4783,8 @@ d3 = function() {
         break;
       }
     }
-    for (lbnd = EdgeList.right(EdgeList.leftEnd); lbnd != EdgeList.rightEnd; lbnd = EdgeList.right(lbnd)) {
-      callback(lbnd.edge);
+    for (lbnd = ConnectorList.right(ConnectorList.leftEnd); lbnd != ConnectorList.rightEnd; lbnd = ConnectorList.right(lbnd)) {
+      callback(lbnd.connector);
     }
   }
   d3.geom.quadtree = function(points, x1, y1, x2, y2) {

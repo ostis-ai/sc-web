@@ -40,21 +40,21 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
         return [debounceBuffered, clear];
     };
 
-    const createNode = function (addr, type) {
-        const object = SCg.Creator.createNode(type, randomPos(), '');
+    const generateNode = function (addr, type) {
+        const object = SCg.Creator.generateNode(type, randomPos(), '');
         resolveIdtf(addr, object);
         return object;
     };
 
-    const createLink = function (addr, type) {
+    const generateLink = function (addr, type) {
         const containerId = 'scg-window-' + sandbox.addr.value + '-' + addr + '-' + new Date().getUTCMilliseconds();
-        const object = SCg.Creator.createLink(type, randomPos(), containerId);
+        const object = SCg.Creator.generateLink(type, randomPos(), containerId);
         resolveIdtf(addr, object);
         return object;
     };
 
-    const createEdge = function (sourceObject, targetObject, type) {
-        return SCg.Creator.createEdge(sourceObject, targetObject, type);
+    const generateConnector = function (sourceObject, targetObject, type) {
+        return SCg.Creator.generateConnector(sourceObject, targetObject, type);
     };
 
     const appendObjectToScene = function (object, addr, level, state, isCopy) {
@@ -69,12 +69,12 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
         const type = object.sc_type;
 
         let copiedObject;
-        if (type & sc_type_node) {
-            copiedObject = createNode(addr, type);
-        } else if (type & sc_type_link) {
-            copiedObject = createLink(addr, type);
-        } else if (type & sc_type_arc_mask) {
-            copiedObject = createEdge(object.source, object.target, type);
+        if ((type & sc_type_node_link) == sc_type_node_link) {
+            copiedObject = generateLink(addr, type);
+        } else if (type & sc_type_node) {
+            copiedObject = generateNode(addr, type);
+        } else if (type & sc_type_connector) {
+            copiedObject = generateConnector(object.source, object.target, type);
         }
 
         appendObjectToScene(copiedObject, addr, object.level, object.state, true);
@@ -110,11 +110,11 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
                 continue;
             }
 
-            if (type & sc_type_node) {
-                object = createNode(addr, type);
-            } else if (type & sc_type_link) {
-                object = createLink(addr, type);
-            } else if (type & sc_type_arc_mask) {
+            if ((type & sc_type_node_link) == sc_type_node_link) {
+                object = generateLink(addr, type);
+            } else if (type & sc_type_node) {
+                object = generateNode(addr, type);
+            } else if (type & sc_type_connector) {
                 const sourceHash = task[4];
                 const targetHash = task[5];
 
@@ -125,10 +125,10 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
                     continue;
                 }
 
-                const multipleArcs = editor.scene.edges.filter(
-                    edge => edge.source.sc_addr === sourceHash && edge.target.sc_addr === targetHash);
-                if (sourceHash === targetHash || multipleArcs.length > 0) targetObject = createAppendCopyObject(targetObject);
-                object = createEdge(sourceObject, targetObject, type);
+                const multipleConnectors = editor.scene.connectors.filter(
+                    connector => connector.source.sc_addr === sourceHash && connector.target.sc_addr === targetHash);
+                if (sourceHash === targetHash || multipleConnectors.length > 0) targetObject = createAppendCopyObject(targetObject);
+                object = generateConnector(sourceObject, targetObject, type);
             }
             appendObjectToScene(object, addr, level, state);
         }
@@ -173,7 +173,7 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
     };
 
     const getElementsTypes = async (elements) => {
-        return await scClient.checkElements(elements);
+        return await scClient.getElementsTypes(elements);
     };
 
     const update = async (data) => {
@@ -193,14 +193,14 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
                 const sourceHash = data.sceneElementSource.value;
                 const sourceTypeValue = data.sceneElementSourceType.value;
                 const sourceLevel = data.sceneElementSourceLevel;
-                if (!data.sceneElementSourceType.isEdge()) {
+                if (!data.sceneElementSourceType.isConnector()) {
                     addAppendTask(sourceHash, [sourceHash, sourceTypeValue, sceneElementState, sourceLevel]);
                 }
 
                 const targetHash = data.sceneElementTarget.value;
                 const targetTypeValue = data.sceneElementTargetType.value;
                 const targetLevel = data.sceneElementTargetLevel;
-                if (!data.sceneElementTargetType.isEdge()) {
+                if (!data.sceneElementTargetType.isConnector()) {
                     addAppendTask(targetHash, [targetHash, targetTypeValue, sceneElementState, targetLevel]);
                 }
 
@@ -209,7 +209,7 @@ const SCgStructFromScTranslatorImpl = function (_editor, _sandbox) {
                     [sceneElementHash, sceneElementTypeValue, sceneElementState, sceneElementLevel, sourceHash, targetHash]
                 );
             }
-            else if (sceneElementType && sceneElementType.isEdge()) {
+            else if (sceneElementType && sceneElementType.isConnector()) {
                 const [source, target] = await window.scHelper.getConnectorElements(sceneElement);
                 if (!source.isValid() || !target.isValid()) return;
 
@@ -260,10 +260,10 @@ const SCgStructToScTranslatorImpl = function (_editor, _sandbox) {
         let scTemplate = new sc.ScTemplate();
         scTemplate.triple(
             sandbox.addr,
-            [sc.ScType.EdgeAccessVarPosPerm, 'arc'],
+            [sc.ScType.VarPermPosArc, 'arc'],
             new sc.ScAddr(obj.sc_addr)
         );
-        let result = await scClient.templateGenerate(scTemplate);
+        let result = await scClient.generateByTemplate(scTemplate);
         arcMapping[result.get('arc').value] = obj;
     };
 
@@ -271,27 +271,27 @@ const SCgStructToScTranslatorImpl = function (_editor, _sandbox) {
         const LINK = 'link';
         const objectAddr = new sc.ScAddr(obj.sc_addr);
 
-        // Checks if identifier is allowed to be system identifier (only letter, digits, '-' and '_')
-        const idtfRelation = /^[a-zA-Z0-9_-]+$/.test(obj.text)
+        // Checks if identifier is allowed to be system identifier (only letter, digits and '_')
+        const idtfRelation = /^[a-zA-Z0-9_]+$/.test(obj.text)
             ? new sc.ScAddr(window.scKeynodes['nrel_system_identifier'])
             : new sc.ScAddr(window.scKeynodes['nrel_main_idtf']);
 
         let template = new sc.ScTemplate();
-        template.tripleWithRelation(
+        template.quintuple(
             objectAddr,
-            sc.ScType.EdgeDCommonVar,
-            [sc.ScType.LinkVar, LINK],
-            sc.ScType.EdgeAccessVarPosPerm,
+            sc.ScType.VarCommonArc,
+            [sc.ScType.VarNodeLink, LINK],
+            sc.ScType.VarPermPosArc,
             idtfRelation
         );
-        let result = await scClient.templateSearch(template);
+        let result = await scClient.searchByTemplate(template);
 
         let idtfLinkAddr;
         if (result.length) {
             idtfLinkAddr = result[0].get(LINK);
         }
         else {
-            result = await scClient.templateGenerate(template);
+            result = await scClient.generateByTemplate(template);
             idtfLinkAddr = result.get(LINK);
         }
         await scClient.setLinkContents([new sc.ScLinkContent(obj.text, sc.ScLinkContentType.String, idtfLinkAddr)]);
@@ -310,7 +310,7 @@ const SCgStructToScTranslatorImpl = function (_editor, _sandbox) {
     const translateNodes = async function (nodes) {
         const implFunc = async function (node) {
             if (!node.sc_addr && node.text) {
-                let linkAddrs = await scClient.getLinksByContents([node.text]);
+                let linkAddrs = await scClient.searchLinksByContents([node.text]);
                 if (linkAddrs.length) {
                     linkAddrs = linkAddrs[0];
                     if (linkAddrs.length) {
@@ -325,8 +325,8 @@ const SCgStructToScTranslatorImpl = function (_editor, _sandbox) {
 
             if (!node.sc_addr) {
                 let scConstruction = new sc.ScConstruction();
-                scConstruction.createNode(new sc.ScType(node.sc_type), "node");
-                let result = await scClient.createElements(scConstruction);
+                scConstruction.generateNode(new sc.ScType(node.sc_type), "node");
+                let result = await scClient.generateElements(scConstruction);
                 node.setScAddr(result[scConstruction.getIndex("node")].value);
                 node.setObjectState(SCgObjectState.NewInMemory);
                 objects.push(node);
@@ -339,13 +339,13 @@ const SCgStructToScTranslatorImpl = function (_editor, _sandbox) {
         return Promise.all(nodes.map(implFunc));
     }
 
-    const preTranslateContoursAndBus = async function (nodes, links, edges, contours, buses) {
+    const preTranslateContoursAndBus = async function (nodes, links, connectors, contours, buses) {
         // create sc-struct nodes
         const scAddrGen = async function (c) {
             if (!c.sc_addr) {
                 let scConstruction = new sc.ScConstruction();
-                scConstruction.createNode(sc.ScType.NodeConstStruct, 'node');
-                let result = await scClient.createElements(scConstruction);
+                scConstruction.generateNode(sc.ScType.ConstNodeStructure, 'node');
+                let result = await scClient.generateElements(scConstruction);
                 let node = result[scConstruction.getIndex('node')].value;
                 c.setScAddr(node);
                 c.setObjectState(SCgObjectState.NewInMemory);
@@ -359,7 +359,7 @@ const SCgStructToScTranslatorImpl = function (_editor, _sandbox) {
         for (let i = 0; i < contours.length; ++i) {
             contours[i].addNodesWhichAreInContourPolygon(nodes);
             contours[i].addNodesWhichAreInContourPolygon(links);
-            contours[i].addEdgesWhichAreInContourPolygon(edges);
+            contours[i].addConnectorsWhichAreInContourPolygon(connectors);
             funcs.push(scAddrGen(contours[i]));
         }
 
@@ -371,23 +371,23 @@ const SCgStructToScTranslatorImpl = function (_editor, _sandbox) {
         return Promise.all(funcs);
     }
 
-    const translateEdges = function (edges) {
+    const translateConnectors = function (connectors) {
         return new Promise((resolve, reject) => {
-            edges = edges.filter(e => !e.sc_addr);
+            connectors = connectors.filter(e => !e.sc_addr);
 
-            let edgesNew = [];
+            let connectorsNew = [];
             let translatedCount = 0;
 
             async function doIteration() {
-                const edge = edges.shift();
+                const connector = connectors.shift();
 
                 function nextIteration() {
-                    if (edges.length === 0) {
-                        if (translatedCount === 0 || (edges.length === 0 && edgesNew.length === 0))
+                    if (connectors.length === 0) {
+                        if (translatedCount === 0 || (connectors.length === 0 && connectorsNew.length === 0))
                             resolve();
                         else {
-                            edges = edgesNew;
-                            edgesNew = [];
+                            connectors = connectorsNew;
+                            connectorsNew = [];
                             translatedCount = 0;
                             window.setTimeout(doIteration, 0);
                         }
@@ -395,29 +395,29 @@ const SCgStructToScTranslatorImpl = function (_editor, _sandbox) {
                         window.setTimeout(doIteration, 0);
                 }
 
-                if (edge.sc_addr)
-                    reject("Edge already have sc-addr");
+                if (connector.sc_addr)
+                    reject("Connector already have sc-addr");
 
-                const src = edge.source.sc_addr;
-                const trg = edge.target.sc_addr;
+                const src = connector.source.sc_addr;
+                const trg = connector.target.sc_addr;
 
                 if (src && trg) {
                     let scConstruction = new sc.ScConstruction();
-                    scConstruction.createEdge(new sc.ScType(edge.sc_type), new sc.ScAddr(src), new sc.ScAddr(trg), 'edge');
-                    let result = await scClient.createElements(scConstruction);
-                    edge.setScAddr(result[scConstruction.getIndex('edge')].value);
-                    edge.setObjectState(SCgObjectState.NewInMemory);
-                    objects.push(edge);
+                    scConstruction.generateConnector(new sc.ScType(connector.sc_type), new sc.ScAddr(src), new sc.ScAddr(trg), 'connector');
+                    let result = await scClient.generateElements(scConstruction);
+                    connector.setScAddr(result[scConstruction.getIndex('connector')].value);
+                    connector.setObjectState(SCgObjectState.NewInMemory);
+                    objects.push(connector);
                     translatedCount++;
                     nextIteration();
                 } else {
-                    edgesNew.push(edge);
+                    connectorsNew.push(connector);
                     nextIteration();
                 }
 
             }
 
-            if (edges.length > 0)
+            if (connectors.length > 0)
                 window.setTimeout(doIteration, 0);
             else
                 resolve();
@@ -428,11 +428,11 @@ const SCgStructToScTranslatorImpl = function (_editor, _sandbox) {
     const translateContours = async function (contours) {
         // now need to process arcs from contours to child elements
         const arcGen = async function (contour, child) {
-            let edgeExist = await window.scHelper.checkEdge(contour.sc_addr, sc_type_arc_pos_const_perm, child.sc_addr);
-            if (!edgeExist) {
+            let connectorExist = await window.scHelper.checkConnector(contour.sc_addr, sc_type_const_perm_pos_arc, child.sc_addr);
+            if (!connectorExist) {
                 let scConstruction = new sc.ScConstruction();
-                scConstruction.createEdge(sc.ScType.EdgeAccessConstPosPerm, new sc.ScAddr(contour.sc_addr), new sc.ScAddr(child.sc_addr), 'edge');
-                await scClient.createElements(scConstruction);
+                scConstruction.generateConnector(sc.ScType.ConstPermPosArc, new sc.ScAddr(contour.sc_addr), new sc.ScAddr(child.sc_addr), 'connector');
+                await scClient.generateElements(scConstruction);
             }
         };
 
@@ -467,7 +467,7 @@ const SCgStructToScTranslatorImpl = function (_editor, _sandbox) {
 
             // Find link from kb by system identifier
             if (!link.sc_addr && link.text) {
-                let linkSystemIdentifierAddrs = await scClient.getLinksByContents([link.text]);
+                let linkSystemIdentifierAddrs = await scClient.searchLinksByContents([link.text]);
                 if (linkSystemIdentifierAddrs.length) {
                     linkSystemIdentifierAddrs = linkSystemIdentifierAddrs[0];
                     if (linkSystemIdentifierAddrs.length) {
@@ -495,8 +495,8 @@ const SCgStructToScTranslatorImpl = function (_editor, _sandbox) {
             else if (!link.sc_addr) {
                 let construction = new sc.ScConstruction();
                 const linkContent = new sc.ScLinkContent(data, type);
-                construction.createLink(new sc.ScType(link.sc_type), linkContent, 'link');
-                const result = await scClient.createElements(construction);
+                construction.generateLink(new sc.ScType(link.sc_type), linkContent, 'link');
+                const result = await scClient.generateElements(construction);
                 const linkAddr = result[construction.getIndex('link')].value;
                 link.setScAddr(linkAddr);
                 link.setObjectState(SCgObjectState.NewInMemory);
@@ -520,14 +520,14 @@ const SCgStructToScTranslatorImpl = function (_editor, _sandbox) {
             editor.scene.commandManager.clear();
             const nodes = editor.scene.nodes.slice();
             const links = editor.scene.links.slice();
-            const edges = editor.scene.edges.slice();
+            const connectors = editor.scene.connectors.slice();
             const contours = editor.scene.contours.slice();
             const buses = editor.scene.buses.slice();
 
             await translateNodes(nodes);
             await translateLinks(links);
-            await preTranslateContoursAndBus(nodes, links, edges, contours, buses);
-            await translateEdges(edges);
+            await preTranslateContoursAndBus(nodes, links, connectors, contours, buses);
+            await translateConnectors(connectors);
             await translateContours(contours);
             await fireCallback();
         }
