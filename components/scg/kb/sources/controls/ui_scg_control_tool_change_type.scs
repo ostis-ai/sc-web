@@ -1,10 +1,10 @@
 ui_scg_control_tool_change_type
     <- ui_scg_control; sc_node_class;
     => nrel_main_idtf:
-        [Изменение типа объекта]
+        [Изменение типа sc.g-элемента]
         (* <- lang_ru;; *);
     => nrel_main_idtf:
-        [Change object type]
+        [Changing sc.g-element type]
         (* <- lang_en;; *);
 	<- rrel_key_sc_element:
     		..e
@@ -13,10 +13,10 @@ ui_scg_control_tool_change_type
    		<= nrel_sc_text_translation:	
 	     ..t1
 	    	(*
-        	-> [Используйте эту функцию для изменения типа SCg-объекта] (* <- lang_ru;; *);;
+        	-> [Используйте эту функцию для изменения типа sc.g-элемента] (* <- lang_ru;; *);;
         	*);
 		..t2
 		(*
-		-> [Use this function to change a type of SCg-object] (* <- lang_en;; *);;
+		-> [Use this function to change a type of sc.g-element] (* <- lang_en;; *);;
 		*);;
     *);;

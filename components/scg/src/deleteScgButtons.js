@@ -2,14 +2,14 @@ DeleteButtons = {
 
     init: function () {
         return new Promise(resolve => {
-            var delete_from_working_place_btn_id = 'ui_scg_control_tool_clear_working_place_from_selected_elements';
-            var delete_from_knowledge_base_btn_id = 'ui_scg_control_tool_erase_from_knowledge_base';
+            var remove_from_working_place_btn_id = 'ui_scg_control_tool_clear_working_place_from_selected_elements';
+            var delete_from_knowledge_base_btn_id = 'ui_scg_control_tool_remove_from_knowledge_base';
             this.delete_btn_cont_id = '#' + 'delete_buttons_container';
 
             var self = this;
 
-            SCWeb.core.Server.resolveScAddr([delete_from_working_place_btn_id, delete_from_knowledge_base_btn_id]).then(function (addrs) {
-                var delete_from_wp = addrs[delete_from_working_place_btn_id];
+            SCWeb.core.Server.resolveScAddr([remove_from_working_place_btn_id, delete_from_knowledge_base_btn_id]).then(function (addrs) {
+                var delete_from_wp = addrs[remove_from_working_place_btn_id];
                 var delete_from_db = addrs[delete_from_knowledge_base_btn_id];
 
                 if (delete_from_wp) {

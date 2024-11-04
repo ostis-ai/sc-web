@@ -1,10 +1,10 @@
 ui_scg_control_tool_change_idtf
     <- ui_scg_control; sc_node_class;
     => nrel_main_idtf:
-        [Изменение идентификатора]
+        [Изменение sc.g-идентификатора]
         (* <- lang_ru;; *);
     => nrel_main_idtf:
-        [Change identifier]
+        [Changing sc.g-identifier]
         (* <- lang_en;; *);
 	<- rrel_key_sc_element:
     		..e
@@ -13,10 +13,10 @@ ui_scg_control_tool_change_idtf
    		<= nrel_sc_text_translation:	
 	     ..t1
 	    	(*
-        	-> [Используйте эту функцию для изменения/задания SCg-идентификатора] (* <- lang_ru;; *);;
+        	-> [Используйте эту функцию для изменения/установки sc.g-идентификатора] (* <- lang_ru;; *);;
         	*);
 		..t2
 		(*
-		-> [Use this function to change/set SCg-identifier] (* <- lang_en;; *);;
+		-> [Use this function to change/set sc.g-identifier] (* <- lang_en;; *);;
 		*);;
     *);;
