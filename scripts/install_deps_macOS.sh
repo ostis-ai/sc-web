@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
 set -eo pipefail
 
-if [ -z "${SC_WEB_PATH}" ];
-then
-  source "$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)"/set_vars.sh
-fi
+SCRIPTS_PATH="$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)"
 
 brew install python3
 
@@ -22,5 +19,5 @@ NODE_MAJOR=16
 nvm install ${NODE_MAJOR} 
 nvm use ${NODE_MAJOR} 
 
-"${SC_WEB_PATH}/scripts/install_deps_npm.sh"
-"${SC_WEB_PATH}/scripts/install_deps_python.sh"
+"${SCRIPTS_PATH}/install_deps_npm.sh"
+"${SCRIPTS_PATH}/install_deps_python.sh"

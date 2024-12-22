@@ -1,8 +1,8 @@
-# SC-Web
+# sc-web
 
 ## About
 
-SC-Web is an intelligent knowledge base user interface. Currently, it is a part of the [OSTIS Web Platform](https://github.com/ostis-ai/ostis-web-platform).
+sc-web is an intelligent user interface. Currently, it is a part of the [OSTIS Web Platform](https://github.com/ostis-ai/ostis-web-platform).
 
 The long term idea of this project is to create a universal rendering mechanism for interfaces defined inside knowledge bases.
 
@@ -30,7 +30,7 @@ git clone https://github.com/ostis-ai/sc-web --recursive
 cd sc-web
 ```
 
-If you're using Ubuntu, you can install node and python runtimes using our script:
+If you're using Ubuntu or macOS, you can install node and python runtimes using our script:
 
 ```sh
 ./scripts/install_dependencies.sh
@@ -61,17 +61,17 @@ npm install
 ### Build the frontend
 
 ```sh
-./scripts/build_sc_web.sh
+npm run build
 ```
 
 ### Run the server
 
-Note: SC-Web backend requires `sc-server` to be up and running, check `./run_scweb.sh --help` for network configuration options.
+Note: sc-web backend requires `sc-machine` to be up and running, check `python3 server/app.py --help` for network configuration options.
 
-Use the included script to launch the backend server:
+To launch the backend server, run:
 
 ```sh
-./scripts/run_sc_web.sh
+python3 server/app.py
 ```
 
 The UI will listen at localhost:8000.
