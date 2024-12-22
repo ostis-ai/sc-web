@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - All action answers were renamed to results.
 - All questions were renamed to actions.
+- Build and run scripts were removed:
+    - Use `scripts/install_dependencies.sh` and `npm run build` instead of `scripts/install.sh`
+    - Use `npm run build` instead of `scripts/build_sc_web.sh`
+    - Use `python3 server/app.py` instead of `scripts/run_sc_web.sh`
 
 ### Changed
 
@@ -18,6 +22,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rename answer to result
 - Rename questions to actions
 - Use venv for python dependencies
+
+### Removed
+
+- Script `run_sc_web.sh`
+- Script `build_sc_web.sh`
+- Script `install.sh`
 
 ## [0.8.1-Unlock] - 22.01.2024
 
