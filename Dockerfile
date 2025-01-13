@@ -9,7 +9,7 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-FROM ubuntu:focal as runtime 
+FROM ubuntu:focal AS runtime 
 USER root
 
 WORKDIR /sc-web
