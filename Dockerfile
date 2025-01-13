@@ -1,15 +1,15 @@
-#nodejs stage to build frontent 
+# nodejs stage to build frontend
 FROM node:16-alpine AS web-buildenv
 
 WORKDIR /sc-web   
-#Install sc-web build-time dependencies
+# Install sc-web build-time dependencies
 COPY package.json package-lock.json ./
 RUN npm install
-#Build sc-web
+# Build sc-web
 COPY . .
 RUN npm run build
 
-FROM ubuntu:focal as runtime 
+FROM ubuntu:focal AS runtime 
 USER root
 
 WORKDIR /sc-web
@@ -35,4 +35,4 @@ COPY --from=web-buildenv /sc-web/sc-web.ini /sc-web/sc-web.ini
 WORKDIR /sc-web/server
 
 EXPOSE 8000
-ENTRYPOINT ["/usr/bin/tini", "--", "/sc-web/scripts/run_sc_web.sh" ]
+ENTRYPOINT ["/usr/bin/tini", "--", "/sc-web/scripts/docker_entrypoint.sh"]
