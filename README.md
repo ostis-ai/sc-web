@@ -54,6 +54,8 @@ Otherwise, the following dependencies should be installed:
 Node.js and Python libraries can be installed using the respective package managers
 
 ```sh
+python3 -m venv .venv
+source .venv/bin/activate
 pip3 install -r requirements.txt
 npm install
 ```
@@ -66,11 +68,12 @@ npm run build
 
 ### Run the server
 
-Note: sc-web backend requires `sc-machine` to be up and running, check `python3 server/app.py --help` for network configuration options.
+Note: sc-web backend requires `sc-machine` to be up and running, check `source .venv/bin/activate && python3 server/app.py --help` for network configuration options.
 
 To launch the backend server, run:
 
 ```sh
+source .venv/bin/activate
 python3 server/app.py
 ```
 
