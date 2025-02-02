@@ -15,7 +15,7 @@ sc_web_specification = [*
     => nrel_explanation: [SC-Web is an intelligent knowledge base user interface] (*<- lang_en;; *);;
     => nrel_component_dependencies: ... (* <- empty_set;; *);;
 
-    => nrel_installation_script: [/scripts/install.sh];;
+    => nrel_installation_script: [/scripts/install_dependencies.sh];;
     => nrel_component_address: [https://github.com/ostis-ai/sc-web] (* <- concept_github_url;; *);;
     => nrel_installation_method: ... (* <- concept_component_dynamically_installed_method;; *);;
 *);;
