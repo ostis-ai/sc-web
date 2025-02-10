@@ -27,6 +27,7 @@ var GwfObject = function (args) {
     this.id = -1;
     this.attributes = {};
     this.required_attrs = [];
+    this.optional_attrs = ["sc_addr"];
 
 }
 
@@ -81,7 +82,7 @@ GwfObjectNode.prototype.parseObject = function (args) {
     var node = args.gwf_object;
     var reader = args.reader;
 
-    this.attributes = reader.fetchAttributes(node, this.required_attrs);
+    this.attributes = reader.fetchAttributes(node, this.required_attrs, this.optional_attrs);
 
     if (this.attributes == false)
         return false;
@@ -103,6 +104,8 @@ GwfObjectNode.prototype.parseObject = function (args) {
 GwfObjectNode.prototype.buildObject = function (args) {
     var scene = args.scene;
     var node = SCg.Creator.generateNode(this.attributes["type"], new SCg.Vector3(this.attributes["x"] + GwfObjectController.getXOffset(), this.attributes["y"] + GwfObjectController.getYOffset(), 0), this.attributes["idtf"]);
+    if (this.attributes.hasOwnProperty("sc_addr"))
+        node.sc_addr = this.attributes.sc_addr;
     scene.appendNode(node);
     scene.appendSelection(node);
     args.scg_object = node;
@@ -126,7 +129,7 @@ GwfObjectPair.prototype.parseObject = function (args) {
     var pair = args.gwf_object;
     var reader = args.reader;
 
-    this.attributes = reader.fetchAttributes(pair, this.required_attrs);
+    this.attributes = reader.fetchAttributes(pair, this.required_attrs, this.optional_attrs);
 
     if (this.attributes === false)
         return false;
@@ -152,6 +155,8 @@ GwfObjectPair.prototype.buildObject = function (args) {
     var source = builder.getOrCreate(this.attributes["id_b"]);
     var target = builder.getOrCreate(this.attributes["id_e"]);
     var connector = SCg.Creator.generateConnector(source, target, this.attributes["type"]);
+    if (this.attributes.hasOwnProperty("sc_addr"))
+        connector.sc_addr = this.attributes.sc_addr;
     scene.appendConnector(connector);
     scene.appendSelection(connector);
     connector.source_dot = parseFloat(this.attributes["dotBBalance"]);
@@ -187,7 +192,7 @@ GwfObjectContour.prototype.parseObject = function (args) {
     var contour = args.gwf_object;
     var reader = args.reader;
 
-    this.attributes = reader.fetchAttributes(contour, this.required_attrs);
+    this.attributes = reader.fetchAttributes(contour, this.required_attrs, this.optional_attrs);
 
     if (this.attributes == false)
         return false;
@@ -219,6 +224,9 @@ GwfObjectContour.prototype.buildObject = function (args) {
 
     var contour = SCg.Creator.createCounter(verticies);
 
+    if (this.attributes.hasOwnProperty("sc_addr"))
+        contour.sc_addr = this.attributes.sc_addr;
+
     args.scg_object = contour;
     this.fixParent(args);
 
@@ -239,7 +247,7 @@ GwfObjectBus.prototype.parseObject = function (args) {
     var bus = args.gwf_object;
     var reader = args.reader;
 
-    this.attributes = reader.fetchAttributes(bus, this.required_attrs);
+    this.attributes = reader.fetchAttributes(bus, this.required_attrs, this.optional_attrs);
 
     if (this.attributes == false)
         return false;
@@ -310,7 +318,7 @@ GwfObjectLink.prototype.parseObject = function (args) {
 
     var link = args.gwf_object;
     var reader = args.reader;
-    this.attributes = reader.fetchAttributes(link, this.requiredAttrs);
+    this.attributes = reader.fetchAttributes(link, this.requiredAttrs, this.optional_attrs);
     if (this.attributes == false) return false;
     this.attributes["type"] = reader.getTypeCode(this.attributes.type);
     this.attributes["x"] = parseFloat(this.attributes["x"]);
@@ -358,6 +366,8 @@ GwfObjectLink.prototype.buildObject = function (args) {
         0),
         '',
         this.attributes["idtf"]);
+    if (this.attributes.hasOwnProperty("sc_addr"))
+        link.sc_addr = this.attributes.sc_addr;
     link.setContent(this.content, this.type);
     scene.appendLink(link);
     scene.appendSelection(link);
