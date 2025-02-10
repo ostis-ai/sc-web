@@ -75,7 +75,7 @@ ScgObjectBuilder = {
                         for (const key of keys)
                         {
                             if (idtf === key) {
-                                foundAddr = await searchNodeByAnyIdentifier(idtf);
+                                const foundAddr = await searchNodeByAnyIdentifier(idtf);
                                 self.commandSetAddrList.push(new SCgCommandGetNodeFromMemory(
                                     node,
                                     node.sc_type,

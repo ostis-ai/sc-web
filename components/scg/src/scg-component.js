@@ -24,7 +24,7 @@ const SCgViewerWindow = function (sandbox) {
     this.scStructTranslator = new SCgStructTranslator(this.editor, this.sandbox);
 
     const autocompletionVariants = async function (keyword, callback) {
-        strings = await window.scClient.searchLinkContentsByContentSubstrings([keyword])
+        const strings = await window.scClient.searchLinkContentsByContentSubstrings([keyword])
         const maxContentSize = 80;
         const keys = strings.length ? strings[0].filter((string) => string.length < maxContentSize) : [];
         callback(keys);
