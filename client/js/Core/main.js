@@ -365,7 +365,7 @@ SCWeb.core.Main = {
     * @param {String} cmd_addr sc-addr of user command
     * @param {Array} cmd_args Array of sc-addrs with command arguments
     */
-    doCommandWithFormat: function (cmd_addr, cmd_args, fmt_addr) {
+    doCommandWithFormat: async function (cmd_addr, cmd_args, fmt_addr) {
         SCWeb.core.Server.doCommand(cmd_addr, cmd_args, function (result) {
             if (result.action !== undefined) {
                 const commandState = new SCWeb.core.CommandState(cmd_addr, cmd_args, fmt_addr);
@@ -380,7 +380,7 @@ SCWeb.core.Main = {
      * Initiate default user interface command
      * @param {Array} cmd_args Array of sc-addrs with command arguments
      */
-    doDefaultCommandWithFormat: function (cmd_args, fmt_addr) {
+    doDefaultCommandWithFormat: async function (cmd_args, fmt_addr) {
         if (!this.default_cmd) {
             var self = this;
             SCWeb.core.Server.resolveScAddr([this.default_cmd_str], function (addrs) {
