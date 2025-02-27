@@ -231,15 +231,9 @@ SCWeb.ui.WindowManager = {
             });
         };
 
-        if (SCWeb.core.ComponentManager.isStructSupported(command_state.format)) {
-            // determine result structure
-            window.scHelper.getResult(action_addr).then(function (addr) {
-                f(addr, true);
-            }).catch(function (v) {
-                translated();
-            });
-        } else
-            translated();
+        // todo(kilativ-dotcom): I couldn't manage to keep track of all places that were is_struct-dependent so I just
+        // removed a bunch of code here
+        translated();
     },
 
     /**

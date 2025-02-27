@@ -156,9 +156,16 @@ GwfObjectInfoReader = {
         this.objects_info[parsed_bus.id] = parsed_bus;
     },
 
-    fetchAttributes: function (tag_element, required_attrs) {
+    fetchAttributes: function (tag_element, required_attrs, optional_attrs = []) {
         var tag_attributes = tag_element.attributes;
         var result_dict = {};
+        for (var i = 0; i < optional_attrs.length; i++) {
+            var attribute = optional_attrs[i];
+            var found_attr = tag_attributes[attribute];
+            if (found_attr != null) {
+                result_dict[found_attr.name] = found_attr.value;
+            }
+        }
 
         for (var i = 0; i < required_attrs.length; i++) {
             var attribute = required_attrs[i];

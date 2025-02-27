@@ -33,6 +33,17 @@ SCg.Render.prototype = {
 
             this.scene.render._changeContainerTransform()
         }
+        this.scrollContainer = function (e) {
+            const scrollAmount = e.deltaY || e.wheelDelta;
+
+            if (e.altKey) {
+                this.translate[0] += scrollAmount; // Horizontal scrolling (left/right)
+            } else {
+                this.translate[1] -= scrollAmount; // Vertical scrolling (up/down)
+            }
+
+            this.scene.render._changeContainerTransform();
+        };
         // disable tooltips
         $('#' + this.containerId).parent().addClass('ui-no-tooltip');
 
@@ -59,7 +70,11 @@ SCg.Render.prototype = {
                 if (d3.event.stopPropagation()) d3.event.stopPropagation();
             })
             .on("wheel", function () {
-                self.transformByZoom(d3.event);
+                if (d3.event.shiftKey) {
+                    self.scrollContainer(d3.event);
+                } else {
+                    self.transformByZoom(d3.event);
+                }
             });
 
         const svg = document.querySelector("svg.SCgSvg");
