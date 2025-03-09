@@ -410,7 +410,7 @@ SCWeb.core.Server = {
                 template.quintuple(
                     addr,
                     sc.ScType.VarCommonArc,
-                    sc.ScType.NodeVar,
+                    sc.ScType.VarNode,
                     sc.ScType.VarPermPosArc,
                     new sc.ScAddr(window.scKeynodes["nrel_format"]),
                 );

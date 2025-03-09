@@ -203,48 +203,48 @@ SCWeb.core.Server = {
             const LINK = "_link";
 
             const mainIdtfTemplate = new sc.ScTemplate();
-            mainIdtfTemplate.tripleWithRelation(
+            mainIdtfTemplate.quintuple(
                 addr,
-                sc.ScType.EdgeDCommonVar,
-                [sc.ScType.LinkVar, LINK],
-                sc.ScType.EdgeAccessVarPosPerm,
+                sc.ScType.VarCommonArc,
+                [sc.ScType.VarNodeLink, LINK],
+                sc.ScType.VarPermPosArc,
                 new sc.ScAddr(window.scKeynodes["nrel_main_idtf"]),
             );
             mainIdtfTemplate.triple(
                 new sc.ScAddr(self._current_language),
-                sc.ScType.EdgeAccessVarPosPerm,
+                sc.ScType.VarPermPosArc,
                 LINK,
             );
-            let result = await window.scClient.templateSearch(mainIdtfTemplate);
+            let result = await window.scClient.searchByTemplate(mainIdtfTemplate);
 
             if (result.length) {
                 return result[0].get(LINK);
             }
 
             const mainIdtfNoLanguageTemplate = new sc.ScTemplate();
-            mainIdtfNoLanguageTemplate.tripleWithRelation(
+            mainIdtfNoLanguageTemplate.quintuple(
                 addr,
-                sc.ScType.EdgeDCommonVar,
-                [sc.ScType.LinkVar, LINK],
-                sc.ScType.EdgeAccessVarPosPerm,
+                sc.ScType.VarCommonArc,
+                [sc.ScType.VarNodeLink, LINK],
+                sc.ScType.VarPermPosArc,
                 new sc.ScAddr(window.scKeynodes["nrel_main_idtf"]),
             );
-            let mainIdtfNoLanguageResult = await window.scClient.templateSearch(mainIdtfNoLanguageTemplate);
+            let mainIdtfNoLanguageResult = await window.scClient.searchByTemplate(mainIdtfNoLanguageTemplate);
 
             if (mainIdtfNoLanguageResult.length) {
                 return mainIdtfNoLanguageResult[0].get(LINK);
             }
 
             const sysIdtfTemplate = new sc.ScTemplate();
-            sysIdtfTemplate.tripleWithRelation(
+            sysIdtfTemplate.quintuple(
                 addr,
-                sc.ScType.EdgeDCommonVar,
-                [sc.ScType.LinkVar, LINK],
-                sc.ScType.EdgeAccessVarPosPerm,
+                sc.ScType.VarCommonArc,
+                [sc.ScType.VarNodeLink, LINK],
+                sc.ScType.VarPermPosArc,
                 new sc.ScAddr(window.scKeynodes["nrel_system_identifier"]),
             );
 
-            result = await window.scClient.templateSearch(sysIdtfTemplate);
+            result = await window.scClient.searchByTemplate(sysIdtfTemplate);
             if (result.length) {
                 return result[0].get(LINK);
             }
@@ -257,6 +257,7 @@ SCWeb.core.Server = {
             const links = await Promise.all(elements.map(async (element) => {
                     const elementIdtf = await getIdentifierLink(element);
                     if ((elementIdtf !== element)) return elementIdtf;
+                    return undefined;
                 }
             ));
             let linksWithoutUndefined = links.filter(link => link !== undefined);
@@ -324,17 +325,17 @@ SCWeb.core.Server = {
         });
     },
 
-    /*! Function to get answer translated into specified format
-     * @param {question_addr} sc-addr of question to get answer translated
-     * @param {format_addr} sc-addr of format to translate answer
-     * @param {lang_addr} sc-addr of language to translate answer
+    /*! Function to get result translated into specified format
+     * @param {action_addr} sc-addr of action to get result translated
+     * @param {format_addr} sc-addr of format to translate result
+     * @param {lang_addr} sc-addr of language to translate result
      * @param {callback} Function, that will be called with received data in specified format
      */
-    getAnswerTranslated: function (question_addr, format_addr, lang_addr, callback) {
+    getResultTranslated: function (action_addr, format_addr, lang_addr, callback) {
         this._push_task({
             type: "POST",
-            url: "api/question/answer/translate/",
-            data: {"question": question_addr, "format": format_addr, "lang": lang_addr},
+            url: "api/action/result/translate/",
+            data: {"action": action_addr, "format": format_addr, "lang": lang_addr},
             success: callback
         });
     },
@@ -406,14 +407,14 @@ SCWeb.core.Server = {
                 const addr = new sc.ScAddr(parseInt(addrStr));
 
                 const template = new sc.ScTemplate();
-                template.tripleWithRelation(
+                template.quintuple(
                     addr,
-                    sc.ScType.EdgeDCommonVar,
-                    sc.ScType.NodeVar,
-                    sc.ScType.EdgeAccessVarPosPerm,
+                    sc.ScType.VarCommonArc,
+                    sc.ScType.VarNode,
+                    sc.ScType.VarPermPosArc,
                     new sc.ScAddr(window.scKeynodes["nrel_format"]),
                 );
-                const format_result = await window.scClient.templateSearch(template);
+                const format_result = await window.scClient.searchByTemplate(template);
 
                 if (format_result.length) {
                     formats[id] = format_result[0].get(2).value;
@@ -503,5 +504,4 @@ SCWeb.core.Server = {
         });
     }
 };
-
 

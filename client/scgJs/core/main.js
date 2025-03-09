@@ -99,10 +99,10 @@ SCWeb.core.Main = {
                     ])
                     const addrs = await SCWeb.core.Server.resolveScAddr(["format_scg_json", "lang_ru"]);
 
-                    const renderScg = (question, lang = addrs["lang_ru"]) => {
+                    const renderScg = (action, lang = addrs["lang_ru"]) => {
                         SCWeb.core.Translation.setLanguage(lang, () => { });
                         const commandState = new SCWeb.core.CommandState(undefined, undefined, addrs["format_scg_json"], lang);
-                        SCWeb.ui.WindowManager.activateWindow(question, commandState);
+                        SCWeb.ui.WindowManager.activateWindow(action, commandState);
                     }
                     window.renderScg = renderScg;
 
@@ -129,20 +129,6 @@ SCWeb.core.Main = {
                     })
 
                     resolve();
-
-                    // const keynodes = await window.scClient.resolveKeynodes([
-                    //     { id: "ui_menu_view_full_semantic_neighborhood", type: new sc.ScType() },
-                    //     { id: "ui_start_sc_element", type: new sc.ScType() },
-                    //     { id: "lang_ru", type: new sc.ScType() },
-                    //     { id: "format_scg_json", type: new sc.ScType() },
-                    // ]);
-                    // const defaultCommand = keynodes["ui_menu_view_full_semantic_neighborhood"].value;
-                    // const startElement = keynodes["ui_start_sc_element"].value;
-
-                    // SCWeb.core.Server.doCommand(defaultCommand, [startElement], (result) => {
-                    //     if (!result.question) return;
-                    //     renderScg(result.question);
-                    // });
                 });
             });
         })
@@ -161,14 +147,14 @@ SCWeb.core.Main = {
      * @param {Array} cmd_args Array of sc-addrs with command arguments
      */
     doCommand: function (cmd_addr, cmd_args) {
+        SCWeb.core.Arguments.clear();
         SCWeb.core.Server.doCommand(cmd_addr, cmd_args, function (result) {
-            if (result.question !== undefined) {
+            if (result.action !== undefined) {
                 const commandState = new SCWeb.core.CommandState(cmd_addr, cmd_args);
-                SCWeb.ui.WindowManager.appendHistoryItem(result.question, commandState);
+                SCWeb.ui.WindowManager.appendHistoryItem(result.action, commandState);
             } else if (result.command !== undefined) {
-
             } else {
-                alert("There are no any answer. Try another request");
+                alert("There are no any result. Try another request");
             }
         });
     },
@@ -176,22 +162,22 @@ SCWeb.core.Main = {
     doCommandWithPromise: function (command_state) {
         return new Promise(function (resolve, reject) {
             SCWeb.core.Server.doCommand(command_state.command_addr, command_state.command_args, function (result) {
-                if (result.question !== undefined) {
-                    resolve(result.question)
+                if (result.action !== undefined) {
+                    resolve(result.action)
                 } else if (result.command !== undefined) {
 
                 } else {
-                    reject("There are no any answer. Try another request");
+                    reject("There are no any result. Try another request");
                 }
             })
         });
     },
 
-    getTranslatedAnswer: function (command_state) {
+    getTranslatedResult: function (command_state) {
         return new Promise(function (resolve) {
-            SCWeb.core.Main.doCommandWithPromise(command_state).then(function (question_addr) {
-                SCWeb.core.Server.getAnswerTranslated(question_addr, command_state.format, command_state.lang, function (answer) {
-                    resolve(answer.link);
+            SCWeb.core.Main.doCommandWithPromise(command_state).then(function (action_addr) {
+                SCWeb.core.Server.getResultTranslated(action_addr, command_state.format, command_state.lang, function (result) {
+                    resolve(result.link);
                 })
             })
         })
@@ -216,20 +202,17 @@ SCWeb.core.Main = {
     },
 
     /**
-     * Initiate user interface command
-     * @param {String} cmd_addr sc-addr of user command
-     * @param {Array} cmd_args Array of sc-addrs with command arguments
-     */
+    * Initiate user interface command
+    * @param {String} cmd_addr sc-addr of user command
+    * @param {Array} cmd_args Array of sc-addrs with command arguments
+    */
     doCommandWithFormat: function (cmd_addr, cmd_args, fmt_addr) {
-        var self = this;
         SCWeb.core.Server.doCommand(cmd_addr, cmd_args, function (result) {
-            if (result.question !== undefined) {
+            if (result.action !== undefined) {
                 const commandState = new SCWeb.core.CommandState(cmd_addr, cmd_args, fmt_addr);
-                SCWeb.ui.WindowManager.appendHistoryItem(result.question, commandState);
-                const message = {"type": "commandExecuted", "payload": {"state": commandState, "response": result}};
-                window.top.postMessage(message, "*")
+                SCWeb.ui.WindowManager.appendHistoryItem(result.action, commandState);
             } else {
-                alert("There are no any answer. Try another request");
+                alert("There are no any result. Try another request");
             }
         });
     },
@@ -241,7 +224,7 @@ SCWeb.core.Main = {
     doDefaultCommandWithFormat: function (cmd_args, fmt_addr) {
         if (!this.default_cmd) {
             var self = this;
-            SCWeb.core.Server.resolveScAddr([this.default_cmd_str]).then(function (addrs) {
+            SCWeb.core.Server.resolveScAddr([this.default_cmd_str], function (addrs) {
                 self.default_cmd = addrs[self.default_cmd_str];
                 if (self.default_cmd) {
                     self.doCommandWithFormat(self.default_cmd, cmd_args, fmt_addr);
@@ -250,5 +233,5 @@ SCWeb.core.Main = {
         } else {
             this.doCommandWithFormat(this.default_cmd, cmd_args, fmt_addr);
         }
-    },
+    }
 };
