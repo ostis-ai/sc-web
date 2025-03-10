@@ -3,7 +3,7 @@ const scKeynodes = null;
 
 const SCgEditMode = {
     SCgModeSelect: 0,
-    SCgModeEdge: 1,
+    SCgModeConnector: 1,
     SCgModeBus: 2,
     SCgModeContour: 3,
     SCgModeLink: 4,

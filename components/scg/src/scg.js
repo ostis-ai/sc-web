@@ -9,8 +9,6 @@ SCg.Editor = function () {
 };
 
 SCg.Editor.prototype = {
-
-
     init: function (params) {
         this.typesMap = {
             'scg-type-node': sc_type_node,
@@ -108,19 +106,19 @@ SCg.Editor.prototype = {
             },
             nodesTypes: {
                 default: 'static/components/html/scg-types-panel-nodes.html',
-                demo: 'static/components/html/demo-scg-types-panel-nodes.html',
+                demo: 'static/components/html/scg-types-panel-nodes.html',
             },
-            edgesTypes: {
-                default: 'static/components/html/scg-types-panel-edges.html',
-                demo: 'static/components/html/demo-scg-types-panel-edges.html',
+            connectorsTypes: {
+                default: 'static/components/html/scg-types-panel-connectors.html',
+                demo: 'static/components/html/scg-types-panel-connectors.html',
             },
             changeIdtf: {
                 default: 'static/components/html/scg-change-idtf.html',
-                demo: 'static/components/html/demo-scg-change-idtf.html',
+                demo: 'static/components/html/scg-change-idtf.html',
             },
             setContent: {
                 default: 'static/components/html/scg-set-content.html',
-                demo: 'static/components/html/demo-scg-set-content.html',
+                demo: 'static/components/html/scg-set-content.html',
             },
         };
 
@@ -153,7 +151,7 @@ SCg.Editor.prototype = {
                         },
                         complete: function () {
                             $.ajax({
-                                url: panelPaths.edgesTypes[implementation],
+                                url: panelPaths.connectorsTypes[implementation],
                                 dataType: 'html',
                                 success: function (response) {
                                     self.connector_types_panel_content = response;
@@ -633,7 +631,7 @@ SCg.Editor.prototype = {
 
             el = $(this);
             el.popover({
-                content: (obj instanceof SCg.ModelEdge) ? self.edge_types_panel_content : self.node_types_panel_content,
+                content: (obj instanceof SCg.ModelConnector) ? self.connector_types_panel_content : self.node_types_panel_content,
                 container: container,
                 title: 'Change type',
                 html: true,
@@ -648,7 +646,7 @@ SCg.Editor.prototype = {
                 cont.find('.popover-title').addClass('demo-scg-popover-title');
                 cont.find('.popover>.arrow').addClass('scg-tool-popover-arrow-hide');
                 cont.find('.popover-title').text(
-                    (obj instanceof SCg.ModelEdge) ? 'Изменить тип дуги' : 'Изменить тип узла'
+                    (obj instanceof SCg.ModelConnector) ? 'Изменить тип дуги' : 'Изменить тип узла'
                 );
             }
 
@@ -1003,7 +1001,6 @@ SCg.Editor.prototype = {
 
         this.toolClear().click(function () {
             if (window.demoImplementation) {
-                console.log("SC-WEB post clearScene");
                 const command = {'type': "clearScene"};
                 window.top.postMessage(command, '*');
             }
