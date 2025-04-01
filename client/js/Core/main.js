@@ -101,7 +101,7 @@ SCWeb.core.Main = {
 
         SCWeb.core.Translation.fireLanguageChanged(this.user.current_lang);
 
-        if (!url.searchObject || !SCWeb.core.Main.pageShowedForUrlParameters(url.searchObject)) {
+        if (!url.searchObject || ! await SCWeb.core.Main.pageShowedForUrlParameters(url.searchObject)) {
             SCWeb.core.Main.showDefaultPage(params).then(null);
         }
 
@@ -111,18 +111,18 @@ SCWeb.core.Main = {
         ]);
     },
 
-    pageShowedForUrlParameters(urlObject) {
-        return SCWeb.core.Main.actionParameterProcessed(urlObject)
+    async pageShowedForUrlParameters(urlObject) {
+        return await SCWeb.core.Main.actionParameterProcessed(urlObject)
             || SCWeb.core.Main.systemIdentifierParameterProcessed(urlObject)
             || SCWeb.core.Main.commandParameterProcessed(urlObject);
     },
 
-    actionParameterProcessed(urlObject) {
+    async actionParameterProcessed(urlObject) {
         const action = urlObject['action'];
         if (action) {
             /// @todo Check action is really a action
             const commandState = new SCWeb.core.CommandState(action, null, null);
-            SCWeb.ui.WindowManager.appendHistoryItem(action, commandState);
+            await SCWeb.ui.WindowManager.appendHistoryItem(action, commandState);
             return true;
         }
         return false;

@@ -86,11 +86,18 @@ SCWeb.core.ComponentManager = {
 
     /** Check if compoenent for specified format supports structures
      */
-    isStructSupported: function (format_addr) {
+    isStructSupported: async function (format_addr) {
         var comp_def = this._factories_fmt[format_addr];
         if (!comp_def)
             throw "There are no component that supports format: " + format_addr;
-
+        if (comp_def.struct_support && comp_def.struct_support.hasOwnProperty(format_addr))
+            return comp_def.struct_support[format_addr];
+        const helpr = new sc.ScHelper(window.scClient);
+        const format_system_identifier = await helpr.getSystemIdentifier(new sc.ScAddr(format_addr));
+        if (comp_def.struct_support && comp_def.struct_support.hasOwnProperty(format_system_identifier)) {
+            comp_def.struct_support[format_addr] = comp_def.struct_support[format_system_identifier];
+            return comp_def.struct_support[format_system_identifier];
+        }
         return comp_def.struct_support;
     },
 
@@ -107,7 +114,7 @@ SCWeb.core.ComponentManager = {
      * If window doesn't created, then returns null
      */
     createWindowSandboxByFormat: function (options) {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             const comp_def = this._factories_fmt[options.format_addr];
             if (comp_def) {
                 const sandbox = new SCWeb.core.ComponentSandbox({
@@ -122,10 +129,10 @@ SCWeb.core.ComponentManager = {
                     command_state: options.command_state,
                     canEdit: options.canEdit
                 });
-                if (!comp_def.struct_support && options.is_struct)
+                if (options.is_struct && ! await this.isStructSupported(options.format_addr))
                     throw "Component doesn't support structures: " + comp_def;
 
-                const component = comp_def.factory(sandbox);
+                const component = await comp_def.factory(sandbox);
                 if (component.editor) {
                     if (component.editor.keyboardCallbacks) {
                         SCWeb.ui.KeyboardHandler.subscribeWindow(options.window_id, component.editor.keyboardCallbacks);
@@ -157,7 +164,7 @@ SCWeb.core.ComponentManager = {
      * @return Return component sandbox object for created window instance.
      * If window doesn't created, then returns null
      */
-    createWindowSandboxByExtLang: function (options, callback) {
+    createWindowSandboxByExtLang: async function (options, callback) {
         var comp_def = this._factories_ext_lang[options.ext_lang_addr];
 
         if (comp_def) {
@@ -171,10 +178,10 @@ SCWeb.core.ComponentManager = {
                 canEdit: options.canEdit,
                 command_state: options.command_state
             });
-            if (!comp_def.struct_support && is_struct)
+            if (!comp_def.struct_support && options.is_struct)
                 throw "Component doesn't support structures: " + comp_def;
 
-            if (comp_def.factory(sandbox))
+            if (await comp_def.factory(sandbox))
                 return sandbox;
         }
 

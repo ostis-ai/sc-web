@@ -4,18 +4,18 @@
 #scg-tool-switch {
     margin-bottom: 2px;
 }
-#scg-tool-select, #scg-tool-autosize, #scg-tool-connector, #scg-tool-bus, #scg-tool-contour, #scg-tool-link, #scg-tool-undo, #scg-tool-redo, #scg-tool-change-idtf, #scg-tool-set-content, #scg-tool-zoomin, #scg-tool-zoomout, #scg-tool-integrate, #scg-tool-open, #scg-tool-save, #scg-tool-delete, #scg-tool-change-type {
+#scg-tool-select, #scg-tool-autosize, #scg-tool-connector, #scg-tool-bus, #scg-tool-contour, #scg-tool-link, #scg-tool-undo, #scg-tool-redo, #scg-tool-change-idtf, #scg-tool-set-content, #scg-tool-zoomin, #scg-tool-zoomout, #scg-tool-integrate, #scg-tool-open, #scg-tool-save, #scg-tool-delete, #scg-tool-change-type #scg-tool-scg-view #scg-tool-scg-with-buses-view {
     margin: 2px 0;
 }
 #scg-tool-clear {
     margin-top: 2px;
 }
-#scg-tool-undo.active, #scg-tool-redo.active, #scg-tool-change-idtf.active, #scg-tool-set-content.active, #scg-tool-zoomin.active, #scg-tool-zoomout.active, #scg-tool-integrate.active, #scg-tool-open.active, #scg-tool-save.active, #scg-tool-delete.active, #scg-tool-change-type.active, #scg-tool-autosize.active {
+#scg-tool-undo.active, #scg-tool-redo.active, #scg-tool-change-idtf.active, #scg-tool-set-content.active, #scg-tool-zoomin.active, #scg-tool-zoomout.active, #scg-tool-integrate.active, #scg-tool-open.active, #scg-tool-save.active, #scg-tool-delete.active, #scg-tool-change-type.active, #scg-tool-autosize.active #scg-tool-scg-view.active #scg-tool-scg-with-buses-view.active {
     background:white;
     -webkit-box-shadow: none;
     box-shadow: none;
 }
-#scg-tool-undo.active:hover, #scg-tool-redo.active:hover, #scg-tool-change-idtf.active:hover, #scg-tool-set-content.active:hover, #scg-tool-zoomin.active:hover, #scg-tool-zoomout.active:hover, #scg-tool-integrate.active:hover, #scg-tool-open.active:hover, #scg-tool-save.active:hover, #scg-tool-delete.active:hover, #scg-tool-change-type.active:hover, #scg-tool-autosize:hover {
+#scg-tool-undo.active:hover, #scg-tool-redo.active:hover, #scg-tool-change-idtf.active:hover, #scg-tool-set-content.active:hover, #scg-tool-zoomin.active:hover, #scg-tool-zoomout.active:hover, #scg-tool-integrate.active:hover, #scg-tool-open.active:hover, #scg-tool-save.active:hover, #scg-tool-delete.active:hover, #scg-tool-change-type.active:hover, #scg-tool-autosize:hover #scg-tool-scg-view.active:hover #scg-tool-scg-with-buses-view.active:hover {
     background:#e6e6e6;
 }
 #scg-tool-autosize {
