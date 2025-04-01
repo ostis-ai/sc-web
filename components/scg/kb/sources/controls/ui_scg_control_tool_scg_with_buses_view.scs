@@ -1,0 +1,21 @@
+ui_scg_control_tool_scg_with_buses_view
+    <- ui_scg_control; sc_node_class;
+    => nrel_main_idtf:
+        [Режим визуализации sc.g-элементов с использованием sc.g-шин]
+        (* <- lang_ru;; *);
+    => nrel_main_idtf:
+        [something about scg with buses visualisation]
+        (* <- lang_en;; *);
+    => nrel_toggled_format:
+        format_gwf_json;
+    <- rrel_key_sc_element:
+        ..e
+        (*
+        <- sc_explanation;;
+        <= nrel_sc_text_translation:
+            ..t1
+            (*
+                -> [Используйте этот режим визуализации для шин] (* <- lang_ru;; *);;
+                -> [Use this visualisation mode to get buses] (* <- lang_en;; *);;
+            *);;
+    *);;

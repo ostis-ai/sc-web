@@ -10,6 +10,22 @@ SCg.Editor = function () {
 
 SCg.Editor.prototype = {
 
+    setFormat: function (newFormat) {
+        if (newFormat != this.format) {
+            const needToDoDefaultCommand = this.format !== undefined;
+            this.format = newFormat;
+            let windowId = SCWeb.ui.WindowManager.getActiveWindowId();
+            let container = document.getElementById(windowId);
+            $(container).attr("sc-addr-fmt", newFormat);
+            if (needToDoDefaultCommand) {
+                SCWeb.core.Main.doDefaultCommandWithFormat([$(container).attr("semantic_neighbourhood_root")], newFormat);
+            }
+        }
+    },
+
+    getFormat: function () {
+        return this.format;
+    },
 
     init: function (params) {
         this.typesMap = {
@@ -286,6 +302,14 @@ SCg.Editor.prototype = {
         return this.tool('zoomout');
     },
 
+    toolSCgView: function () {
+        return this.tool('scg-view');
+    },
+
+    toolSCgWithBusesView: function () {
+        return this.tool('scg-with-buses-view');
+    },
+
     /**
      * Bind events to panel tools
      */
@@ -310,7 +334,9 @@ SCg.Editor.prototype = {
             self.toolClear(),
             self.toolOpen(),
             self.toolSave(),
-            self.toolIntegrate()
+            self.toolIntegrate(),
+            self.toolSCgView(),
+            self.toolSCgWithBusesView()
             ];
             for (var button = 0; button < tools.length; button++) {
                 self.toggleTool(tools[button]);
@@ -910,6 +936,14 @@ SCg.Editor.prototype = {
             self.render.changeScale(0.9);
         });
 
+        this.toolSCgView().click(async function () {
+            self.setFormat(await self._getFormatForButton(self.toolSCgView()));
+        });
+
+        this.toolSCgWithBusesView().click(async function () {
+            self.setFormat(await self._getFormatForButton(self.toolSCgWithBusesView()));
+        });
+
         window.onmessage = (e) => {
             if (e.data.type === 'SCALE_CHANGE') {
                 return self.render.changeScale(e.data.value);
@@ -1019,6 +1053,8 @@ SCg.Editor.prototype = {
         update_tool(this.toolZoomOut());
         update_tool(this.toolIntegrate());
         update_tool(this.toolOpen());
+        update_tool(this.toolSCgView());
+        update_tool(this.toolSCgWithBusesView());
     },
 
     collectIdtfs: function (keyword) {
@@ -1085,5 +1121,31 @@ SCg.Editor.prototype = {
      */
     _enableTool: function (tool) {
         tool.removeAttr('disabled');
+    },
+
+    _getFormatForButton: async function (tool) {
+        const toolSystemIdentifier = tool.attr("sc_control_sys_idtf");
+        const resolvedKeynodes = await window.scClient.resolveKeynodes([{id: toolSystemIdentifier, type: new sc.ScType()}]);
+        const toolAddr = resolvedKeynodes[toolSystemIdentifier];
+        if (!toolAddr.isValid()) {
+            console.error("Cannot find element with system identifier", toolSystemIdentifier, "for tool", tool);
+            throw "Cannot find element with system identifier " + toolSystemIdentifier;
+        }
+        const template = new sc.ScTemplate();
+        template.quintuple(
+            new sc.ScAddr(toolAddr.value),
+            sc.ScType.VarCommonArc,
+            [sc.ScType.VarNode, "_format"],
+            sc.ScType.VarPermPosArc,
+            new sc.ScAddr(window.scKeynodes["nrel_toggled_format"])
+        );
+        const searchResult = await window.scClient.searchByTemplate(template);
+        if (searchResult.length === 0) {
+            console.error("Cannot find nrel_toggle_format for tool", toolSystemIdentifier, tool, searchResult);
+            throw "Cannot find nrel_toggle_format for tool " + toolSystemIdentifier;
+        }
+        const toggleFormat = searchResult[0].get("_format");
+        return toggleFormat.value;
+
     }
 };
