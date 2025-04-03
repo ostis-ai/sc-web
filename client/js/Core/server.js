@@ -265,7 +265,7 @@ SCWeb.core.Server = {
             {
                 const contents = await window.scClient.getLinkContents(linksWithoutUndefined);
                 contents.forEach((content, index) => {
-                    result[notChecked[index]] = content.data;
+                    result[notChecked[links.indexOf(linksWithoutUndefined[index])]] = content.data;
                 });
             }
         }
