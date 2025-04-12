@@ -254,18 +254,18 @@ SCWeb.core.Server = {
 
         if (arguments.length) {
             const elements = notChecked.map(id => new sc.ScAddr(parseInt(id)));
-            const links = await Promise.all(elements.map(async (element, index) => {
+            const links = await Promise.all(elements.map(async (element) => {
                     const elementIdtf = await getIdentifierLink(element);
-                    if ((elementIdtf !== element)) return {identifier: elementIdtf, identifiedElement: notChecked[index]};
-                    return {identifier: undefined, identifiedElement: notChecked[index]};
+                    if ((elementIdtf !== element)) return elementIdtf;
+                    return undefined;
                 }
             ));
-            let linksWithoutUndefined = links.filter(link => link.identifier !== undefined);
+            let linksWithoutUndefined = links.filter(link => link !== undefined);
             if (linksWithoutUndefined.length)
             {
-                const contents = await window.scClient.getLinkContents(linksWithoutUndefined.map((element) => element.identifier));
+                const contents = await window.scClient.getLinkContents(linksWithoutUndefined);
                 contents.forEach((content, index) => {
-                    result[linksWithoutUndefined[index].identifiedElement] = content.data;
+                    result[notChecked[index]] = content.data;
                 });
             }
         }
@@ -504,5 +504,4 @@ SCWeb.core.Server = {
         });
     }
 };
-
 
