@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Mixed identifiers on language switch.
+
 ## [0.9.0] - 21.01.2025
 
 ### Breaking changes
