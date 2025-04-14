@@ -36,7 +36,7 @@ SCWeb.ui.WindowManager = {
                 var addr = this.ext_langs[idx];
                 ext_langs_items += '<li><a href="#" sc_addr="' + addr + '">' + addr + '</a></li>';
             }
-            $('#history-item-langs').html(ext_langs_items).find('[sc_addr]').click(function (event) {
+            $('#history-item-langs').html(ext_langs_items).find('[sc_addr]').click(async function (event) {
 
                 if (SCWeb.ui.ArgumentsPanel.isArgumentAddState()) return;
 
@@ -46,14 +46,15 @@ SCWeb.ui.WindowManager = {
                 var fmt_addr = SCWeb.core.ComponentManager.getPrimaryFormatForExtLang(lang_addr);
                 var lang = SCWeb.core.Translation.getCurrentLanguage();
                 if (fmt_addr) {
-                    var command_state = new SCWeb.core.CommandState(null, null, fmt_addr, lang);
-                    var id = self.hash_addr(action_addr, command_state);
+                    let windowId = SCWeb.ui.WindowManager.getActiveWindowId();
+                    let container = document.getElementById(windowId);
+                    var command_state = new SCWeb.core.CommandState(null, [$(container).attr("semantic_neighbourhood_root")], fmt_addr, lang);
+                    var id = self.hash_addr(action_addr, command_state.format);
                     if (self.isWindowExist(id)) {
                         self.setWindowActive(id);
                     } else {
-                        self.appendWindow(action_addr, command_state);
+                        await self.appendWindow(action_addr, command_state);
                         self.window_active_formats[action_addr] = command_state.format;
-                        self.windows[self.hash_addr(action_addr, command_state.format)] = action_addr;
                     }
                 }
             });
@@ -108,7 +109,7 @@ SCWeb.ui.WindowManager = {
      * @param {String} action_addr sc-addr of item to append into history
      * @param command_state
      */
-    appendHistoryItem: function (action_addr, command_state) {
+    appendHistoryItem: async function (action_addr, command_state) {
         // @todo check if tab exist        
         var tab_html = '<a class="list-group-item history-item ui-no-tooltip" sc_addr="' + action_addr + '">' +
             '<p>' + action_addr + '</p>' +
@@ -131,7 +132,7 @@ SCWeb.ui.WindowManager = {
             if (this.isWindowExist(id)) {
                 this.setWindowActive(id);
             } else {
-                this.appendWindow(action_addr, command_state);
+                await this.appendWindow(action_addr, command_state);
                 this.window_active_formats[action_addr] = command_state.format;
             }
         }
@@ -183,14 +184,14 @@ SCWeb.ui.WindowManager = {
      * @param action_addr
      * @param command_state
      */
-    appendWindow: function (action_addr, command_state) {
+    appendWindow: async function (action_addr, command_state) {
         var self = this;
         SCWeb.ui.Locker.show();
         var f = function (addr, is_struct) {
             var id = self.hash_addr(action_addr, command_state.format);
             if (!self.isWindowExist(id)) {
                 var window_id = 'window_' + action_addr + "_format_" + command_state.format;
-                var window_html = '<div class="panel panel-default sc-window" id="' + id + '" sc_addr="' + action_addr + '" sc-addr-fmt="' + command_state.format + '">' +
+                var window_html = '<div class="panel panel-default sc-window" id="' + id + '" sc_addr="' + action_addr + '" sc-addr-fmt="' + command_state.format + (command_state.command_args.length ? ('" semantic_neighbourhood_root="' + command_state.command_args[0] ) : '') + '">' +
                     '<div class="panel-body" id="' + window_id + '"></div>'
                 '</div>';
                 self.window_container.prepend(window_html);
@@ -231,7 +232,7 @@ SCWeb.ui.WindowManager = {
             });
         };
 
-        if (SCWeb.core.ComponentManager.isStructSupported(command_state.format)) {
+        if (await SCWeb.core.ComponentManager.isStructSupported(command_state.format)) {
             // determine result structure
             window.scHelper.getResult(action_addr).then(function (addr) {
                 f(addr, true);
@@ -339,14 +340,14 @@ SCWeb.ui.WindowManager = {
     /** Create viewers for specified sc-structures
      * @param {Object} containers_map Map of viewer containers (id: id of container, value: {key: sc-struct addr, ext_lang_addr: sc-addr of external language}})
      */
-    createViewersForScStructs: function (containers_map) {
+    createViewersForScStructs: async function (containers_map) {
         var res = {};
         for (var cntId in containers_map) {
             if (!containers_map.hasOwnProperty(cntId))
                 continue;
 
             var info = containers_map[cntId];
-            res[cntId] = SCWeb.core.ComponentManager.createWindowSandboxByExtLang({
+            res[cntId] = await SCWeb.core.ComponentManager.createWindowSandboxByExtLang({
                 ext_lang_addr: info.ext_lang_addr,
                 addr: info.addr,
                 is_struct: true,

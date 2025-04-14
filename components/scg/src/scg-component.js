@@ -1,12 +1,17 @@
 SCgComponent = {
     ext_lang: 'scg_code',
-    formats: ['format_scg_json'],
-    struct_support: true,
-    factory: function (sandbox) {
-        return new SCgViewerWindow(sandbox);
+    formats: ['format_scg_json', 'format_gwf_json'],
+    struct_support: {'format_scg_json': true, 'format_gwf_json': false},
+    factory: async function (sandbox) {
+        return await createSCgViewerWindow(sandbox);
     }
 };
 
+async function createSCgViewerWindow(sandbox) {
+    const instance = new SCgViewerWindow(sandbox);
+    await instance.initialize();
+    return instance;
+}
 
 /**
  * SCgViewerWindow
@@ -14,43 +19,19 @@ SCgComponent = {
  * @constructor
  */
 const SCgViewerWindow = function (sandbox) {
+    this.sandbox = sandbox;
+};
+
+SCgViewerWindow.prototype.initialize = async function() {
+
     const self = this;
 
-    this.sandbox = sandbox;
     this.tree = new SCg.Tree();
     this.editor = new SCg.Editor();
 
-    if (sandbox.is_struct) {
-        this.scStructTranslator = new SCgStructTranslator(this.editor, this.sandbox);
-    }
 
-    const autocompletionVariants = function (keyword, callback) {
-        window.scClient.searchLinkContentsByContentSubstrings([keyword]).then((strings) => {
-            const maxContentSize = 80;
-            const keys = strings.length ? strings[0].filter((string) => string.length < maxContentSize) : [];
-            callback(keys);
-        });
-    };
-
-    this.editor.init(
-        {
-            sandbox: sandbox,
-            containerId: sandbox.container,
-            autocompletionVariants: autocompletionVariants,
-            translateToSc: function (callback) {
-                return self.scStructTranslator.translateToSc().then(callback).catch(callback);
-            },
-            canEdit: this.sandbox.canEdit(),
-            resolveControls: this.sandbox.resolveElementsAddr,
-        }
-    );
-
-
-    this.receiveData = function (data) {
-        this._buildGraph(data);
-    };
-
-    this._buildGraph = function (data) {
+    this._buildGraphForScgJson = function (data) {
+        data = JSON.parse(data)
         var elements = {};
         var connectors = [];
         for (var i = 0; i < data.length; i++) {
@@ -58,15 +39,15 @@ const SCgViewerWindow = function (sandbox) {
 
             if (elements.hasOwnProperty(el.id))
                 continue;
-            if (Object.prototype.hasOwnProperty.call(this.editor.scene.objects, el.id)) {
-                elements[el.id] = this.editor.scene.objects[el.id];
+            if (Object.prototype.hasOwnProperty.call(self.editor.scene.objects, el.id)) {
+                elements[el.id] = self.editor.scene.objects[el.id];
                 continue;
             }
 
             if (el.el_type & sc_type_node) {
                 var model_node = SCg.Creator.generateNode(el.el_type, new SCg.Vector3(10 * Math.random(), 10 * Math.random(), 0), '');
-                this.editor.scene.appendNode(model_node);
-                this.editor.scene.objects[el.id] = model_node;
+                self.editor.scene.appendNode(model_node);
+                self.editor.scene.objects[el.id] = model_node;
                 model_node.setScAddr(el.id);
                 model_node.setObjectState(SCgObjectState.FromMemory);
                 elements[el.id] = model_node;
@@ -90,8 +71,8 @@ const SCgViewerWindow = function (sandbox) {
                     founded = true;
                     connectors.splice(idx, 1);
                     var model_connector = SCg.Creator.generateConnector(beginNode, endNode, obj.el_type);
-                    this.editor.scene.appendConnector(model_connector);
-                    this.editor.scene.objects[obj.id] = model_connector;
+                    self.editor.scene.appendConnector(model_connector);
+                    self.editor.scene.objects[obj.id] = model_connector;
                     model_connector.setScAddr(obj.id);
                     model_connector.setObjectState(SCgObjectState.FromMemory);
                     elements[obj.id] = model_connector;
@@ -102,8 +83,54 @@ const SCgViewerWindow = function (sandbox) {
         if (connectors.length > 0)
             alert("There are some sc-connectors that are impossible to be shown.");
 
-        this.editor.render.update();
-        this.editor.scene.layout();
+        self.editor.render.update();
+        self.editor.scene.layout();
+    };
+
+    this._buildGraphForGwfJson = function (data) {
+        ScgObjectBuilder.scene = self.editor.scene
+        GwfFileLoader.loadFromText(data, self.editor.render);
+    };
+
+    const formats = await window.scClient.resolveKeynodes(SCgComponent.formats.map(value => {return {id: value, type: sc.ScType.NodeConst}}));
+    if (!SCgComponent.struct_support.hasOwnProperty(formats["format_scg_json"].value))
+        SCgComponent.struct_support[formats["format_scg_json"].value] = SCgComponent.struct_support["format_scg_json"];
+    if (!SCgComponent.struct_support.hasOwnProperty(formats["format_gwf_json"].value))
+        SCgComponent.struct_support[formats["format_gwf_json"].value] = SCgComponent.struct_support["format_gwf_json"];
+    this.editor.setFormat(this.sandbox.format_addr);
+    this._buildGraphForFormatMap = {
+        [formats["format_scg_json"].value]: this._buildGraphForScgJson,
+        [formats["format_gwf_json"].value]: this._buildGraphForGwfJson
+    };
+    console.log(this._buildGraphForFormatMap);
+
+    // todo(kilativ-dotcom): I don't understand why scg was supposed to be used not for structs
+    this.scStructTranslator = new SCgStructTranslator(this.editor, this.sandbox);
+
+    const autocompletionVariants = async function (keyword, callback) {
+        const strings = await window.scClient.searchLinkContentsByContentSubstrings([keyword])
+        const maxContentSize = 80;
+        const keys = strings.length ? strings[0].filter((string) => string.length < maxContentSize) : [];
+        callback(keys);
+    };
+
+    this.editor.init(
+        {
+            sandbox: this.sandbox,
+            containerId: this.sandbox.container,
+            autocompletionVariants: autocompletionVariants,
+            translateToSc: function (callback) {
+                console.log("translating to sc!!!!!!")
+                return self.scStructTranslator.translateToSc().then(callback).catch(callback);
+            },
+            canEdit: this.sandbox.canEdit(),
+            resolveControls: this.sandbox.resolveElementsAddr,
+        }
+    );
+
+
+    this.receiveData = function (data) {
+        this._buildGraphForFormatMap[this.editor.getFormat()](data);
     };
 
     this.destroy = function () {

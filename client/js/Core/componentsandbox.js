@@ -191,8 +191,8 @@ SCWeb.core.ComponentSandbox.prototype.createViewersForScLinks = async function (
  * Create viewers for specified sc-structures
  * @param {Object} containers_map Map of viewer containers (id: id of container, value: {key: sc-struct addr, ext_lang_addr: sc-addr of external language}})
  */
-SCWeb.core.ComponentSandbox.prototype.createViewersForScStructs = function (containers_map) {
-    let windows = SCWeb.ui.WindowManager.createViewersForScStructs(containers_map);
+SCWeb.core.ComponentSandbox.prototype.createViewersForScStructs = async function (containers_map) {
+    let windows = await SCWeb.ui.WindowManager.createViewersForScStructs(containers_map);
     this._appendChilds(windows);
     return windows;
 };

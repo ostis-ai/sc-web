@@ -36,7 +36,7 @@ SCs.Viewer = function () {
         this.tree.build(data.keywords, data.triples, data.identifiers);
         $(self.containerId).html(self.output.toHtml());
 
-        $(self.containerId + ' .sc-contour > .scs-scn-view-toogle-button').click(function () {
+        $(self.containerId + ' .sc-contour > .scs-scn-view-toogle-button').click(async function () {
             var button = $(this);
             var contour = button.parent();
             var contour_addr = contour.attr('sc_addr');
@@ -52,7 +52,7 @@ SCs.Viewer = function () {
 
                 var structs = {};
                 structs[wid] = {addr: contour_addr, ext_lang_addr: self.getKeynode('scg_code')};
-                self.sandbox.createViewersForScStructs(structs);
+                await self.sandbox.createViewersForScStructs(structs);
             }
 
             primary.toggleClass('hidden');

@@ -36,10 +36,11 @@ ScgObjectBuilder = {
         return this.scg_objects[gwf_object_id];
     },
 
-    getScAddrsForObjects: function () {
+    getScAddrsForObjects: async function () {
         var self = this;
         var nodes = this.getAllNodesFromObjects();
         var promises = this.trySetScAddrForNodes(nodes);
+        promises = await Promise.resolve(promises);
         Promise.all(promises).then(function () {
             self.scene.commandManager.execute(new SCgWrapperCommand(self.commandSetAddrList));
             self.commandSetAddrList = [];
@@ -51,40 +52,48 @@ ScgObjectBuilder = {
         var nodes = [];
         Object.keys(this.scg_objects).forEach(function (gwf_object_id) {
             var node = self.scg_objects[gwf_object_id];
-            if (node instanceof SCg.ModelNode) {
+            if (node instanceof SCg.ModelNode && !node.sc_addr) {
                 nodes.push(node);
             }
         });
         return nodes;
     },
 
-    trySetScAddrForNodes: function (nodes) {
+    trySetScAddrForNodes: async function (nodes) {
         var self = this;
         var edit = this.scene.edit;
         var promises = [];
         nodes.forEach(node => {
-            promises.push(new Promise((resolve) => {
+            if (node.sc_addr) {
+                return;
+            }
+            promises.push(new Promise(async (resolve) => {
                 const idtf = node.text;
                 if (idtf?.length) {
-                    edit.autocompletionVariants(idtf, (keys) => {
-                        keys.some((string) => {
-                            if (idtf === string) {
-                                searchNodeByAnyIdentifier(idtf).then((foundAddr) => {
-                                    self.commandSetAddrList.push(new SCgCommandGetNodeFromMemory(
-                                        node,
-                                        node.sc_type,
-                                        idtf,
-                                        foundAddr.value,
-                                        self.scene)
-                                    );
-                                });
-                                return true;
+                    await edit.autocompletionVariants(idtf, async (keys) => {
+                        var found = false;
+                        for (const key of keys)
+                        {
+                            if (idtf === key) {
+                                const foundAddr = await searchNodeByAnyIdentifier(idtf);
+                                self.commandSetAddrList.push(new SCgCommandGetNodeFromMemory(
+                                    node,
+                                    node.sc_type,
+                                    idtf,
+                                    foundAddr.value,
+                                    self.scene)
+                                );
+                                found = true;
+                                break;
                             }
-                            return false
-                        });
+                        }
+                        if (found) {
+                            resolve();
+                        }
                     });
+                } else {
+                    resolve();
                 }
-                resolve(node);
             }));
         });
         return promises;

@@ -1,0 +1,21 @@
+ui_scg_control_tool_scg_view
+    <- ui_scg_control; sc_node_class;
+    => nrel_main_idtf:
+        [Режим визуализации sc.g-элементов]
+        (* <- lang_ru;; *);
+    => nrel_main_idtf:
+        [something about scg visualisation]
+        (* <- lang_en;; *);
+    => nrel_toggled_format:
+        format_scg_json;
+    <- rrel_key_sc_element:
+        ..e
+        (*
+        <- sc_explanation;;
+        <= nrel_sc_text_translation:
+            ..t1
+            (*
+                -> [Используйте этот режим визуализации] (* <- lang_ru;; *);;
+                -> [Use this visualisation mode] (* <- lang_en;; *);;
+            *);;
+    *);;

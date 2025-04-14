@@ -51,6 +51,7 @@ ScKeynodes.prototype.init = async function () {
     'ui_start_sc_element',
     'rrel_key_sc_element',
     'rrel_main_key_sc_element',
+    'nrel_toggled_format',
   ]
   );
 };
