@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- SCg supports negative dot balance. In that case connector is rendered as the closest perpendicular to the bus or connector and if no perpendicular can be calculated then the connector has the closest point of the bus or connector as the point of incidence.
+
 ## [0.9.0] - 21.01.2025
 
 ### Breaking changes
