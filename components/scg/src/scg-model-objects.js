@@ -501,40 +501,32 @@ SCg.ModelConnector.prototype.setPoints = function (points) {
     this.requestUpdate();
 };
 
-SCg.ModelConnector.prototype.getConnectionPos = function (from, dotPos) {
-
-    if (this.need_update) this.update();
-
+const getConnectionPosBasedOnSector = function (from, dotPos, sourcePos, targetPos, sectorPoints) {
     // first of all we need to determine sector an it relative position
     var sector = Math.floor(dotPos);
     var sector_pos = dotPos - sector;
 
     // now we need to determine, if sector is correct (in sector bounds)
-    if ((sector < 0) || (sector > this.points.length + 1)) {
-        sector = this.points.length / 2;
+    if ((sector < 0) || (sector > sectorPoints.length + 1)) {
+        sector = sectorPoints.length / 2;
     }
 
     var beg_pos, end_pos;
     if (sector == 0) {
-        beg_pos = this.source_pos;
-        if (this.points.length > 0)
-            end_pos = new SCg.Vector3(this.points[0].x, this.points[0].y, 0);
+        beg_pos = sourcePos;
+        if (sectorPoints.length > 0)
+            end_pos = new SCg.Vector3(sectorPoints[0].x, sectorPoints[0].y, 0);
         else
-            end_pos = this.target_pos;
-    } else if (sector == this.points.length) {
-        end_pos = this.target_pos;
-        if (this.points.length > 0)
-            beg_pos = new SCg.Vector3(this.points[sector - 1].x, this.points[sector - 1].y, 0);
+            end_pos = targetPos;
+    } else if (sector == sectorPoints.length) {
+        end_pos = targetPos;
+        if (sectorPoints.length > 0)
+            beg_pos = new SCg.Vector3(sectorPoints[sector - 1].x, sectorPoints[sector - 1].y, 0);
         else
-            beg_pos = this.source_pos;
+            beg_pos = sourcePos;
     } else {
-        if (this.points.length > sector) {
-            beg_pos = new SCg.Vector3(this.points[sector - 1].x, this.points[sector - 1].y, 0);
-            end_pos = new SCg.Vector3(this.points[sector].x, this.points[sector].y, 0);
-        } else {
-            beg_pos = new SCg.Vector3(this.source.x, this.source.y, 0);
-            end_pos = new SCg.Vector3(this.target.x, this.target.y, 0);
-        }
+        beg_pos = new SCg.Vector3(sectorPoints[sector - 1].x, sectorPoints[sector - 1].y, 0);
+        end_pos = new SCg.Vector3(sectorPoints[sector].x, sectorPoints[sector].y, 0);
     }
 
     var l_pt = new SCg.Vector3(0, 0, 0);
@@ -547,6 +539,83 @@ SCg.ModelConnector.prototype.getConnectionPos = function (from, dotPos) {
     result.multiplyScalar(10).add(l_pt);
 
     return result;
+}
+
+const getConnectionPosBasedOnClosestPerpendicularOrPoint = function (from, points, pointAtStart, pointAtEnd) {
+
+    let minDistToPerpendicularSquared = Infinity;
+    let minXToPerpendicularPoint = 0;
+    let minYToPerpendicularPoint = 0;
+    let minDistSquared = Infinity;
+    let minXPoint = 0;
+    let minYPoint = 0;
+    let pointsWithStartAndEnd = [];
+    if (pointAtStart) {
+        pointsWithStartAndEnd.push(pointAtStart);
+    }
+    pointsWithStartAndEnd = pointsWithStartAndEnd.concat(points);
+    if (pointAtEnd) {
+        pointsWithStartAndEnd.push(pointAtEnd);
+    }
+    for (var i = 1; i < pointsWithStartAndEnd.length; i++) {
+        const segmentStart = new SCg.Vector2(pointsWithStartAndEnd[i - 1].x, pointsWithStartAndEnd[i - 1].y);
+        const segmentEnd = new SCg.Vector2(pointsWithStartAndEnd[i].x, pointsWithStartAndEnd[i].y);
+        const segment = new SCg.Vector2(0, 0);
+        segment.copyFrom(segmentEnd).sub(segmentStart);
+        const startToPoint = from.to2d().sub(segmentStart);
+
+        const segmentLenSquared = segment.lengthSquared();
+        if (segmentLenSquared == 0) {
+            const lengthToPerpendicularSquared = startToPoint.lengthSquared();
+            if (lengthToPerpendicularSquared < minDistToPerpendicularSquared) {
+                minDistToPerpendicularSquared = lengthToPerpendicularSquared;
+                minXToPerpendicularPoint = segmentStart.x;
+                minYToPerpendicularPoint = segmentStart.y;
+            }
+            continue;
+        }
+
+        const dot = new SCg.Vector2(0, 0);
+        const t = dot.copyFrom(startToPoint).dotProduct(segment) / segmentLenSquared;
+        if (t >= 0 && t <= 1) {
+            const perpendicularStart = new SCg.Vector2(0, 0);
+            perpendicularStart.copyFrom(segment).multiplyScalar(t).add(segmentStart);
+            const perpendicular = from.to2d().sub(perpendicularStart);
+            const lengthToPerpendicularSquared = perpendicular.lengthSquared();
+
+            if (lengthToPerpendicularSquared < minDistToPerpendicularSquared) {
+                minDistToPerpendicularSquared = lengthToPerpendicularSquared;
+                minXToPerpendicularPoint = perpendicularStart.x;
+                minYToPerpendicularPoint = perpendicularStart.y;
+            }
+        } else {
+            const closestSegmentPoint = t < 0 ? segmentStart : segmentEnd;
+            const lengthToPerpendicularSquared = closestSegmentPoint.distanceSquared(from);
+
+            if (lengthToPerpendicularSquared < minDistSquared) {
+                minDistSquared = lengthToPerpendicularSquared;
+                minXPoint = closestSegmentPoint.x;
+                minYPoint = closestSegmentPoint.y;
+            }
+
+        }
+    }
+    if (minDistToPerpendicularSquared == Infinity) {
+        return new SCg.Vector3(minXPoint, minYPoint, 0);
+    } else {
+        return new SCg.Vector3(minXToPerpendicularPoint, minYToPerpendicularPoint, 0);
+    }
+}
+
+SCg.ModelConnector.prototype.getConnectionPos = function (from, dotPos) {
+
+    if (this.need_update) this.update();
+
+    if (dotPos >= 0) {
+        return getConnectionPosBasedOnSector(from, dotPos, this.source_pos, this.target_pos, this.points);
+    } else {
+        return getConnectionPosBasedOnClosestPerpendicularOrPoint(from, this.points, this.source_pos, this.target_pos);
+    }
 }
 
 SCg.ModelConnector.prototype.calculateDotPos = function (pos) {
@@ -775,20 +844,9 @@ SCg.ModelBus.prototype.update = function () {
 
     // calculate begin and end positions
     if (this.points.length > 0) {
-
-        if (this.source instanceof SCg.ModelConnector) {
-            this.source_pos = this.source.getConnectionPos(new SCg.Vector3(this.points[0].x, this.points[0].y, 0), this.source_dot);
-        } else {
-            this.source_pos = this.source.getConnectionPos(new SCg.Vector3(this.points[0].x, this.points[0].y, 0), this.source_dot);
-        }
-
+        this.source_pos = this.source.getConnectionPos(new SCg.Vector3(this.points[0].x, this.points[0].y, 0), this.source_dot);
     } else {
-
-        if (this.source instanceof SCg.ModelConnector) {
-            this.source_pos = this.source.getConnectionPos(this.target_pos, this.source_dot);
-        } else {
-            this.source_pos = this.source.getConnectionPos(this.target_pos, this.source_dot);
-        }
+        this.source_pos = this.source.getConnectionPos(this.target_pos, this.source_dot);
     }
 
     this.position.copyFrom(this.target_pos).add(this.source_pos).multiplyScalar(0.5);
@@ -830,7 +888,17 @@ SCg.ModelBus.prototype.setPoints = function (points) {
     this.requestUpdate();
 };
 
-SCg.ModelBus.prototype.getConnectionPos = SCg.ModelConnector.prototype.getConnectionPos;
+SCg.ModelBus.prototype.getConnectionPos = function (from, dotPos) {
+
+    if (this.need_update) this.update();
+
+    if (dotPos >= 0) {
+        return getConnectionPosBasedOnSector(from, dotPos, this.source_pos, this.target_pos, this.points);
+    } else {
+        // pointAtEnd is not passed because it is already in this.points
+        return getConnectionPosBasedOnClosestPerpendicularOrPoint(from, this.points, this.source_pos, null);
+    }
+}
 
 SCg.ModelBus.prototype.calculateDotPos = SCg.ModelConnector.prototype.calculateDotPos;
 

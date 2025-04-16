@@ -102,7 +102,6 @@ SCgViewerWindow.prototype.initialize = async function() {
         [formats["format_scg_json"].value]: this._buildGraphForScgJson,
         [formats["format_gwf_json"].value]: this._buildGraphForGwfJson
     };
-    console.log(this._buildGraphForFormatMap);
 
     // todo(kilativ-dotcom): I don't understand why scg was supposed to be used not for structs
     this.scStructTranslator = new SCgStructTranslator(this.editor, this.sandbox);
@@ -120,7 +119,6 @@ SCgViewerWindow.prototype.initialize = async function() {
             containerId: this.sandbox.container,
             autocompletionVariants: autocompletionVariants,
             translateToSc: function (callback) {
-                console.log("translating to sc!!!!!!")
                 return self.scStructTranslator.translateToSc().then(callback).catch(callback);
             },
             canEdit: this.sandbox.canEdit(),
@@ -162,8 +160,6 @@ SCgViewerWindow.prototype.initialize = async function() {
     this.sandbox.eventGetObjectsToTranslate = $.proxy(this.getObjectsToTranslate, this);
     this.sandbox.eventApplyTranslation = $.proxy(this.applyTranslation, this);
     this.sandbox.eventStructUpdate = $.proxy(this.eventStructUpdate, this);
-
-    this.sandbox.updateContent();
 };
 
 

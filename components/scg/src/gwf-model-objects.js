@@ -371,6 +371,7 @@ GwfObjectLink.prototype.buildObject = function (args) {
     link.setContent(this.content, this.type);
     scene.appendLink(link);
     scene.appendSelection(link);
+    scene.updateLinkVisual();
     args.scg_object = link;
     this.fixParent(args);
     link.update();
