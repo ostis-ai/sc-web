@@ -101,7 +101,7 @@ SCWeb.core.Main = {
 
                     const renderScg = (action, lang = addrs["lang_ru"]) => {
                         SCWeb.core.Translation.setLanguage(lang, () => { });
-                        const commandState = new SCWeb.core.CommandState(undefined, undefined, addrs["format_scg_json"], lang);
+                        const commandState = new SCWeb.core.CommandState(undefined, [addrs["format_scg_json"]], addrs["format_scg_json"], lang);
                         SCWeb.ui.WindowManager.activateWindow(action, commandState);
                     }
                     window.renderScg = renderScg;
@@ -209,6 +209,7 @@ SCWeb.core.Main = {
     doCommandWithFormat: function (cmd_addr, cmd_args, fmt_addr) {
         SCWeb.core.Server.doCommand(cmd_addr, cmd_args, function (result) {
             if (result.action !== undefined) {
+                console.log("create command state")
                 const commandState = new SCWeb.core.CommandState(cmd_addr, cmd_args, fmt_addr);
                 SCWeb.ui.WindowManager.appendHistoryItem(result.action, commandState);
             } else {
@@ -224,13 +225,17 @@ SCWeb.core.Main = {
     doDefaultCommandWithFormat: function (cmd_args, fmt_addr) {
         if (!this.default_cmd) {
             var self = this;
-            SCWeb.core.Server.resolveScAddr([this.default_cmd_str], function (addrs) {
+            console.log("resolve addr, ", this.default_cmd_str)
+            SCWeb.core.Server.resolveScAddr([this.default_cmd_str]).then((addrs) => {
                 self.default_cmd = addrs[self.default_cmd_str];
+                console.log("check default cmd")
                 if (self.default_cmd) {
+                    console.log("with format default")
                     self.doCommandWithFormat(self.default_cmd, cmd_args, fmt_addr);
                 }
             });
         } else {
+            console.log("with format")
             this.doCommandWithFormat(this.default_cmd, cmd_args, fmt_addr);
         }
     }

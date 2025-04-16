@@ -351,6 +351,8 @@ SCWeb.core.Server = {
         let self = this;
         let notResolved = [], result = {}, used = {};
 
+        console.log("idtf list, ", idtfList)
+
         for (let i = 0; i < idtfList.length; i++) {
             const idtf = idtfList[i];
 
@@ -367,6 +369,7 @@ SCWeb.core.Server = {
         }
 
         if (notResolved.length === 0) {
+            console.log("no to resolve");
             return result;
         } else {
             return await (async function (result, notResolved) {
@@ -384,6 +387,7 @@ SCWeb.core.Server = {
                     result[i] = addrs[i].value;
                 }
 
+                console.log("result", result);
                 return result;
             })(result, notResolved);
         }

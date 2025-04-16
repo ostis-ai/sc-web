@@ -11,13 +11,17 @@ SCg.Editor = function () {
 SCg.Editor.prototype = {
 
     setFormat: function (newFormat) {
+        console.log("set format")
         if (newFormat != this.format) {
+            console.log(newFormat);
             const needToDoDefaultCommand = this.format !== undefined;
             this.format = newFormat;
             let windowId = SCWeb.ui.WindowManager.getActiveWindowId();
             let container = document.getElementById(windowId);
             $(container).attr("sc-addr-fmt", newFormat);
             if (needToDoDefaultCommand) {
+                console.log("do command")
+                console.log($(container).attr("semantic_neighbourhood_root"));
                 SCWeb.core.Main.doDefaultCommandWithFormat([$(container).attr("semantic_neighbourhood_root")], newFormat);
             }
         }
@@ -1177,6 +1181,7 @@ SCg.Editor.prototype = {
         });
 
         this.toolSCgWithBusesView().click(async function () {
+            console.log("tool scg buses")
             self.setFormat(await self._getFormatForButton(self.toolSCgWithBusesView()));
         });
 
