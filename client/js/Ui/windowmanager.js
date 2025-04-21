@@ -46,9 +46,7 @@ SCWeb.ui.WindowManager = {
                 var fmt_addr = SCWeb.core.ComponentManager.getPrimaryFormatForExtLang(lang_addr);
                 var lang = SCWeb.core.Translation.getCurrentLanguage();
                 if (fmt_addr) {
-                    let windowId = SCWeb.ui.WindowManager.getActiveWindowId();
-                    let container = document.getElementById(windowId);
-                    var command_state = new SCWeb.core.CommandState(null, [$(container).attr("semantic_neighbourhood_root")], fmt_addr, lang);
+                    var command_state = new SCWeb.core.CommandState(null, null, fmt_addr, lang);
                     var id = self.hash_addr(action_addr, command_state.format);
                     if (self.isWindowExist(id)) {
                         self.setWindowActive(id);
@@ -191,7 +189,7 @@ SCWeb.ui.WindowManager = {
             var id = self.hash_addr(action_addr, command_state.format);
             if (!self.isWindowExist(id)) {
                 var window_id = 'window_' + action_addr + "_format_" + command_state.format;
-                var window_html = '<div class="panel panel-default sc-window" id="' + id + '" sc_addr="' + action_addr + '" sc-addr-fmt="' + command_state.format + (command_state.command_args.length ? ('" semantic_neighbourhood_root="' + command_state.command_args[0] ) : '') + '">' +
+                var window_html = '<div class="panel panel-default sc-window" id="' + id + '" sc_addr="' + action_addr + '" sc-addr-fmt="' + command_state.format + '">' +
                     '<div class="panel-body" id="' + window_id + '"></div>'
                 '</div>';
                 self.window_container.prepend(window_html);

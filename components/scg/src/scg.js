@@ -3,6 +3,7 @@ var SCg = SCg || {
 };
 
 SCg.Editor = function () {
+    console.log("Creating new scg editor", new Error());
 
     this.render = null;
     this.scene = null;
@@ -11,18 +12,17 @@ SCg.Editor = function () {
 SCg.Editor.prototype = {
 
     setFormat: function (newFormat) {
-        console.log("set format")
+        console.log("trying to update format from " + this.format + " to " + newFormat, this);
         if (newFormat != this.format) {
-            console.log(newFormat);
-            const needToDoDefaultCommand = this.format !== undefined;
-            this.format = newFormat;
-            let windowId = SCWeb.ui.WindowManager.getActiveWindowId();
-            let container = document.getElementById(windowId);
-            $(container).attr("sc-addr-fmt", newFormat);
-            if (needToDoDefaultCommand) {
-                console.log("do command")
-                console.log($(container).attr("semantic_neighbourhood_root"));
-                SCWeb.core.Main.doDefaultCommandWithFormat([$(container).attr("semantic_neighbourhood_root")], newFormat);
+            const needToAppendWindow = this.format !== undefined;
+            console.log("updating format from " + this.format + " to " + newFormat);
+            if (needToAppendWindow) {
+                let windowId = SCWeb.ui.WindowManager.getActiveWindowId();
+                let container = document.getElementById(windowId);
+                const commandState = new SCWeb.core.CommandState(undefined, undefined, newFormat, SCWeb.core.Translation.getCurrentLanguage());
+                SCWeb.ui.WindowManager.appendWindow($(container).attr("sc_addr"), commandState);
+            } else {
+                this.format = newFormat;
             }
         }
     },
@@ -1113,6 +1113,7 @@ SCg.Editor.prototype = {
             const widthRatio = containerWidth / scgWidth;
             let scale = currentScale * Math.min(heightRatio, widthRatio) - scaleDelta;
             if (scale < 0) scale = 0.01;
+            if (scale === Infinity) scale = 9e10;
             const translateX = self.scene.render.d3_container[0][0].getBoundingClientRect().width * scale;
             const translateY = self.scene.render.d3_container[0][0].getBoundingClientRect().height * scale;
             
@@ -1181,7 +1182,6 @@ SCg.Editor.prototype = {
         });
 
         this.toolSCgWithBusesView().click(async function () {
-            console.log("tool scg buses")
             self.setFormat(await self._getFormatForButton(self.toolSCgWithBusesView()));
         });
 
