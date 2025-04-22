@@ -3,7 +3,6 @@ var SCg = SCg || {
 };
 
 SCg.Editor = function () {
-    console.log("Creating new scg editor", new Error());
 
     this.render = null;
     this.scene = null;
@@ -12,10 +11,8 @@ SCg.Editor = function () {
 SCg.Editor.prototype = {
 
     setFormat: function (newFormat) {
-        console.log("trying to update format from " + this.format + " to " + newFormat, this);
         if (newFormat != this.format) {
             const needToAppendWindow = this.format !== undefined;
-            console.log("updating format from " + this.format + " to " + newFormat);
             if (needToAppendWindow) {
                 let windowId = SCWeb.ui.WindowManager.getActiveWindowId();
                 let container = document.getElementById(windowId);
