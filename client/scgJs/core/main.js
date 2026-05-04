@@ -128,6 +128,166 @@ SCWeb.core.Main = {
                         }
                     })
 
+                    window.addEventListener('message', (e) => {
+                        if (e.data.type === 'exportSvg') {
+                            try {
+                                const svg = document.querySelector('svg.SCgSvg');
+                                if (!svg) {
+                                    window.top.postMessage({ type: 'exportSvgError', error: 'SVG not found' }, '*');
+                                    return;
+                                }
+                                const clone = svg.cloneNode(true);
+                                clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+                                clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
+                                const origAll = svg.querySelectorAll('*');
+                                const cloneAll = clone.querySelectorAll('*');
+                                for (let i = 0; i < origAll.length; i++) {
+                                    const computed = window.getComputedStyle(origAll[i]);
+                                    let styleStr = '';
+                                    for (let j = 0; j < computed.length; j++) {
+                                        const prop = computed[j];
+                                        styleStr += prop + ':' + computed.getPropertyValue(prop) + ';';
+                                    }
+                                    cloneAll[i].setAttribute('style', styleStr);
+                                }
+                                const svgString = new XMLSerializer().serializeToString(clone);
+                                window.top.postMessage({ type: 'exportSvgResult', data: svgString }, '*');
+                            } catch (err) {
+                                window.top.postMessage({ type: 'exportSvgError', error: err.message }, '*');
+                            }
+                        }
+                    })
+
+                    window.addEventListener('message', async (e) => {
+                        if (e.data.type === 'exportPng') {
+                            try {
+                                const svg = document.querySelector('svg.SCgSvg');
+                                if (!svg) {
+                                    window.top.postMessage({ type: 'exportPngError', error: 'SVG not found' }, '*');
+                                    return;
+                                }
+                                const bbox = svg.getBBox();
+                                const w = Math.ceil(bbox.width + 20);
+                                const h = Math.ceil(bbox.height + 20);
+                                const SCALE = 8;
+                                const clone = svg.cloneNode(true);
+                                clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+                                clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
+                                clone.setAttribute('width', w * SCALE);
+                                clone.setAttribute('height', h * SCALE);
+                                clone.setAttribute('viewBox', (bbox.x - 10) + ' ' + (bbox.y - 10) + ' ' + w + ' ' + h);
+                                const origAll = svg.querySelectorAll('*');
+                                const cloneAll = clone.querySelectorAll('*');
+                                for (let i = 0; i < origAll.length; i++) {
+                                    if (!cloneAll[i] || cloneAll[i].tagName === 'foreignObject') {
+                                        if (cloneAll[i]) cloneAll[i].remove();
+                                        continue;
+                                    }
+                                    const computed = window.getComputedStyle(origAll[i]);
+                                    let styleStr = '';
+                                    for (let j = 0; j < computed.length; j++) {
+                                        const prop = computed[j];
+                                        let value = computed.getPropertyValue(prop);
+                                        const urlRegex = /url\(["']?(https?:\/\/[^"'\)]+)["']?\)/g;
+                                        let match;
+                                        while ((match = urlRegex.exec(value)) !== null) {
+                                            const fullUrl = match[1];
+                                            try {
+                                                const response = await fetch(fullUrl);
+                                                if (response.ok) {
+                                                    const blob = await response.blob();
+                                                    const base64 = await new Promise((resolve) => {
+                                                        const reader = new FileReader();
+                                                        reader.onloadend = () => resolve(reader.result);
+                                                        reader.readAsDataURL(blob);
+                                                    });
+                                                    value = value.replace(match[0], `url("${base64}")`);
+                                                }
+                                            } catch (err) { }
+                                        }
+                                        styleStr += prop + ':' + value + ';';
+                                    }
+                                    cloneAll[i].setAttribute('style', styleStr);
+                                }
+                                const cloneImages = clone.querySelectorAll('image');
+                                for (const cloneImg of cloneImages) {
+                                    const href = cloneImg.getAttribute('xlink:href') || cloneImg.getAttribute('href');
+                                    if (href && !href.startsWith('data:')) {
+                                        try {
+                                            const response = await fetch(href);
+                                            if (response.ok) {
+                                                const blob = await response.blob();
+                                                const base64 = await new Promise((resolve) => {
+                                                    const reader = new FileReader();
+                                                    reader.onloadend = () => resolve(reader.result);
+                                                    reader.readAsDataURL(blob);
+                                                });
+                                                cloneImg.setAttribute('xlink:href', base64);
+                                                cloneImg.setAttribute('href', base64);
+                                            }
+                                        } catch (err) { }
+                                    }
+                                }
+                                const defs = clone.querySelector('defs');
+                                if (defs) {
+                                    const cloneUses = clone.querySelectorAll('use');
+                                    for (const cloneUse of cloneUses) {
+                                        const href = cloneUse.getAttribute('xlink:href') || cloneUse.getAttribute('href');
+                                        if (href && href.startsWith('#')) {
+                                            const id = href.substring(1);
+                                            const defEl = defs.querySelector('#' + id);
+                                            if (defEl) {
+                                                const clonedDef = defEl.cloneNode(true);
+                                                const useAttrs = cloneUse.attributes;
+                                                for (let a = 0; a < useAttrs.length; a++) {
+                                                    if (useAttrs[a].name !== 'href' && useAttrs[a].name !== 'xlink:href') {
+                                                        clonedDef.setAttribute(useAttrs[a].name, useAttrs[a].value);
+                                                    }
+                                                }
+                                                cloneUse.parentNode.replaceChild(clonedDef, cloneUse);
+                                            }
+                                        }
+                                    }
+                                }
+                                const svgString = new XMLSerializer().serializeToString(clone);
+                                const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+                                const url = URL.createObjectURL(svgBlob);
+                                const img = new Image();
+                                img.onload = function() {
+                                    const canvas = document.createElement('canvas');
+                                    canvas.width = w * SCALE;
+                                    canvas.height = h * SCALE;
+                                    const ctx = canvas.getContext('2d');
+                                    ctx.drawImage(img, 0, 0, w * SCALE, h * SCALE);
+                                    URL.revokeObjectURL(url);
+                                    canvas.toBlob(function(blob) {
+                                        if (blob) {
+                                            const reader = new FileReader();
+                                            reader.onloadend = function() {
+                                                window.top.postMessage({ type: 'exportPngResult', data: reader.result }, '*');
+                                            };
+                                            reader.readAsDataURL(blob);
+                                        } else {
+                                            try {
+                                                const dataUrl = canvas.toDataURL('image/png');
+                                                window.top.postMessage({ type: 'exportPngResult', data: dataUrl }, '*');
+                                            } catch (err) {
+                                                window.top.postMessage({ type: 'exportPngError', error: 'toBlob returned null and toDataURL failed: ' + err.message }, '*');
+                                            }
+                                        }
+                                    }, 'image/png');
+                                };
+                                img.onerror = function(err) {
+                                    URL.revokeObjectURL(url);
+                                    window.top.postMessage({ type: 'exportPngError', error: 'Canvas render failed' }, '*');
+                                };
+                                img.src = url;
+                            } catch (err) {
+                                window.top.postMessage({ type: 'exportPngError', error: err.message }, '*');
+                            }
+                        }
+                    })
+
                     resolve();
                 });
             });
