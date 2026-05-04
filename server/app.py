@@ -82,6 +82,15 @@ def init_app_rules():
 
         (r"/static/(.*)", NoCacheStaticHandler, {"path": tornado.options.options.static_path}),
 
+        # auth
+        (r"/login", auth.LoginHandler),
+        (r"/api/register", auth.RegisterHandler),
+        (r"/logout", auth.LogOutHandler),
+        (r"/api/user", auth.MeHandler),
+
+        (r"/auth/google$", auth.GoogleOAuth2LoginHandler),
+        (r"/auth/logout$", auth.LogOutHandler),
+
         # api
         (r"/api/context/", api.ContextMenu),
         (r"/api/cmd/do/", api.CmdDo),
@@ -96,13 +105,11 @@ def init_app_rules():
 
         (r"/api/user/", api.User),
 
-        (r"/auth/google$", auth.GoogleOAuth2LoginHandler),
-        (r"/auth/logout$", auth.LogOut),
-
         (r"/admin$", admin.MainHandler),
         (r"/admin/users/get$", admin_users.UsersInfo),
         (r"/admin/users/set_rights$", admin_users.UserSetRights),
         (r"/admin/users/list_rights$", admin_users.UserListRights),
+        (r"/admin/users/delete$", admin_users.UserDelete),
     ]
 
 
@@ -117,7 +124,8 @@ def post_reconnect_handler():
         exit(1)
 
     logger.info("Resolve keynodes")
-    ScKeynodes().resolve_identifiers([KeynodeSysIdentifiers])
+    # Keynodes are now resolved within AuthService during sync
+
 
 
 def on_error(e):
@@ -151,6 +159,7 @@ def main(options):
     logger.info("Preparing database...")
     database = db.DataBase()
     database.init()
+    database.ensure_dev_user()
 
     # prepare logger
     logger.info("Preparing logger...")
@@ -160,7 +169,7 @@ def main(options):
     application = tornado.web.Application(
         handlers=rules,
         cookie_secret=secret.get_secret(),
-        login_url="/auth/google",
+        login_url="/login",
         template_path=tornado.options.options.templates_path,
         xsrf_cookies=False,
         gzip=True,
@@ -177,6 +186,19 @@ def main(options):
         reconnect_retry_delay=options.reconnect_retry_delay
     )
     client.connect(server_url)
+
+    # Sync users to KB after connecting to SC-server
+    try:
+        auth_svc = auth.auth_service.AuthService()
+        session = database._session()
+        from db import User
+        all_users = session.query(User).all()
+        auth_svc.sync_users_from_db(all_users)
+        session.commit()
+        logger.info("Users synchronized to KB successfully.")
+    except Exception as e:
+        logger.error(f"Failed to synchronize users to KB: {e}")
+
 
     app_instance = tornado.ioloop.IOLoop.instance()
     signal.signal(signal.SIGINT, lambda sig, frame: app_instance.add_callback_from_signal(on_shutdown))

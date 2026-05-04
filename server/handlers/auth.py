@@ -5,6 +5,7 @@ import logging
 import tornado.auth
 import tornado.options
 import tornado.web
+import tornado.gen
 
 from sc_client import client
 from sc_client.constants import sc_type
@@ -18,8 +19,176 @@ import decorators
 from keynodes import KeynodeSysIdentifiers
 
 from . import api_logic as logic
+import auth_service
 
 logger = logging.getLogger()
+
+
+class RegisterHandler(base.BaseHandler):
+    def post(self):
+        try:
+            data = json.loads(self.request.body)
+            login_val = data.get('login')
+            email = data.get('email')
+            password = data.get('password')
+            role_name = data.get('role', 'user')
+        except (ValueError, AttributeError):
+            self.set_status(400)
+            self.write({'error': 'Invalid request body'})
+            self.finish()
+            return
+
+        if not all([login_val, email, password]):
+            self.set_status(400)
+            self.write({'error': 'Missing required fields'})
+            self.finish()
+            return
+
+        database = db.DataBase()
+        if database.get_user_by_login(login_val) or database.get_user_by_email(email):
+            self.set_status(409)
+            self.write({'error': 'User already exists'})
+            self.finish()
+            return
+
+        # Hash password
+        password_hash = database.hash_password(password)
+        
+        # Create role
+        role_obj = database.get_role_by_name(role_name)
+        role_id = role_obj.id if role_obj else 0
+
+        # Add to DB (with KB integration)
+        auth_svc = auth_service.AuthService()
+        try:
+            user_node = auth_svc.register_user(email, login_val)
+            sc_addr = user_node.value if user_node and user_node.is_valid() else 0
+        except Exception as e:
+            logger.error(f"KB registration failed for {login_val}: {e}")
+            sc_addr = 0
+
+        key = database.add_user(
+            name=login_val, 
+            email=email, 
+            login=login_val, 
+            password_hash=password_hash, 
+            role=role_id, 
+            sc_addr=sc_addr
+        )
+
+        # Set session cookie
+        self.set_secure_cookie(self.cookie_user_key, key, 7, samesite='Lax')
+
+        # Return user data
+        user_db = database.get_user_by_key(key)
+        role_final = database.get_user_role(user_db)
+        
+        self.write({
+            'id': user_db.id,
+            'login': user_db.login,
+            'email': user_db.email,
+            'role': role_final.name if role_final else 'user',
+            'avatar': user_db.avatar,
+            'sc_addr': user_db.sc_addr,
+            'is_admin': 1 if role_final and role_final.rights >= db.DataBase.RIGHTS_ADMIN else 0,
+            'can_edit': 1 if role_final and role_final.rights >= db.DataBase.RIGHTS_EDITOR else 0
+        })
+        self.finish()
+
+
+class LoginHandler(base.BaseHandler):
+    def post(self):
+        try:
+            data = json.loads(self.request.body)
+            login_val = data.get('login')
+            password = data.get('password')
+        except (ValueError, AttributeError):
+            self.set_status(400)
+            self.write({'error': 'Invalid request body'})
+            self.finish()
+            return
+
+        database = db.DataBase()
+        u = database.get_user_by_login(login_val)
+        
+        if u and database.verify_password(password, u.password_hash):
+            self.set_secure_cookie(self.cookie_user_key, u.key, 7, samesite='Lax')
+            
+            role_obj = database.get_user_role(u)
+            self.write({
+                'id': u.id,
+                'login': u.login,
+                'email': u.email,
+                'role': role_obj.name if role_obj else 'guest',
+                'avatar': u.avatar,
+                'sc_addr': u.sc_addr,
+                'is_admin': 1 if role_obj and role_obj.rights >= db.DataBase.RIGHTS_ADMIN else 0,
+                'can_edit': 1 if role_obj and role_obj.rights >= db.DataBase.RIGHTS_EDITOR else 0
+            })
+        else:
+            self.set_status(401)
+            self.write({'error': 'Invalid login or password'})
+        
+        self.finish()
+
+    def get(self):
+        user = self.get_current_user()
+        if not user:
+            self.set_status(401)
+            self.write({'error': 'Not authenticated'})
+            self.finish()
+            return
+
+        self.write({
+            'id': user.id,
+            'login': user.login,
+            'email': user.email,
+            'role': user.role_name,
+            'avatar': user.avatar,
+            'sc_addr': user.sc_addr,
+            'is_admin': 1 if user.can_admin() else 0,
+            'can_edit': 1 if user.rights >= db.DataBase.RIGHTS_EDITOR else 0
+        })
+        self.finish()
+
+
+class MeHandler(base.BaseHandler):
+    def get(self):
+        user = self.get_current_user()
+        if not user:
+            self.set_status(401)
+            self.write({'error': 'Not authenticated'})
+            self.finish()
+            return
+
+        self.write({
+            'id': user.id,
+            'login': user.login,
+            'email': user.email,
+            'role': user.role_name,
+            'avatar': user.avatar,
+            'sc_addr': user.sc_addr,
+            'is_admin': 1 if user.can_admin() else 0,
+            'can_edit': 1 if user.rights >= db.DataBase.RIGHTS_EDITOR else 0
+        })
+        self.finish()
+
+
+class LogOutHandler(base.BaseHandler):
+    def get(self):
+        key = self.get_secure_cookie(self.cookie_user_key)
+        if key:
+            key = key.decode('UTF-8')
+            database = db.DataBase()
+            u = database.get_user_by_key(key)
+            if u:
+                auth_svc = auth_service.AuthService()
+                auth_svc.logout_user_from_kb(u.email)
+        
+        logger.info('Clearing cookies...')
+        self.clear_cookie(self.cookie_user_key)
+        self.write({'status': 'success'})
+        self.finish()
 
 
 @decorators.class_logging
@@ -27,13 +196,14 @@ class GoogleOAuth2LoginHandler(base.BaseHandler, tornado.auth.GoogleOAuth2Mixin)
     _keynodes = ScKeynodes()
 
     def _loggedin(self, user):
-        logger.info('User logs in...')
+        logger.info('User logs in via Google...')
 
         email = user['email']
         user_name = user['name']
         if len(email) == 0:
             logger.warning('User email is not set')
             return
+
         database = db.DataBase()
         u = database.get_user_by_email(email)
 
@@ -54,132 +224,19 @@ class GoogleOAuth2LoginHandler(base.BaseHandler, tornado.auth.GoogleOAuth2Mixin)
                     role = r.id
 
             logger.debug('Add user in database...')
+            
+            auth_svc = auth_service.AuthService()
+            user_node = auth_svc.register_user(email, user_name)
+            sc_addr = user_node.value if user_node and user_node.is_valid() else 0
+            
             key = database.add_user(
-                name=user['name'], email=email, avatar=user['picture'], role=role)
+                name=user_name, email=email, avatar=user['picture'], role=role, sc_addr=sc_addr)
 
-        self.set_secure_cookie(self.cookie_user_key, key, 1)
-        self.register_user(email, user_name)
-        self.authorise_user(email)
+        self.set_secure_cookie(self.cookie_user_key, key, 7)
 
-    def authorise_user(self, email: str) -> None:
-        logger.info('User authorization')
-        links = client.search_links_by_contents(email)[0]
-        if links and len(links) == 1:
-            logger.debug('Link is found by email')
-            USER_NODE = "_user"
-            template = ScTemplate()
-            template.quintuple(
-                (sc_type.VAR_NODE, USER_NODE),
-                sc_type.VAR_COMMON_ARC,
-                links[0],
-                sc_type.VAR_PERM_POS_ARC,
-                self._keynodes[KeynodeSysIdentifiers.nrel_email.value]
-            )
-            users = client.search_by_template(template)
-            for user in users:
-                construction = ScConstruction()
-                construction.generate_connector(
-                    sc_type.VAR_COMMON_ARC,
-                    self._keynodes[KeynodeSysIdentifiers.Myself.value],
-                    user.get(USER_NODE),
-                    'bin_arc_authorised'
-                )
-                construction.generate_connector(
-                    sc_type.CONST_PERM_POS_ARC,
-                    self._keynodes[KeynodeSysIdentifiers.nrel_authorised_user.value],
-                    'bin_arc_authorised'
-                )
-                client.generate_elements(construction)
-
-    def register_user(self, email: str, user_name: str) -> None:
-        logger.info('User registration')
-        links = client.search_links_by_contents(email)[0]
-        if links and len(links) == 1:
-            logger.debug('Link is found by email')
-            template = ScTemplate()
-            template.quintuple(
-                sc_type.VAR_NODE,
-                sc_type.VAR_COMMON_ARC,
-                links[0],
-                sc_type.VAR_PERM_POS_ARC,
-                self._keynodes[KeynodeSysIdentifiers.nrel_email.value]
-            )
-            user = client.search_by_template(template)
-            if user and user[0] and user[0].get(0).is_valid():
-                template.quintuple(
-                    self._keynodes[KeynodeSysIdentifiers.Myself.value],
-                    sc_type.VAR_COMMON_ARC,
-                    user[0].get(0),
-                    sc_type.VAR_PERM_POS_ARC,
-                    self._keynodes[KeynodeSysIdentifiers.nrel_registered_user.value]
-                )
-                results = client.search_by_template(template)
-                if not results:
-                    self.gen_registred_user_relation(user[0].get(0))
-            else:
-                user_node = self.create_ui_user_node_at_kb(email, user_name)
-                self.gen_registred_user_relation(user_node)
-        else:
-            user_node = self.create_ui_user_node_at_kb(email, user_name)
-            self.gen_registred_user_relation(user_node)
-
-    def create_ui_user_node_at_kb(self, email: str, username: str) -> ScAddr:
-        logger.debug('Creating ui user node at kb ...')
-        construction = ScConstruction()
-        construction.generate_node(sc_type.CONST_NODE, 'user_node')
-        construction.generate_connector(
-            sc_type.CONST_PERM_POS_ARC, self._keynodes[KeynodeSysIdentifiers.ui_user.value], 'user_node')
-
-        # create system_idtf
-        sys_idtf = email.split('@')[0]
-        construction.generate_link(
-            sc_type.CONST_NODE_LINK, ScLinkContent(sys_idtf, ScLinkContentType.STRING.value), 'sys_idtf_link')
-        construction.generate_connector(sc_type.CONST_COMMON_ARC, 'user_node', 'sys_idtf_link', 'bin_arc_sys_idtf')
-        construction.generate_connector(
-            sc_type.CONST_PERM_POS_ARC,
-            self._keynodes[KeynodeSysIdentifiers.nrel_system_identifier.value],
-            'bin_arc_sys_idtf'
-        )
-
-        # create main_idtf (lang_ru)
-        construction.generate_link(
-            sc_type.CONST_NODE_LINK, ScLinkContent(username, ScLinkContentType.STRING.value), 'main_idtf_link')
-        construction.generate_connector(sc_type.CONST_COMMON_ARC, 'user_node', 'main_idtf_link', 'bin_arc_main_idtf')
-        construction.generate_connector(
-            sc_type.CONST_PERM_POS_ARC,
-            self._keynodes[KeynodeSysIdentifiers.nrel_main_idtf.value],
-            'bin_arc_main_idtf'
-        )
-        construction.generate_connector(
-            sc_type.CONST_PERM_POS_ARC, self._keynodes[KeynodeSysIdentifiers.lang_ru.value], 'main_idtf_link')
-
-        # create email
-        construction.generate_link(
-            sc_type.CONST_NODE_LINK, ScLinkContent(email, ScLinkContentType.STRING.value), 'email_link')
-        construction.generate_connector(sc_type.CONST_COMMON_ARC, 'user_node', 'email_link', 'bin_arc_email')
-        construction.generate_connector(
-            sc_type.CONST_PERM_POS_ARC,
-            self._keynodes[KeynodeSysIdentifiers.nrel_email.value],
-            'bin_arc_email'
-        )
-
-        result = client.generate_elements(construction)
-        return result[construction.get_index('user_node')]
-
-    def gen_registred_user_relation(self, user: ScAddr) -> None:
-        construction = ScConstruction()
-        construction.generate_connector(
-            sc_type.VAR_COMMON_ARC,
-            self._keynodes[KeynodeSysIdentifiers.Myself.value],
-            user,
-            'bin_arc_registered'
-        )
-        construction.generate_connector(
-            sc_type.CONST_PERM_POS_ARC,
-            self._keynodes[KeynodeSysIdentifiers.nrel_registered_user.value],
-            'bin_arc_registered'
-        )
-        client.generate_elements(construction)
+        auth_svc = auth_service.AuthService()
+        auth_svc.register_user(email, user_name)
+        auth_svc.authorise_user_in_kb_by_email(email)
 
     @tornado.gen.coroutine
     def get(self):
@@ -196,7 +253,6 @@ class GoogleOAuth2LoginHandler(base.BaseHandler, tornado.auth.GoogleOAuth2Mixin)
                 redirect_uri=uri,
                 code=self.get_argument('code'))
 
-            # Save the user with e.g. set_secure_cookie
             if not user:
                 self.clear_all_cookies()
                 raise tornado.web.HTTPError(500, 'Google authentication failed')
@@ -222,40 +278,3 @@ class GoogleOAuth2LoginHandler(base.BaseHandler, tornado.auth.GoogleOAuth2Mixin)
                 scope=['profile', 'email'],
                 response_type='code',
                 extra_params={'approval_prompt': 'auto'})
-
-
-@decorators.class_logging
-class LogOut(base.BaseHandler):
-    def get(self):
-        self.logout_user_from_kb()
-        logger.info('Clearing cookies...')
-        self.clear_cookie(self.cookie_user_key)
-        self.redirect('/')
-
-    def logout_user_from_kb(self):
-        logger.info('Logout from kb')
-        keys = ScKeynodes()
-        sc_session = logic.ScSession(self, keys)
-        links = client.search_links_by_contents(sc_session.email)[0]
-        if links and len(links) == 1:
-            USER_NODE = "_user"
-            USER_ARC = "_arc"
-
-            template = ScTemplate()
-            template.quintuple(
-                (sc_type.VAR_NODE, USER_NODE),
-                sc_type.VAR_COMMON_ARC,
-                links[0],
-                sc_type.VAR_PERM_POS_ARC,
-                keys[KeynodeSysIdentifiers.nrel_email.value]
-            )
-            template.quintuple(
-                keys[KeynodeSysIdentifiers.Myself.value],
-                (sc_type.VAR_COMMON_ARC, USER_ARC),
-                USER_NODE,
-                sc_type.VAR_PERM_POS_ARC,
-                keys[KeynodeSysIdentifiers.nrel_authorised_user.value]
-            )
-            result = client.search_by_template(template)
-            for items in result:
-                client.erase_elements(items.get(USER_ARC))

@@ -65,6 +65,7 @@ class UserSetRights(base.BaseHandler):
              }))
 
 
+# ... existing code ...
 @decorators.class_logging
 class UserListRights(base.BaseHandler):
     @tornado.web.authenticated
@@ -72,3 +73,35 @@ class UserListRights(base.BaseHandler):
     def get(self):
         database = db.DataBase()
         self.finish(json.dumps(list(map(lambda r: {'value': r.rights, 'name': r.name}, database.list_rights()))))
+
+
+@decorators.class_logging
+class UserDelete(base.BaseHandler):
+    @tornado.web.authenticated
+    @decorators.requestAdmin
+    def post(self):
+        try:
+            user_id = int(self.get_argument(u'id', -1))
+            if user_id < 0:
+                raise tornado.web.HTTPError(400)
+        except (ValueError, AttributeError):
+            raise tornado.web.HTTPError(400)
+
+        database = db.DataBase()
+        u = database.get_user_by_id(user_id)
+        if not u:
+            raise tornado.web.HTTPError(404)
+
+        # KB Deletion
+        try:
+            import auth_service
+            auth_svc = auth_service.AuthService()
+            auth_svc.unregister_user(u.email)
+        except Exception as e:
+            logging.error(f"Failed to unregister user {u.email} from KB: {e}")
+
+        # DB Deletion
+        database.delete_user(user_id)
+        
+        self.finish(json.dumps({'status': 'success'}))
+

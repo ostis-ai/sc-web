@@ -91,6 +91,19 @@ def parse_menu_command(cmd_addr: ScAddr):
         keynodes[KeynodeSysIdentifiers.nrel_ui_commands_decomposition.value],
     )
     result = client.search_by_template(template)
+    
+    if not result:
+        # Fallback to logical decomposition if UI decomposition is not found
+        template = ScTemplate()
+        template.quintuple(
+            (sc_type.VAR_NODE, DECOMPOSITION_NODE),
+            sc_type.VAR_COMMON_ARC,
+            cmd_addr,
+            sc_type.VAR_PERM_POS_ARC,
+            keynodes[KeynodeSysIdentifiers.nrel_decomposition.value],
+        )
+        result = client.search_by_template(template)
+
     if result:
         # iterate child commands
         decomposition_node = result[0].get(DECOMPOSITION_NODE)
@@ -481,6 +494,74 @@ def get_languages_list() -> List[ScAddr]:
 
 
 @decorators.method_logging
+def is_admin_only_node(node_addr: ScAddr, handler: BaseHandler) -> bool:
+    """Checks if the node belongs to the admin-only users section."""
+    if not node_addr.is_valid():
+        return False
+    
+    user = handler.get_current_user()
+    if user and user.can_admin():
+        return False # Admin can see everything
+    
+    # Check if the node belongs to the 'user_section' class
+    # We resolve the class node by its identifier
+    try:
+        user_section_class = client.resolve_keynodes(
+            ScIdtfResolveParams(idtf='user_section_class', type=None))[0]
+        
+        if not user_section_class.is_valid():
+            return False
+
+        template = ScTemplate()
+        template.triple(
+            sc_type.VAR_NODE,
+            sc_type.VAR_PERM_POS_ARC,
+            node_addr
+        )
+        
+        # Check if any of the classes of the node is our user_section_class
+        results = client.search_by_template(template)
+        for res in results:
+            if res.get(0) == user_section_class:
+                return True
+    except Exception as e:
+        logger.error(f"Error checking admin-only node: {e}")
+        
+    return False
+    
+    keynodes = ScKeynodes()
+    # Try to find if node is connected to users_root
+    # The users_root was created as a node with a specific idtf or we can search for it.
+    # Since we know we created it as 'users_root_node' in AuthService, 
+    # we should probably use a stable way to find it.
+    
+    # For now, we check if the node is a descendant of the 'user_section' class
+    # and if the current user is an admin.
+    
+    user = handler.get_current_user()
+    if user and user.can_admin():
+        return False # Admin can see everything
+    
+    # Check if the node is in the users section
+    # We can use a template to check if the node is a descendant of users_root
+    # But a simpler way is to check if it has the 'user_section' class.
+    
+    template = ScTemplate()
+    template.triple(
+        sc_type.VAR_NODE,
+        sc_type.VAR_PERM_POS_ARC,
+        node_addr
+    )
+    # We need to check if the class is 'user_section'
+    # Since 'user_section' is created dynamically, we might need to resolve it.
+    # For now, we'll search for any node that has the user_section class.
+    
+    # A better way: check if the node's class is 'user_section'
+    # I'll implement a more robust check after I've verified the node creation.
+    
+    return False
+
+@decorators.method_logging
 def do_command(cmd_addr: ScAddr, arguments: List[ScAddr], handler: BaseHandler):
     result = {}
 
@@ -719,6 +800,10 @@ def do_command(cmd_addr: ScAddr, arguments: List[ScAddr], handler: BaseHandler):
         construction.generate_connector(
             sc_type.CONST_PERM_POS_ARC, keynode_system_element, 'arc_2')
         client.generate_elements(construction)
+        
+        # Admin-only check
+        if is_admin_only_node(instance_node, handler):
+            return serialize_error(handler, 403, "Forbidden: Administrator access required")
 
         result = {result_key: instance_node.value}
     return result
