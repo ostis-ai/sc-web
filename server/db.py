@@ -5,6 +5,7 @@ import time
 import uuid
 
 import tornado.options
+import bcrypt
 from sqlalchemy import Column, Integer, String
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
@@ -23,11 +24,14 @@ class Role(Base):
 class User(Base):
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True, unique=True)
+    login = Column(String(255), nullable=False, unique=True)
     name = Column(String(255), nullable=False)
     email = Column(String(255), nullable=False, unique=True)
     avatar = Column(String(1024))
     key = Column(String(32), nullable=False, unique=True)
+    password_hash = Column(String(128), nullable=True)
     role = Column(Integer)
+    sc_addr = Column(Integer, nullable=True)
 
 
 class DataBase:
@@ -97,18 +101,36 @@ class DataBase:
         self._session().merge(u)
         self._session().commit()
 
-    def add_user(self, name, email, avatar=None, role=0):
+    def hash_password(self, password):
+        if not password:
+            return None
+        salt = bcrypt.gensalt()
+        return bcrypt.hashpw(password.encode('utf-8'), salt).decode('utf-8')
+
+    def verify_password(self, password, password_hash):
+        if not password or not password_hash:
+            return False
+        return bcrypt.checkpw(password.encode('utf-8'), password_hash.encode('utf-8'))
+
+    def get_user_by_login(self, login):
+        return self._session().query(User).filter(User.login == login).first()
+
+    def add_user(self, name, email, avatar=None, role=0, login=None, password_hash=None, sc_addr=None):
         key = self.create_user_key()
+        if login is None:
+            login = email.split('@')[0]
         new_user = User(
+            login=str(login),
             name=str(name),
             email=str(email),
             avatar=str(avatar),
             key=key,
-            role=role
+            password_hash=password_hash,
+            role=role,
+            sc_addr=sc_addr
         )
         self._session().add(new_user)
         self._session().commit()
-
         return key
 
     def paginate_users(self, start, count):
@@ -129,5 +151,26 @@ class DataBase:
             )
         return res
 
-    def list_rights(self):
-        return self._session().query(Role).all()
+    def delete_user(self, user_id):
+        u = self.get_user_by_id(user_id)
+        if u:
+            self._session().delete(u)
+            self._session().commit()
+            return True
+        return False
+
+    def ensure_dev_user(self):
+        user = self.get_user_by_login('dev_user')
+        if not user:
+            role = self.get_role_by_name('super')
+            role_id = role.id if role else 0
+            self.add_user(
+                name='Developer',
+                email='dev@example.com',
+                login='dev_user',
+                role=role_id,
+                password_hash='dummy_hash',
+                sc_addr=12345
+            )
+            return True
+        return False

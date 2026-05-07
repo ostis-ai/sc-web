@@ -1,0 +1,60 @@
+<div class="demo-set-content">
+  <div class="demo-select-wrapper">
+    <select id="scg-set-content-type" class="form-control">
+      <option value="string">string</option>
+      <option value="float">float</option>
+      <option value="int8">int8</option>
+      <option value="int16">int16</option>
+      <option value="int32">int32</option>
+      <option value="html">html</option>
+    </select>
+    <div class="demo-select">
+      <input type="text" class="demo-select-value" readonly />
+      <ul class="demo-options">
+        <li class="demo-option">string</li>
+        <li class="demo-option">float</li>
+        <li class="demo-option">int8</li>
+        <li class="demo-option">int16</li>
+        <li class="demo-option">int32</li>
+        <li class="demo-option">html</li>
+      </ul>
+    </div>
+  </div>
+  <textarea
+    cols="30"
+    rows="3"
+    id="scg-set-content-input"
+    class="form-control demo-popover-input demo-popover-textarea"
+    placeholder="Введите текст..."
+    value=""
+    autofocus
+  />
+  <label class="demo-file-input">
+    <input
+      id="content"
+      type="file"
+      class="file-input"
+      accept="image/*,text/html,application/pdf"
+    />
+    <div class="demo-file-input-btn">
+      <img src="static/components/images/scg/demo-input-file-icon.svg" alt="file input svg" />
+    </div>
+    <span class="demo-file-input-text">Файл не выбран</span>
+  </label>
+  <div class="demo-input-group-btn">
+    <button
+      type="button"
+      id="scg-set-content-cancel"
+      class="btn demo-popover-cancel-btn"
+    >
+      Отмена
+    </button>
+    <button
+      type="button"
+      id="scg-set-content-apply"
+      class="btn demo-popover-save-btn"
+    >
+      Сохранить
+    </button>
+  </div>
+</div>

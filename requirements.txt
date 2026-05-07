@@ -4,3 +4,4 @@ sqlalchemy
 numpy
 configparser
 py-sc-client==0.4.0
+bcrypt
